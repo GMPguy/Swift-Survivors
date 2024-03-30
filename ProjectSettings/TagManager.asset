@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Item
+  - Interactable
+  - Mob
+  - Bodypart
+  - Land
+  - HordeDrop
+  - Interactions
+  - Effect
+  - MobPH
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - PostProcessing
+  - Player
+  - Item
+  - Interactable
+  - Mob
+  - IgnoreMPCollision
+  - IngoreAiDetection
+  - GroundDetector
+  - DeepWater
+  - BodyPart
+  - FPP
+  - PostProcessing2
+  - ScannerScan
+  - PostProcessingScanner
+  - Skybox
+  - PlayerPreview
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0

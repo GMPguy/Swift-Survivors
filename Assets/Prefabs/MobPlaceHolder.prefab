@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8469781977986736589
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9081979866091410801}
+  - component: {fileID: 9197748250306332861}
+  m_Layer: 0
+  m_Name: MobPlaceHolder
+  m_TagString: MobPH
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9081979866091410801
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8469781977986736589}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 41.03908, y: 0.09728378, z: -78.14761}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 16
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9197748250306332861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8469781977986736589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9c85102cbb4c94449edcfa8a8637dee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnType: 
+  Activation: 0
+  TimeTillActivation: 0
+  DifficultyLevel: 0
+  Curious: 0
+  SpawnRadius: 0
+  SpawnAmount: 0
+  MainPlayer: {fileID: 0}
+  MobPrefab: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6, type: 3}
+  SubOrdinates: []
+  MonumentPointsOfInterest: []
+  DeactivateID: 0
+  goodtogoDeactivate: 0
