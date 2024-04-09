@@ -651,7 +651,7 @@ public class MainMenuScript : MonoBehaviour {
             }
 
             // Master Audio
-            GS.GetComponent<GameScript>().SetText(OMasterAudio, "Master volume: " + (int)(GS.GetComponent<GameScript>().MasterVolume * 100f), "Ogólna głośność: " + (int)(GS.GetComponent<GameScript>().MasterVolume * 100f));
+            /*GS.GetComponent<GameScript>().SetText(OMasterAudio, "Master volume: " + (int)(GS.GetComponent<GameScript>().MasterVolume * 100f), "Ogólna głośność: " + (int)(GS.GetComponent<GameScript>().MasterVolume * 100f));
             if (OMasterAudio.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0)) {
                 GS.GetComponent<GameScript>().MasterVolume += 0.1f;
                 if (GS.GetComponent<GameScript>().MasterVolume > 1.05f) {
@@ -673,7 +673,7 @@ public class MainMenuScript : MonoBehaviour {
                 if (GS.GetComponent<GameScript>().MusicVolume > 1.05f) {
                     GS.GetComponent<GameScript>().MusicVolume = 0f;
                 }
-            }
+            }*/
 
             // Graphics settings
             string Graphicssettings = "";

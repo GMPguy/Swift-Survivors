@@ -547,9 +547,9 @@ public class RoundScript : MonoBehaviour {
                 foreach (GameObject Ambient in Ambients) {
                     if ((IsSwimming[0] == true && Ambient.name == "UnderwaterAmbience") || (Weather != 4 && Ambient.name == GotTerrain.GetComponent<BiomeInfo>().Ambience && IsSwimming[0] != true) || (Weather == 4 && Ambient.name == "RainingAmbience" && IsSwimming[0] != true)) {
                         if (IsSwimming[0] == true) {
-                            Ambient.GetComponent<AudioSource>().volume = (GS.SoundVolume * GS.MasterVolume);
+                            Ambient.GetComponent<AudioSource>().volume = 1f;
                         } else {
-                            Ambient.GetComponent<AudioSource>().volume = Mathf.Clamp(RoundTime / 60f, 0f, 1f) * (GS.SoundVolume * GS.MasterVolumeA);
+                            Ambient.GetComponent<AudioSource>().volume = Mathf.Clamp(RoundTime / 60f, 0f, 1f);
                         }
                     } else {
                         Ambient.GetComponent<AudioSource>().volume = 0f;
@@ -625,7 +625,7 @@ public class RoundScript : MonoBehaviour {
                             if (Music.GetComponent<AudioSource>().isPlaying == false) {
                                 Music.GetComponent<AudioSource>().Play();
                             }
-                            Music.GetComponent<AudioSource>().volume = Mathf.Clamp((RoundTime - 30f) / 10f, 0f, 1f) * ((GS.GetComponent<GameScript>().MusicVolume * GS.MasterVolumeA) * 0.5f) * MusicObscure;
+                            Music.GetComponent<AudioSource>().volume = Mathf.Clamp((RoundTime - 30f) / 10f, 0f, 1f) * 0.5f * MusicObscure;
                         } else {
                             if (Music.GetComponent<AudioSource>().isPlaying == true) {
                                 Music.GetComponent<AudioSource>().Stop();
@@ -665,7 +665,7 @@ public class RoundScript : MonoBehaviour {
                 // Ambient sounds
                 foreach (GameObject Ambient in Ambients) {
                     if (Ambient.name == "NukeAmbience") {
-                        Ambient.GetComponent<AudioSource>().volume = 1f * (GS.SoundVolume * GS.MasterVolumeA);
+                        Ambient.GetComponent<AudioSource>().volume = 1f;
                     } else {
                         Ambient.GetComponent<AudioSource>().volume = 0f;
                     }
@@ -677,7 +677,6 @@ public class RoundScript : MonoBehaviour {
                         if (Music.GetComponent<AudioSource>().isPlaying == false) {
                             Music.GetComponent<AudioSource>().Play();
                         }
-                        Music.GetComponent<AudioSource>().volume = (GS.MusicVolume * GS.MasterVolumeA) * 0.5f;
                     } else {
                         if (Music.GetComponent<AudioSource>().isPlaying == true) {
                             Music.GetComponent<AudioSource>().Stop();
@@ -692,7 +691,6 @@ public class RoundScript : MonoBehaviour {
                         if (Music.GetComponent<AudioSource>().isPlaying == false) {
                             Music.GetComponent<AudioSource>().Play();
                         }
-                        Music.GetComponent<AudioSource>().volume = (GS.MusicVolume * GS.MasterVolumeA) * 0.5f;
                     } else {
                         if (Music.GetComponent<AudioSource>().isPlaying == true) {
                             Music.GetComponent<AudioSource>().Stop();
@@ -798,7 +796,7 @@ public class RoundScript : MonoBehaviour {
                 // Ambiences
                 foreach (GameObject Ambient in Ambients) {
                     if (Ambient.name == GotTerrain.GetComponent<MapInfo>().Ambience) {
-                        Ambient.GetComponent<AudioSource>().volume = 1f * (GS.SoundVolume * GS.MasterVolumeA);
+                        Ambient.GetComponent<AudioSource>().volume = 1f;
                     } else {
                         Ambient.GetComponent<AudioSource>().volume = 0f;
                     }
@@ -808,7 +806,7 @@ public class RoundScript : MonoBehaviour {
                 foreach (GameObject Music in Musics) {
                     if (Music.name == GotTerrain.GetComponent<MapInfo>().Music && MainPlayer.State == 1) {
                         if (Music.GetComponent<AudioSource>().volume > 0f) {
-                            Music.GetComponent<AudioSource>().volume -= 0.002f * GS.MusicVolume;
+                            Music.GetComponent<AudioSource>().volume -= 0.002f;
                         }
                     } else {
                         Music.GetComponent<AudioSource>().Stop();
@@ -877,7 +875,6 @@ public class RoundScript : MonoBehaviour {
                             Music.GetComponent<AudioSource>().Play();
                             Music.GetComponent<AudioSource>().time = 0f;
                         }
-                        Music.GetComponent<AudioSource>().volume = (GS.MusicVolume * GS.MasterVolumeA) * 0.5f;
                     } else {
                         if (Music.GetComponent<AudioSource>().isPlaying == true) {
                             Music.GetComponent<AudioSource>().Stop();

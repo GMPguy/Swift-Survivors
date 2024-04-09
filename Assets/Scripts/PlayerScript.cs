@@ -4109,7 +4109,6 @@ public class PlayerScript : MonoBehaviour {
                 Soundbank.GetChild(PlayThisone).name = "S_" + Priority;
                 Soundbank.GetChild(PlayThisone).GetComponent<AudioSource>().clip = FoundSound;
                 Soundbank.GetChild(PlayThisone).GetComponent<AudioSource>().pitch = pitch;
-                Soundbank.GetChild(PlayThisone).GetComponent<SoundControlScript>().SetVolume();
                 Soundbank.GetChild(PlayThisone).GetComponent<AudioSource>().Play();
                 Soundbank.GetChild(PlayThisone).GetComponent<AudioSource>().time = From;
             }

@@ -8484,7 +8484,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4445607427158568}
   - component: {fileID: 82819414331650774}
-  - component: {fileID: 114836031551190106}
   m_Layer: 0
   m_Name: S_Sounds
   m_TagString: Untagged
@@ -8516,7 +8515,8 @@ AudioSource:
   m_GameObject: {fileID: 1190783451087022}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -5847124860591138158, guid: 637a0c78a81587046a1377781fcb69e5,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: ccce300920dee2b4ead2eeb9240931f2, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -8603,18 +8603,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &114836031551190106
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1190783451087022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0c1a860383022e40b987629f77de5a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1201145120379916
 GameObject:
   m_ObjectHideFlags: 0
@@ -8811,6 +8799,7 @@ MonoBehaviour:
   AiPosition: {x: 0, y: 0, z: 0}
   AiTargetLastSeen: {x: 0, y: 0, z: 0}
   CurrentWaypoint: {fileID: 0}
+  mobOrigins: 
   GS: {fileID: 0}
   RS: {fileID: 0}
   SelectedMobModel: {fileID: 0}

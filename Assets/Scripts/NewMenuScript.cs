@@ -14,12 +14,14 @@ public class NewMenuScript : MonoBehaviour {
     public string[] PrevWindow = {"", ""}; // Checker, Actual
     float FromStart = 0f;
     public bool isVisible = true;
+    bool hide = false;
     bool Swatched = false;
     public float intActive;
     float ForceHidden = 0f;
     // variables
 
     // references
+    GameObject mainAnchor;
     public Image Logo;
     float LogoAlpha = 0f;
     // Whiles
@@ -150,6 +152,8 @@ public class NewMenuScript : MonoBehaviour {
 
     void Start(){
 
+        mainAnchor = this.transform.GetChild(0).gameObject;
+
         if(GameObject.Find("_GameScript")) {
             GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
             PS = GS.GetComponent<ProfileScript>();
@@ -246,6 +250,9 @@ public class NewMenuScript : MonoBehaviour {
         }
 
         // Displaying
+        if(hide && mainAnchor.activeSelf) mainAnchor.SetActive(false);
+        else if(!hide && !mainAnchor.activeSelf) mainAnchor.SetActive(true);
+
         if(ForceHidden > 0f){
             ForceHidden -= 0.02f * (Time.unscaledDeltaTime*50f);
             isVisible = false;
@@ -260,6 +267,7 @@ public class NewMenuScript : MonoBehaviour {
         else WhilePopups("");
         if(LoadingTime > 0f || AfterLoading != ""){
 
+            hide = false;
             WhileLoading(true);
             WhileMain();
             WhileOptions();
@@ -271,10 +279,11 @@ public class NewMenuScript : MonoBehaviour {
 
         } else if (InputTopic != "") {
 
+            hide = false;
             WhileLoading();
 
         } else if(isVisible){
-
+            hide = false;
             FromStart += 0.02f * (Time.unscaledDeltaTime*50f);
             switch(CurrentWindow){
                 case "Main":
@@ -403,9 +412,9 @@ public class NewMenuScript : MonoBehaviour {
 
             if(Input.GetKeyDown(KeyCode.Escape)) isVisible = true;
 
-        }
-        // Displaying
-        
+            hide = true;
+
+        }        
 
     }
 
@@ -923,18 +932,18 @@ public class NewMenuScript : MonoBehaviour {
                         );
 
                         if(GS.MuteVolume > 0f){
-                            GS.MasterVolume = 0f;
+                            GS.Volumes[0] = 0f;
                             ButtonImage.fillAmount = 0.5f;
                         } else {
                             ButtonImage.fillAmount = 1f;
                         }
 
                         if(SideButtons[sb].IsSelected && Input.GetMouseButtonDown(0))
-                            if(GS.MuteVolume <= 0f && GS.MasterVolume > 0f) {
-                                GS.MuteVolume = GS.MasterVolume;
-                                GS.MasterVolume = 0f;
+                            if(GS.MuteVolume <= 0f && GS.Volumes[0] > 0f) {
+                                GS.MuteVolume = GS.Volumes[0];
+                                GS.Volumes[0] = 0f;
                             } else if (GS.MuteVolume > 0f){
-                                GS.MasterVolume = GS.MuteVolume;
+                                GS.Volumes[0] = GS.MuteVolume;
                                 GS.MuteVolume = 0f;
                             }
                         break;
@@ -1221,26 +1230,26 @@ public class NewMenuScript : MonoBehaviour {
                         objVARS = new string[]{ GS.SetString("Volumes", "Nasilenia"), "", "" };
                         objBG = 0; Activated = false; break;
                     case "MV":
-                        objVARS = new string[]{ GS.SetString("Master: ", "Ogólne: "), ((int)(GS.MasterVolume*100f)).ToString() + "%", "" };
+                        objVARS = new string[]{ GS.SetString("Master: ", "Ogólne: "), ((int)(GS.Volumes[0]*100f)).ToString() + "%", "" };
                         if(Clicked != 0) { 
-                            GS.MasterVolume = ( (GS.MasterVolume*100f) + (Clicked*5f) ) / 100f;
-                            if (GS.MasterVolume > 1.01f) GS.MasterVolume = 0f;
-                            else if (GS.MasterVolume < 0f) GS.MasterVolume = 1f; 
-                            GS.MasterVolumeA = GS.MasterVolume; }
+                            GS.Volumes[0] = ( (GS.Volumes[0]*100f) + (Clicked*5f) ) / 100f;
+                            if (GS.Volumes[0] > 1.01f) GS.Volumes[0] = 0f;
+                            else if (GS.Volumes[0] < 0f) GS.Volumes[0] = 1f; 
+                            }
                         break;
                     case "SV":
-                        objVARS = new string[]{ GS.SetString("Sound effects: ", "Efekty dźwiękowe: "), ((int)(GS.SoundVolume*100f)).ToString() + "%", "" };
+                        objVARS = new string[]{ GS.SetString("Sound effects: ", "Efekty dźwiękowe: "), ((int)(GS.Volumes[2]*100f)).ToString() + "%", "" };
                         if(Clicked != 0) {
-                            GS.SoundVolume = ( (GS.SoundVolume*100f) + (Clicked*5f) ) / 100f;
-                            if (GS.SoundVolume > 1.01f) GS.SoundVolume = 0f;
-                            else if (GS.SoundVolume < 0f) GS.SoundVolume = 1f;}
+                            GS.Volumes[2] = ( (GS.Volumes[2]*100f) + (Clicked*5f) ) / 100f;
+                            if (GS.Volumes[2] > 1.01f) GS.Volumes[2] = 0f;
+                            else if (GS.Volumes[2] < 0f) GS.Volumes[2] = 1f;}
                         break;
                     case "BGM":
-                        objVARS = new string[]{ GS.SetString("Music: ", "Muzyka: "), ((int)(GS.MusicVolume*100f)).ToString() + "%", "" };
+                        objVARS = new string[]{ GS.SetString("Music: ", "Muzyka: "), ((int)(GS.Volumes[1]*100f)).ToString() + "%", "" };
                         if(Clicked != 0) {
-                            GS.MusicVolume = ( (GS.MusicVolume*100f) + (Clicked*5f) ) / 100f;
-                            if (GS.MusicVolume > 1.01f) GS.MusicVolume = 0f;
-                            else if (GS.MusicVolume < 0f) GS.MusicVolume = 1f;}
+                            GS.Volumes[1] = ( (GS.Volumes[1]*100f) + (Clicked*5f) ) / 100f;
+                            if (GS.Volumes[1] > 1.01f) GS.Volumes[1] = 0f;
+                            else if (GS.Volumes[1] < 0f) GS.Volumes[1] = 1f;}
                         break;
                     // audios
                     // misc

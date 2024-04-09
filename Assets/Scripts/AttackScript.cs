@@ -732,7 +732,6 @@ public class AttackScript : MonoBehaviour {
                             BulletCase.transform.SetParent(GunFireObj.transform);
                             if(GunFireObj.transform.GetChild(GT).childCount > 0 && GunFireObj.transform.GetChild(GT).GetChild(0).GetComponent<AudioSource>()){
                                 float Rollof = Mathf.Lerp(0.1f, 1f, Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) / 100f);
-                                GunFireObj.transform.GetChild(GT).GetChild(0).GetComponent<AudioSource>().volume = GameObject.Find("_GameScript").GetComponent<GameScript>().MasterVolumeA * Rollof;
                             }
                         }
                     }
@@ -846,7 +845,6 @@ public class AttackScript : MonoBehaviour {
             if (Slimend && !HitWater && Vector3.Distance(Bullet.transform.position, GameObject.Find("MainCamera").transform.position) < 5f && Vector3.Distance(Slimend.transform.position, GameObject.Find("MainCamera").transform.position) >= 10f && Bullet.name == "S_Bullet" && Bullet.GetComponent<AudioSource>().isPlaying == false) {
                 Bullet.name = "S_Bulleted";
                 Bullet.GetComponent<AudioSource>().Play();
-                Bullet.GetComponent<AudioSource>().volume = 1f * (GameObject.Find("_GameScript").GetComponent<GameScript>().MasterVolumeA * GameObject.Find("_GameScript").GetComponent<GameScript>().SoundVolume);
             }
 
             if(HitWater && BubblesHitScan){

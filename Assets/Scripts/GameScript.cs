@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using Unity.Mathematics;
 using Random=UnityEngine.Random;
+using UnityEngine.Audio;
 
 public class GameScript : MonoBehaviour {
 
@@ -56,14 +57,11 @@ public class GameScript : MonoBehaviour {
     int PrevSkyboxType = 0;
     public int SkyboxType = 0;
     // Volume
+    public AudioMixer mainMixer;
+    string[] mixerChannels = {"Master", "Music", "Sounds", "EnvSounds"};
     public float MuteVolume = 0f;
-    public float MasterVolume = 1f;
-    public float MasterVolumeA = 0f;
-    float PrevMasterVolume = 0f;
-    public float MusicVolume = 1f;
-    float PrevMusicVolume = 0f;
-    public float SoundVolume = 1f;
-    float PrevSoundVolume = 0f;
+    public float[] Volumes = {1f, 1f, 1f, 1f}; // Master, Music, Sound, EnvSound
+    float[] prevVolumes = {-1f, -1f, -1f, -1f};
     public bool EarpiercingAllowed = true;
     // Mouse
     public float MouseSensitivity = 1f;
@@ -573,53 +571,33 @@ public class GameScript : MonoBehaviour {
         bool trimS = false; bool trimP = false; bool trimL = false;
 
         // Volumes
-        bool SetVolumes = false;
         float Deafening = Mathf.Clamp(Earpiercing[0] / Earpiercing[1], 0f, 1f);
         if (EarpiercingAllowed) {
             if (GameObject.Find("Earpiercing") == null) {
                 Earpiercing[0] = 0f;
             } else {
-                GameObject.Find("Earpiercing").GetComponent<AudioSource>().volume = Deafening * SoundVolume * MasterVolume;
+                GameObject.Find("Earpiercing").GetComponent<AudioSource>().volume = Deafening * Volumes[2] * Volumes[0];
             }
             if (Earpiercing[0] > 0f) {
                 Earpiercing[0] -= 0.02f * (Time.deltaTime * 50f);
-                SetVolumes = true;
             } else if (Earpiercing[1] != 0.01f) {
                 Earpiercing[1] = 0.01f;
-                SetVolumes = true;
             }
         } else {
             Deafening = 0f;
             GameObject.Find("Earpiercing").GetComponent<AudioSource>().volume = 0f;
         }
 
-        MasterVolumeA = Mathf.Clamp(MasterVolume - (Deafening * 2f), 0f, 1f);
+        Volumes[3] = Mathf.Clamp(Volumes[2] - (Deafening * 2f), 0f, 1f);
         if (GameObject.FindGameObjectWithTag("Player") != null) {
             if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().IsSwimming == true) {
-                MasterVolumeA /= 2f;
+                Volumes[3] /= 2f;
             }
         }
 
-        
-        if (PrevSoundVolume != SoundVolume) {
-            PrevSoundVolume = SoundVolume;
-            SetVolumes = true;
-        } if (PrevMusicVolume != MusicVolume) {
-            PrevMusicVolume = MusicVolume;
-            SetVolumes = true;
-        } if (PrevMasterVolume != MasterVolumeA) {
-            PrevMasterVolume = MasterVolumeA;
-            SetVolumes = true;
-        }
-
-        if (SetVolumes == true && ASetOffset <= 0f) {
-            ASetOffset = 0.2f;
-            foreach (SoundControlScript A in SoundCache) {
-                if(A) A.SetVolume();
-                else trimS = true;
-            }
-        } else if (ASetOffset > 0f) {
-            ASetOffset -= 0.02f * (Time.deltaTime * 50f);
+        for(int sv = 0; sv < 4; sv++) if (prevVolumes[sv] != Volumes[sv]){
+            prevVolumes[sv] = Volumes[sv];
+            mainMixer.SetFloat(mixerChannels[sv], Mathf.Log10(Volumes[sv])*20f);
         }
         // Volumes
 
@@ -768,9 +746,9 @@ public class GameScript : MonoBehaviour {
                 // add ragdolls
                 ";CamBob_" + CameraBobbing.ToString(CultureInfo.InvariantCulture) +
                 ";CamShi_" + CameraShifting.ToString(CultureInfo.InvariantCulture) +
-                ";MasterV_" + MasterVolume.ToString(CultureInfo.InvariantCulture) +
-                ";SoundV_" + SoundVolume.ToString(CultureInfo.InvariantCulture) +
-                ";MusicV_" + MusicVolume.ToString(CultureInfo.InvariantCulture) +
+                ";MasterV_" + Volumes[0].ToString(CultureInfo.InvariantCulture) +
+                ";SoundV_" + Volumes[2].ToString(CultureInfo.InvariantCulture) +
+                ";MusicV_" + Volumes[1].ToString(CultureInfo.InvariantCulture) +
                 ";FOV_" + FOV.ToString(CultureInfo.InvariantCulture) +
                 ";LaserColor_" + LaserColor.ToString(CultureInfo.InvariantCulture) +
                 ";HoloSight_" + HoloSightImage.ToString(CultureInfo.InvariantCulture) +
@@ -799,9 +777,9 @@ public class GameScript : MonoBehaviour {
                     InvertedMouse = bool.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "Minv_" ));
                     CameraBobbing = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "CamBob_" ), CultureInfo.InvariantCulture);
                     CameraShifting = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "CamShi_" ), CultureInfo.InvariantCulture);
-                    MasterVolume = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "MasterV_" ), CultureInfo.InvariantCulture);
-                    SoundVolume = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "SoundV_" ), CultureInfo.InvariantCulture);
-                    MusicVolume = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "MusicV_" ), CultureInfo.InvariantCulture);
+                    Volumes[0] = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "MasterV_" ), CultureInfo.InvariantCulture);
+                    Volumes[2] = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "SoundV_" ), CultureInfo.InvariantCulture);
+                    Volumes[1] = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "MusicV_" ), CultureInfo.InvariantCulture);
                     FOV = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "FOV_" ), CultureInfo.InvariantCulture);
                     LaserColor = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "LaserColor_" ), CultureInfo.InvariantCulture);
                     HoloSightImage = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "HoloSight_" ), CultureInfo.InvariantCulture);
