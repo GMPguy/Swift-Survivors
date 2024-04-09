@@ -149,7 +149,9 @@ public class ProfileScript : MonoBehaviour{
 
                 DataToSave += AddAchievementsAndStuff("Save") + "®©";
                 
-                for (int AddOld = 0; AddOld < PrevProfs.Length; AddOld++) if (GS.GetSemiClass(PrevProfs[AddOld], "ID_", "®") != ProfileID.ToString()) DataToSave += PrevProfs[AddOld];
+                for (int AddOld = 0; AddOld < PrevProfs.Length; AddOld++) 
+                    if (GS.GetSemiClass(PrevProfs[AddOld], "ID_", "®") != ProfileID.ToString()) 
+                        DataToSave += PrevProfs[AddOld] + "©";
 
                 PlayerPrefs.SetString("ProfileSaves", DataToSave);
                 break;
