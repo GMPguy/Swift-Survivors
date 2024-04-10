@@ -428,9 +428,6 @@ public class NewMenuScript : MonoBehaviour {
             default: MainOptions = Options; break;
         }
 
-        for(int x=0; x < 6; x++){
-            MainButtons[x].GetComponent<Image>().color = new Color(MainButtons[x].GetComponent<Image>().color.r, MainButtons[x].GetComponent<Image>().color.g, MainButtons[x].GetComponent<Image>().color.b, 0);
-        }
     }
 
     void WhileLoading(bool Show = false){

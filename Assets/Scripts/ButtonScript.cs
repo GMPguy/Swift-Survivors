@@ -11,17 +11,26 @@ public class ButtonScript : MonoBehaviour {
     public bool IsSelected = false;
     public bool IsHovering = false;
     public float SelectScale = 1f;
+    float[] SelectedLerp = {0f, -1};
     public AudioSource SelectSound;
     public AudioSource ClickSound;
     Vector3 originalScale;
     Image TheImage;
+    Color OrgColor;
     Outline TheOut;
     // Variables
 
     void Start() {
         originalScale = this.transform.localScale;
-        if(this.GetComponent<Image>()) TheImage = this.GetComponent<Image>();
+        if(this.GetComponent<Image>()) {
+            TheImage = this.GetComponent<Image>();
+            OrgColor = TheImage.color;
+        }
         if(this.GetComponent<Outline>()) TheOut = this.GetComponent<Outline>();
+        if(Effect == "NMPM-B") TheOut = this.transform.GetComponent<Outline>();
+        else if(Effect == "NMPM") TheOut = this.transform.GetChild(0).GetComponent<Outline>();
+
+        if(TheOut) OrgColor = TheOut.effectColor;
     }
 
     void Update () {
@@ -35,35 +44,15 @@ public class ButtonScript : MonoBehaviour {
             IsSelected = false;
         }
 
-        if (Effect == "" && SelectScale != 1f && Active == true) {
-            if (IsSelected == true) {
-                this.transform.localScale = Vector3.MoveTowards(this.transform.localScale, Vector3.one * SelectScale, 0.25f * (Time.unscaledDeltaTime * 100f));
-            } else {
-                this.transform.localScale = Vector3.MoveTowards(this.transform.localScale, originalScale, 0.1f * (Time.unscaledDeltaTime * 100f));
-            }
-        } else if (Effect == "Alpha" && Active){
-            if (IsSelected == true) {
-                TheImage.color = Color.Lerp(TheImage.color, new Color(TheImage.color.r, TheImage.color.g, TheImage.color.b, 1f), 0.1f * (Time.unscaledDeltaTime * 100f));
-            } else {
-                TheImage.color = Color.Lerp(TheImage.color, new Color(TheImage.color.r, TheImage.color.g, TheImage.color.b, SelectScale), 0.1f * (Time.unscaledDeltaTime * 100f));
-            }
-        } else if (Effect == "Highlight" && Active){
-            if (IsSelected == true) {
-                TheOut.effectColor = Color.Lerp(TheOut.effectColor, Color.white/2f, 0.1f * (Time.unscaledDeltaTime * 100f));
-            } else {
-                TheOut.effectColor = Color.Lerp(TheOut.effectColor, Color.black/6f, 0.1f * (Time.unscaledDeltaTime * 100f));
-            }
-        } else if (Effect == "NMPM" && Active){
-            if (IsSelected == true) {
-                this.transform.GetChild(0).GetComponent<Outline>().effectColor = Color.Lerp(this.transform.GetChild(0).GetComponent<Outline>().effectColor, Color.white, 0.1f * (Time.unscaledDeltaTime * 100f));
-            } else {
-                this.transform.GetChild(0).GetComponent<Outline>().effectColor = Color.Lerp(this.transform.GetChild(0).GetComponent<Outline>().effectColor, Color.black/6f, 0.1f * (Time.unscaledDeltaTime * 100f));
-            }
-        } else if (Effect == "NMPM-B" && Active){
-            if (IsSelected == true) {
-                this.transform.GetComponent<Outline>().effectColor = Color.Lerp(this.transform.GetComponent<Outline>().effectColor, Color.white, 0.1f * (Time.unscaledDeltaTime * 100f));
-            } else {
-                this.transform.GetComponent<Outline>().effectColor = Color.Lerp(this.transform.GetComponent<Outline>().effectColor, Color.black/6f, 0.1f * (Time.unscaledDeltaTime * 100f));
+        if(Active && IsSelected) SelectedLerp[0] = Mathf.MoveTowards(SelectedLerp[0], 1f, Time.unscaledDeltaTime*10f);
+        else SelectedLerp[0] = Mathf.MoveTowards(SelectedLerp[0], 0f, Time.unscaledDeltaTime*10f);
+
+        if(Active && SelectedLerp[0] != SelectedLerp[1]){
+            SelectedLerp[1] = SelectedLerp[0];
+            switch(Effect){
+                case "Alpha": TheImage.color = new Color(TheImage.color.r, TheImage.color.g, TheImage.color.b, Mathf.Lerp(0.5f, 1f, SelectedLerp[0])); break;
+                case "Highlight": case "NMPM": case "NMPM-B": TheOut.effectColor = Color.Lerp(OrgColor, Color.white*0.8f, SelectedLerp[0]); break;
+                default: this.transform.localScale = Vector3.Lerp(originalScale, originalScale*SelectScale, SelectedLerp[0]); break;
             }
         }
 
