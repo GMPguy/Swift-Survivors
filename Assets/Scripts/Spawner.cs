@@ -33,62 +33,62 @@ public class Spawner : MonoBehaviour {
 
         if (Special == "HouseStuff" || Special == "CabinStuff") {
             //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(Mathf.Clamp(Random.Range(1f, 20f + (RS.GetComponent<RoundScript>().DifficultySlider * 2f) * (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 20f)), 0f, (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f))) };
-            NewStuffToSpawn = new string[]{GS.ReceiveItemVariables(Mathf.Clamp(Random.Range(1f, 20f + (RS.GetComponent<RoundScript>().DifficultySlider * 2f) * (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 20f)), 0f, (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)))};
+            NewStuffToSpawn = new string[]{GS.itemCache[(int)Mathf.Clamp(Random.Range(1f, 20f + RS.GetComponent<RoundScript>().DifficultySlider * 2f * (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 20f)), 0f, (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f))].startVariables};
             if (GS.GetSemiClass(NewStuffToSpawn[0], "id") == "13") {
                 NewStuffToSpawn[0] = GS.SetSemiClass(NewStuffToSpawn[0], "id", "1");
             }
             Chance = new float[] { 50f, 10f };
         } else if (Special == "KitchenStuff" || Special == "Food") {
             //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().FoodItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().FoodItems.Length - 0.1f)]) };
-            NewStuffToSpawn = new string[]{GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().FoodItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().FoodItems.Length - 0.1f)])};
+            NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().FoodItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().FoodItems.Length - 0.1f)]].startVariables};
             Chance = new float[] { 50f, 10f };
         } else if (Special == "IndustrialStuff") {
             int WhatExactly = Random.Range(0, 5);
             if (WhatExactly == 0) {
                 //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().HealingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().HealingItems.Length - 0.1f)]) };
-                NewStuffToSpawn = new string[]{GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().HealingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().HealingItems.Length - 0.1f)])};
+                NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().HealingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().HealingItems.Length - 0.1f)]].startVariables};
             } else {
                 //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]) };
-                NewStuffToSpawn = new string[]{GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)])};
+                NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]].startVariables};
             }
             Chance = new float[] { 50f, 10f };
         } else if (Special == "BasementSpecial" || Special == "WellSpecial") {
             int WhatExactly = Random.Range(0, 3);
             if (WhatExactly == 0) {
                 //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)]) };
-                NewStuffToSpawn = new string[]{GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)])};
+                NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)]].startVariables};
             } else if (WhatExactly == 1) {
                 //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().HealingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().HealingItems.Length - 0.1f)]) };
-                NewStuffToSpawn = new string[]{GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().HealingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().HealingItems.Length - 0.1f)])};
+                NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().HealingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().HealingItems.Length - 0.1f)]].startVariables};
             } else {
                 //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]) };
-                NewStuffToSpawn = new string[]{GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)])};
+                NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]].startVariables};
             }
             Chance = new float[] { 100f, 25f };
         } else if (Special == "Weaponary") {
             //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)]) };
-            NewStuffToSpawn = new string[]{ GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)]) };
+            NewStuffToSpawn = new string[]{ GS.itemCache[RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)]].startVariables };
             Chance = new float[] { 10f, 2f };
         } else if (Special == "Utilities") {
             //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]) };
-            NewStuffToSpawn = new string[]{ GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]) };
+            NewStuffToSpawn = new string[]{ GS.itemCache[RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]].startVariables };
             Chance = new float[] { 100f, 25f };
         } else if (Special == "MilitaryStuff"){
             int WhatExactly = Random.Range(0, 6);
             if (WhatExactly == 0) {
                 //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().AmmoItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AmmoItems.Length - 0.1f)]) };
-                NewStuffToSpawn = new string[]{GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().AmmoItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AmmoItems.Length - 0.1f)])};
+                NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().AmmoItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AmmoItems.Length - 0.1f)]].startVariables};
             } else if (WhatExactly == 1) {
                 //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().AttachmentItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AttachmentItems.Length - 0.1f)]) };
-                NewStuffToSpawn = new string[]{GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().AttachmentItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AttachmentItems.Length - 0.1f)])};
+                NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().AttachmentItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AttachmentItems.Length - 0.1f)]].startVariables};
             } else {
                 //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)]) };
-                NewStuffToSpawn = new string[]{GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)])};
+                NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)]].startVariables};
             }
             Chance = new float[] { 50f, 10f};
         } else if (Special == "MedicalStuff"){
             //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().HealingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().HealingItems.Length - 0.1f)]) };
-            NewStuffToSpawn = new string[]{GS.ReceiveItemVariables(RS.GetComponent<RoundScript>().HealingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().HealingItems.Length - 0.1f)]) };
+            NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().HealingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().HealingItems.Length - 0.1f)]].startVariables };
             Chance = new float[] { 50f, 10f };
         } else if (Special == "LeftBarrel") {
             //StuffToSpawn = new Vector3[] { new Vector3(1f, 0f, 0f), new Vector3(1f, 0f, 0f) };

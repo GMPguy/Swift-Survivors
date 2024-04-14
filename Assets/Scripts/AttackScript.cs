@@ -939,13 +939,13 @@ public class AttackScript : MonoBehaviour {
 
             if (Attacker != null && GS.GetSemiClass(GS.RoundSetting, "G", "?") != "1") {
                 if (Attacker.GetComponent<PlayerScript>() != null && ObjectHit != null) {
-                    if(MeleeDurability != 0) Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld] = GameObject.Find("_GameScript").GetComponent<GameScript>().SetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "va", "/+-" + MeleeDurability);//Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld].y -= MeleeDurability;
+                    if(MeleeDurability != 0) Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld] = GS.SetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "va", "/+-" + MeleeDurability);//Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld].y -= MeleeDurability;
                     if (ObjectHit.GetComponent<FootstepMaterial>() != null) {
                         int Digup = Random.Range(0, 10);
-                        if (ObjectHit.GetComponent<FootstepMaterial>().WhatToPlay == "Grass" &&  GameObject.Find("_GameScript").GetComponent<GameScript>().GetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "id") == "115" && GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" && Digup == 0) {
+                        if (ObjectHit.GetComponent<FootstepMaterial>().WhatToPlay == "Grass" && GS.GetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "id") == "115" && GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" && Digup == 0) {
                             GameObject DigupItem = Instantiate(ItemPrefab) as GameObject;
                             DigupItem.transform.position = PointHit;
-                            DigupItem.GetComponent<ItemScript>().Variables = GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1, GameObject.Find("_RoundScript").GetComponent<RoundScript>().TotalItems.Length - 0.1f));
+                            DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[(int)Random.Range(1, GameObject.Find("_RoundScript").GetComponent<RoundScript>().TotalItems.Length - 0.1f)].getName();
                         }
                     }
                 }

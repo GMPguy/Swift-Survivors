@@ -9,7 +9,6 @@ public class Interactions : MonoBehaviour {
     public Vector3 Offset;
     GameObject MainPlayer;
     GameObject RS;
-    GameObject GS;
     GameObject MainCamera;
     GameObject MainCanvas;
 
@@ -17,8 +16,12 @@ public class Interactions : MonoBehaviour {
     public string[] Options = new string[] { "" };
     public int ThisOption = 0;
 
+    GameScript GS;
+
 	// Use this for initialization
 	void Start () {
+
+        GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
 
         if (InteractDistance < 0f) {
             InteractDistance = 3f;
@@ -29,7 +32,6 @@ public class Interactions : MonoBehaviour {
             MainPlayer.GetComponent<PlayerScript>().ScannedInteractables.Add(this.gameObject);
         }
         RS = GameObject.Find("_RoundScript");
-        GS = GameObject.Find("_GameScript");
         MainCamera = GameObject.Find("MainCamera");
         MainCanvas = GameObject.Find("MainCanvas");
 
@@ -39,11 +41,10 @@ public class Interactions : MonoBehaviour {
 	public string SetText () {
 
         string ReturnThis = "";
-        GS = GameObject.Find("_GameScript");
         if (Options[ThisOption] == "PickUp") {
             ReturnThis = GS.GetComponent<GameScript>().SetString(
-                "Pick Up " + GS.GetComponent<GameScript>().ReceiveItemName(float.Parse(GS.GetComponent<GameScript>().GetSemiClass(this.GetComponent<ItemScript>().Variables, "id"))), 
-                "Podnieś " + GS.GetComponent<GameScript>().ReceiveItemName(float.Parse(GS.GetComponent<GameScript>().GetSemiClass(this.GetComponent<ItemScript>().Variables, "id"))));
+                "Pick Up " + GS.itemCache[int.Parse(GS.GetSemiClass(this.GetComponent<ItemScript>().Variables, "id"))].getName(), 
+                "Podnieś " + GS.itemCache[int.Parse(GS.GetSemiClass(this.GetComponent<ItemScript>().Variables, "id"))].getName());
         } else if (Options[ThisOption] == "BreakBarel") {
             ReturnThis = GS.GetComponent<GameScript>().SetString(
                 "Break " + this.transform.parent.GetComponent<InteractableScript>().Name + " (" + (int)this.transform.parent.GetComponent<InteractableScript>().Variables.y + ")", 

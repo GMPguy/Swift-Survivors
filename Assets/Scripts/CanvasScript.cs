@@ -601,7 +601,7 @@ public class CanvasScript : MonoBehaviour {
                             if(i.GetComponent<ItemScript>().CanBeFixed && GS.GetSemiClass(i.GetComponent<ItemScript>().Variables, "va") != "100" && (CHIid >= 88 & CHIid <= 90)){
                                 CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n[LMB] Repair ", "\n[LMB] Napraw ") + (int)float.Parse(GS.GetSemiClass(i.GetComponent<ItemScript>().Variables, "va"), CultureInfo.InvariantCulture);
                             } else if(i.GetComponent<ItemScript>().CanHaveAttachments && (CHIid >= 100 && CHIid <= 105 || CHIid == 14)){
-                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n[LMB] Attach ", "\n[LMB] Zamontuj ") + GS.ReceiveItemName(CHIid);
+                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n[LMB] Attach ", "\n[LMB] Zamontuj ") + GS.itemCache[CHIid].getName();
                             }
                         }
                     } else if (CheckInterIcon.name == i.GetComponent<Interactions>().Icons[i.GetComponent<Interactions>().ThisOption]) {
@@ -1045,12 +1045,12 @@ public class CanvasScript : MonoBehaviour {
                             } else {
                                 if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" && DialogedMob.GetComponent<InteractableScript>() != null) {
                                     GS.SetText(CheckedButton.GetComponent<Text>(),
-                                    "- Get " + GS.ReceiveItemName(TradeOptions.x) + " for " + TradeOptions.y + "$",
-                                    "- Dostaniesz " + GS.ReceiveItemName(TradeOptions.x) + " za " + TradeOptions.y + "$");
+                                    "- Get " + GS.itemCache[(int)TradeOptions.x].getName() + " for " + TradeOptions.y + "$",
+                                    "- Dostaniesz " + GS.itemCache[(int)TradeOptions.x].getName() + " za " + TradeOptions.y + "$");
                                 } else {
                                     GS.SetText(CheckedButton.GetComponent<Text>(),
-                                    "- Get " + GS.ReceiveItemName(TradeOptions.x) + " for " + GS.ReceiveItemName(TradeOptions.y),
-                                    "- Dostaniesz " + GS.ReceiveItemName(TradeOptions.x) + " za " + GS.ReceiveItemName(TradeOptions.y));
+                                    "- Get " + GS.itemCache[(int)TradeOptions.x].getName() + " for " + GS.itemCache[(int)TradeOptions.y].getName(),
+                                    "- Dostaniesz " + GS.itemCache[(int)TradeOptions.x].getName() + " za " + GS.itemCache[(int)TradeOptions.y].getName());
                                 }
                             }
                             int GotTradedItem = -1;
@@ -1065,7 +1065,7 @@ public class CanvasScript : MonoBehaviour {
                                 }
                             }
                             if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" && CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GS.Money >= TradeOptions.y && Input.GetMouseButtonDown(0)) {
-                                MainPlayer.InvGet(GS.ReceiveItemVariables(TradeOptions.x), 0);
+                                MainPlayer.InvGet(GS.itemCache[(int)TradeOptions.x].startVariables, 0);
                                 GS.Mess(GS.SetString("Item purchased!", "Kupiono ten przedmiot!"), "Buy");
                                 DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = -1;
                                 GS.Money -= (int)TradeOptions.y;
@@ -1193,23 +1193,23 @@ public class CanvasScript : MonoBehaviour {
             case  14: case  15: case  16: case  27: case  28: case  993: case 88: case 95: case 96: case 132: case 134: case 136: case 138:
                 // Mele weapons
                 Infos = new string[]{
-                    GS.ReceiveItemName(float.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture)),
+                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                     GS.SetString("Durability: ", "Wytrzymałość: ") + (int)float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + "%"};
                 break;
             case 2: case 68: case 127: case 128: case 130:
                 // Power stuff
                 Infos = new string[]{
-                    GS.ReceiveItemName(float.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture)),
+                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                     GS.SetString("Power: ", "Moc: ") + (int)float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + "%"};
                 break;
             case 89: case 991:
                 Infos = new string[]{
-                    GS.ReceiveItemName(float.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture)),
+                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                     GS.SetString("Uses: ", "Użycia: ") + (int)(float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) / 30f) };
                 break;
             case 98: case 124:
                 Infos = new string[]{
-                    GS.ReceiveItemName(float.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture)),
+                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                     GS.SetString("Uses: ", "Użycia: ") + (int)(float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) / 10f) };
                 break;
             case 29: case 31: case 32: case 34: case 35: case 36: case 38: case 40: case 41: case 42: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 64: case 65: case 113: case 135: case 137:
@@ -1246,16 +1246,16 @@ public class CanvasScript : MonoBehaviour {
                 
                 if(GS.ExistSemiClass(ItemInfos, "at")) 
                     Infos = new string[]{
-                        GS.ReceiveItemName(float.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture)),
+                        GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                         GS.SetString("Ammo: ", "Ammunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + " / " + SpareAmmo,
-                        GS.SetString("Attachment: ", "Dodatek: ") + GS.ReceiveItemName(int.Parse(GS.GetSemiClass(ItemInfos, "at"), CultureInfo.InvariantCulture))};
+                        GS.SetString("Attachment: ", "Dodatek: ") + GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "at"))].getName()};
                 else
                     Infos = new string[]{
-                        GS.ReceiveItemName(float.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture)),
-                        GS.SetString("Ammo: ", "Ammunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + " / " + SpareAmmo,};
+                        GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
+                        GS.SetString("Ammo: ", "Ammunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + " / " + SpareAmmo};
 
                 break;
-            default: Infos = new string[]{GS.ReceiveItemName(float.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture))}; break;
+            default: Infos = new string[]{GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),}; break;
         }
 
         for(int SetInfos = 0; SetInfos < 5; SetInfos++){
@@ -1400,479 +1400,8 @@ public class CanvasScript : MonoBehaviour {
                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                     }
-                    ITItemHeldInfo.transform.GetChild(1).GetComponent<Text>().text = GS.GetComponent<GameScript>().ReceiveItemName(float.Parse(GS.GetSemiClass(ItemHeld, "id")));
-                    switch (int.Parse(GS.GetSemiClass(ItemHeld, "id"))) {
-                        case 1:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 30 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 30 sekund.");
-                            break;
-                        case 2:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It shines light in front of you. Lasts for 60 seconds.", "Oświeca teren przed tobą. Bateria starcza na 60 sekund.");
-                            break;
-                        case 3:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 120 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 120 sekund.");
-                            break;
-                        case 4:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 240 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 240 sekund.");
-                            break;
-                        case 5:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 60 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 60 sekund.");
-                            break;
-                        case 6:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 60 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 60 sekund.");
-                            break;
-                        case 7:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 180 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 180 sekund.");
-                            break;
-                        case 8:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 120 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 120 sekund.");
-                            break;
-                        case 9:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 120 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 120 sekund.");
-                            break;
-                        case 10:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 120 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 120 sekund.");
-                            break;
-                        case 11:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A dim light source with infinite lifetime.", "Słabe źródło światła które nigdy się nie wyczerpie.");
-                            break;
-                        case 12:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can lit it for 30 seconds. It shines a bright red light, and warms you. When thrown, it can set foes on fire.", "Możesz to odpalić na 30 sekund. Flara będzie świecić jasnym czerwonym światłem, i będzie cię ocieplać. Gdy rzucisz nią w kogoś, ten ktoś zostanie podpalony.");
-                            break;
-                        case 13:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It shines a bright red light, and warms you. When thrown, it can set foes on fire.", "Świeci jasnym czerwonym światłem, i cię ociepla. Gdy rzucisz nią w kogoś, ten ktoś zostanie podpalony.");
-                            break;
-                        case 14:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A weak melee weapon, it's pretty quick though.", "Słaba broń biała, jest jednak dość szybka.");
-                            break;
-                        case 15:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A slow melee weapon. Doesn't do much damage to living things, but does a lot to props.", "Powolna broń biała. Nie zadaje dużo obrażeń istotom żywym, ale zadaje dużo obrażeń przedmiotom.");
-                            break;
-                        case 16:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A slow, yet powerful melee weapon.", "Powolna, lecz silna broń biała.");
-                            break;
-                        case 17:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can drink it to add 60 seconds of hydration.", "Możesz to wypić i nawodnić się na 60 sekund.");
-                            break;
-                        case 18:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can drink it to add 30 seconds of hydration, and to remove 25% of tiredness (this will increase your hunger by 25 seconds though).", "Możesz to wypić i nawodnić się na 30 sekund, oraz pozbyć się 25% zmęczenia (to jednak doda ci 25 sekund głodu).");
-                            break;
-                        case 19:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 60 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 60 sekund.");
-                            break;
-                        case 20:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 240 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 240 sekund.");
-                            break;
-                        case 21:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger back to default value.", "Możesz to zjeść i obniżyć poziom głodu do pierwotnego stanu.");
-                            break;
-                        case 22:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can use it to stop any bleedings, and to add +25hp (up to 75% of max healht).", "Możesz tego użyć by zatrzymać krwotok, i by odzyskać 25pz (do 75% maksymalnej ilości zdrowia).");
-                            break;
-                        case 23:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can use it to reduce infection and radioactivity by 25% (this will increase your hunger by 30 senconds though).", "Możesz tego użyć by pozbyć się 25% infekcji i radioaktywności (to jednak doda ci 30 sekund głodu).");
-                            break;
-                        case 24:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon using it, any infections you have will dissapear.", "Po użyciu tego przedmiotu, wszelkie infekcje jakie posiadasz zostaną usunięte.");
-                            break;
-                        case 25:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon using it, any radiation you have will dissapear, and you will gain 30 seconds of immunity over any radiation sickness.", "Po użyciu tego przedmiotu, wszelkie choroby popromienne jakie posiadasz zostaną usunięte, oraz zdobędziesz odporność na nie na 30 sekund.");
-                            break;
-                        case 26:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can use it to add +50hp.", "Możesz tego użyć, by otrzymać +50pz.");
-                            break;
-                        case 27:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A direct upgrade to knife; deals more damage, and is more durable.", "Jest to ulepszona wersja noża; zadaje więcej obrażeń, i jest bardziej wytrzymała.");
-                            break;
-                        case 28:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A blunt and quick weapon. Does decent damage to living things, but is very fragile.", "Jest to kij, którym w miarę szybko i w miarę dobrze można posyłać ludzi do piachu. Broń ta się dość łatwo niszczy.");
-                            break;
-                        case 29:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A simple pistol, nothing special.", "Prosty pistolet, nic specialnego.");
-                            break;
-                        case 30:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It contains ammo which can be used to reload pistols. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać pistolety. Można go naładować paczkami z amunicją.");
-                            break;
-                        case 31:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A fast firing pistol. Not very accurate, but does decent damage.", "Szybko strzelający pistolet. Niezbyt celny, ale zadaje dużo obrażeń.");
-                            break;
-                        case 32:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A very powerful yet small gun. Deals a lot of damage, is very accurate, but fires very slow.", "Bardzo silna, a zarazem mała broń palna. Zadaje dużo obrażeń, jest bardzo dokładna, jednak strzela powoli.");
-                            break;
-                        case 33:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It contains ammo which can be used to reload guns that don't have magazines. It also can be used to reload other magazines.", "To zawiera amunicję, którą można przeładowywać bronie które nie mają magazynków. Można nią także naładowywać inne magazynki.");
-                            break;
-                        case 34:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A slow bolt-action rifle. Has a decent range, good accuracy, but doesn't do much damage.", "Powolny karabin powtarzalny. Posiada dobry dystans, niski rozrzut broni, ale nie zadaje dużo obrażeń.");
-                            break;
-                        case 35:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A very powerful gun that fires many bullets per shot, but can only contain 2 rounds at once.", "Potężna broń która wystrzeliwuje wiele kul na jeden strzał, jednak może pomieścić tylko 2 naboje.");
-                            break;
-                        case 36:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Cult classic SMG. Doesn't do much damage, but fires really fast, and contains a lot of ammo.", "Bardzo znany i doceniany pistolet maszynowy. Nie zadaje sporej ilości obrażeń, ale strzela bardzo szybko, i posiada dużą pojemność na amunicję.");
-                            break;
-                        case 37:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It contains ammo which can be used to reload SMGs. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać pistolety maszynowe. Można go naładować paczkami z amunicją.");
-                            break;
-                        case 38:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Popular, reliable, and very deadly. This is one of the best assault rifle you can get.", "Popularny, niezawodny, i niosiący śmierć. To jest jeden z najlepszych karabinów szturmowych");
-                            break;
-                        case 39:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It can be used to reload rifles. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać karabiny. Można go naładować paczkami z amunicją.");
-                            break;
-                        case 40:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A very powerful gun that fires many bullets per shot, but doesn't do as much damage as the double-barrelled variant.", "Potężna broń która wystrzeliwuje wiele kul na jeden strzał, jednak nie zadaje tylu obrażeń co dubeltówka.");
-                            break;
-                        case 41:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A very fast SMG.", "Bardzo szybki pistolet maszynowy.");
-                            break;
-                        case 42:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "This carbine is similar to AK-47, albeit it is slower, but more accurate and deals more damage.", "Karabinek ten jest podobny do AK-47, tylko że jest wolniejszy, zadaje więcej obrażeń, i jest bardziej dokładny.");
-                            break;
-                        case 43:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon using it, it'll instantly warm you, and you will gain 15 seconds of immunity over coldness.", "Po użyciu tego przedmiotu, natychmiastowo cię ociepli, oraz zdobędziesz odporność na zimno na 15 sekund.");
-                            break;
-                        case 44:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "This substance will make your stamina infinite, for 15 seconds. It will damage you a bit though!", "Ta substancja spowoduje że twoja energia będzie nieskończona, przez 15 sekund. Stracisz jednak trochę zdrowia!");
-                            break;
-                        case 45:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon wearing it, you'll have +1 inventory slot.", "Po jej założeniu, dostaniesz +1 miejsce w inwentarzu.");
-                            break;
-                        case 46:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon wearing it, you'll have +2 inventory slots.", "Po jego założeniu, dostaniesz +2 miejsc w inwentarzu.");
-                            break;
-                        case 47:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon wearing it, you'll have +4 inventory slots.", "Po jego założeniu, dostaniesz +4 miejsc w inwentarzu.");
-                            break;
-                        case 48:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon wearing it, you'll have 150 max health.", "Po jej założeniu, będziesz miał maksymalnie 150pz.");
-                            break;
-                        case 49:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon wearing it, you'll have 250 max health, +4 inventory slots, but your walking speed decrease by 3m/s.", "Po jej założeniu, będziesz miał maksymalnie 250pz, +4 miejsc w inwentarzu, jednak twoja prędkość spadnie o 3m/s.");
-                            break;
-                        case 990:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Treasure found in silos. Upon using it, you'll enter a teal state, where you'll be free from any dangers.", "Skarb znajdywalny w silosach. Po jego użyciu, wejdziesz w stan cyjanowy, gdzie będziesz bezpieczny od wszelakich niebezpieczeństw.");
-                            break;
-                        case 991:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Treasure found in churches. You can drink from it, to regain all of the lost health and hunger, and to get rid of any negative buffs. Has 3 uses.", "Skarb znajdywalny w kościołach. Możesz z niego pić, by odnowić swoje zdrowie oraz głód, i by pozbyć się wszelkich złych efektów. Ma 3 użycia.");
-                            break;
-                        case 992:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Treasure found in lighthouses. You can throw it, and teleport to the place where it lands.", "Skarb znajdywalny w latarniach morskich. Możesz nim rzucić, i teleportować się tam gdzie spadnie.");
-                            break;
-                        case 993:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Treasure found in hangars. It is a weapon, that can kill anything in one hit, but only can be used 4 times.", "Skarb znajdywalny w hangarach. Jest to broń, która zabije każdą żywą istotę, jednym uderzeniem, jednak można z niej skorzystać tylko 4 razy.");
-                            break;
-                        case 994:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Treasure found in quarries. It is an armor, that gives you: 300 max health, +6 inventory slots, and +3m/s walking speed.", "Skarb znajdywalny w kamieniołomach. Jest to zbroja, po której założeniu otrzymujesz: 300 maksymalnej ilości zdrowia, +6 miejsc w inwentarzu, oraz +3m/s prędkości chodzenia.");
-                            break;
-                        case 995:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Treasure found in castles. A blue, bright light source that has infinite lifetime.", "Skarb znajdywalny w zamkach. Jasne niebieskie źródło światła, z nieskończoną żywotnością.");
-                            break;
-                        case 996:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Treasure found in bunkers. It's basically an AK-47 rifle, but it doesn't need any magazines to reload.", "Skarb znajdywalny w bunkrach. Jest to zwykły karabin AK-47, tylko że nie potrzebuje żadnych magazynków do przeładowywania.");
-                            break;
-                        case 997:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Treasure found in radar stations. It can fire short lightning bolts. Recharges itself slowly overtime.", "Skarb znajdywalny w stacjach radarowych. Może strzelać prądem. Swoją energie regeneruje z czasem powoli.");
-                            break;
-                        case 998:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Treasure found in mazes. When held, it'll protect you from any damage, but it'll slow you down by a lot.", "Skarb znajdywalny w labiryntach. Trzymany, obroni cię przed wszelkimi obrażeniami, aczkolwiek będziesz się poruszać wolniej.");
-                            break;
-                        case 999:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Treasure found in ships. Upon using it, it'll drop a lot of random items.", "Skarb znajdywalny w statkach. Po jego użyciu, upuści sporo losowych przedmiotów.");
-                            break;
-                        case 50:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon escaping, all of the tiredness will be removed.", "Po opuszczeniu mapy, całe twoje zmęczenie zniknie.");
-                            break;
-                        case 51:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon wearing it, your speed will increase by 3m/s.", "Po ich ubraniu, twoja prędkość wzrośnie o 3m/s.");
-                            break;
-                        case 52:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It can be used to trade, when you don't have the item the trader wants.", "Możesz tym handlować, jeśli nie posiadasz przedmiotu, którego chce handlujący.");
-                            break;
-                        case 53:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon using these goggles, you'll be able to see anything in the dark. They last for 60 seconds, you can turn them on/off them at any time, and you don't need to constantly hold them.", "Po założeniu tych gogli, będziesz widzieć w ciemności. Starczają na 60 sekund, możesz je włączyć/wyłączyć w każdej chwili, i nie musisz ich cały czas trzymać.");
-                            break;
-                        case 54:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "If you throw it while standing, you may create a rope bridge from the point where you're standing, and where the hook lands. Might break when throwing.", "Gdy tym rzucisz stojąc w miejscu, stworzysz most liniowy, znajdujący pomiędzy sobą, a miejscem gdzie uderzy hak. Może się zniszczyć.");
-                            break;
-                        case 55:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A mass produced smg. Similar to thompson, but does less damage.", "Masowo produkowany pistolet maszynowy. Podobny do thompsona, tylko że zadaje mniej obrażeń.");
-                            break;
-                        case 56:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Classic american rifle. It is very powerful, very accurate, but isn't that fast. It also can be reloaded, only if it's empty.", "Klasyczny amerykański karabin. Zadaje dużo obrażeń, jest dokładny, jednak nie jest taki szybki. Nie można go przeładowywać, jeżeli nie jest pusty.");
-                            break;
-                        case 57:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A french assault rifle. It's fast, deadly, but not very accurate.", "Francuski karabin szturmowy. Jest szybki, śmiercionośny, jednak niezbyt dokładny.");
-                            break;
-                        case 58:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A smg, that you can hold in one hand.", "Pistolet maszynowy, który można trzymać w jednej ręce.");
-                            break;
-                        case 59:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A german assault rifle. Similar to M4, but a bit more accurate.", "Niemiecki karabin szturmowy. Podobny do karabinku M4, tylko że jest bardziej dokładny.");
-                            break;
-                        case 60:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A fast firing assault rifle. It does a lot of damage, but the recoil is high.", "Szybko strzelny karabin szturmowy. Zadaje dużo obrażeń, jednak ma spory odrzut.");
-                            break;
-                        case 61:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A semi-automatic shotgun. It's very lethal, if you can handle the recoil.", "Pół automatyczna strzelba. Bardzo śmiercionośna, jednak z ogromnym odrzutem.");
-                            break;
-                        case 62:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Very fast firing machine gun. Can mown down enemies pretty easily", "Bardzo szybki karabin maszynowy. Z łatwością może przemieniać przeciwników w ser szwajcarski.");
-                            break;
-                        case 63:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A bunch of bullets, on a chain. This can be used to reload machine guns.", "Łańcuch z kulami. Można tego użyć do przeładowywania karabinów maszynowych.");
-                            break;
-                        case 64:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A very powerful gun. Fires really fast, does a lot of damage, and can contain a lot of ammo. Although, mobility is decreased when firing.", "Bardzo potężna broń. Strzela bardzo szybko, zadaje dużo obrażeń, jednak mobilność podczas strzelania jest dość niska.");
-                            break;
-                        case 65:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A bolt-action rifle of soviet construction. It is a very accurate weapon, and is perfect for taking out targets from long distances.", "Karabin powtarzalny sowjeckiej konstrukcji. Jest bardzo dokładny, i sprawdza się idealnie na dalekie dystanse.");
-                            break;
-                        case 66:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A throwable explosive. After unpining it, you'll have 5 seconds to throw or drop it before it explodes.", "Materiał wybuchowy do rzucania. Po odbezpieczeniu, masz 5 sekund żeby rzucić, albo upuścić go, zanim wybuchnie.");
-                            break;
-                        case 67:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Single-use grenade launcher.", "Jednorazowy granatnik.");
-                            break;
-                        case 68:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A very handy machine, that can mown down any living and/or not living thing. When held, the battery can last for only 60 seconds.", "Bardzo przydatna maszyna, która potrafi rozwalić wszystko co żywe lub nie. Gdy trzymana, bateria starcza na 60 sekund.");
-                            break;
-                        case 69:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can shoot arrows with it.", "Możesz z niego strzelać strzałami.");
-                            break;
-                        case 70:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 120 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 120 sekund.");
-                            break;
-                        case 71:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 60 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 60 sekund.");
-                            break;
-                        case 72:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 180 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 180 sekund.");
-                            break;
-                        case 73:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 60 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 60 sekund.");
-                            break;
-                        case 74:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 120 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 120 sekund.");
-                            break;
-                        case 75:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 60 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 60 sekund.");
-                            break;
-                        case 76:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 60 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 60 sekund.");
-                            break;
-                        case 77:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 60 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 60 sekund.");
-                            break;
-                        case 78:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 60 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 60 sekund.");
-                            break;
-                        case 79:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can drink it to add 30 seconds of hydration, and to remove 10% of tiredness (this will increase your hunger by 10 seconds though).", "Możesz to wypić i nawodnić się na 30 sekund, oraz pozbyć się 10% zmęczenia (to jednak doda ci 10 sekund głodu).");
-                            break;
-                        case 80:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can drink it to add 15 seconds of drunknenness.", "Możesz to wypić i upić się na 15 sekund.");
-                            break;
-                        case 81:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can drink it to add 45 seconds of drunknenness.", "Możesz to wypić i upić się na 45 sekund.");
-                            break;
-                        case 82:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 30 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 30 sekund.");
-                            break;
-                        case 83:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can drink it to add 60 seconds of hydration. May heal broken bones.", "Możesz to wypić i nawodnić się na 60 sekund. Może uleczyć połamane kości.");
-                            break;
-                        case 84:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 60 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 60 sekund.");
-                            break;
-                        case 85:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "When held, it slows down the falling speed, thus saving you from falling damage. It also protects you from rain.", "Gdy go trzymasz, obniża prędkość spadania, przez co zapobiega otrzymywniu obrażeń od spadania. Ponad to, chroni cię przed deszczem.");
-                            break;
-                        case 86:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon wearing it, you'll be protected from any radiation and fire, though you'll move very slow. Prolonged exposure might damage this suit.", "Po założeniu, nie będziesz otrzymywał obrażeń od promieniowania i ognia, jednak będziesz się powoli poruszał. Nadmierne promieniowanie może jednak uszkodzić ten kombinezon.");
-                            break;
-                        case 87:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "When held, it allows you to move normally in water, and you won't get wet from it.", "Gdy go trzymasz, pozwala ci normalnie chodzić w wodzie, bez moknięcia.");
-                            break;
-                        case 88:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It can be used on some items, in order to repair them by 50%. Has only one use.", "Może zostać użyta na niektórych przedmiotach, aby je naprawić o 50%. Ma tylko jedno użycie.");
-                            break;
-                        case 89:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It can be used on some items, in order to repair them to 100%. Has three uses.", "Może zostać użyty na niektórych przedmiotach, aby je naprawić do 100%. Można go użyć trzy razy.");
-                            break;
-                        case 90:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It can be used on some items, in order to repair them by 5%. Has infinite uses, but reparing takes long time.", "Może zostać użyty na niektórych przedmiotach, aby je naprawić o 5%. Można go używać bez końca, jednak czas naprawy jest dość długi.");
-                            break;
-                        case 91:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "This device has a really bright flash. When taking a photo, anyone that is close to you, will get stunned for 2 seconds.", "To urządzenie posiada bardzo jasną lampę błyskową. Po strzeleniu zdjęcia, każdy kto jest blisko ciebie, zostanie oślepiony na 2 sekundy.");
-                            break;
-                        case 92:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It allows you to zoom really far.", "Pozwalają ci popatrzeć z bliska na dalsze tereny.");
-                            break;
-                        case 93:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "An old rusty cowbell. You can ring it, to alert anyone in the radius of 100m.", "Stary zardzewiały dzwonek. Możesz nim zadzwonić; każdy w promieniu 100m to usłyszy.");
-                            break;
-                        case 94:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon using it, you'll be protected from coldness. Will cause overheating when not cold.", "Po użyciu tego, będziesz chroniony od zimna. Możesz się przegrzać jeśli nie będzie ci zimno");
-                            break;
-                        case 95:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A tactical shield, that can block bullets, melee weapons, mutant attacks, and explosions. It may break after few blocks.", "Taktyczna tarcza, która blokuje kule, bronie białe, ataki mutantów, i eksplozje. Może się popsuć po długim użytku.");
-                            break;
-                        case 96:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon using it, no one will detect you, although you can only crouch in it. It is small, so after some usage it'll eventually break.", "Po założeniu tego kartonu na siebie, nikt cię nie zobaczy, jednak będziesz musiał kucać. To pudło jest małe, i po długim czasie użytkowania może się popsuć.");
-                            break;
-                        case 97:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon using it on a locked door or a barrel, it may either: open it, break itself, or nothing will happen.", "Po użyciu tego na zamkniętych drzwiach lub beczkach: zostaną otwarte, wytrych się złamie, albo nic.");
-                            break;
-                        case 98:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can use it to wipe yourself, and reduce wetness, bleeding, and radioactivity.", "Możesz nim się wytrzeć, by pozbyć się trochę mokra, krwotoku, i radioaktywności.");
-                            break;
-                        case 99:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon using it, it'll mark some interesting locations on your map.", "Po użyciu tego, na twojej mapie zostaną zaznaczone interesujące lokacje.");
-                            break;
-                        case 100:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A gun attachment. When attached, it'll make your gun fire very quiet, and won't alert anyone.", "Dodatek do broni. Gdy założony, twoja broń będzie strzelać ciszej, i nikt jej nie usłyszy.");
-                            break;
-                        case 101:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A gun attachment. When attached, the gun recoil will be significantly reduced.", "Dodatek do broni. Gdy założony, rozrzut broni zostanie znacznie zmniejszony.");
-                            break;
-                        case 102:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A gun attachment. When attached, you'll be able to fire grenades for 50% of maximum gun's ammo.", "Dodatek do broni. Gdy założony, będziesz mógł wystrzeliwywać granaty za 50% maksymalnej amunicji.");
-                            break;
-                        case 103:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A gun attachment. When attached to some kind of rifle, it reduces gun spread and firing speed, but increases damage and aiming zoom.", "Dodatek do broni. Gdy założona na jakiegoś rodzaju karabin, obniży rozrzut i prędkość strzelania, ale podwyższy obrażenia i zoom.");
-                            break;
-                        case 104:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A gun attachment. When attached, it'll increase your aiming zoom.", "Dodatek do broni. Po założeniu, będziesz mógł bliżej celować.");
-                            break;
-                        case 105:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A gun attachment. When attached, it'll completely remove gun spread and recoil when crouching.", "Dodatek do broni. Po założeniu, pozbędzie się rozrzutu i odrzutu broni, podczas kucania.");
-                            break;
-                        case 106:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can use it to add +75hp. It also has a chance to remove specific wounds, like bleeding or broken bones.", "Możesz tego użyć, by otrzymać +75pz. Użycie tego, także ma szanse pozbycia się specyficznych ran, takich jak krwotok, albo połamane kości.");
-                            break;
-                        case 107:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon using it, it'll fix your bones if they're broken.", "Po użyciu tego przedmiotu, twoje kości zostaną uleczone, jeśli miałeś je połamane.");
-                            break;
-                        case 108:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It's a tool, that can be used as a weapon. It isn't very effective, but you can throw it at a foe, to blind them for 5 seconds.", "Jest to narzędzie, którego możesz użyć jako broni. Nie jest to efektowne, ale możesz rzucić tym w przeciwnika, by go oślepić na 5 sekund.");
-                            break;
-                        case 109:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "An industrial flamethrower.", "Przemysłowy miotacz ognia.");
-                            break;
-                        case 110:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A throwable explosive. It has smaller explosion radius that normal grenade, albeit, upon exploding it can shoot out multiple deadly fragments.", "Materiał wybuchowy do rzucania. Wybuch ma mniejszy zasięg niż zwykły granat, ale, po detonacji wystrzeliwuje wiele śmiercionośnych odłamków.");
-                            break;
-                        case 111:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A weapon, that can fire grenades, which explode on impact.", "Broń która wystrzeliwuje granaty, wybuchające po uderzeniu.");
-                            break;
-                        case 112:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It's like a bow, except you don't need to load it before shooting, but rather after.", "Jest to podobne do łuku, z takim wyjątkiem, że ładuje się po wystrzale, a nie przed.");
-                            break;
-                        case 113:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "An old trapdoor musket. Can hold only one bullet at a time, and isn't very accurate.", "Stary muszkiet. Posiada tylko jeden pocisk, i nie jest zbytnio dokładny.");
-                            break;
-                        case 114:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A slightly modified taser. It's modification, in fact, makes it is very deadly!", "Zmodyfikowany paralizator. Jego modyfikacja, robi go bardzo niebezpiecznym!");
-                            break;
-                        case 115:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "This tool, besides being a decent yet fragile weapon, has one special use. If you keep hitting dirt with it, you have 10% chance of getting a random item.", "To narzędzie, poza byciem bronią, posiada jedną ciekawą cechę. Jeśli będziesz nią bił o ziemie, będziesz miał 10% szans na zdobycie losowego przedmiotu.");
-                            break;
-                        case 116:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 30 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 30 sekund.");
-                            break;
-                        case 117:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 120 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 120 sekund.");
-                            break;
-                        case 118:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 300 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 300 sekund.");
-                            break;
-                        case 119:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 240 seconds, and to add 30 seconds of hydration.", "Możesz to zjeść i obniżyć poziom głodu o 240 sekund, oraz nawodnić się na 30 sekund.");
-                            break;
-                        case 120:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 30 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 30 sekund.");
-                            break;
-                        case 121:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 240 seconds.", "Możesz to zjeść i obniżyć poziom głodu o 240 sekund.");
-                            break;
-                        case 122:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can drink it to restore your stamina, and to add 30 seconds of hydration.", "Możesz to wypić i odnowić swoją wytrzymałość, oraz nawodnić się na 30 sekund.");
-                            break;
-                        case 123:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can eat it to reduce hunger by 60 seconds, though you'll get 25% of coldness.", "Możesz to zjeść i obniżyć poziom głodu o 60 sekund, jednak otrzymasz 25% zimna.");
-                            break;
-                        case 124:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "You can use it to instantly regenerate your stamina.", "Możesz tego użyć, by natychmiastowo zregenerować swoją wytrzymałość.");
-                            break;
-                        case 125:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon equipping it, you'll be breathing oxygen from this tank. It can provide a maximum of 5 minutes of oxygen.", "Po jej założeniu, będziesz oddychał tlenem z tej butli. Może zapewnić maksimum 5 minut tlenu.");
-                            break;
-                        case 126:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Upon wearing those, your swimming speed will increase by 7m/s.", "Po ich założeniu, twoja prędkość pływania wzrośnie o 7m/s.");
-                            break;
-                        case 127:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "It shines light in front of you. Battery lasts for a short time, but it can be recharged by cranking it.", "Oświeca teren przed tobą. Bateria starcza na krótką chwilę, ale można ją ręcznie naładować.");
-                            break;
-                        case 128:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "Aside from extinguishing fires, it can also cause a temporary propulsion opposite of your looking direction.", "Poza gaszeniem pożarów, powoduje chwilowy napęd w przeciwnym kierunku twojego wzroku.");
-                            break;
-                        case 129:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "This tool allows you to catch fish and other stuff from water.", "To narzędzie pozwala ci łowić ryby i śmieci z wody.");
-                            break;
-                        case 130:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "This advanced electronic device allows you to scan the entire map for items, and other stuff.", "To zaawansowane elektroniczne urządzenie pozwala skanować mapę w poszukiwaniu przedmiotów i innych rzeczy.");
-                            break;
-                        case 131:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A throwable explosive. It doesn't deal any damage, but it'll stun anyone nearby. It's stun effect decreases with distance.", "Materiał wybuchowy do rzucania. Nie zadaje żadnych obrażeń, ale potrafi ogłuszyć każdego w pobliżu. Efekt ogłuszenia jest silniejszy im bliżej wybuchu.");
-                            break;
-                        case 132:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A swift and deadly japanese sword. It is very fragile though, and it breaks easily!", "Szybka i śmiertelna broń japońska. Bądź ostrożny, łatwo można ją uszkodzić!");
-                            break;
-                        case 133:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A throwable bottle with flammable substance in it. Upon throwing and hitting something, everyone within 6 meter radius will be set on fire.", "Butelka z substancją łatwopalną. Gdy nią rzucisz i coś uderzysz, wszyscy w promieniu 6 metrów zostaną podpaleni.");
-                            break;
-                        case 134:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "This melee weapon has long attack distance. When thrown, it flies far, and deals more damage.", "Ta broń biała może atakować na dłuższy dystans. Rzucona, zadaje więcej obrażeń, oraz leci na bardzo długi dystans.");
-                            break;
-                        case 135:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "This pistol is pretty weak, but it's fully automatic!", "Ten pistolet jest dość słaby, ale jest automatyczny!");
-                            break;
-                        case 136:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A kitchen utility made from cast iron. Can be used as a weapon, but it's pretty loud. Some hits may stun foes.", "Narzędzie kuchenne stworzone z żeliwa. Może być użyte za broń, ale jest dość głośna. Niektóre uderzenia mogą ogłuszyć nieprzyjaciół.");
-                            break;
-                        case 137:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "This carbine is an upgrade of the Garand rifle. It has more ammo, fires faster, but deals less damage.", "Ten karabinek jest następcą karabinu Garand. Ma więcej amunicji, strzela szybciej, ale zadaje mniej obrażeń.");
-                            break;
-                        case 138:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "This tool is very powerful. It deals a lot of damage, can push foes far, but it's very slow and drains a lot of stamina.", "Jest to potężne narzędzie. Zadaje bardzo dużo obrażeń przedmiotom, potrafi wyrzucić przeciwników w powietrze, jednak jest bardzo powolna i wymaga dużo wytrzymałości.");
-                            break;
-                        case 139:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "This is a powerful rocket launcher.", "Jest to potężna wyrzutnia rakiet.");
-                            break;
-                        case 140:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A piece of wood. Used mainly for crafting.", "Kawałek drewna. Głównie używany w tworzeniu.");
-                            break;
-                        case 141:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A bunch of strings tied together. Used mainly for crafting.", "Kawał nici zawiniętych razem. Głównie używane w tworzeniu.");
-                            break;
-                        case 142:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A small stone. Used mainly for crafting, but can also be used as a throwable weapon.", "Mały kamień. Głównie używany w tworzeniu, ale można również nim rzucać w nieprzyjaciół.");
-                            break;
-                        case 143:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A piece of paper. Used mainly for crafting.", "Kawałek kartki. Głównie używany w tworzeniu.");
-                            break;
-                        case 144:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A piece of cloth. Used mainly for crafting.", "Kawałek tkaniny. Głównie używany w tworzeniu.");
-                            break;
-                        case 145:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A bunch of scraps of various metals. Used mainly for crafting.", "Kawał zezłomowanego metalu. Głównie używany w tworzeniu.");
-                            break;
-                        case 146:
-                            GS.GetComponent<GameScript>().SetText(ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>(), "A pile of dirt, with some traces of clay, gravel, and whatnot. Used mainly for crafting.", "Sterta ziemi, z domieszką gliny, żwiru, i czegoś tam jeszcze. Głównie używana w tworzeniu.");
-                            break;
-                        default:
-                            break;
-                    }
+                    ITItemHeldInfo.transform.GetChild(1).GetComponent<Text>().text = GS.itemCache[int.Parse(GS.GetSemiClass(ItemHeld, "id"))].getName();
+                    ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>().text = GS.itemCache[int.Parse(GS.GetSemiClass(ItemHeld, "id"))].getDesc();
                 }
                 // Item Held
 
@@ -1912,36 +1441,18 @@ public class CanvasScript : MonoBehaviour {
                             Equipment.transform.GetChild(0).GetComponent<Text>().color = new Color(1f, 1f, 1f, EqTextScroll[0]);
                             if (GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id") == "53") {
                                 GS.SetText(Equipment.transform.GetChild(0).GetComponent<Text>(),
-                                    GS.ReceiveItemName(float.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))) + "\nLMB - Unequip   RMB - Turn on/off",
-                                    GS.ReceiveItemName(float.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))) + "\nLPM - Zdejmij   PPM - Włącz/wyłącz");
+                                    GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))].getName() + "\nLMB - Unequip   RMB - Turn on/off",
+                                    GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))].getName() + "\nLPM - Zdejmij   PPM - Włącz/wyłącz");
                             } else {
                                 GS.SetText(Equipment.transform.GetChild(0).GetComponent<Text>(),
-                                    GS.ReceiveItemName(float.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))) + "\nLMB - Unequip",
-                                    GS.ReceiveItemName(float.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))) + "\nLPM - Zdejmij");
+                                    GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))].getName() + "\nLMB - Unequip",
+                                    GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))].getName() + "\nLPM - Zdejmij");
                             }
 
                             if (Input.GetMouseButtonDown(0)) {
-                                GS.Mess(GS.SetString(GS.ReceiveItemName(float.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))) + " unequipped", GS.ReceiveItemName(float.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))) + " zdjęty"), "Unwear");
+                                GS.Mess(GS.SetString(GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))].getName() + " unequipped", "Zdjęto: " + GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))]), "Unwear");
                                 MainPlayer.InvGet(MainPlayer.Equipment[CheckEq], 0);
                                 MainPlayer.Equipment[CheckEq] = "id0;";
-                                /*int UnequipHere = -1;
-                                for (int CheckFreeSlot = 0; CheckFreeSlot < MainPlayer.GetComponent<PlayerScript>().MaxInventorySlots; CheckFreeSlot++) {
-                                    if (GS.GetSemiClass(MainPlayer.GetComponent<PlayerScript>().Inventory[CheckFreeSlot], "id") == "0") {
-                                        UnequipHere = CheckFreeSlot;
-                                        break;
-                                    }
-                                }
-                                if (UnequipHere == -1) {
-                                    MainPlayer.Equipment[CheckEq] = GS.RemoveSemiClass(MainPlayer.Equipment[CheckEq], "ct");
-                                    GameObject UnequipItem = Instantiate(MainPlayer.GetComponent<PlayerScript>().ItemPrefab) as GameObject;
-                                    UnequipItem.transform.position = MainPlayer.transform.position + MainPlayer.transform.forward * 1f;
-                                    UnequipItem.GetComponent<ItemScript>().Variables = MainPlayer.Equipment[CheckEq];//new Vector3(MainPlayer.Equipment[CheckEq].x, MainPlayer.Equipment[CheckEq].y, MainPlayer.Equipment[CheckEq].z);
-                                    MainPlayer.Equipment[CheckEq] = "id0;";
-                                } else {
-                                    MainPlayer.Equipment[CheckEq] = GS.RemoveSemiClass(MainPlayer.Equipment[CheckEq], "ct");
-                                    ;//MainPlayer.Inventory[UnequipHere] = MainPlayer.Equipment[CheckEq];//new Vector3(MainPlayer.Equipment[CheckEq].x, MainPlayer.Equipment[CheckEq].y, MainPlayer.Equipment[CheckEq].z);
-                                    MainPlayer.Equipment[CheckEq] = "id0;";
-                                }*/
                             } else if (Input.GetMouseButtonDown(1)) {
                                 if (GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id") == "53") {
                                     if (GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "tr") == "0") {

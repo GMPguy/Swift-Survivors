@@ -157,7 +157,7 @@ public class HordeDropScript : MonoBehaviour {
                 if (FreeSpace == -1 || GS.GetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "id") == "0") {
                     FreeSpace = other.GetComponent<PlayerScript>().CurrentItemHeld;
                 }
-                other.GetComponent<PlayerScript>().Inventory[FreeSpace] = GS.GetComponent<GameScript>().ReceiveItemVariables(SpecificValue);
+                other.GetComponent<PlayerScript>().Inventory[FreeSpace] = GS.itemCache[SpecificValue].startVariables;
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
                 GS.Mess(GS.SetString("Picked up weapon", "Podniesiono broń"), "ś" + SoundWhenFlash);
             } else if (WhatToDrop == "Health") {
@@ -192,7 +192,7 @@ public class HordeDropScript : MonoBehaviour {
                     SpecificValue = AvailableAttachments[(int)Random.Range(0f, AvailableAttachments.Length - 0.1f)];
                     other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld] = GS.SetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "at", SpecificValue.ToString());//other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].z = SpecificValue;
                     GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
-                    GS.Mess(GS.SetString("New attachement: " + GS.GetComponent<GameScript>().ReceiveItemName(SpecificValue), "Nowy dodatek: " + GS.GetComponent<GameScript>().ReceiveItemName(SpecificValue)), "ś" + SoundWhenFlash);
+                    GS.Mess(GS.SetString("New attachement: " + GS.itemCache[SpecificValue].getName(), "Nowy dodatek: " + GS.itemCache[SpecificValue].getName()), "ś" + SoundWhenFlash);
                 }
             } else if (WhatToDrop == "Money") {
                 GS.GetComponent<GameScript>().Money += SpecificValue;

@@ -141,7 +141,7 @@ public class DestructionScript : MonoBehaviour {
                     if (subType=="TreePalm") for(int BanCoc = Random.Range(1, 3); BanCoc > 0; BanCoc--){
                         GameObject Wooddrop = Instantiate(ItemPrefab) as GameObject;
                         Wooddrop.transform.position = this.transform.position + this.transform.forward*Random.Range(1f, 5f);
-                        Wooddrop.GetComponent<ItemScript>().Variables = GS.ReceiveItemVariables(pickfrut);
+                        Wooddrop.GetComponent<ItemScript>().Variables = GS.itemCache[pickfrut].startVariables;
                     }
                     break;
                 case "TreeBig":

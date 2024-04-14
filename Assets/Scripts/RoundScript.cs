@@ -1131,7 +1131,7 @@ public class RoundScript : MonoBehaviour {
                                 if(MainPlayer.Inventory[Give] == "id0;"){
                                     ByThatMuch--;
                                     int GivenID = TotalItems[(int)Random.Range(0f, TotalItems.Length - 0.1f)];
-                                    MainPlayer.Inventory[Give] = GS.ReceiveItemVariables(GivenID);
+                                    MainPlayer.Inventory[Give] = GS.itemCache[GivenID].startVariables;
                                 }
                                 if(ByThatMuch <= 0) break;
                             }
@@ -1151,7 +1151,7 @@ public class RoundScript : MonoBehaviour {
                             SetScore("RTreasure_", "1");
                             for(int GiveT = 0; GiveT < Mathf.Clamp(MainPlayer.MaxInventorySlots + 1, 0, 9); GiveT++){
                                 if(MainPlayer.Inventory[GiveT] == "id0;"){
-                                    MainPlayer.Inventory[GiveT] = GS.ReceiveItemVariables(990 + (int)Random.Range(0f, 9.9f));
+                                    MainPlayer.Inventory[GiveT] = GS.itemCache[990 + (int)Random.Range(0f, 9.9f)].startVariables;
                                     break;
                                 }
                             }

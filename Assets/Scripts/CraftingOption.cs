@@ -97,7 +97,8 @@ public class CraftingOption : MonoBehaviour {
 
                     for(int cr = 0; cr < WhatToCraft.Length; cr++){
                         if(cr > 0) ToDisplay += " + ";
-                        ToDisplay += GS.ReceiveItemName(float.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))).ToUpper();
+                        ToDisplay += GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName().ToUpper();
+                        //ToDisplay += GS.ReceiveItemName(float.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))).ToUpper();
                         if(GS.ExistSemiClass(WhatToCraft[0], "sq") && GS.GetSemiClass(WhatToCraft[0], "sq") != "1") ToDisplay += " x" + GS.GetSemiClass(WhatToCraft[0], "sq");
                     }
 
@@ -111,7 +112,7 @@ public class CraftingOption : MonoBehaviour {
 
                     for(int sr = 0; sr < Resources.Length; sr++){
                         if(sr == 0) ToDisplay += "\nResources:";
-                        ToDisplay += "\n- " + GS.ReceiveItemName(float.Parse(GS.GetSemiClass(Resources[sr], "id")));
+                        ToDisplay += "\n- " + GS.itemCache[int.Parse(GS.GetSemiClass(Resources[sr], "id"))].getName();//GS.ReceiveItemName(float.Parse(GS.GetSemiClass(Resources[sr], "id")));
                         if(GS.ExistSemiClass(WhatToCraft[0], "sq") && GS.GetSemiClass(WhatToCraft[0], "sq") != "1") ToDisplay += " x" + GS.GetSemiClass(WhatToCraft[0], "sq");
                     }
 
@@ -125,7 +126,7 @@ public class CraftingOption : MonoBehaviour {
                         MainPlayer.ShakeCam((CraftingTime[1] / CraftingTime[0]) / 3f, 0.1f);
                         CraftingTime[1] = Mathf.Clamp(CraftingTime[1] + (0.02f * (Time.deltaTime * 50f)), 0f, CraftingTime[0]);
                         if (CraftingTime[1] >= CraftingTime[0]) {
-                            GS.Mess(GS.SetString(GS.ReceiveItemName(float.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))) + " crafted!", "Stworzono " + GS.ReceiveItemName(float.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))) + "!"), "Craft");
+                            GS.Mess(GS.SetString(GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName() + " crafted!", "Stworzono " + GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName() + "!"), "Craft");
                             MainPlayer.CantCraft = Mathf.Clamp(MainPlayer.CantCraft, 0.5f, Mathf.Infinity);
                             // Retrive resources
                             foreach (Vector3 GetResource in AcquiredItems) {
@@ -173,7 +174,7 @@ public class CraftingOption : MonoBehaviour {
             Special = WhichTemplate.GetComponent<CraftingOption>().Special;
             CraftingTime = new float[] {WhichTemplate.GetComponent<CraftingOption>().CraftingTime[0], 0f};
 
-            this.transform.GetChild(1).GetComponent<Text>().text = GS.ReceiveItemName(float.Parse(GS.GetSemiClass(WhatToCraft[0], "id"), CultureInfo.InvariantCulture));//GS.ReceiveItemName(WhatToCraft[0].x);
+            this.transform.GetChild(1).GetComponent<Text>().text = GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName();//GS.ReceiveItemName(WhatToCraft[0].x);
             foreach (Sprite SetIcon in MainCanvas.ItemIcons) {
                 if (SetIcon.name.Substring(1) == GS.GetSemiClass(WhatToCraft[0], "id")) {
                     COIcon.transform.GetChild(0).GetComponent<Image>().sprite = SetIcon;

@@ -9,6 +9,7 @@ using System.IO;
 using Unity.Mathematics;
 using Random=UnityEngine.Random;
 using UnityEngine.Audio;
+using System.Data;
 
 public class GameScript : MonoBehaviour {
 
@@ -125,12 +126,36 @@ public class GameScript : MonoBehaviour {
     public List<Vector2> Resolutions;
     // Misc
 
+    // Improved item classification
+    public itemClass[] itemCache;
+    public class itemClass{
+        GameScript GS;
+        public string startVariables;
+        public Vector3 ThrowVariables = new(10f, 0f, 0f); // throw speed, change of breaking, damage
+        public int imageIndex; // 0 normal, 1 counter, 2 bar
+        public string[] Name, Desc;
+        public itemClass(GameScript sGS, string[] sName, string[] sDesc, string startervariables, Vector3 setThrow = default, int setImage = 0){
+            GS = sGS;
+            Name = sName; 
+            Desc = sDesc;
+            startVariables = startervariables;
+            if(setThrow != default) ThrowVariables = setThrow;
+            imageIndex = setImage;
+        }
+        public itemClass(){}
+
+        public string getName(){ return GS.SetString(Name[0], Name[1]); }
+        public string getDesc(){ return GS.SetString(Desc[0], Desc[1]); }
+    }
+    // Improved item classification
+
     // Use this for initialization
     void Start () {
 
         if (GameObject.Find("_GameScript") != null) {
             Destroy(this.gameObject);
         } else {
+            setItemData();
             MainPP.TryGetSettings(out PPBloom);
             GunsPP.TryGetSettings(out PPAmbient);
             MainPP.TryGetSettings(out PPBlur);
@@ -808,682 +833,652 @@ public class GameScript : MonoBehaviour {
                 break;
         }
 
-        /*if (WhatToDo == 0) {
-            PlayerPrefs.SetString("Language", Language);
-            PlayerPrefs.SetFloat("MouseSensitivity", MouseSensitivity);
-            PlayerPrefs.SetFloat("MouseSmoothness", MouseSmoothness);
-            PlayerPrefs.SetString("InvertedMouse", InvertedMouse.ToString());
-            PlayerPrefs.SetFloat("CameraBobbing", CameraBobbing);
-            PlayerPrefs.SetFloat("MasterVolume", MasterVolume);
-            PlayerPrefs.SetFloat("SoundVolume", SoundVolume);
-            PlayerPrefs.SetFloat("MusicVolume", MusicVolume);
-            PlayerPrefs.SetFloat("FOV", FOV);
-            PlayerPrefs.SetInt("LaserColor", LaserColor);
-            PlayerPrefs.SetInt("HoloSightImage", HoloSightImage);
-            PlayerPrefs.SetInt("Graphics", QualitySettings.GetQualityLevel());
-            PlayerPrefs.SetString("HintsTold", ToldHints);
-        } else if (WhatToDo == 1) {
-            Language = PlayerPrefs.GetString("Language");
-            MouseSensitivity = PlayerPrefs.GetFloat("MouseSensitivity");
-            MouseSmoothness = PlayerPrefs.GetFloat("MouseSmoothness");
-            InvertedMouse = bool.Parse(PlayerPrefs.GetString("InvertedMouse"));
-            CameraBobbing = PlayerPrefs.GetFloat("CameraBobbing");
-            MasterVolume = PlayerPrefs.GetFloat("MasterVolume");
-            SoundVolume = PlayerPrefs.GetFloat("SoundVolume");
-            MusicVolume = PlayerPrefs.GetFloat("MusicVolume");
-            FOV = PlayerPrefs.GetFloat("FOV");
-            LaserColor = PlayerPrefs.GetInt("LaserColor");
-            HoloSightImage = PlayerPrefs.GetInt("HoloSightImage");
-            if (Platform == 2) {
-                if (PlayerPrefs.HasKey("Graphics")) {
-                    QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("Graphics"));
-                } else {
-                    QualitySettings.SetQualityLevel(2);
-                }
-            }
-            ToldHints = PlayerPrefs.GetString("HintsTold");
-        } else if (WhatToDo == 2) {
-            PlayerPrefs.DeleteKey("Language");
-            PlayerPrefs.DeleteKey("MouseSensitivity");
-            PlayerPrefs.DeleteKey("MouseSmoothness");
-            PlayerPrefs.DeleteKey("InvertedMouse");
-            PlayerPrefs.DeleteKey("CameraBobbing");
-            PlayerPrefs.DeleteKey("MasterVolume");
-            PlayerPrefs.DeleteKey("SoundVolume");
-            PlayerPrefs.DeleteKey("MusicVolume");
-            PlayerPrefs.DeleteKey("LaserColor");
-            PlayerPrefs.DeleteKey("HoloSightImage");
-            PlayerPrefs.DeleteKey("Graphics");
-            PlayerPrefs.DeleteKey("FOV");
-            PlayerPrefs.DeleteKey("HintsTold");
-        }*/
-
     }
 
     // Item functions
+    void setItemData(){
+        itemCache = new itemClass[]{
+            new(),
+            new(this, new string[]{"Apple", "Jabłko"},
+                new string[]{"A red and round edible fruit.", "Okrągły i czerwony owoc"},
+                "id1;va0;sq1;"
+            ),
+            new(this, new string[]{"Flashlight", "Latarka"},
+                new string[]{"It shines light in front of you. Can also used be as a weak weapon.", "Oświeca teren przed tobą. Działa również jako prosta broń biała."},
+                "id2;va100;"
+            ),
+            new(this, new string[]{"Bread", "Chleb"},
+                new string[]{"A big loaf of bread.", "Duży bochenek chleba."},
+                "id3;va0;sq1;"
+            ),
+            new(this, new string[]{"Can of soup", "Zupa w puszce"},
+                new string[]{"A can containing a tomato soup with noodles. Can be eaten cold.", "Puszka z zupą pomidorową i makaronem. Można jeść na zimno."},
+                "id4;va0;sq1;"
+            ),
+            new(this, new string[]{"Canned mackerel", "Makrela w puszce"},
+                new string[]{"A smoked mackerel, soaked in oil.", "Wędzona makrela w oleju."},
+                "id5;va0;sq1;"
+            ),
+            new(this, new string[]{"Chocolate", "Czekolada"},
+                new string[]{"A bar of milk chocolate.", "Tabliczka mlecznej czekolady."},
+                "id6;va0;sq1;"
+            ),
+            new(this, new string[]{"Sausage", "Kiełbasa"},
+                new string[]{"A big piece of smoked kielbasa.", "Duży kawałek wędzonej kiełbasy."},
+                "id7;va0;sq1;"
+            ),
+            new(this, new string[]{"Jam", "Dżem"},
+                new string[]{"A jar containing strawberry jam.", "Słoik z dżemem truskawkowym."},
+                "id8;va0;sq1;"
+            ),
+            new(this, new string[]{"Chips", "Czipsy"},
+                new string[]{"A bag of potato chips.", "Paczka z czipsami."},
+                "id9;va0;sq1;"
+            ),
+            new(this, new string[]{"Cheese", "Ser"},
+                new string[]{"A piece of gouda cheese.", "Kawałek sera gouda."},
+                "id10;va0;sq1;"
+            ),
+            new(this, new string[]{"Glowstick", "Światło chemiczne"},
+                new string[]{"A dim light source with infinite lifetime.", "Słabe źródło światła, które się nigdy nie wyczerpie."},
+                "id11;va0;cl" + Random.Range(0, 10).ToString() + ";"
+            ),
+            new(this, new string[]{"Flare", "Flara"},
+                new string[]{"It shines a bright light, and warms you. When thrown, it can set foes on fire.", "Flara będzie świecić jasnym światłem, i będzie cię ocieplać. Gdy rzucisz nią w kogoś, ten ktoś zostanie podpalony."},
+                "id12;va0;cl" + Random.Range(0, 10).ToString() + ";"
+            ),
+            new(this, new string[]{"Lit Flare", "Odpalona Flara"},
+                new string[]{"It shines a bright light, and warms you. When thrown, it can set foes on fire.", "Flara będzie świecić jasnym światłem, i będzie cię ocieplać. Gdy rzucisz nią w kogoś, ten ktoś zostanie podpalony."},
+                "id13;va100;cl0;"
+            ),
+            new(this, new string[]{"Knife", "Nóż"},
+                new string[]{"A weak melee weapon, it's pretty quick though.", "Słaba broń biała, jest jednak dość szybka."},
+                "id14;va100;"
+            ),
+            new(this, new string[]{"Crowbar", "Łom"},
+                new string[]{"A slow melee weapon. Doesn't do much damage to living things, but does a lot to objects.", "Powolna broń biała. Nie zadaje dużo obrażeń istotom żywym, ale dużo przedmiotom."},
+                "id15;va100;"
+            ),
+            new(this, new string[]{"Fire axe", "Siekera strażacka"},
+                new string[]{"A slow, yet powerful melee weapon. Can chop down trees.", "Powolna, lecz silna broń biała. Można nią ścinać drzewa."},
+                "id16;va100;"
+            ),
+            new(this, new string[]{"Bottle of water", "Butelka z wodą"},
+                new string[]{"You can drink from it, to regydrate yourself. Also good for when you're on fire.", "Można się z niej napić, w celu nawodnienia się. Przydatna, gdy ktoś cię podpalił."},
+                "id17;va0;sq1;"
+            ),
+            new(this, new string[]{"Energy drink", "Energetyk"},
+                new string[]{"Despite being very unhealthy, it can rehydrate you, and it reduces tiredness.", "Mimo iż są niezdrowe, mogą cię nawodnić, i obniżyć poziom zmęczenia."},
+                "id18;va0;sq1;"
+            ),
+            new(this, new string[]{"Candy bar", "Batonik"},
+                new string[]{"A small chocolate candy bar, with some nuts.", "Mały batonik czekoladowy, z orzechami."},
+                "id19;va0;sq1;"
+            ),
+            new(this, new string[]{"Can of beans", "Fasolki w puszce"},
+                new string[]{"A can of beans in tomato sauce. Can be eaten cold.", "Puszka z fasolkami w sosie pomidorowym. Można jeść na zimno."},
+                "id20;va0;sq1;"
+            ),
+            new(this, new string[]{"MRE", "MRE"},
+                new string[]{"Military grade, meal ready to eat. It brings your food points to full.", "Wojskowa racja żywnościowa. Napełnia punkty jedzenia do pełna."},
+                "id21;va0;sq1;"
+            ),
+            new(this, new string[]{"Bandage", "Bandaż"},
+                new string[]{"It stops bleeding, and brings back 25hp.", "Zatrzymuje krwotok, i przywraca 25pz."},
+                "id22;va0;sq1;"
+            ),
+            new(this, new string[]{"Antibiotics", "Antybiotyki"},
+                new string[]{"Consuming it will reduce a small portion of infection and radiation sickness.", "Użycie spowoduje obniżenie małej porcji nabytej infekcji oraz choroby popromiennej."},
+                "id23;va0;sq1;"
+            ),
+            new(this, new string[]{"Vaccine", "Szczepionka"},
+                new string[]{"Injecting this will cure infection.", "Szczepionka leczy z infekcji."},
+                "id24;va0;sq1;"
+            ),
+            new(this, new string[]{"Lugol's solution", "Płyn lugola"},
+                new string[]{"Drinking this cures radiation sickness, and makes you invulnerable to it for 30 seconds.", "Wypicie leczy chorobę popromienną, i chroni przed jej nabyciem przez 30 sekund."},
+                "id25;va0;sq1;"
+            ),
+            new(this, new string[]{"First aid kit", "Apteczka pierwszej pomocy"},
+                new string[]{"Heals you by 50hp.", "Leczy 50pz."},
+                "id26;va0;sq1;"
+            ),
+            new(this, new string[]{"Machete", "Maczeta"},
+                new string[]{"A direct upgrade to knife; deals more damage, and is more durable. Can be used to chop trees.", "Jest to ulepszona wersja noża; zadaje więcej obrażeń, i jest bardziej wytrzymała. Może ścinać drzewa."},
+                "id27;va100;"
+            ),
+            new(this, new string[]{"Baseball bat", "Kij baseballowy"},
+                new string[]{"A blunt and quick weapon. Does decent damage to living things, but is very fragile.", "Jest to kij, którym w miarę szybko i w miarę dobrze można posyłać ludzi do piachu. Broń ta się dość łatwo niszczy."},
+                "id28;va100;"
+            ),
+            new(this, new string[]{"Colt", "Colt"},
+                new string[]{"A simple pistol, nothing special.", "Prosty pistolet, nic specialnego."},
+                "id29;va7;"
+            ),
+            new(this, new string[]{"Pistol magazine", "Magazynek do pistoletu"},
+                new string[]{"It contains ammo which can be used to reload pistols. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać pistolety. Można go naładować paczkami z amunicją."},
+                "id30;va" + (4 * Random.Range(1, 5)).ToString() + ";"
+            ),
+            new(this, new string[]{"Luger", "Luger"},
+                new string[]{"A fast firing pistol. Not very accurate, but does decent damage.", "Szybko strzelający pistolet. Niezbyt celny, ale zadaje dużo obrażeń."},
+                "id31;va8;"
+            ),
+            new(this, new string[]{"Revolver", "Rewolwer"},
+                new string[]{"A very powerful yet small gun. Deals a lot of damage, is very accurate, but fires very slow.", "Bardzo silna, a zarazem mała broń palna. Zadaje dużo obrażeń, jest bardzo dokładna, jednak strzela powoli."},
+                "id32;va6;"
+            ),
+            new(this, new string[]{"Ammo pack", "Paczka z amunicją"},
+                new string[]{"It contains ammo which can be used to reload guns that don't have magazines. It also can be used to reload other magazines.", "To zawiera amunicję, którą można przeładowywać bronie które nie mają magazynków. Można nią także naładowywać inne magazynki."},
+                "id33;va" + (5 * Random.Range(1, 10)).ToString() + ";"
+            ),
+            new(this, new string[]{"Hunting rifle", "Karabin myśliwski"},
+                new string[]{"A slow bolt-action rifle. Has a decent range, good accuracy, but doesn't do much damage.", "Powolny karabin powtarzalny. Posiada dobry dystans, niski rozrzut broni, ale nie zadaje dużo obrażeń."},
+                "id34;va5;"
+            ),
+            new(this, new string[]{"DB Shotgun", "Dubeltówka"},
+                new string[]{"A very powerful gun that fires many bullets per shot, but can only contain 2 rounds at once.", "Potężna broń która wystrzeliwuje wiele kul na jeden strzał, jednak może pomieścić tylko 2 naboje."},
+                "id35;va2;"
+            ),
+            new(this, new string[]{"Thompson", "Thompson"},
+                new string[]{"Cult classic SMG. Doesn't do much damage, but fires really fast, and contains a lot of ammo.", "Bardzo znany i doceniany pistolet maszynowy. Nie zadaje sporej ilości obrażeń, ale strzela bardzo szybko, i posiada dużą pojemność na amunicję."},
+                "id36;va30;"
+            ),
+            new(this, new string[]{"SMG Magazine", "Magazynek do PM"},
+                new string[]{"It contains ammo which can be used to reload SMGs. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać pistolety maszynowe. Można go naładować paczkami z amunicją."},
+                "id37;va" + (15 * Random.Range(1, 5)).ToString() + ";"
+            ),
+            new(this, new string[]{"AK47", "AK47"},
+                new string[]{"Popular, reliable, and very deadly. This is one of the best assault rifle you can get.", "Popularny, niezawodny, i niosiący śmierć. To jest jeden z najlepszych karabinów szturmowych"},
+                "id38;va30;"
+            ),
+            new(this, new string[]{"Rifle magazine", "Magazynek do karabinów"},
+                new string[]{"It can be used to reload rifles. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać karabiny. Można go naładować paczkami z amunicją."},
+                "id39;va" + (15 * Random.Range(1, 5)).ToString()
+            ),
+            new(this, new string[]{"Shotgun", "Strzelba"},
+                new string[]{"A very powerful gun that fires many bullets per shot, but doesn't do as much damage as the double-barrelled variant.", "Potężna broń która wystrzeliwuje wiele kul na jeden strzał, jednak nie zadaje tylu obrażeń co dubeltówka."},
+                "id40;va5;"
+            ),
+            new(this, new string[]{"MP5", "MP5"},
+                new string[]{"A very fast SMG.", "Bardzo szybki pistolet maszynowy."},
+                "id41;va40;"
+            ),
+            new(this, new string[]{"M4", "M4"},
+                new string[]{"This carbine is similar to AK-47. It is slower, but more accurate and deals more damage.", "Karabinek ten jest podobny do AK-47. Jest wolniejszy, ale zadaje więcej obrażeń, i jest bardziej celny."},
+                "id42;va30;"
+            ),
+            new(this, new string[]{"Heat pack", "Ogrzewacz"},
+                new string[]{"Upon using it, it'll instantly warm you, and you will gain 15 seconds of immunity over coldness.", "Po użyciu tego przedmiotu, natychmiastowo cię ociepli, oraz zdobędziesz odporność na zimno na 15 sekund."},
+                "id43;va0;sq1;"
+            ),
+            new(this, new string[]{"Adrenaline", "Adrenalina"},
+                new string[]{"This substance will make your stamina infinite, for 15 seconds. It will damage you a bit though!", "Ta substancja spowoduje że twoja energia będzie nieskończona, przez 15 sekund. Stracisz jednak trochę zdrowia!"},
+                "id44;va0;sq1;"
+            ),
+            new(this, new string[]{"Fanny pack", "Torba na pas"},
+                new string[]{"Upon wearing it, you'll have +1 inventory slot.", "Po jej założeniu, dostaniesz +1 miejsce w inwentarzu."},
+                "id45;va0;sq1;"
+            ),
+            new(this, new string[]{"Backpack", "Plecak"},
+                new string[]{"Upon wearing it, you'll have +2 inventory slots.", "Po jego założeniu, dostaniesz +2 miejsc w inwentarzu."},
+                "id46;va0;sq1;"
+            ),
+            new(this, new string[]{"Military backpack", "Plecak wojskowy"},
+                new string[]{"Upon wearing it, you'll have +4 inventory slots.", "Po jego założeniu, dostaniesz +4 miejsc w inwentarzu."},
+                "id47;va0;sq1;"
+            ),
+            new(this, new string[]{"Bulletproof vest", "Kamizelka kuloodporna"},
+                new string[]{"Upon wearing it, you'll have 150 max health.", "Po jej założeniu, będziesz miał maksymalnie 150pz."},
+                "id48;va0;sq1;"
+            ),
+            new(this, new string[]{"Military vest", "Kamizelka wojskowa"},
+                new string[]{"Upon wearing it, you'll have 250 max health, +4 inventory slots, but your walking speed decrease by 3m/s.", "Po jej założeniu, będziesz miał maksymalnie 250pz, +4 miejsc w inwentarzu, jednak twoja prędkość spadnie o 3m/s."},
+                "id49;va0;sq1;"
+            ),
+            new(this, new string[]{"Sleeping bag", "Śpiwór"},
+                new string[]{"Upon escaping, all of the tiredness will be removed.", "Po opuszczeniu mapy, całe twoje zmęczenie zniknie."},
+                "id50;va0;sq1;"
+            ),
+            new(this, new string[]{"Sport shoes", "Buty sportowe"},
+                new string[]{"Upon wearing it, your speed will increase by 3m/s.", "Po ich ubraniu, twoja prędkość wzrośnie o 3m/s."},
+                "id51;va0;sq1;"
+            ),
+            new(this, new string[]{"Money", "Pieniądze"},
+                new string[]{"It can be used to trade, when you don't have the item the trader wants.", "Możesz tym handlować, jeśli nie posiadasz przedmiotu, którego chce handlujący."},
+                "id52;va0;sq1;"
+            ),
+            new(this, new string[]{"Night vision goggles", "Noktowizor"},
+                new string[]{"Upon using these goggles, you'll be able to see anything in the dark. They last for 60 seconds, you can turn them on/off them at any time, and you don't need to constantly hold them.", "Po założeniu tych gogli, będziesz widzieć w ciemności. Starczają na 60 sekund, możesz je włączyć/wyłączyć w każdej chwili, i nie musisz ich cały czas trzymać."},
+                "id53;va0;sq1;"
+            ),
+            new(this, new string[]{"Grappling hook", "Hak mocujący"},
+                new string[]{"If you throw it while standing, you may create a rope bridge from the point where you're standing, and where the hook lands. Might break when throwing.", "Gdy tym rzucisz stojąc w miejscu, stworzysz most liniowy, znajdujący pomiędzy sobą, a miejscem gdzie uderzy hak. Może się zniszczyć."},
+                "id54;va0;sq1;"
+            ),
+            new(this, new string[]{"Sten", "Sten"},
+                new string[]{"A mass produced smg. Similar to thompson, but does less damage.", "Masowo produkowany pistolet maszynowy. Podobny do thompsona, tylko że zadaje mniej obrażeń."},
+                "id55;va32;"
+            ),
+            new(this, new string[]{"Garand", "Garand"},
+                new string[]{"Classic american rifle. It is very powerful, very accurate, but isn't that fast. It also can be reloaded, only if it's empty.", "Klasyczny amerykański karabin. Zadaje dużo obrażeń, jest dokładny, jednak nie jest taki szybki. Nie można go przeładowywać, jeżeli nie jest pusty."},
+                "id56;va8;"
+            ),
+            new(this, new string[]{"Famas", "Famas"},
+                new string[]{"A french assault rifle. It's fast, deadly, but not very accurate.", "Francuski karabin szturmowy. Jest szybki, śmiercionośny, jednak niezbyt dokładny."},
+                "id57;va25;"
+            ),
+            new(this, new string[]{"Uzi", "Uzi"},
+                new string[]{"A smg, that you can hold in one hand.", "Pistolet maszynowy, który można trzymać w jednej ręce."},
+                "id58;va25;"
+            ),
+            new(this, new string[]{"G3", "G3"},
+                new string[]{"A german assault rifle. Similar to M4, but a bit more accurate.", "Niemiecki karabin szturmowy. Podobny do karabinku M4, tylko że jest bardziej dokładny."},
+                "id59;va20;"
+            ),
+            new(this, new string[]{"SCAR", "SCAR"},
+                new string[]{"A fast firing assault rifle. It does a lot of damage, but the recoil is high.", "Szybko strzelny karabin szturmowy. Zadaje dużo obrażeń, jednak ma spory odrzut."},
+                "id60;va28;"
+            ),
+            new(this, new string[]{"SPAS", "SPAS"},
+                new string[]{"A semi-automatic shotgun. It's very lethal, if you can handle the recoil.", "Pół automatyczna strzelba. Bardzo śmiercionośna, jednak z ogromnym odrzutem."},
+                "id61;va8;"
+            ),
+            new(this, new string[]{"SAW", "SAW"},
+                new string[]{"Very fast firing machine gun. Can mown down enemies pretty easily", "Bardzo szybki karabin maszynowy. Z łatwością może przemieniać przeciwników w ser szwajcarski."},
+                "id62;va100;"
+            ),
+            new(this, new string[]{"Ammo chain", "Taśma nabojowa"},
+                new string[]{"A bunch of bullets, on a chain. This can be used to reload machine guns.", "Łańcuch z kulami. Można tego użyć do przeładowywania karabinów maszynowych."},
+                "id63;va" + (250 * Random.Range(1, 4)).ToString() + ";"
+            ),
+            new(this, new string[]{"Minigun", "Minigun"},
+                new string[]{"A very powerful gun. Fires really fast, does a lot of damage, and can contain a lot of ammo. Although, mobility is decreased when firing.", "Bardzo potężna broń. Strzela bardzo szybko, zadaje dużo obrażeń, jednak mobilność podczas strzelania jest dość niska."},
+                "id64;va500;"
+            ),
+            new(this, new string[]{"Mosin Nagant", "Karabin Mosina"},
+                new string[]{"A bolt-action rifle of soviet construction. It is a very accurate weapon, and is perfect for taking out targets from long distances.", "Karabin powtarzalny sowjeckiej konstrukcji. Jest bardzo dokładny, i sprawdza się idealnie na dalekie dystanse."},
+                "id65;va5;"
+            ),
+            new(this, new string[]{"Grenade", "Granat"},
+                new string[]{"A throwable explosive. After unpining it, you'll have 5 seconds to throw or drop it before it explodes.", "Materiał wybuchowy do rzucania. Po odbezpieczeniu, masz 5 sekund żeby rzucić, albo upuścić go, zanim wybuchnie."},
+                "id66;va0;sq1;"
+            ),
+            new(this, new string[]{"Panzerfaust", "Panzerfaust"},
+                new string[]{"Single-use grenade launcher.", "Jednorazowy granatnik."},
+                "id67;va0;sq1;"
+            ),
+            new(this, new string[]{"Chainsaw", "Piła łańcuchowa"},
+                new string[]{"A very handy machine, that can mown down any living and/or not living thing. When held, fuel can last for only 60 seconds.", "Bardzo przydatna maszyna, która potrafi rozwalić wszystko co żywe lub nie. Gdy trzymana, paliwo starcza na 60 sekund."},
+                "id68;va100;"
+            ),
+            new(this, new string[]{"Bow", "Łuk"},
+                new string[]{"You can shoot arrows with it.", "Można z niego strzelać strzałami."},
+                "id69;va10;"
+            ),
+            new(this, new string[]{"Baguette", "Bagieta"},
+                new string[]{"A very long bread.", "Bardzo długi kawałek chleba."},
+                "id70;va0;sq1;"
+            ),
+            new(this, new string[]{"Pickles", "Ogórki kiszone"},
+                new string[]{"Pickled cucumbers. Sour, salty, some even might find them tasty.", "Kwaśne, słone, niektórzy mogliby nawet powiedzieć, że są smaczne."},
+                "id71;va0;sq1;"
+            ),
+            new(this, new string[]{"Meat", "Mięso"},
+                new string[]{"A large piece of dead animal. It is delicious and nutritious!", "Spory kawałek martwego zwierzęcia. Jest pyszne i pożywne!"},
+                "id72;va100;"
+            ),
+            new(this, new string[]{"Pretzel", "Precel"},
+                new string[]{"Crusty outside, soft inside.", "Kruche z zewnątrz, miękkie w środku."},
+                "id73;va0;sq1;"
+            ),
+            new(this, new string[]{"Cheeseburger", "Burger"},
+                new string[]{"The cornerstone of any nutritious breakfast.", "Podstawa każdego pożywnego śniadania."},
+                "id74;va0;sq1;"
+            ),
+            new(this, new string[]{"Waffle", "Gofr"},
+                new string[]{"A soft and sweet waffer.", "Słodki i miękki wafel."},
+                "id75;va0;sq1;"
+            ),
+            new(this, new string[]{"Donut", "Donut"},
+                new string[]{"A bagel, shaped like a donut.", "Pączek, w kształcie donuta."},
+                "id76;va0;sq1;"
+            ),
+            new(this, new string[]{"Pâté", "Pasztet"},
+                new string[]{"A forcemeat without pastery.", "Jednolita masa z gotowanego mięsa."},
+                "id77;va0;sq1;"
+            ),
+            new(this, new string[]{"Crackers", "Krakersy"},
+                new string[]{"A bunch of small, salty crackers.", "Paczka z małymi, słonymi krakersami."},
+                "id78;va0;sq1;"
+            ),
+            new(this, new string[]{"Cola", "Kola"},
+                new string[]{"A can of refreshing and energizing soft drink.", "Puszka nawadniającego i energetyzującego napoju gazowanego."},
+                "id79;va0;sq1;"
+            ),
+            new(this, new string[]{"Beer", "Piwo"},
+                new string[]{"A bottle of fermented wheat water. Drinking will result in 15 seconds of drunkeness", "Butleka z fermentowanym sokiem z przenicy. Wypicie spowoduje 15 sekund upicia."},
+                "id80;va0;sq1;"
+            ),
+            new(this, new string[]{"Vodka", "Wódka"},
+                new string[]{"A bottle of fermented potato water. Drinking will result in 45 seconds of drunkeness", "Butelka z fermentowaną wodą z ziemniaków. Wypicie spowoduje 45 sekund upicia."},
+                "id81;va0;sq1;"
+            ),
+            new(this, new string[]{"Potato", "Ziemniak"},
+                new string[]{"A baked potato. Should be safe to eat.", "Upieczony ziemniak. Chyba bezpieczny do spożycia."},
+                "id82;va100;sq1;"
+            ),
+            new(this, new string[]{"Milk", "Mleko"},
+                new string[]{"A carton of cow milk. Will rehydrate you, and will make your bones grow strong.", "Karton krowiego mleka. Wypicie nawodni, i wzmocni twoje kości."},
+                "id83;va0;sq1;"
+            ),
+            new(this, new string[]{"Biscuits", "Herbatniki"},
+                new string[]{"A bunch of small and flat cookies.", "Paczka z małymi, płaskimi ciasteczkami."},
+                "id84;va0;sq1;"
+            ),
+            new(this, new string[]{"Umbrella", "Parasol"},
+                new string[]{"This tool can protect you from rain, and falling down.", "Ten przedmiot chroni przed deszczem, i spadaniem z wysokości."},
+                "id85;va0;sq1;"
+            ),
+            new(this, new string[]{"Hazmat suit", "Kombinezon materiałów niebezpiecznych"},
+                new string[]{"Upon wearing it, you'll be protected from any radiation and fire, though you'll move very slow. Prolonged exposure might damage this suit.", "Po założeniu, nie będziesz otrzymywał obrażeń od promieniowania i ognia, jednak będziesz się powoli poruszał. Nadmierne promieniowanie może jednak uszkodzić ten kombinezon."},
+                "id86;va100;"
+            ),
+            new(this, new string[]{"Lifebuoy", "Koło ratunkowe"},
+                new string[]{"When held, it allows you to move normally in water, and you won't get wet from it.", "Gdy go trzymasz, pozwala ci normalnie chodzić w wodzie, bez moknięcia."},
+                "id87;va0;sq1;"
+            ),
+            new(this, new string[]{"Ducktape", "Taśma klejąca"},
+                new string[]{"It can be used on some items, in order to repair them by 50%. Has only one use.", "Może zostać użyta na niektórych przedmiotach, aby je naprawić o 50%. Ma tylko jedno użycie."},
+                "id88;va0;sq1;"
+            ),
+            new(this, new string[]{"Blowtorch", "Palnik"},
+                new string[]{"It can be used on some items, in order to repair them to 100%. Has three uses.", "Może zostać użyty na niektórych przedmiotach, aby je naprawić do 100%. Można go użyć trzy razy."},
+                "id89;va100;"
+            ),
+            new(this, new string[]{"Wrench", "Klucz"},
+                new string[]{"It can be used on some items, in order to repair them by 5%. Has infinite uses, but reparing takes long time.", "Może zostać użyty na niektórych przedmiotach, aby je naprawić o 5%. Można go używać bez końca, jednak czas naprawy jest dość długi."},
+                "id90;va0;sq1;"
+            ),
+            new(this, new string[]{"Camera", "Aparat"},
+                new string[]{"This device has a really bright flash. When taking a photo, anyone that is close to you, will get stunned for 2 seconds.", "To urządzenie posiada bardzo jasną lampę błyskową. Po strzeleniu zdjęcia, każdy kto jest blisko ciebie, zostanie oślepiony na 2 sekundy."},
+                "id91;va10;"
+            ),
+            new(this, new string[]{"Binoculars", "Lornetki"},
+                new string[]{"It allows you to zoom really far.", "Pozwalają ci popatrzeć z bliska na dalsze tereny."},
+                "id92;va0;sq1;"
+            ),
+            new(this, new string[]{"Cowbell", "Dzwon"},
+                new string[]{"An old rusty cowbell. You can ring it, to alert anyone in the radius of 100m.", "Stary zardzewiały dzwonek. Możesz nim zadzwonić; każdy w promieniu 100m to usłyszy."},
+                "id93;va0;sq1;"
+            ),
+            new(this, new string[]{"Scarf", "Szalik"},
+                new string[]{"Upon using it, you'll be protected from coldness. Will cause overheating when not cold.", "Po użyciu tego, będziesz chroniony od zimna. Możesz się przegrzać jeśli nie będzie ci zimno"},
+                "id94;va0;sq1;"
+            ),
+            new(this, new string[]{"Riot shield", "Tarcza policyjna"},
+                new string[]{"A tactical shield, that can block bullets, melee weapons, mutant attacks, and explosions. It may break after few blocks.", "Taktyczna tarcza, która blokuje kule, bronie białe, ataki mutantów, i eksplozje. Może się popsuć po długim użytku."},
+                "id95;va100;"
+            ),
+            new(this, new string[]{"Cardboard box", "Karton"},
+                new string[]{"Upon using it, no one will detect you, although you can only crouch in it. It is small, so after some usage it'll eventually break.", "Po założeniu tego kartonu na siebie, nikt cię nie zobaczy, jednak będziesz musiał kucać. To pudło jest małe, i po długim czasie użytkowania może się popsuć."},
+                "id96;va100;"
+            ),
+            new(this, new string[]{"Lockpick", "Wytrych"},
+                new string[]{"Upon using it on a locked door or a barrel, it may either: open it, break itself, or nothing will happen.", "Po użyciu tego na zamkniętych drzwiach lub beczkach: zostaną otwarte, wytrych się złamie, albo nic."},
+                "id97;va0;sq1;"
+            ),
+            new(this, new string[]{"Towel", "Ręcznik"},
+                new string[]{"You can use it to wipe yourself, and reduce wetness, bleeding, and radioactivity.", "Możesz nim się wytrzeć, by pozbyć się trochę mokra, krwotoku, i radioaktywności."},
+                "id98;va100;"
+            ),
+            new(this, new string[]{"Map", "Mapa"},
+                new string[]{"Upon using it, it'll mark some interesting locations on your map.", "Po użyciu tego, na twojej mapie zostaną zaznaczone interesujące lokacje."},
+                "id99;va" + Random.Range(1, 4).ToString() + ";"
+            ),
+            new(this, new string[]{"Suppressor", "Tłumik"},
+                new string[]{"A gun attachment. When attached, it'll make your gun fire very quiet, and won't alert anyone.", "Dodatek do broni. Gdy założony, twoja broń będzie strzelać ciszej, i nikt jej nie usłyszy."},
+                "id100;va0;"
+            ),
+            new(this, new string[]{"Grip", "Uchwyt"},
+                new string[]{"A gun attachment. When attached, the gun recoil will be significantly reduced.", "Dodatek do broni. Gdy założony, rozrzut broni zostanie znacznie zmniejszony."},
+                "id101;va0;"
+            ),
+            new(this, new string[]{"Grenade launcher attachment", "Montowalny granatnik"},
+                new string[]{"A gun attachment. When attached, you'll be able to fire grenades for 50% of maximum gun's ammo.", "Dodatek do broni. Gdy założony, będziesz mógł wystrzeliwywać granaty za 50% maksymalnej amunicji."},
+                "id102;va0;"
+            ),
+            new(this, new string[]{"Sniper scope", "Luneta snajperska"},
+                new string[]{"A gun attachment. When attached to some kind of rifle, it reduces gun spread and firing speed, but increases damage and aiming zoom.", "Dodatek do broni. Gdy założona na jakiegoś rodzaju karabin, obniży rozrzut i prędkość strzelania, ale podwyższy obrażenia i zoom."},
+                "id103;va0;"
+            ),
+            new(this, new string[]{"Holo sight", "Holograficzny celownik"},
+                new string[]{"A gun attachment. When attached, it'll increase your aiming zoom.", "Dodatek do broni. Po założeniu, będziesz mógł bliżej celować."},
+                "id104;va0;"
+            ),
+            new(this, new string[]{"Bipod", "Dwójnóg"},
+                new string[]{"A gun attachment. When attached, it'll completely remove gun spread and recoil when crouching.", "Dodatek do broni. Po założeniu, pozbędzie się rozrzutu i odrzutu broni, podczas kucania."},
+                "id105;va0;"
+            ),
+            new(this, new string[]{"Med Kit", "Apteczka"},
+                new string[]{"You can use it to add +75hp. It also has a chance to remove specific wounds, like bleeding or broken bones.", "Możesz tego użyć, by otrzymać +75pz. Użycie tego, także ma szanse pozbycia się specyficznych ran, takich jak krwotok, albo połamane kości."},
+                "id106;va0;sq1;"
+            ),
+            new(this, new string[]{"Splint", "Szyna"},
+                new string[]{"Upon using it, it'll fix your bones if they're broken.", "Po użyciu tego przedmiotu, twoje kości zostaną uleczone, jeśli miałeś je połamane."},
+                "id107;va0;sq1;"
+            ),
+            new(this, new string[]{"Plunger", "Przepychacz"},
+                new string[]{"It's a tool, that can be used as a weapon. It isn't very effective, but you can throw it at a foe, to blind them for 5 seconds.", "Jest to narzędzie, którego możesz użyć jako broni. Nie jest to efektowne, ale możesz rzucić tym w przeciwnika, by go oślepić na 5 sekund."},
+                "id108;va100;"
+            ),
+            new(this, new string[]{"Flamethrower", "Miotacz ognia"},
+                new string[]{"An industrial flamethrower.", "Przemysłowy miotacz ognia."},
+                "id109;va100;"
+            ),
+            new(this, new string[]{"Frag grenade", "Granat odłamkowy"},
+                new string[]{"A throwable explosive. It has smaller explosion radius that normal grenade, albeit, upon exploding it can shoot out multiple deadly fragments.", "Materiał wybuchowy do rzucania. Wybuch ma mniejszy zasięg niż zwykły granat, ale, po detonacji wystrzeliwuje wiele śmiercionośnych odłamków."},
+                "id110;va0;sq1;"
+            ),
+            new(this, new string[]{"Grenade launcher", "Granatnik"},
+                new string[]{"A weapon, that can fire grenades, which explode on impact.", "Broń która wystrzeliwuje granaty, wybuchające po uderzeniu."},
+                "id111;va6;"
+            ),
+            new(this, new string[]{"Crossbow", "Kusza"},
+                new string[]{"It's like a bow, except you don't need to load it before shooting, but rather after.", "Jest to podobne do łuku, z takim wyjątkiem, że ładuje się po wystrzale, a nie przed."},
+                "id112;va10;"
+            ),
+            new(this, new string[]{"Musket", "Muszkiet"},
+                new string[]{"An old trapdoor musket. Can hold only one bullet at a time, and isn't very accurate.", "Stary muszkiet. Posiada tylko jeden pocisk, i nie jest zbytnio celny."},
+                "id113;va1;"
+            ),
+            new(this, new string[]{"Taser", "Paralizator"},
+                new string[]{"A slightly modified taser. It's modification, in fact, makes it is very deadly!", "Zmodyfikowany paralizator. Jego modyfikacja, robi go bardzo niebezpiecznym!"},
+                "id114;va0;sq1;"
+            ),
+            new(this, new string[]{"Shovel", "Łopata"},
+                new string[]{"This tool, besides being a decent yet fragile weapon, has one special use. If you keep hitting dirt with it, you have 10% chance of getting a random item.", "To narzędzie, poza byciem bronią, posiada jedną ciekawą cechę. Jeśli będziesz nią bił o ziemie, będziesz miał 10% szans na zdobycie losowego przedmiotu."},
+                "id115;va100;"
+            ),
+            new(this, new string[]{"Herring", "Śledź"},
+                new string[]{"A small fish. Tasty, but not very filling.", "Mała rybka. Smaczna, ale nie napełni do syta."},
+                "id116;va0;sq1;"
+            ),
+            new(this, new string[]{"Salmon", "Łosoś"},
+                new string[]{"A decent catch. Tasty, and filling.", "Przyzwoity połów. Smaczna i napełniająca."},
+                "id117;va0;sq1;"
+            ),
+            new(this, new string[]{"Carp", "Krap"},
+                new string[]{"A very big fish. Tastes like wet newspaper covered in mud, but at least it is very filling.", "Bardzo duża ryba. Smakuje jak mokra gazeta zanurzona w błocie, ale zato napełnia do syta."},
+                "id118;va0;sq1;"
+            ),
+            new(this, new string[]{"Coconut", "Kokos"},
+                new string[]{"A coco fruit, that not only is very filling, but also can rehydrate you!", "Owoc kokosowy, który nie dość że napełnia do syta, to również nawadnia!"},
+                "id119;va0;sq1;"
+            ),
+            new(this, new string[]{"Banana", "Banan"},
+                new string[]{"Potassium.", "Potas."},
+                "id120;va0;sq1;"
+            ),
+            new(this, new string[]{"Sandwich", "Kanapka"},
+                new string[]{"Bologna sandwich, a perfect fuel.", "Kanapka, najbardziej przydatny przedmiot w życiu."},
+                "id121;va0;sq1;"
+            ),
+            new(this, new string[]{"Coffee", "Kawa"},
+                new string[]{"A cup of coffee. Can rehydrate you, and instantly recharge stamina.", "Filiżanka kawy. Nawadnia, i przywraca do pełnia wytrzymałość."},
+                "id122;va0;sq1;"
+            ),
+            new(this, new string[]{"Popsicle", "Lód na patyku"},
+                new string[]{"A sweet and sour treat. Be careful tho, it can give you 25% of coldness.", "Słodki i kwaśny deser. Ostrożnie, spożycie spowoduje nabycie 25% zimna."},
+                "id123;va0;sq1;"
+            ),
+            new(this, new string[]{"Puffer", "Inhalator"},
+                new string[]{"Can be used to regain stamina instantly.", "Natychmiastowo regeneruje wytrzymałość."},
+                "id124;va100;"
+            ),
+            new(this, new string[]{"Scuba tank", "Butla do nurkowania"},
+                new string[]{"Upon equipping it, you'll be breathing oxygen from this tank. It can provide a maximum of 5 minutes of oxygen.", "Po jej założeniu, będziesz oddychał tlenem z tej butli. Może zapewnić maksimum 5 minut tlenu."},
+                "id125;va100;"
+            ),
+            new(this, new string[]{"Flippers", "Płetwy"},
+                new string[]{"Upon wearing those, your swimming speed will increase by 7m/s.", "Po ich założeniu, twoja prędkość pływania wzrośnie o 7m/s."},
+                "id126;va0;sq1;"
+            ),
+            new(this, new string[]{"Crank flashlight", "Latarka na korbkę"},
+                new string[]{"It shines light in front of you. Battery lasts for a short time, but it can be recharged by cranking it.", "Oświeca teren przed tobą. Bateria starcza na krótką chwilę, ale można ją ręcznie naładować."},
+                "id127;va0;"
+            ),
+            new(this, new string[]{"Fire extinguisher", "Gaśnica"},
+                new string[]{"Aside from extinguishing fires, it can also cause a temporary propulsion opposite of your looking direction.", "Poza gaszeniem pożarów, powoduje chwilowy napęd w przeciwnym kierunku twojego wzroku."},
+                "id128;va100;"
+            ),
+            new(this, new string[]{"Fishing rod", "Wędka"},
+                new string[]{"This tool allows you to catch fish and other stuff from water.", "To narzędzie pozwala ci łowić ryby i śmieci z wody."},
+                "id129;va0;"
+            ),
+            new(this, new string[]{"Scanner", "Skaner"},
+                new string[]{"This advanced electronic device allows you to scan the entire map for items, and other stuff.", "To zaawansowane elektroniczne urządzenie pozwala skanować mapę w poszukiwaniu przedmiotów i innych rzeczy."},
+                "id130;va100;"
+            ),
+            new(this, new string[]{"Flashbang", "Granat hukowy"},
+                new string[]{"A throwable explosive. It doesn't deal any damage, but it'll stun anyone nearby. It's stun effect decreases with distance.", "Materiał wybuchowy do rzucania. Nie zadaje żadnych obrażeń, ale potrafi ogłuszyć każdego w pobliżu. Efekt ogłuszenia jest silniejszy im bliżej wybuchu."},
+                "id131;va0;sq1;"
+            ),
+            new(this, new string[]{"Katana", "Katana"},
+                new string[]{"A swift and deadly japanese sword. It is very fragile though, and it breaks easily!", "Szybka i śmiertelna broń japońska. Bądź ostrożny, łatwo można ją uszkodzić!"},
+                "id132;va100;"
+            ),
+            new(this, new string[]{"Molotov cocktail", "Koktajl mołotowa"},
+                new string[]{"A throwable bottle with flammable substance in it. Upon throwing and hitting something, everyone within 6 meter radius will be set on fire.", "Butelka z substancją łatwopalną. Gdy nią rzucisz i coś uderzysz, wszyscy w promieniu 6 metrów zostaną podpaleni."},
+                "id133;va0;sq1;"
+            ),
+            new(this, new string[]{"Spear", "Włócznia"},
+                new string[]{"This melee weapon has long attack distance. When thrown, it flies far, and deals more damage.", "Ta broń biała może atakować na dłuższy dystans. Rzucona, zadaje więcej obrażeń, oraz leci na bardzo długi dystans."},
+                "id134;va100;"
+            ),
+            new(this, new string[]{"G18", "G18"},
+                new string[]{"This pistol is pretty weak, but it's fully automatic!", "Ten pistolet jest dość słaby, ale jest automatyczny!"},
+                "id135;va17;"
+            ),
+            new(this, new string[]{"Frying pan", "Patelnia"},
+                new string[]{"A kitchen utility made from cast iron. Can be used as a weapon, but it's pretty loud. Some hits may stun foes.", "Narzędzie kuchenne stworzone z żeliwa. Może być użyte za broń, ale jest dość głośna. Niektóre uderzenia mogą ogłuszyć nieprzyjaciół."},
+                "id136;va100;"
+            ),
+            new(this, new string[]{"M1 Carbine", "Karabinek M1"},
+                new string[]{"This carbine is an upgrade of the Garand rifle. It has more ammo, fires faster, but deals less damage.", "Ten karabinek jest następcą karabinu Garand. Ma więcej amunicji, strzela szybciej, ale zadaje mniej obrażeń."},
+                "id137;va15;"
+            ),
+            new(this, new string[]{"Sledgehammer", "Młot wyburzeniowy"},
+                new string[]{"This tool is very powerful. It deals a lot of damage, can push foes far, but it's very slow and drains a lot of stamina.", "Jest to potężne narzędzie. Zadaje bardzo dużo obrażeń przedmiotom, potrafi wyrzucić przeciwników w powietrze, jednak jest bardzo powolna i wymaga dużo wytrzymałości."},
+                "id138;va100;"
+            ),
+            new(this, new string[]{"Bazooka", "Bazooka"},
+                new string[]{"This is a powerful rocket launcher.", "Jest to potężna wyrzutnia rakiet."},
+                "id139;va6;"
+            ),
+            new(this, new string[]{"Wood", "Drewno"},
+                new string[]{"A piece of wood. Used mainly for crafting.", "Kawałek drewna. Głównie używany w tworzeniu."},
+                "id140;va0;sq1;"
+            ),
+            new(this, new string[]{"Thread", "Nić"},
+                new string[]{"A bunch of strings tied together. Used mainly for crafting.", "Kawał nici zawiniętych razem. Głównie używane w tworzeniu."},
+                "id141;va0;sq1;"
+            ),
+            new(this, new string[]{"Stone", "Kamień"},
+                new string[]{"A small stone. Used mainly for crafting, but can also be used as a throwable weapon.", "Mały kamień. Głównie używany w tworzeniu, ale można również nim rzucać w nieprzyjaciół."},
+                "id142;va100;sq1;"
+            ),
+            new(this, new string[]{"Paper", "Papier"},
+                new string[]{"A piece of paper. Used mainly for crafting.", "Kawałek kartki. Głównie używany w tworzeniu."},
+                "id143;va0;sq1;"
+            ),
+            new(this, new string[]{"Cloth", "Tkanina"},
+                new string[]{"A piece of cloth. Used mainly for crafting.", "Kawałek tkaniny. Głównie używany w tworzeniu."},
+                "id144;va0;sq1;"
+            ),
+            new(this, new string[]{"Metal", "Metal"},
+                new string[]{"A bunch of scraps of various metals. Used mainly for crafting.", "Kawał zezłomowanego metalu. Głównie używany w tworzeniu."},
+                "id145;va0;sq1;"
+            ),
+            new(this, new string[]{"Clay", "Ziemia"},
+                new string[]{"A pile of dirt, with some traces of clay, gravel, and whatnot. Used mainly for crafting.", "Sterta ziemi, z domieszką gliny, żwiru, i czegoś tam jeszcze. Głównie używana w tworzeniu."},
+                "id146;va0;sq1;"
+            ),
+            new(this, new string[]{"Coal", "Węgiel"},
+                new string[]{"A piece of charcoal. Used mainly for crafting.", "Kawałek węgla drzewnego. Głównie używany w tworzeniu."},
+                "id147;va0;sq1;"
+            )
+        };
 
-    public string ReceiveItemName(float ItemID) {
-
-        ItemID = Mathf.Clamp(ItemID, 0, 999);
-        string ItemName = "";
-
-        switch ((int)ItemID) {
-            case 1:
-                ItemName = SetString("Apple", "Jabłko");
-                break;
-            case 2:
-                ItemName = SetString("Flashlight", "Latarka");
-                break;
-            case 3:
-                ItemName = SetString("Bread", "Chleb");
-                break;
-            case 4:
-                ItemName = SetString("Soup Can", "Zupa w Puszce");
-                break;
-            case 5:
-                ItemName = SetString("Canned Mackerel", "Makrela w Puszce");
-                break;
-            case 6:
-                ItemName = SetString("Chocolate Bar", "Czekolada");
-                break;
-            case 7:
-                ItemName = SetString("Sausage", "Kiełbasa");
-                break;
-            case 8:
-                ItemName = SetString("Jam", "Dżem");
-                break;
-            case 9:
-                ItemName = SetString("Chips", "Czipsy");
-                break;
-            case 10:
-                ItemName = SetString("Cheese", "Ser");
-                break;
-            case 11:
-                ItemName = SetString("Glow Stick", "Światło Chemiczne");
-                break;
-            case 12:
-                ItemName = SetString("Flare", "Flara");
-                break;
-            case 13:
-                ItemName = SetString("Lit Flare", "Odpalona Flara");
-                break;
-            case 14:
-                ItemName = SetString("Knife", "Nóż");
-                break;
-            case 15:
-                ItemName = SetString("Crowbar", "Łom");
-                break;
-            case 16:
-                ItemName = SetString("Fire Axe", "Siekiera Strażacka");
-                break;
-            case 17:
-                ItemName = SetString("Bottle of Water", "Butelka z Wodą");
-                break;
-            case 18:
-                ItemName = SetString("Energy Drink", "Energetyk");
-                break;
-            case 19:
-                ItemName = SetString("Candy Bar", "Batonik");
-                break;
-            case 20:
-                ItemName = SetString("Bean Can", "Fasolki w Puszcze");
-                break;
-            case 21:
-                ItemName = SetString("MRE", "MRE");
-                break;
-            case 22:
-                ItemName = SetString("Bandage", "Bandaż");
-                break;
-            case 23:
-                ItemName = SetString("Antibiotics", "Antybiotyk");
-                break;
-            case 24:
-                ItemName = SetString("Vaccine", "Szczepionka");
-                break;
-            case 25:
-                ItemName = SetString("Lugol's Solution", "Płyn Lugola");
-                break;
-            case 26:
-                ItemName = SetString("First Aid Kit", "Apteczka Pierwszej Pomocy");
-                break;
-            case 27:
-                ItemName = SetString("Machete", "Maczeta");
-                break;
-            case 28:
-                ItemName = SetString("Baseball Bat", "Kij Baseball'owy");
-                break;
-            case 29:
-                ItemName = SetString("Colt", "Colt");
-                break;
-            case 30:
-                ItemName = SetString("Pistol Magazine", "Magazynek do Pistoleta");
-                break;
-            case 31:
-                ItemName = SetString("Luger", "Luger");
-                break;
-            case 32:
-                ItemName = SetString("Revolver", "Rewolwer");
-                break;
-            case 33:
-                ItemName = SetString("Ammo Pack", "Paczka z Amunicją");
-                break;
-            case 34:
-                ItemName = SetString("Hunter Rilfe", "Karabin Myśliwski");
-                break;
-            case 35:
-                ItemName = SetString("DB Shotgun", "Dubeltówka");
-                break;
-            case 36:
-                ItemName = SetString("Thompson", "Thompson");
-                break;
-            case 37:
-                ItemName = SetString("SMG Magazine", "Magazynek do Pistoletów Maszynowych");
-                break;
-            case 38:
-                ItemName = SetString("AK-47", "AK-47");
-                break;
-            case 39:
-                ItemName = SetString("Rifle Magazine", "Magazynek do Karabinów");
-                break;
-            case 40:
-                ItemName = SetString("Shotgun", "Strzelba");
-                break;
-            case 41:
-                ItemName = SetString("MP5", "MP5");
-                break;
-            case 42:
-                ItemName = SetString("M4", "M4");
-                break;
-            case 43:
-                ItemName = SetString("Heat Pack", "Ogrzewacz");
-                break;
-            case 44:
-                ItemName = SetString("Adrenaline", "Adrenalina");
-                break;
-            case 45:
-                ItemName = SetString("Fanny Pack", "Torba na Pas");
-                break;
-            case 46:
-                ItemName = SetString("Backpack", "Plecak");
-                break;
-            case 47:
-                ItemName = SetString("Military Backpack", "Plecak Wojskowy");
-                break;
-            case 48:
-                ItemName = SetString("Bulletproof Vest", "Kamizelka Kuloodporna");
-                break;
-            case 49:
-                ItemName = SetString("Military Vest", "Kamizelka Wojskowa");
-                break;
-            case 990:
-                ItemName = SetString("Teal", "Cyjan");
-                break;
-            case 991:
-                ItemName = SetString("Grail", "Graal");
-                break;
-            case 992:
-                ItemName = SetString("Travelstone", "Kamień Teleportacji");
-                break;
-            case 993:
-                ItemName = SetString("Sapphire Spear", "Szafirowa Włócznia");
-                break;
-            case 994:
-                ItemName = SetString("White Gold Armor", "Zbroja z Białego Złota");
-                break;
-            case 995:
-                ItemName = SetString("Spark", "Iskra");
-                break;
-            case 996:
-                ItemName = SetString("Golden AK-47", "Złoty AK-47");
-                break;
-            case 997:
-                ItemName = SetString("Tesla Rifle", "Karabin Tesli");
-                break;
-            case 998:
-                ItemName = SetString("Ruby Ring", "Rubinowy Pierścień");
-                break;
-            case 999:
-                ItemName = SetString("Present", "Prezent");
-                break;
-            case 50:
-                ItemName = SetString("Sleeping Bag", "Śpiwór");
-                break;
-            case 51:
-                ItemName = SetString("Sport Shoes", "Buty Sportowe");
-                break;
-            case 52:
-                ItemName = SetString("Money", "Pieniądze");
-                break;
-            case 53:
-                ItemName = SetString("Night Vision Goggles", "Noktowizor");
-                break;
-            case 54:
-                ItemName = SetString("Grappling Hook", "Hak Mocujący");
-                break;
-            case 55:
-                ItemName = SetString("Sten", "Sten");
-                break;
-            case 56:
-                ItemName = SetString("Garand", "Garand");
-                break;
-            case 57:
-                ItemName = SetString("Famas", "Famas");
-                break;
-            case 58:
-                ItemName = SetString("Uzi", "Uzi");
-                break;
-            case 59:
-                ItemName = SetString("G3", "G3");
-                break;
-            case 60:
-                ItemName = SetString("SCAR", "SCAR");
-                break;
-            case 61:
-                ItemName = SetString("SPAS", "SPAS");
-                break;
-            case 62:
-                ItemName = SetString("SAW", "SAW");
-                break;
-            case 63:
-                ItemName = SetString("Ammo Chain", "Taśma Nabojowa");
-                break;
-            case 64:
-                ItemName = SetString("Minigun", "Minigun");
-                break;
-            case 65:
-                ItemName = SetString("Mosin Nagant", "Mosin Nagant");
-                break;
-            case 66:
-                ItemName = SetString("Grenade", "Granat");
-                break;
-            case 67:
-                ItemName = SetString("Panzerfaust", "Panzerfaust");
-                break;
-            case 68:
-                ItemName = SetString("Chainsaw", "Piła Łańcuchowa");
-                break;
-            case 69:
-                ItemName = SetString("Bow", "Łuk");
-                break;
-            case 70:
-                ItemName = SetString("Baguette", "Bagieta");
-                break;
-            case 71:
-                ItemName = SetString("Pickles", "Ogórki Kiszone");
-                break;
-            case 72:
-                ItemName = SetString("Meat", "Mięso");
-                break;
-            case 73:
-                ItemName = SetString("Pretzel", "Precel");
-                break;
-            case 74:
-                ItemName = SetString("Cheeseburger", "Cheesburger");
-                break;
-            case 75:
-                ItemName = SetString("Waffle", "Gofr");
-                break;
-            case 76:
-                ItemName = SetString("Donut", "Donut");
-                break;
-            case 77:
-                ItemName = SetString("Pâté", "Pasztet");
-                break;
-            case 78:
-                ItemName = SetString("Crackers", "Krakersy");
-                break;
-            case 79:
-                ItemName = SetString("Cola", "Kola");
-                break;
-            case 80:
-                ItemName = SetString("Beer", "Piwo");
-                break;
-            case 81:
-                ItemName = SetString("Vodka", "Wódka");
-                break;
-            case 82:
-                ItemName = SetString("Potato", "Ziemniak");
-                break;
-            case 83:
-                ItemName = SetString("Milk", "Mleko");
-                break;
-            case 84:
-                ItemName = SetString("Biscuits", "Herbatniki");
-                break;
-            case 85:
-                ItemName = SetString("Umbrella", "Parasol");
-                break;
-            case 86:
-                ItemName = SetString("Hazmat Suit", "Kombinezon Materiałów Niebezpiecznych");
-                break;
-            case 87:
-                ItemName = SetString("Lifebuoy", "Koło Ratunkowe");
-                break;
-            case 88:
-                ItemName = SetString("Ducktape", "Taśma Klejąca");
-                break;
-            case 89:
-                ItemName = SetString("Blowtorch", "Palnik");
-                break;
-            case 90:
-                ItemName = SetString("Wrench", "Kluch");
-                break;
-            case 91:
-                ItemName = SetString("Camera", "Aparat");
-                break;
-            case 92:
-                ItemName = SetString("Binoculars", "Lornetki");
-                break;
-            case 93:
-                ItemName = SetString("Cowbell", "Dzwon");
-                break;
-            case 94:
-                ItemName = SetString("Scarf", "Szalik");
-                break;
-            case 95:
-                ItemName = SetString("Riot Shield", "Tarcza Policyjna");
-                break;
-            case 96:
-                ItemName = SetString("Cardboard Box", "Karton");
-                break;
-            case 97:
-                ItemName = SetString("Lockpick", "Wytrych");
-                break;
-            case 98:
-                ItemName = SetString("Towel", "Ręcznik");
-                break;
-            case 99:
-                ItemName = SetString("Map", "Mapa");
-                break;
-            case 100:
-                ItemName = SetString("Suppressor", "Tłumik");
-                break;
-            case 101:
-                ItemName = SetString("Grip", "Uchwyt");
-                break;
-            case 102:
-                ItemName = SetString("Grenade Launcher Attachment", "Montowalny Granatnik");
-                break;
-            case 103:
-                ItemName = SetString("Sniper Scope", "Luneta Snajperska");
-                break;
-            case 104:
-                ItemName = SetString("Holo Sight", "Holograficzny Celownik");
-                break;
-            case 105:
-                ItemName = SetString("Bipod", "Dwójnóg");
-                break;
-            case 106:
-                ItemName = SetString("Med Kit", "Apteczka");
-                break;
-            case 107:
-                ItemName = SetString("Splint", "Szyna");
-                break;
-            case 108:
-                ItemName = SetString("Plunger", "Przepychacz");
-                break;
-            case 109:
-                ItemName = SetString("Flamethrower", "Miotacz Ognia");
-                break;
-            case 110:
-                ItemName = SetString("Frag Grenade", "Granat Odłamkowy");
-                break;
-            case 111:
-                ItemName = SetString("Grenade Launcher", "Granatnik");
-                break;
-            case 112:
-                ItemName = SetString("Crossbow", "Kusza");
-                break;
-            case 113:
-                ItemName = SetString("Musket", "Muszkiet");
-                break;
-            case 114:
-                ItemName = SetString("Taser", "Paralizator");
-                break;
-            case 115:
-                ItemName = SetString("Shovel", "Łopata");
-                break;
-            case 116:
-                ItemName = SetString("Herring", "Śledź");
-                break;
-            case 117:
-                ItemName = SetString("Salmon", "Łosoś");
-                break;
-            case 118:
-                ItemName = SetString("Carp", "Karp");
-                break;
-            case 119:
-                ItemName = SetString("Coconut", "Kokos");
-                break;
-            case 120:
-                ItemName = SetString("Banana", "Banan");
-                break;
-            case 121:
-                ItemName = SetString("Sandwich", "Kanapka");
-                break;
-            case 122:
-                ItemName = SetString("Coffee", "Kawa");
-                break;
-            case 123:
-                ItemName = SetString("Popsicle", "Lód na patyku");
-                break;
-            case 124:
-                ItemName = SetString("Puffer", "Inhalator");
-                break;
-            case 125:
-                ItemName = SetString("Scuba Tank", "Butla do Nurkowania");
-                break;
-            case 126:
-                ItemName = SetString("Flippers", "Płetwy");
-                break;
-            case 127:
-                ItemName = SetString("Crank Flashlight", "Latarka na Korbkę");
-                break;
-            case 128:
-                ItemName = SetString("Fire Extinguisher", "Gaśnica");
-                break;
-            case 129:
-                ItemName = SetString("Fishing Rod", "Wędka");
-                break;
-            case 130:
-                ItemName = SetString("Scanner", "Skaner");
-                break;
-            case 131:
-                ItemName = SetString("Flashbang", "Granat Hukowy");
-                break;
-            case 132:
-                ItemName = SetString("Katana", "Katana");
-                break;
-            case 133:
-                ItemName = SetString("Molotov Cocktail", "Koktajl Mołotowa");
-                break;
-            case 134:
-                ItemName = SetString("Spear", "Włócznia");
-                break;
-            case 135:
-                ItemName = SetString("G18", "G18");
-                break;
-            case 136:
-                ItemName = SetString("Frying Pan", "Patelnia");
-                break;
-            case 137:
-                ItemName = SetString("M1 Carbine", "Karabinek M1");
-                break;
-            case 138:
-                ItemName = SetString("Sledgehammer", "Młot Wyburzeniowy");
-                break;
-            case 139:
-                ItemName = SetString("Bazooka", "Bazooka");
-                break;
-            case 140:
-                ItemName = SetString("Wood", "Drewno");
-                break;
-            case 141:
-                ItemName = SetString("Thread", "Nić");
-                break;
-            case 142:
-                ItemName = SetString("Stone", "Kamień");
-                break;
-            case 143:
-                ItemName = SetString("Paper", "Papier");
-                break;
-            case 144:
-                ItemName = SetString("Cloth", "Tkanina");
-                break;
-            case 145:
-                ItemName = SetString("Metal", "Metal");
-                break;
-            case 146:
-                ItemName = SetString("Clay", "Ziemia");
-                break;
-            case 147:
-                ItemName = SetString("Coal", "Węgiel");
-                break;
-            default:
-                ItemName = "";
-                break;
-            }
-
-        return ItemName;
-
-    }
-
-    public string ReceiveItemVariables(float ItemID) {
-
-        int ItemIDA = (int)ItemID;
-        string VariablesToSet = "id" + ItemIDA.ToString() + ";";//new Vector3(ItemIDA, 0f, 0f);
-
-        switch ((int)ItemIDA) {
-            case 2: case  14: case  15: case  16: case  27: case  28: case  991: case  993: case 53: case 68: case 86: case  89: case 88: case 95: case 96: case 98: case 124: case 125: case 128: case 130: case 132: case 134: case 136: case 138:
-                VariablesToSet += "va100;"; //new Vector3(ItemIDA, 100f, 0f);
-                break;
-           case 11: case 12:
-                VariablesToSet += "cl" + ((int)Random.Range(0f, 10f)).ToString() + ";";//new Vector3(ItemIDA, 0f, (int)Random.Range(0f, 10f));
-                break;
-            case 13:
-                VariablesToSet = "id12;va100;cl0;";
-                break;
-            case 29:
-                VariablesToSet += "va7;";//new Vector3(ItemIDA, 7f, 0f);
-                break;
-            case 30:
-                VariablesToSet += "va" + (4 * (int)Random.Range(1f, 4.9f)).ToString() + ";";//new Vector3(ItemIDA, (4 * (int)Random.Range(1f, 4.9f)), 0f);
-                break;
-            case 31:
-                VariablesToSet += "va8;";//new Vector3(ItemIDA, 8f, 0f);
-                break;
-            case 32:
-                VariablesToSet += "va6;";//new Vector3(ItemIDA, 6f, 0f);
-                break;
-            case 33:
-                VariablesToSet += "va" + (5 * (int)Random.Range(1f, 10.9f)).ToString() + ";";//new Vector3(ItemIDA, (5 * (int)Random.Range(1f, 10.9f)), 0f);
-                break;
-            case 34:
-                VariablesToSet += "va5;";//new Vector3(ItemIDA, 5f, 0f);
-                break;
-            case 35:
-                VariablesToSet += "va2;";//new Vector3(ItemIDA, 2f, 0f);
-                break;
-            case 36:
-                VariablesToSet += "va30;";//new Vector3(ItemIDA, 30f, 0f);
-                break;
-            case 37:
-                VariablesToSet += "va" + (15 * (int)Random.Range(1f, 4.9f)).ToString() + ";";//new Vector3(ItemIDA, (15 * (int)Random.Range(1f, 4.9f)), 0f);
-                break;
-            case 38: case 996:
-                VariablesToSet += "va30;";//new Vector3(ItemIDA, 30f, 0f);
-                break;
-            case 39:
-                VariablesToSet += "va" + (15 * (int)Random.Range(1f, 4.9f)).ToString() + ";";//new Vector3(ItemIDA, (15 * (int)Random.Range(1f, 4.9f)), 0f);
-                break;
-            case 40:
-                VariablesToSet += "va5;";//new Vector3(ItemIDA, 5f, 0f);
-                break;
-            case 41:
-                VariablesToSet += "va40;";//new Vector3(ItemIDA, 40f, 0f);
-                break;
-            case 42:
-                VariablesToSet += "va30;";//new Vector3(ItemIDA, 30f, 0f);
-                break;
-            case 55:
-                VariablesToSet += "va32;";//new Vector3(ItemIDA, 32f, 0f);
-                break;
-            case 56:
-                VariablesToSet += "va8;";//new Vector3(ItemIDA, 8f, 0f);
-                break;
-            case 57:
-                VariablesToSet += "va25;";//new Vector3(ItemIDA, 25f, 0f);
-                break;
-            case 58:
-                VariablesToSet += "va25;";//new Vector3(ItemIDA, 25f, 0f);
-                break;
-            case 59:
-                VariablesToSet += "va20;";//new Vector3(ItemIDA, 20f, 0f);
-                break;
-            case 60:
-                VariablesToSet += "va28;";//new Vector3(ItemIDA, 28f, 0f);
-                break;
-            case 61:
-                VariablesToSet += "va8;";//new Vector3(ItemIDA, 8f, 0f);
-                break;
-            case 62:
-                VariablesToSet += "va100;";//new Vector3(ItemIDA, 100f, 0f);
-                break;
-            case 63:
-                VariablesToSet += "va" + (250 * (int)Random.Range(1f, 3.9f)).ToString() + ";";//new Vector3(ItemIDA, (250 * (int)Random.Range(1f, 3.9f)), 0f);
-                break;
-            case 64:
-                VariablesToSet += "va500;";//new Vector3(ItemIDA, 500f, 0f);
-                break;
-            case 65:
-                VariablesToSet += "va5;";//new Vector3(ItemIDA, 5f, 0f);
-                break;
-            case 66: case 110: case 127: case 131:
-                VariablesToSet += "va0;sq1;";//new Vector3(ItemIDA, 5f, 0f);
-                break;
-            case 69:
-                VariablesToSet += "va10;";//new Vector3(ItemIDA, 10f, 0f);
-                break;
-            case 91:
-                VariablesToSet += "va10;";//new Vector3(ItemIDA, 10f, 0f);
-                break;
-            case 99:
-                VariablesToSet += "va" + ((int)Random.Range(1f, 3f)).ToString() + ";";//new Vector3(ItemIDA, (int)Random.Range(1f, 3f), 0f);
-                break;
-            case 108:
-                VariablesToSet += "va100;";//new Vector3(ItemIDA, 100f, 0f);
-                break;
-            case 109:
-                VariablesToSet += "va100;";//new Vector3(ItemIDA, 100f, 0f);
-                break;
-            case 111:
-                VariablesToSet += "va6;";//new Vector3(ItemIDA, 6f, 0f);
-                break;
-            case 112:
-                VariablesToSet += "va10;";//new Vector3(ItemIDA, 10f, 0f);
-                break;
-            case 113:
-                VariablesToSet += "va1;";//new Vector3(ItemIDA, 1f, 0f);
-                break;
-            case 115:
-                VariablesToSet += "va100;";//new Vector3(ItemIDA, 100f, 0f);
-                break;
-            case 135:
-                VariablesToSet += "va17;";//new Vector3(ItemIDA, 17f, 0f);
-                break;
-            case 137:
-                VariablesToSet += "va15;";//new Vector3(ItemIDA, 15f, 0f);
-                break;
-            case 139:
-                VariablesToSet += "va6;";//new Vector3(ItemIDA, 6f, 0f);
-                break;
-            default:
-                VariablesToSet += "sq1;";//new Vector3(ItemIDA, 0f, 0f);
-                break;
+        // filler
+        List<itemClass> filIC = new();
+        filIC.AddRange(itemCache);
+        for (int fil = itemCache.Length; fil < 990; fil++){
+            filIC.Add(null);
         }
 
-        if(!ExistSemiClass(VariablesToSet, "va")) VariablesToSet += "va0;";
-        return VariablesToSet;
+        // treasures
+        filIC.AddRange( new itemClass[]{
+            new(this, new string[]{"Teal", "Cyjan"},
+                new string[]{"Treasure found in silos. Upon using it, you'll enter a teal state, where you'll be free from any dangers.", "Skarb znajdywalny w silosach. Po jego użyciu, wejdziesz w stan cyjanowy, gdzie będziesz bezpieczny od wszelakich niebezpieczeństw."},
+                "id990;va0;sq1"
+            ),
+            new(this, new string[]{"Grail", "Gral"},
+                new string[]{"Treasure found in churches. You can drink from it, to regain all of the lost health and hunger, and to get rid of any negative buffs. Has 3 uses.", "Skarb znajdywalny w kościołach. Możesz z niego pić, by odnowić swoje zdrowie oraz głód, i by pozbyć się wszelkich złych efektów. Ma 3 użycia."},
+                "id991;va100;"
+            ),
+            new(this, new string[]{"Travelstone", "Kamieńpodróży"},
+                new string[]{"Treasure found in lighthouses. You can throw it, and teleport to the place where it lands.", "Skarb znajdywalny w latarniach morskich. Możesz nim rzucić, i teleportować się tam gdzie spadnie."},
+                "id992;va0;sq1;"
+            ),
+            new(this, new string[]{"Sapphire spear", "Włócznia szafirowa"},
+                new string[]{"Treasure found in hangars. It is a weapon, that can kill anything in one hit, but only can be used 4 times.", "Skarb znajdywalny w hangarach. Jest to broń, która zabije każdą żywą istotę, jednym uderzeniem, jednak można z niej skorzystać tylko 4 razy."},
+                "id993;va100;"
+            ),
+            new(this, new string[]{"White gold armor", "Zbroja z białego złota"},
+                new string[]{"Treasure found in quarries. It is an armor, that gives you: 300 max health, +6 inventory slots, and +3m/s walking speed.", "Skarb znajdywalny w kamieniołomach. Jest to zbroja, po której założeniu otrzymujesz: 300 maksymalnej ilości zdrowia, +6 miejsc w inwentarzu, oraz +3m/s prędkości chodzenia."},
+                "id994;va0;sq1;"
+            ),
+            new(this, new string[]{"Spark", "Iskra"},
+                new string[]{"Treasure found in castles. A blue, bright light source that has infinite lifetime.", "Skarb znajdywalny w zamkach. Jasne niebieskie źródło światła, z nieskończoną żywotnością."},
+                "id995;va0;sq1;"
+            ),
+            new(this, new string[]{"Golden AK47", "Złoty AK47"},
+                new string[]{"Treasure found in bunkers. It's basically an AK47 rifle, but it doesn't need any magazines to reload.", "Skarb znajdywalny w bunkrach. Jest to zwykły karabin AK47, tylko że nie potrzebuje żadnych magazynków do przeładowywania."},
+                "id996;va0;"
+            ),
+            new(this, new string[]{"Tesla rifle", "Karabin Tesli"},
+                new string[]{"Treasure found in radar stations. It can fire short lightning bolts. Recharges itself slowly overtime.", "Skarb znajdywalny w stacjach radarowych. Może strzelać prądem. Swoją energie regeneruje z czasem powoli."},
+                "id997;va100;"
+            ),
+            new(this, new string[]{"Ruby ring", "Rubinowy pierścien"},
+                new string[]{"Treasure found in mazes. When held, it'll protect you from any damage, but it'll slow you down by a lot.", "Skarb znajdywalny w labiryntach. Trzymany, obroni cię przed wszelkimi obrażeniami, aczkolwiek będziesz się poruszać wolniej."},
+                "id998;va0;sq1;"
+            ),
+            new(this, new string[]{"Present", "Prezent"},
+                new string[]{"Treasure found in ships. Upon using it, it'll drop a lot of random items.", "Skarb znajdywalny w statkach. Po jego użyciu, upuści sporo losowych przedmiotów."},
+                "id999;va0;sq1;"
+            )
+        });
 
     }
 

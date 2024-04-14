@@ -351,7 +351,7 @@ public class PlayerScript : MonoBehaviour {
                             GameObject SpawnFish = Instantiate(ItemPrefab) as GameObject;
                             SpawnFish.transform.position = FishingRodBait.transform.position;
                             int pickedFish = (int)Random.Range(0f, FishesChance.Length - 0.1f);
-                            SpawnFish.GetComponent<ItemScript>().Variables = GS.ReceiveItemVariables(FishesChance[pickedFish]);
+                            SpawnFish.GetComponent<ItemScript>().Variables = GS.itemCache[FishesChance[pickedFish]].startVariables;
                             SpawnFish.GetComponent<ItemScript>().State = 2;
                             SpawnFish.GetComponent<ItemScript>().ThrownDirection = FishingRodBait.transform.GetChild(0).forward;
                             if(pickedFish == 6) GS.PS.AchProg("Ach_Fisherman", "", new string[]{"vcarp_", "1"});
@@ -359,7 +359,7 @@ public class PlayerScript : MonoBehaviour {
                             GS.Mess(GS.SetString("You caught some trash!", "Złowiłeś jakiś przedmiot!"), "Good");
                             GameObject SpawnFish = Instantiate(ItemPrefab) as GameObject;
                             SpawnFish.transform.position = FishingRodBait.transform.position;
-                            SpawnFish.GetComponent<ItemScript>().Variables = GS.ReceiveItemVariables(RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]);
+                            SpawnFish.GetComponent<ItemScript>().Variables = GS.itemCache[RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]].startVariables;
                             SpawnFish.GetComponent<ItemScript>().State = 2;
                             SpawnFish.GetComponent<ItemScript>().ThrownDirection = FishingRodBait.transform.GetChild(0).forward + FishingRodBait.transform.GetChild(0).up;
                             GS.PS.AchProg("Ach_Fisherman", "", new string[]{"vgarbage_", "1"});
@@ -1089,7 +1089,7 @@ public class PlayerScript : MonoBehaviour {
                     for(int rs = 0; rs < MaxInventorySlots; rs++) if (Inventory[rs] == What) {
                         if(GS.ExistSemiClass(Inventory[rs], "sq") && int.Parse(GS.GetSemiClass(Inventory[rs], "sq")) > stackAmount) {
                             int keepStack = int.Parse(GS.GetSemiClass(Inventory[rs], "sq")) - stackAmount;
-                            Inventory[rs] = GS.ReceiveItemVariables( float.Parse(GS.GetSemiClass(Inventory[rs], "id")) );
+                            Inventory[rs] = GS.itemCache[ int.Parse(GS.GetSemiClass(Inventory[rs], "id")) ].startVariables;
                             Inventory[rs] = GS.SetSemiClass(Inventory[rs], "sq", keepStack.ToString());
                         } else Inventory[rs] = "id0;";
                         break;
@@ -1098,7 +1098,7 @@ public class PlayerScript : MonoBehaviour {
                     int at = int.Parse(What);
                     if(GS.ExistSemiClass(Inventory[at], "sq") && int.Parse(GS.GetSemiClass(Inventory[at], "sq")) > stackAmount) {
                         int keepStack = int.Parse(GS.GetSemiClass(Inventory[at], "sq")) - stackAmount;
-                        Inventory[at] = GS.ReceiveItemVariables( float.Parse(GS.GetSemiClass(Inventory[at], "id")) );
+                        Inventory[at] = GS.itemCache[ int.Parse(GS.GetSemiClass(Inventory[at], "id")) ].startVariables;
                         Inventory[at] = GS.SetSemiClass(Inventory[at], "sq", keepStack.ToString());
                     } else Inventory[at] = "id0;";
                 }
@@ -1359,11 +1359,11 @@ public class PlayerScript : MonoBehaviour {
                     if (GS.GetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "at") != "") {
                         GameObject Deattach = Instantiate(ItemPrefab) as GameObject;
                         Deattach.transform.position = InteractedGameobject.transform.position;
-                        Deattach.GetComponent<ItemScript>().Variables = GS.ReceiveItemVariables(float.Parse(GS.GetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "at"), CultureInfo.InvariantCulture));
+                        Deattach.GetComponent<ItemScript>().Variables = GS.itemCache[int.Parse(GS.GetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "at"))].startVariables;
                         Deattach.GetComponent<ItemScript>().DroppedBy = this.gameObject;
                     }
                     InteractedGameobject.GetComponent<ItemScript>().Variables = GS.SetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "at", GS.GetSemiClass(Inventory[CurrentItemHeld], "id")); //InteractedGameobject.GetComponent<ItemScript>().Variables.z = GS.GetSemiClass(Inventory[CurrentItemHeld], "id");
-                    GS.Mess(GS.SetString(GS.ReceiveItemName(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"))) + " attached to weapon", "Dodano " + GS.ReceiveItemName(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"))) + " do broni"));
+                    GS.Mess(GS.SetString(GS.itemCache[int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"))].getName() + " attached to weapon", "Dodano " + GS.itemCache[int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"))].getName() + " do broni"));
                     InvGet(CurrentItemHeld.ToString(), 1);
                 } else {
                     CantUseItem = 0.5f;
@@ -1562,7 +1562,8 @@ public class PlayerScript : MonoBehaviour {
             }
             // Specifics for held items
             
-            switch(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"))) {
+            int currID = int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"));
+            switch(currID) {
                 case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 19: case 20: case 21: case 22: case 23: case 24: case 25: case 26: case 70: case 71: case 72: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 80: case 81: case 82: case 83: case 84: case 106: case 116: case 117: case 118: case 119: case 120: case 121: case 122: case 123:
                     // Get Food info
                     int DrinkOrWhat = 0; // 0 Eat   1 Drink   2 Other
@@ -2576,7 +2577,7 @@ public class PlayerScript : MonoBehaviour {
                                 IsReloading = ReloadVariables[2];
                             } else {
                                 CantUseItem = 0.5f;
-                                GS.Mess(GS.SetString("You need " + GS.ReceiveItemName(ReloadVariables[1]) + "!", "Potrzebujesz " + GS.ReceiveItemName(ReloadVariables[1]) + "!"), "Error");
+                                GS.Mess(GS.SetString("You need " + GS.itemCache[(int)ReloadVariables[1]].getName() + "!", "Potrzebujesz " + GS.itemCache[(int)ReloadVariables[1]].getName() + "!"), "Error");
                             }
                                 
                         }
@@ -2697,45 +2698,22 @@ public class PlayerScript : MonoBehaviour {
                     break;
                 case 45: case 46: case 47: case 48: case 49: case 994: case 51: case 53: case 86: case 94: case 125: case 126:
                     // Get Clothing Infos
-                    string ClothingName = "";
+                    string ClothingName = GS.itemCache[currID].getName();
                     Color32 WearColor = new Color32(255, 255, 255, 255);
                     string Category = "0";
-                    if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "45") {
-                        ClothingName = GS.SetString("Fanny Pack", "Torbę na Pas");
-                        Category = "1";
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "46") {
-                        ClothingName = GS.SetString("Backpack", "Plecak");
-                        Category = "1";
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "47") {
-                        ClothingName = GS.SetString("Military Backpack", "Wojskowy Plecak");
-                        Category = "1";
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "48") {
-                        ClothingName = GS.SetString("Bulletproof Vest", "Kamizelkę Kuloodporną");
-                        Category = "2";
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "49") {
-                        ClothingName = GS.SetString("Military Vest", "Kamizelkę Wojskową");
-                        Category = "2";
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "994") {
-                        ClothingName = GS.SetString("White Gold Armor", "Zbroję z Białego Złota");
-                        Category = "2";
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "51") {
-                        ClothingName = GS.SetString("Sport Shoes", "Buty Sportowe");
-                        Category = "3";
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "53") {
-                        ClothingName = GS.SetString("Night Vision Goggles", "Noktowizor");
-                        Category = "4";
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "86") {
-                        ClothingName = GS.SetString("Hazmat Suit", "Kombinezon Hazmatyczny");
-                        Category = "5";
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "94") {
-                        ClothingName = GS.SetString("Scarf", "Szalik");
-                        Category = "6";
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "125") {
-                        ClothingName = GS.SetString("Scuba Tank", "Butle do Nurkowania");
-                        Category = "4";
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "126") {
-                        ClothingName = GS.SetString("Flippers", "Płetwy");
-                        Category = "3";
+                    switch(currID){
+                        case 45: Category = "1"; break;
+                        case 46: Category = "1"; break;
+                        case 47: Category = "1"; break;
+                        case 48: Category = "2"; break;
+                        case 49: Category = "2"; break;
+                        case 994: Category = "2"; break;
+                        case 51: Category = "3"; break;
+                        case 53: Category = "4"; break;
+                        case 86: Category = "5"; break;
+                        case 94: Category = "6"; break;
+                        case 125: Category = "4"; break;
+                        case 126: Category = "3"; break;
                     }
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f) {
 
@@ -2746,9 +2724,9 @@ public class PlayerScript : MonoBehaviour {
                                 CantUseItem = 0.5f;
                                 string WhatCategory = "";
                                 if (Category == "1") {
-                                    WhatCategory = GS.ReceiveItemName(float.Parse(GS.GetSemiClass(Equipment[CheckEq], "id"), CultureInfo.InvariantCulture));
+                                    WhatCategory = GS.itemCache[int.Parse(GS.GetSemiClass(Equipment[CheckEq], "id"))].getName();
                                 }
-                                GS.Mess(GS.SetString("Can't wear that, unequip " + GS.ReceiveItemName(float.Parse(GS.GetSemiClass(Equipment[CheckEq], "id"), CultureInfo.InvariantCulture)) + " first!", "Nie można tego ubrać, " + GS.ReceiveItemName(float.Parse(GS.GetSemiClass(Equipment[CheckEq], "id"), CultureInfo.InvariantCulture)) + " zajmuje miejsce!"), "Error");
+                                GS.Mess(GS.SetString("Can't wear that, unequip " + GS.itemCache[int.Parse(GS.GetSemiClass(Equipment[CheckEq], "id"))] + " first!", "Nie można tego ubrać, " + GS.itemCache[int.Parse(GS.GetSemiClass(Equipment[CheckEq], "id"))].getName() + " zajmuje miejsce!"), "Error");
                                 break;
                             } else if (GS.GetSemiClass(Equipment[CheckEq], "id") == "0") {
                                 AddHere = CheckEq;
@@ -2761,7 +2739,7 @@ public class PlayerScript : MonoBehaviour {
                             Equipment[AddHere] = Inventory[CurrentItemHeld] + "ct" + Category + ";";//new Vector4(Inventory[CurrentItemHeld].x, Inventory[CurrentItemHeld].y, Inventory[CurrentItemHeld].z, Category);
 
                             MainCanvas.Flash(new Color32(255, 255, 255, 75), new float[]{0.5f, 0.5f});
-                            GS.Mess(GS.SetString(ClothingName + " worn", "Ubrano " + ClothingName), "Wear");
+                            GS.Mess(GS.SetString(ClothingName + " worn", "Ubrano: " + ClothingName), "Wear");
                             InvGet(CurrentItemHeld.ToString(), 1);
 
                         } else if (AddHere == -1) {
@@ -2820,18 +2798,6 @@ public class PlayerScript : MonoBehaviour {
                         CantSwitchItem = CantUseItem;
                         Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-10");//Inventory[CurrentItemHeld].y -= 10f;
                         ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Shoot", "997", AnimationAddition), 0, 0f);
-                        //GameObject SpawnAttack = Instantiate(AttackPrefab) as GameObject;
-                        //SpawnAttack.transform.position = LookDir.position;
-                        //SpawnAttack.transform.eulerAngles = LookDir.eulerAngles;
-                        //SpawnAttack.GetComponent<AttackScript>().GunName = "LightningBolt";
-                        //SpawnAttack.GetComponent<AttackScript>().Attacker = this.gameObject;
-                        //if ((int)Inventory[CurrentItemHeld].z == 103) {
-                        //    SpawnAttack.GetComponent<AttackScript>().DrunknessPower = 10f;
-                        //} else {
-                        //    SpawnAttack.GetComponent<AttackScript>().DrunknessPower = (Drunkenness / 10f);
-                        //}
-                        //SpawnAttack.GetComponent<AttackScript>().WchichItemWasHeld = CurrentItemHeld;
-                        //SpawnAttack.GetComponent<AttackScript>().Slimend = SlimEnd;
                         RS.Attack(new string[]{ "LightningBolt", "Power" + (Drunkenness / 10f), "ItemID" + CurrentItemHeld }, LookDir.position, LookDir.forward, this.gameObject, SlimEnd);
                     }
                     break;
@@ -2840,7 +2806,7 @@ public class PlayerScript : MonoBehaviour {
                         for (int DropItems = 10; DropItems > 0; DropItems--) {
                             GameObject Present = Instantiate(ItemPrefab) as GameObject;
                             Present.transform.position = this.transform.position + new Vector3(Random.Range(-3f, 3f), 2f, Random.Range(-3f, 3f));
-                            Present.GetComponent<ItemScript>().Variables = GS.ReceiveItemVariables(RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]);
+                            Present.GetComponent<ItemScript>().Variables = GS.itemCache[RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]].startVariables;
                         }
                         MainCanvas.Flash(new Color32(255, 255, 255, 75), new float[]{0.5f, 0.5f});
                         GS.Mess(GS.SetString("Here are some items", "Masz tu kilka przedmiotów"), "Wear");
