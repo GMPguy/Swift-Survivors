@@ -42,6 +42,8 @@ public class ItemScript : MonoBehaviour {
 
         HitDetector.transform.position = this.transform.position;
 
+        ThrownVariables = GS.itemCache[int.Parse(GS.GetSemiClass(Variables, "id"))].ThrowVariables;
+
         // Check if in water
         Ray CheckWaterUP = new Ray(this.transform.position, Vector3.up);
         foreach (RaycastHit CheckWaterUPHIT in Physics.RaycastAll(CheckWaterUP, Mathf.Infinity)) {
@@ -120,7 +122,8 @@ public class ItemScript : MonoBehaviour {
 
         Name = GS.itemCache[int.Parse(GS.GetSemiClass(Variables, "id"))].getName();
         if(GS.ExistSemiClass(Variables, "sq") && GS.GetSemiClass(Variables, "sq") != "1") Name += " x" + GS.GetSemiClass(Variables, "sq");
-        ThrownVariables = GS.itemCache[int.Parse(GS.GetSemiClass(Variables, "id"))].ThrowVariables;
+        if(GS.ExistSemiClass(Variables, "rep")) CanBeFixed = true;
+        if(GS.ExistSemiClass(Variables, "at")) CanHaveAttachments = true;
 
         if (InWater == true) {
             ThrownVariables[0] /= 2f;

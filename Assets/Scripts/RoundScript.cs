@@ -141,7 +141,7 @@ public class RoundScript : MonoBehaviour {
             }
 
             // Manage destructors
-            if(ActiveDestructs != null && ActiveDestructs.ToArray().Length >= 1f){ ActiveDestructs.TrimExcess();
+            if(ActiveDestructs != null && ActiveDestructs.ToArray().Length >= 1f){
                 for(int ad = 0; ad < ActiveDestructs.ToArray().Length; ad++) if(ActiveDestructs[ad]) ActiveDestructs[ad].Do();
             }
 

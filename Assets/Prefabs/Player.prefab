@@ -44930,6 +44930,8 @@ MonoBehaviour:
   CurrentItemHeld: 0
   MaxInventorySlots: 4
   currBuild: 
+  Buildings:
+  - {fileID: 3087582353592737714, guid: ba2d254caacde984f8e340c910e055dc, type: 3}
   objBuild: {fileID: 5886461589312696465}
   posBuild: {x: 0, y: 0, z: 0}
   rotBuild: {x: 0, y: 0, z: 0}

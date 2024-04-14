@@ -30,6 +30,7 @@ public class PlayerScript : MonoBehaviour {
     // Inventory
     // Building
     public string currBuild = "";
+    public GameObject[] Buildings;
     public Transform objBuild;
     public Vector3 posBuild, rotBuild;
     // Building
@@ -1561,7 +1562,7 @@ public class PlayerScript : MonoBehaviour {
                 InBox = false;
             }
             // Specifics for held items
-            
+            currBuild = "";
             int currID = int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"));
             switch(currID) {
                 case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 19: case 20: case 21: case 22: case 23: case 24: case 25: case 26: case 70: case 71: case 72: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 80: case 81: case 82: case 83: case 84: case 106: case 116: case 117: case 118: case 119: case 120: case 121: case 122: case 123:
@@ -3389,6 +3390,9 @@ public class PlayerScript : MonoBehaviour {
                         }
                     }
                     break;
+                case 148:
+                    currBuild = GS.itemCache[currID].getName();
+                    break;
                 default:
                     break;
             }
@@ -3566,7 +3570,7 @@ public class PlayerScript : MonoBehaviour {
     void BuildingFunctions(){
         bool avaBuild = true;
 
-        if(currBuild != "" && currBuild != "[Remove]"){
+        if(currBuild != ""){
 
             if(State != 1) currBuild = "";
 
@@ -3592,9 +3596,7 @@ public class PlayerScript : MonoBehaviour {
                 for(int setBuild = 0; setBuild <= objBuild.childCount; setBuild++) 
                     if (setBuild == objBuild.childCount) {
                         if(thir == -1) Debug.LogError("No building of name " + currBuild + " has been found!");
-                        else {
-                            objBuild.GetChild(thir).SetSiblingIndex(0);
-                        }
+                        else objBuild.GetChild(thir).SetSiblingIndex(0);
                     } else if (objBuild.GetChild(setBuild).gameObject.name == currBuild){
                         thir = setBuild;
                         if(!objBuild.GetChild(setBuild).gameObject.activeInHierarchy) objBuild.GetChild(setBuild).gameObject.SetActive(true);
@@ -3608,13 +3610,19 @@ public class PlayerScript : MonoBehaviour {
             }
 
             if(GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && avaBuild){
-                switch(currBuild){
-                    default: /*here is place stuff code*/ break;
+                for(int gp = 0; gp <= Buildings.Length; gp++) if (Buildings[gp].name == currBuild) {
+                    GameObject newBuild = Instantiate(Buildings[gp]);
+                    newBuild.transform.position = objBuild.GetChild(0).position;
+                    newBuild.transform.eulerAngles = objBuild.GetChild(0).eulerAngles;
+                    switch(currBuild){
+                        default: break;
+                    }
+                    break;
                 }
                 CantUseItem = 0.5f;
-                currBuild = "[Remove]";
+                InvGet(CurrentItemHeld.ToString(), 1);
+                currBuild = "";
             }
-
         } else {
             objBuild.gameObject.SetActive(false);
         }

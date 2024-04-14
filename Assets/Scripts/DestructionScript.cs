@@ -6,6 +6,7 @@ public class DestructionScript : MonoBehaviour {
 
     // Main variables
     public float Health = 10f;
+    float prevHealth = 10f;
     public string mainType = "";
     public string subType = "";
     public string penType = "";
@@ -25,10 +26,14 @@ public class DestructionScript : MonoBehaviour {
         RS = GameObject.FindObjectOfType<RoundScript>();
         GS = RS.GS;
         ItemPrefab = RS.ItemPrefab;
+        prevHealth = Health;
 
         switch(mainType){
             case "Tree":
                 TreeLean = new Vector3[]{this.transform.eulerAngles, this.transform.eulerAngles, this.transform.localScale};
+                break;
+            case "Construction":
+                TreeLean = new Vector3[]{this.transform.localScale, this.transform.eulerAngles, this.transform.localScale * Random.Range(0.8f, 0.9f), this.transform.eulerAngles + Vector3.one*Random.Range(-10f, 10f)};
                 break;
         }
     }
@@ -57,7 +62,10 @@ public class DestructionScript : MonoBehaviour {
             }
 
         } else {
-            if(RS.ActiveDestructs.Contains(this)) RS.ActiveDestructs.Remove(this);
+            if(RS.ActiveDestructs.Contains(this)) {
+                RS.ActiveDestructs.Remove(this);
+                RS.ActiveDestructs.TrimExcess();
+            }
             if(Health <= 0f) {
                 if(State == "Timber") dropLoot();
                 Destroy(this.gameObject);
@@ -91,6 +99,10 @@ public class DestructionScript : MonoBehaviour {
                             State = "Chop";
                             TreeLean[1] = TreeLean[0] + Vector3.one*15f;
                             break;
+                        case "Construction":
+                            this.transform.localScale = Vector3.Lerp(TreeLean[0], TreeLean[1], Health/prevHealth);
+                            this.transform.eulerAngles = Vector3.Lerp(TreeLean[2], TreeLean[3], Health/prevHealth);
+                            break;
                         default:break;
                     }
 
@@ -98,7 +110,7 @@ public class DestructionScript : MonoBehaviour {
 
                     // Destroy effect
                     switch(mainType){
-                        case "Tree":
+                        case "Tree": case "Construction":
                             KeepState = 5f;
                             State = "Timber";
                             TreeLean[1] = TreeLean[0] + Vector3.one*15f;
@@ -162,6 +174,13 @@ public class DestructionScript : MonoBehaviour {
             }
 
             dropedLoot = true;
+        }
+    }
+
+    void OnDestroy(){
+        if(RS.ActiveDestructs.Contains(this)) {
+            RS.ActiveDestructs.Remove(this);
+            RS.ActiveDestructs.TrimExcess();
         }
     }
 

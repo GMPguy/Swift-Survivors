@@ -1244,7 +1244,7 @@ public class CanvasScript : MonoBehaviour {
                     }
                 }
                 
-                if(GS.ExistSemiClass(ItemInfos, "at")) 
+                if(GS.ExistSemiClass(ItemInfos, "at") && GS.GetSemiClass(ItemInfos, "at") != "0") 
                     Infos = new string[]{
                         GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                         GS.SetString("Ammo: ", "Ammunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + " / " + SpareAmmo,

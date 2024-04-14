@@ -893,15 +893,15 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Knife", "Nóż"},
                 new string[]{"A weak melee weapon, it's pretty quick though.", "Słaba broń biała, jest jednak dość szybka."},
-                "id14;va100;"
+                "id14;va100;rep;"
             ),
             new(this, new string[]{"Crowbar", "Łom"},
                 new string[]{"A slow melee weapon. Doesn't do much damage to living things, but does a lot to objects.", "Powolna broń biała. Nie zadaje dużo obrażeń istotom żywym, ale dużo przedmiotom."},
-                "id15;va100;"
+                "id15;va100;rep;"
             ),
             new(this, new string[]{"Fire axe", "Siekera strażacka"},
                 new string[]{"A slow, yet powerful melee weapon. Can chop down trees.", "Powolna, lecz silna broń biała. Można nią ścinać drzewa."},
-                "id16;va100;"
+                "id16;va100;rep;"
             ),
             new(this, new string[]{"Bottle of water", "Butelka z wodą"},
                 new string[]{"You can drink from it, to regydrate yourself. Also good for when you're on fire.", "Można się z niej napić, w celu nawodnienia się. Przydatna, gdy ktoś cię podpalił."},
@@ -945,15 +945,15 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Machete", "Maczeta"},
                 new string[]{"A direct upgrade to knife; deals more damage, and is more durable. Can be used to chop trees.", "Jest to ulepszona wersja noża; zadaje więcej obrażeń, i jest bardziej wytrzymała. Może ścinać drzewa."},
-                "id27;va100;"
+                "id27;va100;rep;"
             ),
             new(this, new string[]{"Baseball bat", "Kij baseballowy"},
                 new string[]{"A blunt and quick weapon. Does decent damage to living things, but is very fragile.", "Jest to kij, którym w miarę szybko i w miarę dobrze można posyłać ludzi do piachu. Broń ta się dość łatwo niszczy."},
-                "id28;va100;"
+                "id28;va100;rep;"
             ),
             new(this, new string[]{"Colt", "Colt"},
                 new string[]{"A simple pistol, nothing special.", "Prosty pistolet, nic specialnego."},
-                "id29;va7;"
+                "id29;va7;at0;"
             ),
             new(this, new string[]{"Pistol magazine", "Magazynek do pistoletu"},
                 new string[]{"It contains ammo which can be used to reload pistols. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać pistolety. Można go naładować paczkami z amunicją."},
@@ -961,11 +961,11 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Luger", "Luger"},
                 new string[]{"A fast firing pistol. Not very accurate, but does decent damage.", "Szybko strzelający pistolet. Niezbyt celny, ale zadaje dużo obrażeń."},
-                "id31;va8;"
+                "id31;va8;at0;"
             ),
             new(this, new string[]{"Revolver", "Rewolwer"},
                 new string[]{"A very powerful yet small gun. Deals a lot of damage, is very accurate, but fires very slow.", "Bardzo silna, a zarazem mała broń palna. Zadaje dużo obrażeń, jest bardzo dokładna, jednak strzela powoli."},
-                "id32;va6;"
+                "id32;va6;at0;"
             ),
             new(this, new string[]{"Ammo pack", "Paczka z amunicją"},
                 new string[]{"It contains ammo which can be used to reload guns that don't have magazines. It also can be used to reload other magazines.", "To zawiera amunicję, którą można przeładowywać bronie które nie mają magazynków. Można nią także naładowywać inne magazynki."},
@@ -973,15 +973,15 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Hunting rifle", "Karabin myśliwski"},
                 new string[]{"A slow bolt-action rifle. Has a decent range, good accuracy, but doesn't do much damage.", "Powolny karabin powtarzalny. Posiada dobry dystans, niski rozrzut broni, ale nie zadaje dużo obrażeń."},
-                "id34;va5;"
+                "id34;va5;at0;"
             ),
             new(this, new string[]{"DB Shotgun", "Dubeltówka"},
                 new string[]{"A very powerful gun that fires many bullets per shot, but can only contain 2 rounds at once.", "Potężna broń która wystrzeliwuje wiele kul na jeden strzał, jednak może pomieścić tylko 2 naboje."},
-                "id35;va2;"
+                "id35;va2;at0;"
             ),
             new(this, new string[]{"Thompson", "Thompson"},
                 new string[]{"Cult classic SMG. Doesn't do much damage, but fires really fast, and contains a lot of ammo.", "Bardzo znany i doceniany pistolet maszynowy. Nie zadaje sporej ilości obrażeń, ale strzela bardzo szybko, i posiada dużą pojemność na amunicję."},
-                "id36;va30;"
+                "id36;va30;at0;"
             ),
             new(this, new string[]{"SMG Magazine", "Magazynek do PM"},
                 new string[]{"It contains ammo which can be used to reload SMGs. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać pistolety maszynowe. Można go naładować paczkami z amunicją."},
@@ -989,7 +989,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"AK47", "AK47"},
                 new string[]{"Popular, reliable, and very deadly. This is one of the best assault rifle you can get.", "Popularny, niezawodny, i niosiący śmierć. To jest jeden z najlepszych karabinów szturmowych"},
-                "id38;va30;"
+                "id38;va30;at0;"
             ),
             new(this, new string[]{"Rifle magazine", "Magazynek do karabinów"},
                 new string[]{"It can be used to reload rifles. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać karabiny. Można go naładować paczkami z amunicją."},
@@ -997,15 +997,15 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Shotgun", "Strzelba"},
                 new string[]{"A very powerful gun that fires many bullets per shot, but doesn't do as much damage as the double-barrelled variant.", "Potężna broń która wystrzeliwuje wiele kul na jeden strzał, jednak nie zadaje tylu obrażeń co dubeltówka."},
-                "id40;va5;"
+                "id40;va5;at0;"
             ),
             new(this, new string[]{"MP5", "MP5"},
                 new string[]{"A very fast SMG.", "Bardzo szybki pistolet maszynowy."},
-                "id41;va40;"
+                "id41;va40;at0;"
             ),
             new(this, new string[]{"M4", "M4"},
                 new string[]{"This carbine is similar to AK-47. It is slower, but more accurate and deals more damage.", "Karabinek ten jest podobny do AK-47. Jest wolniejszy, ale zadaje więcej obrażeń, i jest bardziej celny."},
-                "id42;va30;"
+                "id42;va30;at0;"
             ),
             new(this, new string[]{"Heat pack", "Ogrzewacz"},
                 new string[]{"Upon using it, it'll instantly warm you, and you will gain 15 seconds of immunity over coldness.", "Po użyciu tego przedmiotu, natychmiastowo cię ociepli, oraz zdobędziesz odporność na zimno na 15 sekund."},
@@ -1057,35 +1057,35 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Sten", "Sten"},
                 new string[]{"A mass produced smg. Similar to thompson, but does less damage.", "Masowo produkowany pistolet maszynowy. Podobny do thompsona, tylko że zadaje mniej obrażeń."},
-                "id55;va32;"
+                "id55;va32;at0;"
             ),
             new(this, new string[]{"Garand", "Garand"},
                 new string[]{"Classic american rifle. It is very powerful, very accurate, but isn't that fast. It also can be reloaded, only if it's empty.", "Klasyczny amerykański karabin. Zadaje dużo obrażeń, jest dokładny, jednak nie jest taki szybki. Nie można go przeładowywać, jeżeli nie jest pusty."},
-                "id56;va8;"
+                "id56;va8;at0;"
             ),
             new(this, new string[]{"Famas", "Famas"},
                 new string[]{"A french assault rifle. It's fast, deadly, but not very accurate.", "Francuski karabin szturmowy. Jest szybki, śmiercionośny, jednak niezbyt dokładny."},
-                "id57;va25;"
+                "id57;va25;at0;"
             ),
             new(this, new string[]{"Uzi", "Uzi"},
                 new string[]{"A smg, that you can hold in one hand.", "Pistolet maszynowy, który można trzymać w jednej ręce."},
-                "id58;va25;"
+                "id58;va25;at0;"
             ),
             new(this, new string[]{"G3", "G3"},
                 new string[]{"A german assault rifle. Similar to M4, but a bit more accurate.", "Niemiecki karabin szturmowy. Podobny do karabinku M4, tylko że jest bardziej dokładny."},
-                "id59;va20;"
+                "id59;va20;at0;"
             ),
             new(this, new string[]{"SCAR", "SCAR"},
                 new string[]{"A fast firing assault rifle. It does a lot of damage, but the recoil is high.", "Szybko strzelny karabin szturmowy. Zadaje dużo obrażeń, jednak ma spory odrzut."},
-                "id60;va28;"
+                "id60;va28;at0;"
             ),
             new(this, new string[]{"SPAS", "SPAS"},
                 new string[]{"A semi-automatic shotgun. It's very lethal, if you can handle the recoil.", "Pół automatyczna strzelba. Bardzo śmiercionośna, jednak z ogromnym odrzutem."},
-                "id61;va8;"
+                "id61;va8;at0;"
             ),
             new(this, new string[]{"SAW", "SAW"},
                 new string[]{"Very fast firing machine gun. Can mown down enemies pretty easily", "Bardzo szybki karabin maszynowy. Z łatwością może przemieniać przeciwników w ser szwajcarski."},
-                "id62;va100;"
+                "id62;va100;at0;"
             ),
             new(this, new string[]{"Ammo chain", "Taśma nabojowa"},
                 new string[]{"A bunch of bullets, on a chain. This can be used to reload machine guns.", "Łańcuch z kulami. Można tego użyć do przeładowywania karabinów maszynowych."},
@@ -1093,11 +1093,11 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Minigun", "Minigun"},
                 new string[]{"A very powerful gun. Fires really fast, does a lot of damage, and can contain a lot of ammo. Although, mobility is decreased when firing.", "Bardzo potężna broń. Strzela bardzo szybko, zadaje dużo obrażeń, jednak mobilność podczas strzelania jest dość niska."},
-                "id64;va500;"
+                "id64;va500;at0;"
             ),
             new(this, new string[]{"Mosin Nagant", "Karabin Mosina"},
                 new string[]{"A bolt-action rifle of soviet construction. It is a very accurate weapon, and is perfect for taking out targets from long distances.", "Karabin powtarzalny sowjeckiej konstrukcji. Jest bardzo dokładny, i sprawdza się idealnie na dalekie dystanse."},
-                "id65;va5;"
+                "id65;va5;at0;"
             ),
             new(this, new string[]{"Grenade", "Granat"},
                 new string[]{"A throwable explosive. After unpining it, you'll have 5 seconds to throw or drop it before it explodes.", "Materiał wybuchowy do rzucania. Po odbezpieczeniu, masz 5 sekund żeby rzucić, albo upuścić go, zanim wybuchnie."},
@@ -1181,7 +1181,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Hazmat suit", "Kombinezon materiałów niebezpiecznych"},
                 new string[]{"Upon wearing it, you'll be protected from any radiation and fire, though you'll move very slow. Prolonged exposure might damage this suit.", "Po założeniu, nie będziesz otrzymywał obrażeń od promieniowania i ognia, jednak będziesz się powoli poruszał. Nadmierne promieniowanie może jednak uszkodzić ten kombinezon."},
-                "id86;va100;"
+                "id86;va100;rep;"
             ),
             new(this, new string[]{"Lifebuoy", "Koło ratunkowe"},
                 new string[]{"When held, it allows you to move normally in water, and you won't get wet from it.", "Gdy go trzymasz, pozwala ci normalnie chodzić w wodzie, bez moknięcia."},
@@ -1217,11 +1217,11 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Riot shield", "Tarcza policyjna"},
                 new string[]{"A tactical shield, that can block bullets, melee weapons, mutant attacks, and explosions. It may break after few blocks.", "Taktyczna tarcza, która blokuje kule, bronie białe, ataki mutantów, i eksplozje. Może się popsuć po długim użytku."},
-                "id95;va100;"
+                "id95;va100;rep;"
             ),
             new(this, new string[]{"Cardboard box", "Karton"},
                 new string[]{"Upon using it, no one will detect you, although you can only crouch in it. It is small, so after some usage it'll eventually break.", "Po założeniu tego kartonu na siebie, nikt cię nie zobaczy, jednak będziesz musiał kucać. To pudło jest małe, i po długim czasie użytkowania może się popsuć."},
-                "id96;va100;"
+                "id96;va100;rep;"
             ),
             new(this, new string[]{"Lockpick", "Wytrych"},
                 new string[]{"Upon using it on a locked door or a barrel, it may either: open it, break itself, or nothing will happen.", "Po użyciu tego na zamkniętych drzwiach lub beczkach: zostaną otwarte, wytrych się złamie, albo nic."},
@@ -1269,7 +1269,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Plunger", "Przepychacz"},
                 new string[]{"It's a tool, that can be used as a weapon. It isn't very effective, but you can throw it at a foe, to blind them for 5 seconds.", "Jest to narzędzie, którego możesz użyć jako broni. Nie jest to efektowne, ale możesz rzucić tym w przeciwnika, by go oślepić na 5 sekund."},
-                "id108;va100;"
+                "id108;va100;rep;"
             ),
             new(this, new string[]{"Flamethrower", "Miotacz ognia"},
                 new string[]{"An industrial flamethrower.", "Przemysłowy miotacz ognia."},
@@ -1289,7 +1289,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Musket", "Muszkiet"},
                 new string[]{"An old trapdoor musket. Can hold only one bullet at a time, and isn't very accurate.", "Stary muszkiet. Posiada tylko jeden pocisk, i nie jest zbytnio celny."},
-                "id113;va1;"
+                "id113;va1;at0;"
             ),
             new(this, new string[]{"Taser", "Paralizator"},
                 new string[]{"A slightly modified taser. It's modification, in fact, makes it is very deadly!", "Zmodyfikowany paralizator. Jego modyfikacja, robi go bardzo niebezpiecznym!"},
@@ -1297,7 +1297,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Shovel", "Łopata"},
                 new string[]{"This tool, besides being a decent yet fragile weapon, has one special use. If you keep hitting dirt with it, you have 10% chance of getting a random item.", "To narzędzie, poza byciem bronią, posiada jedną ciekawą cechę. Jeśli będziesz nią bił o ziemie, będziesz miał 10% szans na zdobycie losowego przedmiotu."},
-                "id115;va100;"
+                "id115;va100;rep;"
             ),
             new(this, new string[]{"Herring", "Śledź"},
                 new string[]{"A small fish. Tasty, but not very filling.", "Mała rybka. Smaczna, ale nie napełni do syta."},
@@ -1365,7 +1365,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Katana", "Katana"},
                 new string[]{"A swift and deadly japanese sword. It is very fragile though, and it breaks easily!", "Szybka i śmiertelna broń japońska. Bądź ostrożny, łatwo można ją uszkodzić!"},
-                "id132;va100;"
+                "id132;va100;rep;"
             ),
             new(this, new string[]{"Molotov cocktail", "Koktajl mołotowa"},
                 new string[]{"A throwable bottle with flammable substance in it. Upon throwing and hitting something, everyone within 6 meter radius will be set on fire.", "Butelka z substancją łatwopalną. Gdy nią rzucisz i coś uderzysz, wszyscy w promieniu 6 metrów zostaną podpaleni."},
@@ -1373,23 +1373,23 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Spear", "Włócznia"},
                 new string[]{"This melee weapon has long attack distance. When thrown, it flies far, and deals more damage.", "Ta broń biała może atakować na dłuższy dystans. Rzucona, zadaje więcej obrażeń, oraz leci na bardzo długi dystans."},
-                "id134;va100;"
+                "id134;va100;rep;"
             ),
             new(this, new string[]{"G18", "G18"},
                 new string[]{"This pistol is pretty weak, but it's fully automatic!", "Ten pistolet jest dość słaby, ale jest automatyczny!"},
-                "id135;va17;"
+                "id135;va17;at0;"
             ),
             new(this, new string[]{"Frying pan", "Patelnia"},
                 new string[]{"A kitchen utility made from cast iron. Can be used as a weapon, but it's pretty loud. Some hits may stun foes.", "Narzędzie kuchenne stworzone z żeliwa. Może być użyte za broń, ale jest dość głośna. Niektóre uderzenia mogą ogłuszyć nieprzyjaciół."},
-                "id136;va100;"
+                "id136;va100;rep;"
             ),
             new(this, new string[]{"M1 Carbine", "Karabinek M1"},
                 new string[]{"This carbine is an upgrade of the Garand rifle. It has more ammo, fires faster, but deals less damage.", "Ten karabinek jest następcą karabinu Garand. Ma więcej amunicji, strzela szybciej, ale zadaje mniej obrażeń."},
-                "id137;va15;"
+                "id137;va15;at0;"
             ),
             new(this, new string[]{"Sledgehammer", "Młot wyburzeniowy"},
                 new string[]{"This tool is very powerful. It deals a lot of damage, can push foes far, but it's very slow and drains a lot of stamina.", "Jest to potężne narzędzie. Zadaje bardzo dużo obrażeń przedmiotom, potrafi wyrzucić przeciwników w powietrze, jednak jest bardzo powolna i wymaga dużo wytrzymałości."},
-                "id138;va100;"
+                "id138;va100;rep;"
             ),
             new(this, new string[]{"Bazooka", "Bazooka"},
                 new string[]{"This is a powerful rocket launcher.", "Jest to potężna wyrzutnia rakiet."},
@@ -1426,6 +1426,10 @@ public class GameScript : MonoBehaviour {
             new(this, new string[]{"Coal", "Węgiel"},
                 new string[]{"A piece of charcoal. Used mainly for crafting.", "Kawałek węgla drzewnego. Głównie używany w tworzeniu."},
                 "id147;va0;sq1;"
+            ),
+            new(this, new string[]{"Campfire", "Ognisko"},
+                new string[]{"Upon placing, you'll have a campfire. Standing near it will warm you, and will allow you to craft items that require heat.", "Po zbudowaniu, będziesz miał ognisko. Stojąc blisko ogniska, ogrzeje cię, i będziesz mógł tworzyć przedmioty wymagające ciepła."},
+                "id148;va0;sq1;"
             )
         };
 
