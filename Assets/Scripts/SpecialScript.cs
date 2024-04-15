@@ -269,22 +269,24 @@ public class SpecialScript : MonoBehaviour {
             }
         }
 
-        GameObject ItemPref = GameObject.Find("_RoundScript").GetComponent<RoundScript>().ItemPrefab;
         foreach (GameObject FoundItem in GameObject.FindGameObjectsWithTag("Item")) {
-            if (Vector3.Distance(FoundItem.transform.position, Where) > 0.25f && Vector3.Distance(FoundItem.transform.position, Where) < ExplosionRange) {
-                GameObject ThrewItem = Instantiate(ItemPref) as GameObject;
-                ThrewItem.transform.position = Vector3.Lerp(FoundItem.transform.position, this.transform.position, 0.75f);
-                ThrewItem.GetComponent<ItemScript>().ThrownDirection = Vector3.ClampMagnitude(Vector3.up + Vector3.right*Random.Range(-2f, 2f) + Vector3.forward*Random.Range(-2f, 2f), 1f);
-                ThrewItem.GetComponent<ItemScript>().Variables = FoundItem.GetComponent<ItemScript>().Variables;
-                ThrewItem.GetComponent<ItemScript>().State = 2;
-                ThrewItem.GetComponent<ItemScript>().DroppedBy = CausedBy;
-                string specID = GS.GetSemiClass(ThrewItem.GetComponent<ItemScript>().Variables, "id");
-                if((specID == "110" || specID == "66") &&  GS.GetSemiClass(ThrewItem.GetComponent<ItemScript>().Variables, "va") == "0"){
-                    ThrewItem.GetComponent<ItemScript>().Variables = GS.SetSemiClass(ThrewItem.GetComponent<ItemScript>().Variables, "va", Random.Range(60f, 99f).ToString());
-                    ThrewItem.tag = "Untagged";
+            if (Vector3.Distance(FoundItem.transform.position, Where) > 0.01f && Vector3.Distance(FoundItem.transform.position, Where) < ExplosionRange) {
+                string specID = GS.GetSemiClass(FoundItem.GetComponent<ItemScript>().Variables, "id");
+                if((specID == "110" || specID == "66") &&  GS.GetSemiClass(FoundItem.GetComponent<ItemScript>().Variables, "va") == "0"){
+                    FoundItem.GetComponent<ItemScript>().Variables = GS.SetSemiClass(FoundItem.GetComponent<ItemScript>().Variables, "va", Random.Range(1f, 99f).ToString());
+                    FoundItem.GetComponent<ItemScript>().enabled = true;
                 }
-                Destroy(FoundItem);
             }
+        }
+
+        foreach(Rigidbody ThrewAway in GameObject.FindObjectsOfType<Rigidbody>()){
+            if(Vector3.Distance(ThrewAway.transform.position, Where) < ExplosionRange) 
+                ThrewAway.velocity = new Vector3(Random.Range(-4f, 4f), Random.Range(4f, 16f), Random.Range(-4f, 4f));
+        }
+
+        foreach(DestructionScript Destruct in GameObject.FindObjectsOfType<DestructionScript>()){
+            if(Vector3.Distance(Destruct.transform.position, Where) < ExplosionRange)
+                Destruct.Hit(Mathf.Clamp(Vector3.Distance(Destruct.transform.position, Where) * 200f, 0f, 100f), new[]{"Explosion"}, Where);
         }
 
     }
@@ -304,9 +306,9 @@ public class SpecialScript : MonoBehaviour {
                     GotHit = true;
                 }
             }
-            if (DistPerCent < 0.75f && GotHit == true) {
+            if (DistPerCent < 0.5f && GotHit == true) {
                 GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[1] = 2.5f;
-                GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[0] = ((DistPerCent - 0.25f) / 0.75f) * 5f;
+                GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[0] = ((DistPerCent - 0.5f) / 0.5f) * 5f;
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(new Color32(255, 255, 255, 255), new float[]{((DistPerCent - 0.25f) / 0.75f) * 5f, 2.5f});
             } else if (GotHit == true) {
                 GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[0] = 5f;
@@ -333,8 +335,8 @@ public class SpecialScript : MonoBehaviour {
                         GotHit = true;
                     }
                 }
-                if (DistPerCent < 0.75f && GotHit == true) {
-                    FoundMob.GetComponent<MobScript>().React("Blinded", Mathf.Lerp(1f, 5f, (DistPerCent - 0.25f) / 0.75f), this.transform.position);
+                if (DistPerCent < 0.5f && GotHit == true) {
+                    FoundMob.GetComponent<MobScript>().React("Blinded", Mathf.Lerp(1f, 10f, (DistPerCent - 0.25f) / 0.75f), this.transform.position);
                 } else if (GotHit == true) {
                     FoundMob.GetComponent<MobScript>().React("Blinded", 10f, this.transform.position);
                 } else {

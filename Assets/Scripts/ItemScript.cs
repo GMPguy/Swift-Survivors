@@ -78,7 +78,7 @@ public class ItemScript : MonoBehaviour {
         }
 
         string ID = GS.GetSemiClass(Variables, "id");
-        if(ID == "148") ID = "Toolbox";
+        if(ID == "148" || ID == "149") ID = "Toolbox";
 
         foreach (Transform GetMesh in this.transform) {
             if (GetMesh.name == ID) {
@@ -209,7 +209,7 @@ public class ItemScript : MonoBehaviour {
                     Boom.transform.position = this.transform.position;
                     if (GS.GetSemiClass(Variables, "id") == "131") {
                         Boom.GetComponent<SpecialScript>().TypeOfSpecial = "Flashbang";
-                        Boom.GetComponent<SpecialScript>().ExplosionRange = 20f;
+                        Boom.GetComponent<SpecialScript>().ExplosionRange = 50f;
                     } else if (GS.GetSemiClass(Variables, "id") != "110") {
                         Boom.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
                         Boom.GetComponent<SpecialScript>().ExplosionRange = 6f;
@@ -330,7 +330,7 @@ public class ItemScript : MonoBehaviour {
                             Ring.transform.position = this.transform.position;
                             Ring.GetComponent<EffectScript>().EffectName = "Cowbell";
                         }
-                        if (CanHaveAttachments == true && GS.GetSemiClass(Variables, "at") != "") {
+                        if (CanHaveAttachments == true && GS.GetSemiClass(Variables, "at") != "" && GS.GetSemiClass(Variables, "at") != "0") {
                             GameObject DropEffect = Instantiate(EffectPrefab) as GameObject;
                             DropEffect.GetComponent<EffectScript>().EffectName = "Unpin";
                             DropEffect.transform.position = this.transform.position;
@@ -339,9 +339,7 @@ public class ItemScript : MonoBehaviour {
                             Attachment.GetComponent<ItemScript>().Variables = GS.itemCache[int.Parse(GS.GetSemiClass(Variables, "at"))].startVariables;
                             Attachment.transform.position = this.transform.position;
                             Variables = GS.RemoveSemiClass(Variables, "at"); //Variables = new Vector3(Variables.x, Variables.y, 0f);
-                            foreach (Transform AttachmentMesh in SelectedMesh.transform.GetChild(0)) {
-                                AttachmentMesh.gameObject.SetActive(false);
-                            }
+                            setAtt();
                         } else {
                             if (ChanceOfDestruction <= ThrownVariables.y) {
                                 Destroy(this.gameObject);
@@ -392,6 +390,10 @@ public class ItemScript : MonoBehaviour {
         if (Stagnate)
             this.enabled = false;
 
+    }
+
+    public void setAtt(){
+        foreach (Transform AttachmentMesh in SelectedMesh.transform.GetChild(0)) AttachmentMesh.gameObject.SetActive(false);
     }
 
     void OnDestroy() {

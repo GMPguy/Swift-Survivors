@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,9 +31,14 @@ public class PlayerScript : MonoBehaviour {
     // Inventory
     // Building
     public string currBuild = "";
+    int styleBuild = 0;
+    float maxBuildAngle = 0f;
+    bool plant = false;
     public GameObject[] Buildings;
     public Transform objBuild;
-    public Vector3 posBuild, rotBuild;
+    public Vector3 posBuild;
+    public float rotBuild;
+    public Material buildMat;
     // Building
     // Buffs
     public string BuffsText = "";
@@ -208,6 +214,22 @@ public class PlayerScript : MonoBehaviour {
         SkinColor = GS.PS.cl_Skin;
         HairColor = GS.PS.cl_Hair;
         SetArmModel(Shirt, true);
+
+        // Prepare buildings
+        Material[] setMats(MeshRenderer sm){
+            Material[] res = new Material[sm.materials.Length];
+            for(int repMat = 0; repMat < res.Length; repMat++) res[repMat] = buildMat;
+            return res;
+        }
+
+        foreach(Transform getObj in objBuild){
+            if(getObj.GetComponent<MeshRenderer>()) getObj.GetComponent<MeshRenderer>().materials = setMats(getObj.GetComponent<MeshRenderer>());
+            else foreach(Transform subMesh in getObj) if (subMesh.GetComponent<MeshRenderer>()) {
+                subMesh.GetComponent<MeshRenderer>().materials = setMats(subMesh.GetComponent<MeshRenderer>());
+            }
+            getObj.gameObject.SetActive(false);
+        }
+        // Prepare buildings
 
     }
 
@@ -1357,15 +1379,15 @@ public class PlayerScript : MonoBehaviour {
                     }
                 }
                 if (Compatible == true) {
-                    if (GS.GetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "at") != "") {
-                        GameObject Deattach = Instantiate(ItemPrefab) as GameObject;
-                        Deattach.transform.position = InteractedGameobject.transform.position;
-                        Deattach.GetComponent<ItemScript>().Variables = GS.itemCache[int.Parse(GS.GetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "at"))].startVariables;
-                        Deattach.GetComponent<ItemScript>().DroppedBy = this.gameObject;
-                    }
+                    string prevAt = GS.GetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "at");
+                    if (prevAt != "" && prevAt != "0") {
+                        prevAt = GS.itemCache[int.Parse(prevAt)].startVariables;
+                    } else prevAt = "";
                     InteractedGameobject.GetComponent<ItemScript>().Variables = GS.SetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "at", GS.GetSemiClass(Inventory[CurrentItemHeld], "id")); //InteractedGameobject.GetComponent<ItemScript>().Variables.z = GS.GetSemiClass(Inventory[CurrentItemHeld], "id");
+                    InteractedGameobject.GetComponent<ItemScript>().setAtt();
                     GS.Mess(GS.SetString(GS.itemCache[int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"))].getName() + " attached to weapon", "Dodano " + GS.itemCache[int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"))].getName() + " do broni"));
                     InvGet(CurrentItemHeld.ToString(), 1);
+                    if(prevAt != "")InvGet(prevAt, 0);
                 } else {
                     CantUseItem = 0.5f;
                     CantSwitchItem = CantUseItem;
@@ -1882,22 +1904,6 @@ public class PlayerScript : MonoBehaviour {
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && CanUse == true) {
                         CantUseItem = 1f;
                         CantSwitchItem = CantUseItem;
-                            
-                        /*float Exceeding = 0f;
-                        if (Food[0] + HungerToAddSub > Food[1]) {
-                            if (GS.RoundSettings.Substring(1, 1) == "1") {
-                                Exceeding = Mathf.Abs((Food[0] + HungerToAddSub) - Food[1]) / 2f;
-                            } else if (GS.RoundSettings.Substring(1, 1) == "2") {
-                                Exceeding = Mathf.Abs((Food[0] + HungerToAddSub) - Food[1]) / 5f;
-                            } else if (GS.RoundSettings.Substring(1, 1) == "3") {
-                                Exceeding = Mathf.Abs((Food[0] + HungerToAddSub) - Food[1]) / 10f;
-                            } else {
-                                Exceeding = Mathf.Abs((Food[0] + HungerToAddSub) - Food[1]) / 20f;
-                            }
-                            HungerToAddSub -= ((Food[0] + HungerToAddSub) - Food[1]);
-                        }
-                        Exceeding = Mathf.Clamp(Exceeding, 0f, Health[1] - Health[0]);
-                        Health[0] += Exceeding;*/
 
                         Food[0] += HungerToAddSub;
                         Health[0] += HealthToAddSub;
@@ -3390,8 +3396,33 @@ public class PlayerScript : MonoBehaviour {
                         }
                     }
                     break;
-                case 148:
-                    currBuild = GS.itemCache[currID].getName();
+                case 148: case 149:
+                    if(GS.ReceiveButtonPress("Reload", "Hold") > 0f && CantUseItem <= 0f){
+                        rotBuild += 45f;
+                        CantUseItem = 0.5f;
+                    }
+
+                    string[] styles = {};
+                    switch(currID){
+                        case 149:
+                            styles = new[]{"WoodenWall", "WoodenFloor"};
+                            maxBuildAngle = 180f;
+                            plant = false;
+                            break;
+                        default:
+                            currBuild = GS.itemCache[currID].getName();
+                            plant = true;
+                            maxBuildAngle = 10f;
+                            break;
+                    }
+                    if(styles.Length > 0){
+                        if(styleBuild > styles.Length) styleBuild = 0;
+                        currBuild = styles[styleBuild];
+                        if(GS.ReceiveButtonPress("AltAction", "Hold") > 0f && CantUseItem <= 0f){
+                            styleBuild = (styleBuild+1) % styles.Length;
+                            CantUseItem = 0.5f;
+                        }
+                    }
                     break;
                 default:
                     break;
@@ -3422,15 +3453,6 @@ public class PlayerScript : MonoBehaviour {
 
             EquipmentText = "";
             for (int SetEq = 0; SetEq <= 3; SetEq++) {
-                //string StrX = "00" + (int)Mathf.Clamp(Equipment[SetEq].x, 0, 999);
-                //StrX = StrX.Substring(StrX.Length - 3, 3);
-                //string StrY = "00" + (int)Mathf.Clamp(Equipment[SetEq].y, 0, 999);
-                //StrY = StrY.Substring(StrY.Length - 3, 3);
-                //string StrZ = "00" + (int)Mathf.Clamp(Equipment[SetEq].z, 0, 999);
-                //StrZ = StrZ.Substring(StrZ.Length - 3, 3);
-                //string StrW = "00" + (int)Mathf.Clamp(Equipment[SetEq].w, 0, 999);
-                //StrW = StrW.Substring(StrZ.Length - 3, 3);
-                //EquipmentText += StrX + StrY + StrZ + StrW;
                 EquipmentText += Equipment[SetEq] + "/";
             }
 
@@ -3576,20 +3598,23 @@ public class PlayerScript : MonoBehaviour {
 
             // Place check
             objBuild.gameObject.SetActive(true);
-            objBuild.position = posBuild;
-            objBuild.eulerAngles = rotBuild;
 
             RaycastHit hitBuild;
             if(Physics.Raycast(LookDir.position, LookDir.forward, out hitBuild, Mathf.Infinity)){
                 posBuild = hitBuild.point;
+                if (plant) objBuild.up = hitBuild.normal; else objBuild.up = Vector3.up;
+                if(Vector3.Angle(Vector3.up, hitBuild.normal) > maxBuildAngle) avaBuild = false;
             } else {
-                posBuild = LookDir.position + LookDir.forward*3f;
+                objBuild.up = Vector3.up;
                 avaBuild = false;
             }
 
+            objBuild.position = posBuild;
+            objBuild.Rotate(Vector3.up * rotBuild);
+
             // Create building
-            Color32 buldCol = new Color32(0,255,0,255);
-            if(!avaBuild) buldCol = new Color32(255,0,0,255);
+            if(!avaBuild) buildMat.color = new Color32(100, 0, 0, 255);
+            else buildMat.color = new Color32(0, 100, 0, 255);
 
             if(objBuild.GetChild(0).name != currBuild || !objBuild.GetChild(0).gameObject.activeInHierarchy){
                 int thir = -1;
@@ -3603,10 +3628,6 @@ public class PlayerScript : MonoBehaviour {
                     } else {
                         if(objBuild.GetChild(setBuild).gameObject.activeInHierarchy) objBuild.GetChild(setBuild).gameObject.SetActive(false);
                     }
-            } else {
-                if(objBuild.GetChild(0).GetComponent<MeshRenderer>()) foreach(Material setCol in objBuild.GetChild(0).GetComponent<MeshRenderer>().materials){
-                    setCol.color = buldCol;
-                }
             }
 
             if(GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && avaBuild){

@@ -53,8 +53,11 @@ public class DestructionScript : MonoBehaviour {
                     if(KeepState < 1f){
                         if(this.GetComponent<Rigidbody>()) Destroy(this.GetComponent<Rigidbody>());
                         this.transform.localScale = Vector3.Lerp( Vector3.zero, TreeLean[2], KeepState);
-                    } else if(!this.GetComponent<MeshCollider>().convex){
+                    } else if(this.GetComponent<MeshCollider>() && !this.GetComponent<MeshCollider>().convex){
                         this.GetComponent<MeshCollider>().convex = true;
+                        this.gameObject.AddComponent<Rigidbody>();
+                        this.GetComponent<Rigidbody>().mass = 10f;
+                    } else {
                         this.gameObject.AddComponent<Rigidbody>();
                         this.GetComponent<Rigidbody>().mass = 10f;
                     }
@@ -100,8 +103,8 @@ public class DestructionScript : MonoBehaviour {
                             TreeLean[1] = TreeLean[0] + Vector3.one*15f;
                             break;
                         case "Construction":
-                            this.transform.localScale = Vector3.Lerp(TreeLean[0], TreeLean[1], Health/prevHealth);
-                            this.transform.eulerAngles = Vector3.Lerp(TreeLean[2], TreeLean[3], Health/prevHealth);
+                            this.transform.localScale = Vector3.Lerp(TreeLean[0], TreeLean[2], Health/prevHealth);
+                            this.transform.eulerAngles = Vector3.Lerp(TreeLean[1], TreeLean[3], Health/prevHealth);
                             break;
                         default:break;
                     }

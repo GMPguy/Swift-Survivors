@@ -1430,6 +1430,10 @@ public class GameScript : MonoBehaviour {
             new(this, new string[]{"Campfire", "Ognisko"},
                 new string[]{"Upon placing, you'll have a campfire. Standing near it will warm you, and will allow you to craft items that require heat.", "Po zbudowaniu, będziesz miał ognisko. Stojąc blisko ogniska, ogrzeje cię, i będziesz mógł tworzyć przedmioty wymagające ciepła."},
                 "id148;va0;sq1;"
+            ),
+            new(this, new string[]{"Wooden wall", "Drewniana ściana"},
+                new string[]{"You can place it either as: a wall, a floor, or stairs.", "Można postawić jako: ściana, podłoga, lub schody."},
+                "id149;va0;sq1;"
             )
         };
 
@@ -1483,6 +1487,8 @@ public class GameScript : MonoBehaviour {
                 "id999;va0;sq1;"
             )
         });
+
+        itemCache = filIC.ToArray();
 
     }
 
