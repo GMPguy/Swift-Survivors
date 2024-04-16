@@ -954,6 +954,8 @@ public class AttackScript : MonoBehaviour {
             Lifetime[0] = 0f;
             if(ObjectHit.GetComponent<DestructionScript>()){
                 ObjectHit.GetComponent<DestructionScript>().Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit);
+            } else if(ObjectHit.layer == 24){
+                ObjectHit.transform.parent.GetComponent<DestructionScript>().Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit);
             } 
             if (ObjectHit.GetComponent<FootstepMaterial>() != null) {
                 GameObject BulletHit = Instantiate(EffectPrefab) as GameObject;

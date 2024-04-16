@@ -1250,6 +1250,10 @@ public class MobScript : MonoBehaviour {
             if(TypeOfDamage == "Flare"){
                 TypeOfDamage = "Fire";
                 Ach_Flare = true;
+            } else if (TypeOfDamage == "BarbedWire"){
+                CantDoAnything = Damage;
+                Anim.Play(AnimationSet + "Hurt2", 0, 0f);
+                Anim.speed = 1f/Damage;
             }
 
             if (Damage > 0f) {

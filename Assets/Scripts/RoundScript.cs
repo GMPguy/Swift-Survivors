@@ -53,6 +53,7 @@ public class RoundScript : MonoBehaviour {
     public MobPH[] MobPHeses;
     int currentMobPHscan = 0;
     public List<DestructionScript> ActiveDestructs;
+    public List<BuildingScript> ActiveBuildings;
     // Ambiences
     public GameObject[] Ambients;
     public GameObject[] Musics;
@@ -114,11 +115,12 @@ public class RoundScript : MonoBehaviour {
         }
 
         ActiveDestructs = new List<DestructionScript>();
+        ActiveBuildings = new List<BuildingScript>();
 
     }
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void Update () {
 
         if (GS == null) {
             if(GameObject.Find("_GameScript")) GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
@@ -145,9 +147,14 @@ public class RoundScript : MonoBehaviour {
                 for(int ad = 0; ad < ActiveDestructs.ToArray().Length; ad++) if(ActiveDestructs[ad]) ActiveDestructs[ad].Do();
             }
 
+            // Manage buildings
+            if(ActiveDestructs != null && ActiveBuildings.ToArray().Length >= 1f){
+                for(int ad = 0; ad < ActiveBuildings.ToArray().Length; ad++) if(ActiveBuildings[ad]) ActiveBuildings[ad].Do();
+            }
+
             // Count survived time
             if (RoundState == "Normal" || RoundState == "Nuked" || RoundState == "BeforeWave" || RoundState == "HordeWave"){
-                if (CountSecond > 0f) CountSecond -= 0.02f;
+                if (CountSecond > 0f) CountSecond -= Time.deltaTime;
                 else {
                     CountSecond = 1f;
                     SetScore("SurvivedTime_", "/+1");
@@ -156,7 +163,7 @@ public class RoundScript : MonoBehaviour {
 
             // Timeofday[1] is hour, but if it changes, an AmbientSet must be called, for the visual changes to set in
             if(RoundState == "Normal" || RoundState == "Nuked"){
-                TimeOfDay[1] += 0.01f;
+                TimeOfDay[1] += Time.deltaTime/2f;
                 if(TimeOfDay[1] > TimeOfDay[2] + 1f){
                     TimeOfDay[2] = TimeOfDay[1] + 1f;
                     if(GS.SkyboxType == 2) AmbientSet("Normal");
@@ -513,7 +520,7 @@ public class RoundScript : MonoBehaviour {
             } else if (RoundState == "Normal") {
 
                 if (RoundTime > 0f) {
-                    RoundTime -= 0.02f;
+                    RoundTime -= Time.deltaTime;
                     // Before getting nuked
                     if (RoundTime <= 30f) {
                         if (GS.SkyboxType == 2) {
@@ -582,7 +589,7 @@ public class RoundScript : MonoBehaviour {
 
                 // Lightning
                 if (Weather == 5 && LightningBang > 0f) {
-                    LightningBang -= 0.02f;
+                    LightningBang -= Time.deltaTime;
                 } else if (Weather == 5) {
                     LightningBang = Random.Range(5f, 15f);
                     GameObject Bang = Instantiate(SpecialPrefab) as GameObject;
@@ -592,7 +599,7 @@ public class RoundScript : MonoBehaviour {
 
                 // Alrillery and Gunfire
                 if (AltilleryFire > 0f) {
-                    AltilleryFire -= 0.02f;
+                    AltilleryFire -= Time.deltaTime;
                 } else if (GS.GetComponent<GameScript>().Biome == 10) {
                     AltilleryFire = Random.Range(1f, 3f);
                     //GameObject Alt = Instantiate(AttackPrefab) as GameObject;
@@ -642,10 +649,10 @@ public class RoundScript : MonoBehaviour {
                 NukeObj.transform.localScale = new Vector3(NukeDistance, 1f, NukeDistance);
                 GameObject.Find("Sun").transform.position = NukeObj.transform.position + Vector3.up * 250f;
                 GameObject.Find("Sun").transform.LookAt(Vector3.zero);
-                NukeDistance += 0.5f;
+                NukeDistance += Time.deltaTime * 25f;
 
                 if (MainPlayer.Radioactivity >= -1f && MainPlayer.IsHS == false) {
-                    MainPlayer.Radioactivity += 0.04f;
+                    MainPlayer.Radioactivity += Time.deltaTime;
                 }
 
                 if (Vector3.Distance(MainPlayer.transform.position, NukePosition) < NukeDistance) {
@@ -701,7 +708,7 @@ public class RoundScript : MonoBehaviour {
             } else if (RoundState == "BeforeWave") {
 
                 if (RoundTime > 0f) {
-                    RoundTime -= 0.02f;
+                    RoundTime -= Time.deltaTime;
                     if (RoundTime < 5f) {
                         if(GS.SkyboxType == 2) AmbientSet("Horde");
                     } else {
@@ -806,7 +813,7 @@ public class RoundScript : MonoBehaviour {
                 foreach (GameObject Music in Musics) {
                     if (Music.name == GotTerrain.GetComponent<MapInfo>().Music && MainPlayer.State == 1) {
                         if (Music.GetComponent<AudioSource>().volume > 0f) {
-                            Music.GetComponent<AudioSource>().volume -= 0.002f;
+                            Music.GetComponent<AudioSource>().volume -= Time.deltaTime/10f;
                         }
                     } else {
                         Music.GetComponent<AudioSource>().Stop();
@@ -823,7 +830,7 @@ public class RoundScript : MonoBehaviour {
                 }
 
                 if (HordeSpawnCooldown > 0f) {
-                    HordeSpawnCooldown -= 0.02f;
+                    HordeSpawnCooldown -= Time.deltaTime;
                 } else if (HordeAmount > 0 && BAmountOfHorde < HordeVariables[1]) {
                     GameObject NewCustomer = Instantiate(MobPrefab) as GameObject;
                     GameObject CustomerSpawnPoint = GotTerrain.GetComponent<MapInfo>().HordeSpawnPoints[(int)Random.Range(0, GotTerrain.GetComponent<MapInfo>().HordeSpawnPoints.Length - 0.1f)];
@@ -1355,30 +1362,6 @@ public class RoundScript : MonoBehaviour {
             TempStats = GS.SetSemiClass(TempStats, ScoreType, Score);
             GS.PlaythroughStats = GS.SetSemiClass(GS.PlaythroughStats, ScoreType, Score);
         }
-        /*if(GS.ExistSemiClass(TempStats, ScoreType)){
-
-            if(Score.Substring(0, 1) == "/"){
-                if(Score.Substring(0, 2) == "/+"){
-                    string NewScore = (float.Parse(GS.GetSemiClass(TempStats, ScoreType), CultureInfo.InvariantCulture) + float.Parse(Score.Substring(2), CultureInfo.InvariantCulture)).ToString();
-                    TempStats = GS.SetSemiClass(TempStats, ScoreType, NewScore);
-                    GS.PlaythroughStats = GS.SetSemiClass(GS.PlaythroughStats, ScoreType, NewScore);
-                }
-            } else {
-                TempStats = GS.SetSemiClass(TempStats, ScoreType, Score);
-                GS.PlaythroughStats = GS.SetSemiClass(GS.PlaythroughStats, ScoreType, Score);
-            }
-            
-        } else {
-
-            if(Score.Substring(0, 1) == "/"){
-                if(Score.Substring(0, 2) == "/+"){
-                    TempStats += ScoreType + Score.Substring(2) + ";";
-                }
-            } else {
-                TempStats += ScoreType + Score + ";";
-            }
-            
-        }*/
 
     }
 
@@ -1408,7 +1391,7 @@ public class RoundScript : MonoBehaviour {
         else if(TimeOfDay[1] > 1140 && TimeOfDay[1] < 1200) SunPower *= (1f - ((TimeOfDay[1] - 1140) / 60f));
         else if((TimeOfDay[1] >= 1200 && TimeOfDay[1] <= 1260) || (TimeOfDay[1] >= 360f && TimeOfDay[1] <= 390)) SunPower = 0f;
 
-        if((WhatSet == "Normal" || WhatSet == "NormalEnding" || WhatSet == "Swimming")){
+        if(WhatSet == "Normal" || WhatSet == "NormalEnding" || WhatSet == "Swimming"){
             BiomeInfo GitBI = GotTerrain.GetComponent<BiomeInfo>();
             if(Default){
                 if(TimeOfDay[1] >= 360f && TimeOfDay[1] <= 480){

@@ -2832,6 +2832,7 @@ public class PlayerScript : MonoBehaviour {
                     break;
                 case 67: case 114:
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f) {
+                        CantUseItem = 1.5f;
                         //GameObject SpawnAttack = Instantiate(AttackPrefab) as GameObject;
                         //SpawnAttack.transform.position = LookDir.position;
                         //SpawnAttack.transform.eulerAngles = LookDir.eulerAngles;
@@ -3396,16 +3397,16 @@ public class PlayerScript : MonoBehaviour {
                         }
                     }
                     break;
-                case 148: case 149:
+                case 148: case 149: case 150:
                     if(GS.ReceiveButtonPress("Reload", "Hold") > 0f && CantUseItem <= 0f){
                         rotBuild += 45f;
-                        CantUseItem = 0.5f;
+                        CantUseItem = 0.2f;
                     }
 
                     string[] styles = {};
                     switch(currID){
                         case 149:
-                            styles = new[]{"WoodenWall", "WoodenFloor"};
+                            styles = new[]{"WoodenWall", "WoodenFloor", "WoodenRamp"};
                             maxBuildAngle = 180f;
                             plant = false;
                             break;
@@ -3600,10 +3601,13 @@ public class PlayerScript : MonoBehaviour {
             objBuild.gameObject.SetActive(true);
 
             RaycastHit hitBuild;
+            DestructionScript potAnchor = null;
             if(Physics.Raycast(LookDir.position, LookDir.forward, out hitBuild, Mathf.Infinity)){
                 posBuild = hitBuild.point;
                 if (plant) objBuild.up = hitBuild.normal; else objBuild.up = Vector3.up;
                 if(Vector3.Angle(Vector3.up, hitBuild.normal) > maxBuildAngle) avaBuild = false;
+                if(hitBuild.collider.GetComponent<DestructionScript>()) potAnchor = hitBuild.collider.GetComponent<DestructionScript>();
+                else if (hitBuild.collider.gameObject.layer == 24) potAnchor = hitBuild.collider.transform.parent.GetComponent<DestructionScript>();
             } else {
                 objBuild.up = Vector3.up;
                 avaBuild = false;
@@ -3635,6 +3639,7 @@ public class PlayerScript : MonoBehaviour {
                     GameObject newBuild = Instantiate(Buildings[gp]);
                     newBuild.transform.position = objBuild.GetChild(0).position;
                     newBuild.transform.eulerAngles = objBuild.GetChild(0).eulerAngles;
+                    if(potAnchor && newBuild.GetComponent<DestructionScript>()) potAnchor.Anchor(newBuild.GetComponent<DestructionScript>());
                     switch(currBuild){
                         default: break;
                     }
@@ -4046,6 +4051,11 @@ public class PlayerScript : MonoBehaviour {
                     if (InfectionChance == 0) {
                         Bleeding += Random.Range(1f, 5f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
                     }
+                } else if (DamageType == "BarbedWire") {
+                    KilledBy = GS.SetString("You were caught in barbed wire.", "Utknąłeś w drucie kolczastym.");
+                    HardcoreInstaKill = true;
+                    CantMove = Mathf.Clamp(5f, CantMove, Mathf.Infinity);
+                    Bleeding += Random.Range(5f, 20f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
                 } else {
                     KilledBy = GS.SetString("You died.", "Umarłeś.");
                 }

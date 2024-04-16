@@ -17,9 +17,11 @@ public class DestructionScript : MonoBehaviour {
     GameScript GS;
     GameObject ItemPrefab;
     bool dropedLoot = false;
+    Vector3 orgScale;
 
     // Misc
     Vector3[] TreeLean;
+    List<DestructionScript> Anchors;
 
     // Start is called before the first frame update
     void Start() {
@@ -27,6 +29,7 @@ public class DestructionScript : MonoBehaviour {
         GS = RS.GS;
         ItemPrefab = RS.ItemPrefab;
         prevHealth = Health;
+        orgScale = this.transform.localScale;
 
         switch(mainType){
             case "Tree":
@@ -34,6 +37,9 @@ public class DestructionScript : MonoBehaviour {
                 break;
             case "Construction":
                 TreeLean = new Vector3[]{this.transform.localScale, this.transform.eulerAngles, this.transform.localScale * Random.Range(0.8f, 0.9f), this.transform.eulerAngles + Vector3.one*Random.Range(-10f, 10f)};
+                break;
+            case "Construction2":
+                TreeLean = new Vector3[]{this.transform.position, this.transform.position - Vector3.up, this.transform.eulerAngles, this.transform.eulerAngles + Vector3.one*Random.Range(-15f, 15f)};
                 break;
         }
     }
@@ -52,14 +58,22 @@ public class DestructionScript : MonoBehaviour {
                 case "Timber":
                     if(KeepState < 1f){
                         if(this.GetComponent<Rigidbody>()) Destroy(this.GetComponent<Rigidbody>());
-                        this.transform.localScale = Vector3.Lerp( Vector3.zero, TreeLean[2], KeepState);
+                        this.transform.localScale = Vector3.Lerp( Vector3.zero, orgScale, KeepState);
                     } else if(this.GetComponent<MeshCollider>() && !this.GetComponent<MeshCollider>().convex){
                         this.GetComponent<MeshCollider>().convex = true;
                         this.gameObject.AddComponent<Rigidbody>();
                         this.GetComponent<Rigidbody>().mass = 10f;
-                    } else {
+                    } else if (!this.GetComponent<Rigidbody>()) {
                         this.gameObject.AddComponent<Rigidbody>();
                         this.GetComponent<Rigidbody>().mass = 10f;
+                    }
+                    break;
+                case "Construction":
+                    if(KeepState < 1f){
+                        this.transform.localScale = Vector3.Lerp( Vector3.zero, orgScale, KeepState);
+                    } else {
+                        this.transform.position = Vector3.Lerp( TreeLean[1], TreeLean[0], KeepState-1f);
+                        this.transform.eulerAngles = Vector3.Lerp( TreeLean[3], TreeLean[2], KeepState-1f);
                     }
                     break;
             }
@@ -103,8 +117,8 @@ public class DestructionScript : MonoBehaviour {
                             TreeLean[1] = TreeLean[0] + Vector3.one*15f;
                             break;
                         case "Construction":
-                            this.transform.localScale = Vector3.Lerp(TreeLean[0], TreeLean[2], Health/prevHealth);
-                            this.transform.eulerAngles = Vector3.Lerp(TreeLean[1], TreeLean[3], Health/prevHealth);
+                            this.transform.localScale = Vector3.Lerp(TreeLean[2], TreeLean[0], Health/prevHealth);
+                            this.transform.eulerAngles = Vector3.Lerp(TreeLean[3], TreeLean[1], Health/prevHealth);
                             break;
                         default:break;
                     }
@@ -118,10 +132,21 @@ public class DestructionScript : MonoBehaviour {
                             State = "Timber";
                             TreeLean[1] = TreeLean[0] + Vector3.one*15f;
                             break;
+                        case "Construction2":
+                            KeepState = 2f;
+                            State = "Construction";
+                            break;
                         default:
                             dropLoot();
                             Destroy(this.gameObject);
                             break;
+                    }
+
+                    // Destroy anchors
+                    
+                    if(Anchors != null) {
+                        DestructionScript[] bAnchors = Anchors.ToArray();
+                        for (int bye = 0; bye < bAnchors.Length; bye++) bAnchors[bye].Hit(9999f, new[]{"Broke"}, this.transform.position);
                     }
 
                 }   
@@ -133,6 +158,11 @@ public class DestructionScript : MonoBehaviour {
 
         }
 
+    }
+
+    public void Anchor(DestructionScript stick){
+        if(Anchors == null) Anchors = new();
+        Anchors.Add(stick);
     }
 
     void dropLoot(){

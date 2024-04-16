@@ -78,7 +78,7 @@ public class ItemScript : MonoBehaviour {
         }
 
         string ID = GS.GetSemiClass(Variables, "id");
-        if(ID == "148" || ID == "149") ID = "Toolbox";
+        if(ID == "148" || ID == "149" || ID == "150") ID = "Toolbox";
 
         foreach (Transform GetMesh in this.transform) {
             if (GetMesh.name == ID) {
@@ -228,15 +228,6 @@ public class ItemScript : MonoBehaviour {
                             int Xturn = (int)(shootFrag / 6);
                             this.transform.eulerAngles = new Vector3(Xturn * Random.Range(0f, -10f), Yturn * Random.Range(0f, 60f), 0f);
                             GameObject.Find("_RoundScript").GetComponent<RoundScript>().Attack(new string[]{Ids[(int)Random.Range(0f, 5.9f)], "CanHurtSelf", "Power100;"}, this.transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(0.25f, 1f), Random.Range(-1f, 1f)), this.transform.forward, DroppedBy, Bubbles, Bubbles);
-                            /*GameObject Shootfrag = Instantiate(AttackPrefab) as GameObject;
-                            Shootfrag.transform.position = this.transform.position + Vector3.up * 0.25f;
-                            Shootfrag.transform.Rotate(new Vector3(Random.Range(0f, 360f), Random.Range(0f, 360f), 0f));
-                            Shootfrag.GetComponent<AttackScript>().GunName = "MosinNagant";
-                            Shootfrag.GetComponent<AttackScript>().Attacker = DroppedBy;
-                            Shootfrag.GetComponent<AttackScript>().Slimend = this.gameObject;
-                            Shootfrag.GetComponent<AttackScript>().BulletChamber = this.gameObject;
-                            Shootfrag.GetComponent<AttackScript>().CanHurtSelf = true;
-                            Shootfrag.GetComponent<AttackScript>().GunFire = false;*/
                         }
                     }
                     Destroy(this.gameObject);

@@ -5047,6 +5047,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Type: Campfire
+  isStatic: 0
   audioClips:
   - {fileID: 8300000, guid: a44b507e97c021c448ce5b9210b562a2, type: 3}
   mainLight: {fileID: 2744981473058075134}

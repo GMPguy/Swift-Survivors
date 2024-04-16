@@ -1434,6 +1434,10 @@ public class GameScript : MonoBehaviour {
             new(this, new string[]{"Wooden wall", "Drewniana ściana"},
                 new string[]{"You can place it either as: a wall, a floor, or stairs.", "Można postawić jako: ściana, podłoga, lub schody."},
                 "id149;va0;sq1;"
+            ),
+            new(this, new string[]{"Barbed wire", "Drut kolczasty"},
+                new string[]{"Upon placing, anything that enters it, will get cut and stuck. Yes, even the one who placed it.", "Po zbudowaniu, wszystko co wejdzie, się potnie i utknie. Tak, nawet osoba która to położyła."},
+                "id150;va0;sq1;"
             )
         };
 
