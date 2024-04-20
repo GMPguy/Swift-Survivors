@@ -3397,7 +3397,7 @@ public class PlayerScript : MonoBehaviour {
                         }
                     }
                     break;
-                case 148: case 149: case 150:
+                case 148: case 149: case 150: case 151:
                     if(GS.ReceiveButtonPress("Reload", "Hold") > 0f && CantUseItem <= 0f){
                         rotBuild += 45f;
                         CantUseItem = 0.2f;
@@ -3407,6 +3407,11 @@ public class PlayerScript : MonoBehaviour {
                     switch(currID){
                         case 149:
                             styles = new[]{"WoodenWall", "WoodenFloor", "WoodenRamp"};
+                            maxBuildAngle = 180f;
+                            plant = false;
+                            break;
+                        case 151:
+                            styles = new[]{"MetalWall", "MetalFloor", "MetalRamp"};
                             maxBuildAngle = 180f;
                             plant = false;
                             break;
