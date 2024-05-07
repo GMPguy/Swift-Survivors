@@ -622,6 +622,24 @@ public class NewMenuScript : MonoBehaviour {
                         "EXIT_GAME",
                         "STAY_GAME"};
                     break;
+                case "GiveUp":
+                    WarningAddData = new string[]{
+                        "Default",
+                        GS.SetString("YOU WANT TO GIVE UP?", "CHCESZ SIĘ PODDAĆ?"),
+                        GS.SetString("Giving up will cause your character to die instantly.\n\nUse this option, if you want to get rid of this save file, but also want to keep your statistics.", "Poddanie się spowoduje, że twoja postać natychmiastowo umrze.\n\nUżyj tej opcji, gdy chcesz usunąć zapis z grą, jednocześnie nie tracąc statystyk nabytych w grze."),
+                        "KYS",
+                        "STAY_GAME"};
+                    if(Warning[0] == "BackToMenu0") WarningAddData[2] = GS.SetString("Game is saved after completing rounds. Since you haven't finished at least one, this save file will be lost!", "Gra zapisuje się po ukończeniu rundy. Ponieważ nie przeszedłeś ani jednej, zapis z tą grą zostanie utracony!");
+                    break;
+                case "BackToMenu":
+                    WarningAddData = new string[]{
+                        "Default",
+                        GS.SetString("GO BACK TO MAIN MENU?", "WRÓCIĆ DO MENU GŁÓWNEGO?"),
+                        GS.SetString("Game is saved, but you'll have to start from the beginning of this round.", "Gra została zapisana, ale będziesz musiał zaczynać od początku tej rundy."),
+                        "BACK_TO_MENU",
+                        "STAY_GAME"};
+                    if(GS.Round == 1) WarningAddData[2] = GS.SetString("Game is saved after completing rounds. Since you haven't finished at least one, this save file will be lost!", "Gra zapisuje się po ukończeniu rundy. Ponieważ nie przeszedłeś ani jednej, zapis z tą grą zostanie utracony!");
+                    break;
                 case "NMPM_ItemPreview":
                     WarningAddData = new string[]{
                         "ItemPreview",
@@ -697,6 +715,21 @@ public class NewMenuScript : MonoBehaviour {
                                             PS.SaveProfile(BackUp);
                                             CurrentWindow = "Main";
                                             ClearIt = true;
+                                        }
+                                        break;
+                                    case "KYS": 
+                                        ButtonText.text = GS.SetString("Give up", "Poddaj się");
+                                        if(ButtonButton.IsSelected && Input.GetMouseButtonDown(0)) {
+                                            GameObject.Find("MainCanvas").GetComponent<CanvasScript>().IsPaused = false;
+                                            GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().Hurt(9999f, "Suicide", false, Vector3.zero);
+                                            ClearIt = true;
+                                        }
+                                        break;
+                                    case "BACK_TO_MENU": 
+                                        ButtonText.text = GS.SetString("Exit", "Wyjdź");
+                                        if(ButtonButton.IsSelected && Input.GetMouseButtonDown(0)) {
+                                            LoadingTime = Random.Range(1f, 3f);
+                                            AfterLoading = "f_MainMenu";
                                         }
                                         break;
                                     case "EXIT_GAME": 
@@ -846,10 +879,8 @@ public class NewMenuScript : MonoBehaviour {
                             break;
                         case "GiveUp":
                             MB.GetChild(0).GetComponent<Text>().text = GS.SetString("Give up", "Poddaj się");
-                            if(MB.GetComponent<ButtonScript>().IsHovering && Input.GetMouseButtonDown(0) && intActive<=0f){
-                                GameObject.Find("MainCanvas").GetComponent<CanvasScript>().IsPaused = false;
-                                GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().Hurt(9999f, "Suicide", false, Vector3.zero);
-                            }
+                            if(MB.GetComponent<ButtonScript>().IsHovering && Input.GetMouseButtonDown(0) && intActive<=0f)
+                                Warning = new string[]{"GiveUp", ""};
                             break;
                         case "Play":
                             MB.GetChild(0).GetComponent<Text>().text = GS.SetString("Play", "Graj");
@@ -873,10 +904,8 @@ public class NewMenuScript : MonoBehaviour {
                             break;
                         case "Menu":
                             MB.GetChild(0).GetComponent<Text>().text = GS.SetString("Quit to menu", "Wyjdź do menu");
-                            if(MB.GetComponent<ButtonScript>().IsHovering && Input.GetMouseButtonDown(0) && intActive<=0f){
-                                LoadingTime = Random.Range(1f, 3f);
-                                AfterLoading = "f_MainMenu";
-                            }
+                            if(MB.GetComponent<ButtonScript>().IsHovering && Input.GetMouseButtonDown(0) && intActive<=0f)
+                                Warning = new string[]{"BackToMenu", ""};
                             break;
                         case "Records":
                             MB.GetChild(0).GetComponent<Text>().text = GS.SetString("Records", "Rekordy");

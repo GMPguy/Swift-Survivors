@@ -95,7 +95,7 @@ public class PlayerScript : MonoBehaviour {
     public GameObject InteractedGameobject;
     public bool IsGrounded = false;
     float lastGroundY = 0f;
-    Vector3 MoveDir;
+    Vector3 MoveDirNorm, MoveDirSpeed;
     bool InWater = false;
     public bool IsSwimming = false;
     public bool IsNV = false;
@@ -276,39 +276,17 @@ public class PlayerScript : MonoBehaviour {
         } else {
 
             // Cants
-            if (CantMove > 0f) {
-                CantMove -= 0.02f;
-            }
-            if (CantLook > 0f) {
-                CantLook -= 0.02f;
-            }
-            if (CantUseItem > 0f) {
-                CantUseItem -= 0.02f;
-            }
-            if (CantSwitchItem > 0f) {
-                CantSwitchItem -= 0.02f;
-            }
-            if (CantCraft > 0f) {
-                CantCraft -= 0.02f;
-            }
-            if (CantInteract > 0f) {
-                CantInteract -= 0.02f;
-            }
-            if (EnergyRegen > 0f) {
-                EnergyRegen -= 0.02f;
-            }
-            if (IsReloading > 0f) {
-                IsReloading -= 0.02f;
-            }
-            if (GunSpreadRegain > 0f) {
-                GunSpreadRegain -= 0.02f;
-            }
-            if (GunSpreadPC > 0f && GunSpreadRegain <= 0f) {
-                GunSpreadPC -= 0.02f;
-            }
-            if (JumpCooldown > 0f && IsGrounded == true) {
-                JumpCooldown -= 0.2f;
-            }
+            if (CantMove > 0f) CantMove -= 0.02f;
+            if (CantLook > 0f) CantLook -= 0.02f;
+            if (CantUseItem > 0f) CantUseItem -= 0.02f;
+            if (CantSwitchItem > 0f) CantSwitchItem -= 0.02f;
+            if (CantCraft > 0f)  CantCraft -= 0.02f;
+            if (CantInteract > 0f) CantInteract -= 0.02f;
+            if (EnergyRegen > 0f) EnergyRegen -= 0.02f;
+            if (IsReloading > 0f) IsReloading -= 0.02f;
+            if (GunSpreadRegain > 0f) GunSpreadRegain -= 0.02f;
+            if (GunSpreadPC > 0f && GunSpreadRegain <= 0f) GunSpreadPC -= 0.02f;
+            if (JumpCooldown > 0f) JumpCooldown -= 0.2f;
             // Cants
 
             // Night Vision
@@ -573,19 +551,12 @@ public class PlayerScript : MonoBehaviour {
                     if(GS.Round > 1) GS.PS.AchProg("Ach_TheCycleBegins", "0");
                     if(GS.Round == 19 && GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0") GS.PS.AchProg("Ach_AWholeWeek", "0");
                     Debug.LogError("Here, add a new game over screen!");
-                    //GS.ScoreToSet = new int[] { int.Parse(GS.GetSemiClass(GS.RoundSetting, "G", "?"), CultureInfo.InvariantCulture), int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"), CultureInfo.InvariantCulture), GS.Score, GS.Round - 1 };
                     GS.NeueScore = new string[]{
                         "S" + GS.Score.ToString() + ";R" + GS.Round.ToString() + ";G" + GS.GetSemiClass(GS.RoundSetting, "G", "?") + ";D" + GS.GetSemiClass(GS.RoundSetting, "D", "?") + ";N" + GS.SaveFileName + ";P" + GS.GetSemiClass(GS.RoundSetting, "P", "?"),
                         GS.PlaythroughStats
                     };
                     GS.SaveManipulation(GS.CurrentSave, 2);
                 }
-
-                /*if (Hunger[0] < Hunger[1] && RS.RoundState != "TealState" && GS.RoundSettings.Substring(0, 1) != "2") {
-                    Hunger[0] += 0.02f;
-                } else if (RS.RoundState != "TealState" && GS.RoundSettings.Substring(0, 1) != "2") {
-                    Hurt(0.025f, "Starvation", false, Vector3.zero);
-                }*/
 
                 if (EnergyRegen <= 0f && Energy[0] < Energy[1]) {
                     float DrunkSlowDown = Mathf.Clamp(1f - (Drunkenness / 100f), 0.25f, 1f);
@@ -902,10 +873,10 @@ public class PlayerScript : MonoBehaviour {
                 }
             }
 
-            if (IsGrounded == true) {
+            //if (IsGrounded == true) {
 
                 // Crouching
-                if ((GS.ReceiveButtonPress("Crouch", "Hold") > 0f && InWater == false) || InBox == true) {
+                if (IsGrounded && (GS.ReceiveButtonPress("Crouch", "Hold") > 0f && InWater == false) || InBox == true) {
                     IsCrouching = Mathf.MoveTowards(IsCrouching, 1f, 0.2f);
                 } else {
                     IsCrouching = Mathf.MoveTowards(IsCrouching, 0f, 0.2f);
@@ -922,12 +893,18 @@ public class PlayerScript : MonoBehaviour {
 
                 // Walking
                 float GotSpeed = 0f;
-                if (GS.ReceiveButtonPress("Sprint", "Hold") > 0f) {
-                    MoveDir = Vector3.MoveTowards(MoveDir, this.transform.forward, 0.25f);
-                } else {
-                    MoveDir = Vector3.MoveTowards(MoveDir, (this.transform.forward * GS.ReceiveButtonPress("MoveForward", "Hold")) + (this.transform.forward * -GS.ReceiveButtonPress("MoveBackwards", "Hold")) + (this.transform.right * GS.ReceiveButtonPress("MoveRight", "Hold")) + (this.transform.right * -GS.ReceiveButtonPress("MoveLeft", "Hold")), 0.25f);
-                    MoveDir = Vector3.ClampMagnitude(MoveDir, 1f);
+                int moved = 0;
+                if (IsGrounded && GS.ReceiveButtonPress("Sprint", "Hold") > 0f){
+                    MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, this.transform.forward, 0.25f);
+                    moved = 2;
+                } else if (IsGrounded){
+                    MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, (this.transform.forward * GS.ReceiveButtonPress("MoveForward", "Hold")) + (this.transform.forward * -GS.ReceiveButtonPress("MoveBackwards", "Hold")) + (this.transform.right * GS.ReceiveButtonPress("MoveRight", "Hold")) + (this.transform.right * -GS.ReceiveButtonPress("MoveLeft", "Hold")), 0.25f);
+                    moved = 1;
+                } else if (GS.ReceiveButtonPress("MoveForward", "Hold") > 0f ||GS.ReceiveButtonPress("MoveBackwards", "Hold") > 0f||GS.ReceiveButtonPress("MoveRight", "Hold") > 0f || GS.ReceiveButtonPress("MoveLeft", "Hold") > 0f) {
+                    MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, (this.transform.forward * GS.ReceiveButtonPress("MoveForward", "Hold")) + (this.transform.forward * -GS.ReceiveButtonPress("MoveBackwards", "Hold")) + (this.transform.right * GS.ReceiveButtonPress("MoveRight", "Hold")) + (this.transform.right * -GS.ReceiveButtonPress("MoveLeft", "Hold")), 0.05f);
+                    moved = 1;
                 }
+                MoveDirNorm = Vector3.ClampMagnitude(MoveDirNorm, 1f);
                 PushbackForce = Vector3.Lerp(PushbackForce, Vector3.zero, 0.1f);
                 int SlowDown = 0; // 0 Normal   1 Can't sprint   2 Slow Movement   3 Can't jump
 
@@ -954,25 +931,22 @@ public class PlayerScript : MonoBehaviour {
                     WetSlowDown = (1f + (Wet / 300f));
                 }
 
-                if (GS.ReceiveButtonPress("Sprint", "Hold") > 0f && Energy[0] > 10f && SlowDown == 0) {
+                if (moved == 2 && GS.ReceiveButtonPress("Sprint", "Hold") > 0f && Energy[0] > 10f && SlowDown == 0) {
                     EnergyRegen = 1f;
                     Energy[0] -= 0.25f;
-                    Vector3 MoveDirA = (MoveDir * (GotSpeed * 2f)) * (1f - (Drunkenness / 150f)) * WetSlowDown;
-                    this.GetComponent<Rigidbody>().velocity = new Vector3(MoveDirA.x, this.GetComponent<Rigidbody>().velocity.y, MoveDirA.z);
+                    MoveDirSpeed = (MoveDirNorm * (GotSpeed * 2f)) * (1f - (Drunkenness / 150f)) * WetSlowDown;
                     FOVoffset = new float[]{Mathf.Lerp(FOVoffset[0], 7.5f, 0.2f), 0.1f};
-                } else {
-                    if (SlowDown >= 2) {
-                        Vector3 MoveDirA = (MoveDir * (GotSpeed / 2f)) * (1f - (Drunkenness / 150f)) * WetSlowDown;
-                        this.GetComponent<Rigidbody>().velocity = new Vector3(MoveDirA.x, this.GetComponent<Rigidbody>().velocity.y, MoveDirA.z);
-                    } else {
-                        Vector3 MoveDirA = (MoveDir * GotSpeed) * (1f - (Drunkenness / 150f)) * WetSlowDown;
-                        this.GetComponent<Rigidbody>().velocity = new Vector3(MoveDirA.x, this.GetComponent<Rigidbody>().velocity.y, MoveDirA.z);
-                    }
+                } else if (moved == 1) {
+                    if (SlowDown >= 2) MoveDirSpeed = (MoveDirNorm * (GotSpeed / 2f)) * (1f - (Drunkenness / 150f)) * WetSlowDown;
+                    else MoveDirSpeed = (MoveDirNorm * GotSpeed) * (1f - (Drunkenness / 150f)) * WetSlowDown;
                 }
+
+                if(moved != 0)
+                    this.GetComponent<Rigidbody>().velocity = new Vector3(MoveDirSpeed.x, this.GetComponent<Rigidbody>().velocity.y, MoveDirSpeed.z);
                 // Walking
 
                 // Jumping
-                if (GS.ReceiveButtonPress("Jump", "Hold") > 0f && Energy[0] > 25f && JumpCooldown <= 0f && SlowDown != 3) {
+                if ((IsGrounded || this.GetComponent<Rigidbody>().velocity.magnitude <= 0f) && GS.ReceiveButtonPress("Jump", "Hold") > 0f && Energy[0] > 25f && JumpCooldown <= 0f && SlowDown != 3) {
                     ReturnPushback = 0f;
                     JumpCooldown = 1f;
                     EnergyRegen = 1f;
@@ -987,7 +961,17 @@ public class PlayerScript : MonoBehaviour {
                 }
                 // Jumping
 
-            }
+            /*} else {
+
+                // Mid air control
+                Vector3 midAir = (this.transform.forward * GS.ReceiveButtonPress("MoveForward", "Hold")) + (this.transform.forward * -GS.ReceiveButtonPress("MoveBackwards", "Hold")) + (this.transform.right * GS.ReceiveButtonPress("MoveRight", "Hold")) + (this.transform.right * -GS.ReceiveButtonPress("MoveLeft", "Hold"));
+                float momentum = this.GetComponent<Rigidbody>().velocity.magnitude;
+                Vector3 midAirA = Vector3.ClampMagnitude(midAir, 1f) * Mathf.Clamp(momentum, Speed, Speed*2f);
+                midAirA.y = this.GetComponent<Rigidbody>().velocity.y;
+                if(midAir.magnitude > 0.1f)
+                    this.GetComponent<Rigidbody>().velocity = Vector3.MoveTowards(this.GetComponent<Rigidbody>().velocity, midAirA, 0.5f);
+
+            }*/
 
         } else if (CantMove <= 0f && IsSwimming == true) {
 
