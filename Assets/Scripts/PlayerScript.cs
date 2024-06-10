@@ -1997,7 +1997,7 @@ public class PlayerScript : MonoBehaviour {
                         GS.Mess(GS.SetString("Flare got extinguished!", "Flara się zgasiła!"), "Error");
                     }
                     break;
-                case 2: case 14: case 15: case 16: case 27: case 28: case 993: case 68: case 108: case 115: case 132: case 134: case 136: case 138:
+                case 2: case 14: case 15: case 16: case 27: case 28: case 993: case 68: case 108: case 115: case 132: case 134: case 136: case 138: case 152: case 153: case 154: case 155: case 156:
 
                     // Get Melee info
                     string AttackType = "";
@@ -2085,7 +2085,38 @@ public class PlayerScript : MonoBehaviour {
                         AttackCooldown = 2f;
                         EnergyDrain = 50f;
                         ParryDrain = 2f;
+                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "152") {
+                        UseDamage = 3f;
+                        AttackType = "FireAxe";
+                        AttackCooldown = 0.75f;
+                        EnergyDrain = 25f;
+                        ParryDrain = 5f;
+                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "153") {
+                        UseDamage = 5f;
+                        AttackType = "StoneAxe";
+                        AttackCooldown = 0.75f;
+                        EnergyDrain = 25f;
+                        ParryDrain = 5f;
+                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "154") {
+                        UseDamage = 3f;
+                        AttackType = "Fokos";
+                        AttackCooldown = 0.5f;
+                        EnergyDrain = 10f;
+                        ParryDrain = 0f;
+                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "155") {
+                        UseDamage = 3f;
+                        AttackType = "Sword";
+                        AttackCooldown = 2f;
+                        EnergyDrain = 25f;
+                        ParryDrain = 25f;
+                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "156") {
+                        UseDamage = 2f;
+                        AttackType = "Pickaxe";
+                        AttackCooldown = 0.5f;
+                        EnergyDrain = 10f;
+                        ParryDrain = 10f;
                     }
+
                     // Get Melee info
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && Energy[0] >= EnergyDrain) {
                         CantUseItem = AttackCooldown;
@@ -4313,7 +4344,7 @@ public class PlayerScript : MonoBehaviour {
                     }
                 }
                 break;
-            case 15: case 27: case 108: case 136:
+            case 15: case 27: case 108: case 136: case 152: case 153: case 154: case 156:
                 PlayThis = "MOH-" + WhatAnim;
                 if(WhatAnim == "Swing"){
                     PlayThis = "MOH-" + WhatAnim + (int)Random.Range(1f, 4.9f);
@@ -4333,7 +4364,7 @@ public class PlayerScript : MonoBehaviour {
                     }
                 }
                 break;
-            case 16: case 28: case 115: case 132: case 138:
+            case 16: case 28: case 115: case 132: case 138: case 155:
                 PlayThis = "MTH-" + WhatAnim;
                 if(WhatAnim == "Swing"){
                     PlayThis = "MTH-" + WhatAnim + (int)Random.Range(1f, 4.9f);

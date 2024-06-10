@@ -1442,6 +1442,26 @@ public class GameScript : MonoBehaviour {
             new(this, new string[]{"Metal wall", "Metalowa ściana"},
                 new string[]{"You can place it either as: a wall, a floor, or stairs.", "Można postawić jako: ściana, podłoga, lub schody."},
                 "id151;va0;sq1;"
+            ),
+            new(this, new string[]{"Metal axe", "Metalowa siekiera"},
+                new string[]{"A slow, yet powerful melee weapon. Can chop down trees.", "Powolna, lecz silna broń biała. Można nią ścinać drzewa."},
+                "id152;va100;"
+            ),
+            new(this, new string[]{"Celt", "Celt"},
+                new string[]{"A makeshift stone axe. It's slow and blunt, but can chop down trees pretty well.", "Domowej roboty kamienna siekiera. Jest powolna i tępa, ale dobrze ścina drzewa."},
+                "id153;va100;"
+            ),
+            new(this, new string[]{"Fokos", "Ciupaga"},
+                new string[]{"An axe, with long handle and small head. It's bad at chopping stuff, but you can parry attacks with it pretty well.", "Siekierka z długą rękojeścią i małą główką. Nie nadaje się do siekania, ale można nią dobrze parować ataki."},
+                "id154;va100;"
+            ),
+            new(this, new string[]{"Sword", "Miecz"},
+                new string[]{"A great two-handed sword. It's slow, but does great damage.", "Potężny miecz oburęczny. Jest powolny, ale zadaje potężne obrażenia."},
+                "id155;va100;"
+            ),
+            new(this, new string[]{"Pickaxe", "Kilof"},
+                new string[]{"The pointy head allows to break solid construction down quite well. It can also be used to climb up walls.", "Szpiczasta główka pozwala na niszczenie solidnych konstrukcji. Można również tego użyć do wspinaczki po ścianach."},
+                "id156;va100;"
             )
         };
 

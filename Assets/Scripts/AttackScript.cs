@@ -534,6 +534,41 @@ public class AttackScript : MonoBehaviour {
                 AttackMechanic = "HitScan";
                 AttackType = "Melee";
                 break;
+            case "StoneAxe":
+                AttackMobDamage = Random.Range(5f, 10f);
+                AttackPushForce = new float[] { 3f, 0f };
+                AttackPropertyDamage = Random.Range(5f, 20f);
+                AttackDistance = 2f;
+                AttackMechanic = "HitScan";
+                AttackType = "Melee";
+                FirearmType = "Axe";
+                break;
+            case "Fokos":
+                AttackMobDamage = Random.Range(5f, 10f);
+                AttackPushForce = new float[] { 3f, 0f };
+                AttackPropertyDamage = Random.Range(2f, 5f);
+                AttackDistance = 2f;
+                AttackMechanic = "HitScan";
+                AttackType = "Melee";
+                FirearmType = "Axe";
+                break;
+            case "Sword":
+                AttackMobDamage = Random.Range(100f, 200f);
+                AttackPushForce = new float[] { 3f, 0f };
+                AttackPropertyDamage = Random.Range(25f, 50f);
+                AttackDistance = 2f;
+                AttackMechanic = "HitScan";
+                AttackType = "Melee";
+                break;
+            case "Pickaxe":
+                AttackMobDamage = Random.Range(5f, 10f);
+                AttackPushForce = new float[] { 3f, 0f };
+                AttackPropertyDamage = Random.Range(50f, 100f);
+                AttackDistance = 2f;
+                AttackMechanic = "HitScan";
+                AttackType = "Melee";
+                FirearmType = "Pickaxe";
+                break;
             default:
                 Destroy(this.gameObject);
                 break;
@@ -563,7 +598,7 @@ public class AttackScript : MonoBehaviour {
         // Gunfires
         string[] GunfiresoundSettings = {""};
         switch(GunName){
-            case "Flashlight": case "Knife": case  "Bayonet": case  "Crowbar": case  "FireAxe": case  "Machete": case  "BaseballBat": case "SapphireSpear": case "Katana": case "Spear": case "FryingPan": case "Sledgehammer": case "Plunger":
+            case "Flashlight": case "Knife": case  "Bayonet": case  "Crowbar": case  "FireAxe": case  "Machete": case  "BaseballBat": case "SapphireSpear": case "Katana": case "Spear": case "FryingPan": case "Sledgehammer": case "Plunger": case "StoneAxe": case "Fokos": case "Sword": case "Pickaxe":
                 string[] Swings = {"Swing1", "Swing2", "Swing3"};
                 GunfiresoundSettings = new string[]{ Swings[(int)Random.Range(0f, 2.9f)], "100", "Invisible" };
                 break;
