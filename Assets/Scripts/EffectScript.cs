@@ -174,7 +174,7 @@ public class EffectScript : MonoBehaviour {
                 }
                 Lifetime = 5f;
                 break;
-            case "Colt": case "Luger": case "Revolver": case "HunterRifle": case "DBShotgun": case "Thompson": case "AK-47": case "Shotgun": case "MP5": case "M4": case "Sten": case "Garand": case "GarandR": case "Famas": case "Uzi": case "G3": case "Scar": case "SPAS": case "SAW": case "Minigun": case "MosinNagant": case "Rocket": case "Musket": case "G18": case "M1Carbine":
+            case "Colt": case "Luger": case "Revolver": case "HunterRifle": case "DBShotgun": case "Thompson": case "AK-47": case "Shotgun": case "MP5": case "M4": case "Sten": case "Garand": case "GarandR": case "Famas": case "Uzi": case "G3": case "Scar": case "SPAS": case "SAW": case "Minigun": case "MosinNagant": case "Rocket": case "Musket": case "G18": case "M1Carbine": case "Flintlock": case "BakerRifle": case "NockGun":
                 GunFireMuzzle.SetActive(true);
                 BulletCase.SetActive(true);
                 int Muzzle = Random.Range(0, 3);

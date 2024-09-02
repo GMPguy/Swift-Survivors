@@ -22,6 +22,7 @@ public class GameScript : MonoBehaviour {
     public string SaveFileName = "";
 
     public string RoundSetting = "G0?D0?P1";
+    public int GameModePrefab = 0;
     public int Round = 0;
     public int Biome = 0;
     public int Score = 0;
@@ -1462,6 +1463,22 @@ public class GameScript : MonoBehaviour {
             new(this, new string[]{"Pickaxe", "Kilof"},
                 new string[]{"The pointy head allows to break solid construction down quite well. It can also be used to climb up walls.", "Szpiczasta główka pozwala na niszczenie solidnych konstrukcji. Można również tego użyć do wspinaczki po ścianach."},
                 "id156;va100;"
+            ),
+            new(this, new string[]{"Flintlock", "Pistolet skałkowy"},
+                new string[]{"A single shot blackpowder pistol. It's not very accurate, and takes long to reload, but deals a lot of damage.", "Jednostrzałowy pistolet czarnoprochowy. Jest niedokładny, i długo się go przeładowuje, ale zadaje duże obrażenia."},
+                "id157;va1;"
+            ),
+            new(this, new string[]{"Blackpowder", "Czarny proch"},
+                new string[]{"A wooden box with blackpowder cartridges. Can be used to reload blackpowder guns.", "Drewniane pudełko z czarnoprochowymi nabojami. Można je użyć do przeładowania czarnoprochowców."},
+                "id158;va" + (Random.Range(1, 4) * 5).ToString() + ";"
+            ),
+            new(this, new string[]{"Baker rifle", "Karabin Bakera"},
+                new string[]{"A single shot blackpowder rifle. It takes very long to reload, but the rifled barrel allows for very accurate - and deadly - shots.", "Jednostrzałowy karabin czarnoprochowy. Bardzo długo się go przeładowuje, ale gwintowana lufa gwarantuje bardzo dokładne - i zabójcze - strzały."},
+                "id159;va1;"
+            ),
+            new(this, new string[]{"Nock gun", "Karabin Nocka"},
+                new string[]{"Blackpowder musket, that can fire 7 shots at once! The price for obliterating everything near your crosshair, is low accuracy, and VERY long reload time.", "Karabin czarnoprochowy, będący w stanie wystrzelić 7 pocisków na raz! Ceną za anihilację wszystkiego w pobliżu celownika, jest BARDZO długi czas przeładowania, i niska celność."},
+                "id160;va7;"
             )
         };
 

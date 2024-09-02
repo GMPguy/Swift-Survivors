@@ -569,6 +569,40 @@ public class AttackScript : MonoBehaviour {
                 AttackType = "Melee";
                 FirearmType = "Pickaxe";
                 break;
+            case "Flintlock":
+                AttackMobDamage = Random.Range(100f, 200f);
+                AttackPushForce = new float[] { 10f, 0f };
+                AttackPropertyDamage = Random.Range(50f, 100f);
+                DiesInWater = true;
+                AttackDistance = 100f;
+                GunSpread = 10f;
+                AttackMechanic = "Projectile";
+                AttackType = "Gun";
+                FirearmType = "Blackpowder";
+                break;
+            case "BakerRifle":
+                AttackMobDamage = Random.Range(100f, 200f);
+                AttackPushForce = new float[] { 10f, 0f };
+                AttackPropertyDamage = Random.Range(25f, 50f);
+                DiesInWater = true;
+                AttackDistance = 200f;
+                GunSpread = 0f;
+                AttackMechanic = "Projectile";
+                AttackType = "Gun";
+                FirearmType = "Blackpowder";
+                break;
+            case "NockGun":
+                Debug.Log("NockGun fired");
+                AttackMobDamage = Random.Range(50f, 100f);
+                AttackPushForce = new float[] { 30f, 0f };
+                AttackPropertyDamage = Random.Range(50f, 100f);
+                DiesInWater = true;
+                AttackDistance = 100f;
+                GunSpread = 10f;
+                AttackMechanic = "Projectile";
+                AttackType = "Gun";
+                FirearmType = "Blackpowder";
+                break;
             default:
                 Destroy(this.gameObject);
                 break;
@@ -658,10 +692,9 @@ public class AttackScript : MonoBehaviour {
                 }
             }
                 break;
-            case "Colt": case  "Luger": case "Revolver": case "HunterRifle": case "DBShotgun": case "Thompson": case "AK-47": case "Shotgun": case "MP5": case "M4": case "Sten": case "Garand": case "GarandR": case "Famas": case "Uzi": case "G3": case "Scar": case "SPAS": case "SAW": case "Minigun": case "MosinNagant": case "Musket": case "G18": case "M1Carbine":
+            case "Colt": case  "Luger": case "Revolver": case "HunterRifle": case "DBShotgun": case "Thompson": case "AK-47": case "Shotgun": case "MP5": case "M4": case "Sten": case "Garand": case "GarandR": case "Famas": case "Uzi": case "G3": case "Scar": case "SPAS": case "SAW": case "Minigun": case "MosinNagant": case "Musket": case "G18": case "M1Carbine": case "Flintlock": case "BakerRifle": case "NockGun":
 
                 if (GunFire == true) {
-
                     GunfiresoundSettings = new string[]{ GunName, "100", "Gun" };
                     //GameObject Gunfire9 = Instantiate(EffectPrefab) as GameObject;
                     //Gunfire9.transform.position = Slimend.transform.position;
@@ -671,7 +704,7 @@ public class AttackScript : MonoBehaviour {
                     //    Gunfire9.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
                     //    FollowSlimend = Gunfire9;
                     //}
-                    Lifetime = new float[] { AttackDistance / 300f, 0.5f };
+                    Lifetime = new float[] { 9999f, 0.5f };
                     Bullet.SetActive(true);
                     if(PenetrationStatus == "Ricochet" || PenetrationStatus == "Penetration"){
                         GunfiresoundSettings = new string[]{ "Bullet" + PenetrationStatus, "100", "Gun" };
@@ -746,7 +779,7 @@ public class AttackScript : MonoBehaviour {
                             Gunfiretype = "Rifle";
                             DropBullet = 0.5f;
                             break;
-                        case "Musket":
+                        case "Musket": case "Flintlock": case "BakerRifle": case "NockGun":
                             Gunfiretype = "BlackPowder";
                             DropBullet = 9999f;
                             break;
@@ -758,16 +791,14 @@ public class AttackScript : MonoBehaviour {
                             GunFireObj.transform.GetChild(GT).gameObject.SetActive(true);
                             ParticleSystem.MainModule SetCol = Bullet.GetComponent<ParticleSystem>().main;
                             SetCol.startColor = GunFireObj.transform.GetChild(GT).GetComponent<ParticleSystem>().main.startColor;
-                            if(GS.LightingQuality > 1 && FlashGunfire && Random.Range(0f, 1f) < 0.5f) {
+                            if(GS.LightingQuality > 1 && FlashGunfire && Random.Range(0f, 1f) < 0.3f) {
+                                GunFireObj.transform.GetChild(GT).GetComponent<ParticleSystem>().Play();
                                 Light SetLight = GunFireObj.gameObject.GetComponent<Light>();
                                 SetLight.enabled = true;
                                 SetLight.color = Bullet.GetComponent<ParticleSystem>().main.startColor.color;
                                 SetLight.intensity = 2f;
                             }
                             BulletCase.transform.SetParent(GunFireObj.transform);
-                            if(GunFireObj.transform.GetChild(GT).childCount > 0 && GunFireObj.transform.GetChild(GT).GetChild(0).GetComponent<AudioSource>()){
-                                float Rollof = Mathf.Lerp(0.1f, 1f, Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) / 100f);
-                            }
                         }
                     }
                     string Bullettype = Gunfiretype;
@@ -827,7 +858,10 @@ public class AttackScript : MonoBehaviour {
             Grenade.transform.Rotate(10f, 10f, 10f);
         }
 
-        if (AttackMechanic == "Projectile" && (AttackHit == 0 || HitWater)) {
+        if (AttackType == "Gun" && (AttackHit == 0 || HitWater)) {
+            this.transform.position += this.transform.forward * (AttackSpeeds[0] / 50f);
+            this.transform.eulerAngles += Vector3.right * (Vector3.Distance(SlimenPos, this.transform.position) / AttackDistance) / 5f;
+        } else if (AttackMechanic == "Projectile" && (AttackHit == 0 || HitWater)) {
             this.transform.position += this.transform.forward * (AttackSpeeds[0] / 50f);
             this.transform.eulerAngles += Vector3.right * (AttackSpeeds[1] / 50f);
         }
@@ -945,6 +979,8 @@ public class AttackScript : MonoBehaviour {
                 }
             }
         }
+
+        float TraveledDistance = Vector3.Distance(SlimenPos, PointHit);
 
         if (ObjectHit != null && CanHit == true && AttackHit == 0) {
 
@@ -1073,7 +1109,7 @@ public class AttackScript : MonoBehaviour {
                 BulletHit.transform.LookAt(this.transform.position - this.transform.forward * 1f);
             }
 
-            if(Penetrate == "Sure" && AttackType == "Gun"){
+            if(Penetrate == "Sure" && AttackType == "Gun" && TraveledDistance < AttackDistance){
                 float PenPower = Mathf.Clamp(DrunknessPower, 0f, 1f);
                 // Check for ricochet
                 Ray CheckRic = new Ray(this.transform.position + this.transform.up * 0.1f, this.transform.forward);

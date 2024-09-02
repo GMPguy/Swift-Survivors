@@ -56918,7 +56918,6 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 4bdfe1beeca933a49b24fcf2217587f2, type: 2}
-  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -61968,6 +61967,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: b0c8db69fd51504489cb4870cb2453fd, type: 3}
   - {fileID: 8300000, guid: badc8ff5ae7c3334893ecb90ff50d512, type: 3}
   - {fileID: 8300000, guid: b778b59fc9bd9484a97712f2c4a67b3a, type: 3}
+  - {fileID: 8300000, guid: 362db0cfb87511b4a8506448de18167b, type: 3}
+  - {fileID: 8300000, guid: cf81a37aec3f03f4ca3921593647c921, type: 3}
+  - {fileID: 8300000, guid: 923688530dc8ac54eabf5d99d2cbcf2d, type: 3}
   EatingEffect: {fileID: 1434836245418444}
   DrinkingEffect: {fileID: 1726522370745390}
   PatchUpEffect: {fileID: 1336854399644344}

@@ -102,6 +102,7 @@ public class PlayerScript : MonoBehaviour {
     public bool IsHS = false;
     public bool IsST = false;
     public bool IsAiming = false;
+    int BulletsLoaded = 0;
     public bool InBox = false;
     int[] previousItem;
     float FootstepCooldown = 1f;
@@ -163,6 +164,7 @@ public class PlayerScript : MonoBehaviour {
     float IsReloading = 0f;
     float EnergyRegen = 0f;
     float GunSpreadRegain = 0f;
+    float[] UseDelay = {0f,0f};
     // Cants
     GameObject NullTester = null;
     // Misc
@@ -1177,15 +1179,7 @@ public class PlayerScript : MonoBehaviour {
 
             InventoryText = "";
             string AnimationAddition = "";
-            /*for (int SetInv = 0; SetInv <= 9; SetInv ++) {
-                string StrX = "00" + (int)Mathf.Clamp(Inventory[SetInv].x, 0, 999);
-                StrX = StrX.Substring(StrX.Length - 3, 3);
-                string StrY = "00" + (int)Mathf.Clamp(Inventory[SetInv].y, 0, 999);
-                StrY = StrY.Substring(StrY.Length - 3, 3);
-                string StrZ = "00" + (int)Mathf.Clamp(Inventory[SetInv].z, 0, 999);
-                StrZ = StrZ.Substring(StrZ.Length - 3, 3);
-                InventoryText += StrX + StrY + StrZ;
-            }*/
+
             for(int SetInv = 0; SetInv <= 9; SetInv ++){
                 InventoryText += Inventory[SetInv] + "/";
             }
@@ -1236,19 +1230,21 @@ public class PlayerScript : MonoBehaviour {
                     DropOrThrow = 0f;
                     SwitchItemSound = ChangeTo.ToString();
                     switch(int.Parse(GS.GetSemiClass(Inventory[ChangeTo], "id"))){
-                        case 34: case 35: case 38: case 40: case 42: case 56: case 59: case 62: case 64: case 65: case 61: case 60: case 113: case 137: case 996: case 69:
+                        case 34: case 35: case 38: case 40: case 42: case 56: case 59: case 62: case 64: case 65: case 61: case 60: case 113: case 137: case 996: case 69: case 157: case 159: case 160:
                             CantUseItem = 1f;
                             break;
                         default:
                             CantUseItem = 0.5f;
                             break;
                     }
+                    BulletsLoaded = 0;
+                    UseDelay = new[]{0f, 0f};
                 }
 
             }
 
             switch(int.Parse(GS.GetSemiClass(Inventory[int.Parse(SwitchItemSound, CultureInfo.InvariantCulture)], "id"), CultureInfo.InvariantCulture)){
-                case 38: case 42: case 59: case 60: case 137: case 34: case 65: case 113:
+                case 38: case 42: case 59: case 60: case 137: case 34: case 65: case 113: case 157: case 159: case 160:
                     if(GS.GetSemiClass(Inventory[int.Parse(SwitchItemSound)], "at") == "101") SwitchItemSound = "SwitchItem";
                     else SwitchItemSound = "SwitchItem-AR";
                     break;
@@ -1272,6 +1268,9 @@ public class PlayerScript : MonoBehaviour {
                 TempItemShown[0] = int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"));
             }
             // Temp item show
+
+            if(UseDelay[0] < UseDelay[1])
+                UseDelay[0] += 0.02f;
 
             // Drop/Pickup/Throw Item
             bool CanAttach = false;
@@ -1315,46 +1314,6 @@ public class PlayerScript : MonoBehaviour {
                     InvGet(newItemVars, 0);
                 }
 
-                /* if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "0") {
-                    //CantUseItem = Mathf.Clamp(CantUseItem, 0.5f, Mathf.Infinity);
-                    ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("PickUpA", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition), 0, 0f);
-                    InvGet(InteractedGameobject.GetComponent<ItemScript>().Variables, 0) // Inventory[CurrentItemHeld] = InteractedGameobject.GetComponent<ItemScript>().Variables;
-                    if(InteractedGameobject.GetComponent<ItemScript>().DroppedBy == null) RS.SetScore("ItemsFound_", "/+1");
-                    Destroy(InteractedGameobject.gameObject);
-                    PlaySoundBank("PickupItem", 1, Random.Range(0.75f, 1f), 0f, "Only");
-                } else {
-                    bool Gave = false;
-                    for (int AvailableSlots = 0; AvailableSlots < MaxInventorySlots; AvailableSlots++) {
-                        if (GS.GetSemiClass(Inventory[AvailableSlots], "id") == "0") {
-                            //CantUseItem = Mathf.Clamp(CantUseItem, 0.5f, Mathf.Infinity);
-                            //CantSwitchItem = CantUseItem;
-                            ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("PickUpB", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition), 0, 0f);
-                            Inventory[AvailableSlots] = InteractedGameobject.GetComponent<ItemScript>().Variables;
-                            if(InteractedGameobject.GetComponent<ItemScript>().DroppedBy == null) RS.SetScore("ItemsFound_", "/+1");
-                            Destroy(InteractedGameobject.gameObject);
-                            PlaySoundBank("PickupItem", 1, Random.Range(0.75f, 1f), 0f, "Only");
-                            Gave = true;
-                            break;
-                        }
-                    }
-                    if (Gave == false) {
-                        //CantUseItem = Mathf.Clamp(CantUseItem, 0.5f, Mathf.Infinity);
-                        //CantSwitchItem = CantUseItem;
-                        GS.Mess(GS.SetString("Inventory is full; switching items", "Inwentarz jest pełen; zamieniono przedmioty"), "MidError");
-                        ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("PickUpA", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition), 0, 0f);
-                        GameObject DropCurrent = Instantiate(ItemPrefab) as GameObject;
-                        DropCurrent.GetComponent<ItemScript>().Variables = Inventory[CurrentItemHeld];
-                        DropCurrent.GetComponent<ItemScript>().DroppedBy = this.gameObject;
-                        DropCurrent.transform.position = InteractedGameobject.transform.position;
-                        Inventory[CurrentItemHeld] = InteractedGameobject.GetComponent<ItemScript>().Variables;
-                        if(InteractedGameobject.GetComponent<ItemScript>().DroppedBy == null) {
-                            RS.SetScore("ItemsFound_", "/+1");
-                            if(InteractedGameobject.GetComponent<ItemScript>().InWater) GS.PS.AchProg("Ach_UnderwaterTreasure", "/+-1");
-                        }
-                        Destroy(InteractedGameobject.gameObject);
-                        PlaySoundBank("PickupItem", 1, Random.Range(0.75f, 1f), 0f, "Only");
-                    }
-                } */
             } else if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CanAttach == true && CantUseItem <= 0f) {
                 bool Compatible = false;
                 foreach (Transform CheckC in InteractedGameobject.GetComponent<ItemScript>().SelectedMesh.transform.GetChild(0)) {
@@ -2170,61 +2129,55 @@ public class PlayerScript : MonoBehaviour {
                     }
 
                     break;
-                case 29: case 31: case 32: case 34: case 35: case 36: case 38: case 40: case 41: case 42: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 64: case 65: case 996: case 113: case 135: case 137:
+                case 29: case 31: case 32: case 34: case 35: case 36: case 38: case 40: case 41: case 42: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 64: case 65: case 996: case 113: case 135: case 137: case 157: case 159: case 160:
                     // Get ranged info
                     string GunType = "";
                     string[] FireAnimation = new string[]{"", ""};
-                    float GunCooldown = 1f;
-                    float AmmoInUse = 0f;
+                    float[] GunCooldown = {1f, 1f};
+                    float AmmoInUse = 1f;
                     float AimZoom = 0f;
                     string[] ReloadingAnimation = new string[] { "ItemReload", "Reloading" };
                     float[] ReloadVariables = new float[] { 0f, 0f, 0f };
                     int AmountToShoot = 1;
                     int AmountOfGunFires = 1;
+                    int BurstFire = 1;
                     float[] RecoilPhysics = new float[]{1f, 1f};
+                    float DelayFire = 0f;
+                    string[] DelayFireEffects = new string [0];
                     if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "29") {
                         GunType = "Colt";
                         FireAnimation = new string[]{"Pistol-Shoot", ""};
-                        GunCooldown = 0.25f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.25f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "Pistol-Reload", "ReloadingShort", "FullLoad" };
                         ReloadVariables = new float[] { 7f, 30f, 2f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "31") {
                         GunType = "Luger";
                         FireAnimation = new string[]{"Pistol-Shoot", ""};
-                        GunCooldown = 0.25f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.25f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "Pistol-Reload", "ReloadingShort", "FullLoad" };
                         ReloadVariables = new float[] { 8f, 30f, 2f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "32") {
                         GunType = "Revolver";
                         FireAnimation = new string[]{"Pistol-Shoot", ""};
-                        GunCooldown = 1f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 1f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "Revolver-Reload", "ReloadingShort", "FullLoad" };
                         ReloadVariables = new float[] { 6f, 33f, 2f };
                         RecoilPhysics = new float[]{0f, 100f};
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "34") {
                         GunType = "HunterRifle";
                         FireAnimation = new string[]{"BoltAction-Shoot", "BoltAction-ShootNoReload"};
-                        GunCooldown = 1f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 1f;
                         AimZoom = 25f;
                         ReloadingAnimation = new string[] { "BoltAction-Reload", "Reloading1BL", "OneByOne" };
                         ReloadVariables = new float[] { 5f, 33f, 2f };
                         RecoilPhysics = new float[]{0f, 100f};
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "35") {
                         GunType = "DBShotgun";
                         FireAnimation = new string[]{"DBshotgun-Shoot", ""};
-                        GunCooldown = 0.5f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.5f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "DBshotgun-Reload", "Reloading1BL", "FullLoad" };
                         ReloadVariables = new float[] { 2f, 33f, 2f };
@@ -2233,26 +2186,21 @@ public class PlayerScript : MonoBehaviour {
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "36") {
                         GunType = "Thompson";
                         FireAnimation = new string[]{"Thompson-Shoot", ""};
-                        GunCooldown = 0.075f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.075f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "Thompson-Reload", "ReloadingShort", "FullLoad" };
                         ReloadVariables = new float[] { 30f, 37f, 2f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "38" || GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "996") {
                         GunType = "AK-47";
                         FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown = 0.08f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.08f;
                         AimZoom = 40f;
                         ReloadingAnimation = new string[] { "AK-Reload", "Reloading", "FullLoad" };
                         ReloadVariables = new float[] { 30f, 39f, 3f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "40") {
                         GunType = "Shotgun";
                         FireAnimation = new string[]{"Shotgun-Shoot", "Shotgun-ShootNoReload"};
-                        GunCooldown = 1.5f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 1.5f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "Shotgun-Reload", "Reloading1BL", "OneByOne" };
                         ReloadVariables = new float[] { 5f, 33f, 2f };
@@ -2261,30 +2209,24 @@ public class PlayerScript : MonoBehaviour {
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "41") {
                         GunType = "MP5";
                         FireAnimation = new string[]{"Thompson-Shoot", ""};
-                        GunCooldown = 0.05f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.05f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "MP5-Reload", "ReloadingShort", "FullLoad" };
                         ReloadVariables = new float[] { 30f, 37f, 2f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "42") {
                         GunType = "M4";
                         FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown = 0.1f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.1f;
                         AimZoom = 40f;
                         ReloadingAnimation = new string[] { "M4-Reload", "Reloading", "FullLoad" };
                         ReloadVariables = new float[] { 30f, 39f, 3f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "55") {
                         GunType = "Sten";
                         FireAnimation = new string[]{"Sten-Shoot", ""};
-                        GunCooldown = 0.075f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.075f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "Sten-Reload", "ReloadingShort", "FullLoad" };
                         ReloadVariables = new float[] { 32f, 37f, 2f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "56") {
                         if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) > 1f) {
                             GunType = "Garand";
@@ -2292,54 +2234,44 @@ public class PlayerScript : MonoBehaviour {
                             GunType = "GarandR";
                         }
                         FireAnimation = new string[]{"BoltAction-ShootNoReload", ""};
-                        GunCooldown = 0.25f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.25f;
                         AimZoom = 30f;
                         ReloadingAnimation = new string[] { "Garand-Reload", "ReloadingShort", "FullLoad" };
                         ReloadVariables = new float[] { 8f, 33f, 2f };
                         RecoilPhysics = new float[]{0f, 100f};
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "57") {
                         GunType = "Famas";
                         FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown = 0.08f;
-                        AmmoInUse = 1f;
+                        GunCooldown = new[] {0.5f, 0.075f};
+                        BurstFire = 3;
                         AimZoom = 40f;
                         ReloadingAnimation = new string[] { "FAMAS-Reload", "Reloading", "FullLoad" };
                         ReloadVariables = new float[] { 25f, 39f, 3f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "58") {
                         GunType = "Uzi";
                         FireAnimation = new string[]{"Pistol-Shoot", ""};
-                        GunCooldown = 0.075f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.075f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "Uzi-Reload", "ReloadingShort", "FullLoad" };
                         ReloadVariables = new float[] { 25, 37f, 1.5f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "59") {
                         GunType = "G3";
                         FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown = 0.1f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.1f;
                         AimZoom = 40f;
                         ReloadingAnimation = new string[] { "G3-Reload", "Reloading", "FullLoad" };
                         ReloadVariables = new float[] { 20f, 39f, 3f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "60") {
                         GunType = "Scar";
                         FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown = 0.08f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.08f;
                         AimZoom = 40f;
                         ReloadingAnimation = new string[] { "SCAR-Reload", "Reloading", "FullLoad" };
                         ReloadVariables = new float[] { 28f, 39f, 3f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "61") {
                         GunType = "SPAS";
                         FireAnimation = new string[]{"Shotgun-ShootNoReload", ""};
-                        GunCooldown = 0.5f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.5f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "Shotgun-Reload", "Reloading1BL", "OneByOne" };
                         ReloadVariables = new float[] { 8f, 33f, 2f };
@@ -2348,57 +2280,74 @@ public class PlayerScript : MonoBehaviour {
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "62") {
                         GunType = "SAW";
                         FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown = 0.05f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.05f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "SAW-Reload", "ReloadingMG", "FullLoad" };
                         ReloadVariables = new float[] { 100f, 63f, 7f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "64") {
                         GunType = "Minigun";
                         FireAnimation = new string[]{"Minigun-Shoot", ""};
-                        GunCooldown = 0.025f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.025f;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "Minigun-Reload", "ReloadingMG", "FullLoad" };
                         ReloadVariables = new float[] { 500f, 63f, 7f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "65") {
                         GunType = "MosinNagant";
                         FireAnimation = new string[]{"BoltAction-Shoot", "BoltAction-ShootNoReload"};
-                        GunCooldown = 1.5f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 1.5f;
                         AimZoom = 25f;
                         ReloadingAnimation = new string[] { "BoltAction-Reload", "Reloading1BL", "OneByOne" };
                         ReloadVariables = new float[] { 5f, 33f, 2f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "113") {
                         GunType = "Musket";
                         FireAnimation = new string[]{"BoltAction-ShootNoReload", ""};
-                        GunCooldown = 0.1f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.1f;
                         AimZoom = 30f;
                         ReloadingAnimation = new string[] { "BoltAction-Reload", "Reloading1BL", "FullLoad" };
                         ReloadVariables = new float[] { 1f, 33f, 2f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "135") {
                         GunType = "G18";
                         FireAnimation = new string[]{"Pistol-Shoot", ""};
-                        GunCooldown = 0.1f;
-                        AmmoInUse = 1f;
+                        GunCooldown = new []{0.5f, 0.08f};
+                        BurstFire = 3;
                         AimZoom = 55f;
                         ReloadingAnimation = new string[] { "Pistol-Reload", "ReloadingShort", "FullLoad" };
                         ReloadVariables = new float[] { 17f, 30f, 1.5f };
-                        AmountToShoot = 1;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "137") {
                         GunType = "M1Carbine";
                         FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown = 0.15f;
-                        AmmoInUse = 1f;
+                        GunCooldown[0] = 0.15f;
                         AimZoom = 30f;
                         ReloadingAnimation = new string[] { "AK-Reload", "Reloading", "FullLoad" };
                         ReloadVariables = new float[] { 15f, 39f, 3f };
-                        AmountToShoot = 1;
+                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "157") {
+                        GunType = "Flintlock";
+                        FireAnimation = new string[]{"Flintlock-Shoot", ""};
+                        GunCooldown[0] = 1f;
+                        AimZoom = 55f;
+                        ReloadingAnimation = new string[] { "Flintlock-Reload", "ReloadingFlintlock", "FullLoad" };
+                        ReloadVariables = new float[] { 1f, 158f, 5f };
+                        DelayFire = Random.Range(.1f, .5f);
+                        DelayFireEffects = new string[] {"Flintlock-Trigger", "GunEmpty"};
+                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "159") {
+                        GunType = "BakerRifle";
+                        FireAnimation = new string[]{"BakerRifle-Shoot", ""};
+                        GunCooldown[0] = 1f;
+                        AimZoom = 25f;
+                        ReloadingAnimation = new string[] { "BakerRifle-Reload", "ReloadingBakerRifle", "FullLoad" };
+                        ReloadVariables = new float[] { 1f, 158f, 10f };
+                        DelayFire = Random.Range(.1f, .5f);
+                        DelayFireEffects = new string[] {"BakerRifle-Trigger", "GunEmpty"};
+                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "160") {
+                        GunType = "NockGun";
+                        FireAnimation = new string[]{"NockGun-Shoot", ""};
+                        GunCooldown = new[] {1f, Random.Range(0f, .1f)};
+                        BurstFire = 7;
+                        AimZoom = 55f;
+                        ReloadingAnimation = new string[] { "NockGun-Reload", "ReloadingNockGun", "OneByOne" };
+                        ReloadVariables = new float[] { 7f, 158f, 10f };
+                        DelayFire = Random.Range(.1f, .5f);
+                        DelayFireEffects = new string[] {"BakerRifle-Trigger", "GunEmpty"};
                     }
                     if(FireAnimation[1] == "") FireAnimation[1] = FireAnimation[0];
                     // Get range info
@@ -2411,8 +2360,8 @@ public class PlayerScript : MonoBehaviour {
                         if(GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "55") FireAnimation = new string[]{"GripThompson-Shoot", "GripTHompson-Shoot"};
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "103") {
                         AimZoom = 5f;
-                        GunCooldown = 1f;
-                        //GunSpreadValues = new float[] { 0f, 0f, 0f, 0f, 0f };
+                        BurstFire = 1;
+                        GunCooldown[0] = 1f;
                         GunSpreadPC = 0f;
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "104") {
                         AimZoom = 25f;
@@ -2425,14 +2374,6 @@ public class PlayerScript : MonoBehaviour {
                                 CantUseItem = 0.5f;
                                 CantSwitchItem = 0.5f;
                                 ItemsShown.GetComponent<Animator>().Play(FireAnimation[1], 0, 0f);
-                                //GameObject SpawnAttack = Instantiate(AttackPrefab) as GameObject;
-                                //SpawnAttack.transform.position = LookDir.position;
-                                //SpawnAttack.transform.eulerAngles = MainCamera.eulerAngles;
-                                //SpawnAttack.GetComponent<AttackScript>().GunName = "Bayonet";
-                                //SpawnAttack.GetComponent<AttackScript>().Attacker = this.gameObject;
-                                //SpawnAttack.GetComponent<AttackScript>().DrunknessPower = (Drunkenness / 10f);
-                                //SpawnAttack.GetComponent<AttackScript>().WchichItemWasHeld = CurrentItemHeld;
-                                //SpawnAttack.GetComponent<AttackScript>().Slimend = SlimEnd;
                                 RS.Attack(new string[]{ "Bayonet", "Power" + (Drunkenness / 10f), "Inventory" + CurrentItemHeld }, LookDir.position, MainCamera.forward, this.gameObject, SlimEnd, SlimEnd);
                             }
                         } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "102") {
@@ -2441,21 +2382,13 @@ public class PlayerScript : MonoBehaviour {
                                 CantUseItem = 1f;
                                 CantSwitchItem = 1f;
                                 ItemsShown.GetComponent<Animator>().Play(FireAnimation[1], 0, 0f);
-                                //GameObject SpawnAttack = Instantiate(AttackPrefab) as GameObject;
-                                //SpawnAttack.transform.position = LookDir.position;
-                                //SpawnAttack.transform.eulerAngles = MainCamera.eulerAngles;
-                                //SpawnAttack.GetComponent<AttackScript>().GunName = "GrenadeLauncher";
-                                //SpawnAttack.GetComponent<AttackScript>().Attacker = this.gameObject;
-                                //SpawnAttack.GetComponent<AttackScript>().DrunknessPower = (Drunkenness / 10f);
-                                //SpawnAttack.GetComponent<AttackScript>().WchichItemWasHeld = CurrentItemHeld;
-                                //SpawnAttack.GetComponent<AttackScript>().Slimend = SlimEnd;
                                 RS.Attack(new string[]{ "GrenadeLauncher", "Power" + (Drunkenness / 10f), "Inventory" + CurrentItemHeld }, LookDir.position, MainCamera.forward, this.gameObject, SlimEnd, SlimEnd);
                             }   
                         } else {
                             if (IsReloading <= 0f) {
                                 ZoomValues[0] = AimZoom + FOVoffset[0];
                                 ZoomValues[3] = 0.03f;
-                                if (ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(PlayItemAnim("Idle", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition)) && ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.01f) {
+                                if (ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(PlayItemAnim("Idle", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition)) && ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.001f) {
                                     ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Idle", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition), 0, 0f);
                                 }
                             }
@@ -2466,11 +2399,24 @@ public class PlayerScript : MonoBehaviour {
                     if (((GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "103") && ZoomValues[1] > ZoomValues[0]) || (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "64" && ZoomValues[1] > ZoomValues[0])) {
                         CanFire = false;
                     }
-                    if (GS.GetComponent<GameScript>().ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) >= AmmoInUse && CanFire == true) {
-                        CantUseItem = GunCooldown;
+
+                    if(GS.GetComponent<GameScript>().ReceiveButtonPress("Action", "Hold") > 0f && BulletsLoaded <= 0 && CantUseItem <= 0f && float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) >= AmmoInUse && CanFire == true){
+                        BulletsLoaded = Mathf.Clamp(BurstFire, 1, int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va")));
+                        UseDelay = new float[] {0f, DelayFire};
+                        CantUseItem = UseDelay[1];
+                        if(DelayFireEffects.Length >= 1) {
+                            ItemsShown.GetComponent<Animator>().Play(DelayFireEffects[0], 0, 0f);
+                            if(DelayFireEffects.Length == 2)
+                                PlaySoundBank(DelayFireEffects[1], 1);
+                        }
+                    }
+
+                    if (BulletsLoaded > 0 && UseDelay[0] >= UseDelay[1] && CantUseItem <= 0f) {
+                        BulletsLoaded -= 1;
+                        CantUseItem = BulletsLoaded == 0 ? GunCooldown[0] : GunCooldown[1];
                         CantSwitchItem = CantUseItem;
                         Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-" + AmmoInUse); //Inventory[CurrentItemHeld].y -= AmmoInUse;
-                        if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "103" || FireAnimation[0] == "BoltAction-Shoot" || FireAnimation[0] == "Shotgun-Shoot" || ZoomValues[1] > ZoomValues[0] + 1) {
+                        if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "103" || FireAnimation[0] == "BoltAction-Shoot" || FireAnimation[0] == "Shotgun-Shoot" || FireAnimation[0] == "Flintlock-Shoot" || ZoomValues[1] > ZoomValues[0] + 1) {
                             ItemsShown.GetComponent<Animator>().Play(FireAnimation[0], 0, 0f);
                         } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "104") {
                             ItemsShown.GetComponent<Animator>().Play(FireAnimation[0], 0, 0.8f);
@@ -2486,23 +2432,11 @@ public class PlayerScript : MonoBehaviour {
                             if(ZoomValues[1] <= ZoomValues[0] + 1) Gunspread /= 3f;
                             Additionals.Add("GunSpread" + Gunspread.ToString(CultureInfo.InvariantCulture));
                             Additionals.Add("Inventory" + CurrentItemHeld);
-                            //float AttackPower = (Drunkenness / 10f);
-                            //bool PlayGunFire = true;
-                            //bool IsSilenced = false;
-                            //GameObject SpawnAttack = Instantiate(AttackPrefab) as GameObject;
-                            //SpawnAttack.transform.position = LookDir.position;
-                            //SpawnAttack.transform.eulerAngles = LookDir.eulerAngles;
-                            //SpawnAttack.GetComponent<AttackScript>().GunName = GunType;
-                            //SpawnAttack.GetComponent<AttackScript>().SpecialGunSpread = RS.ReceiveGunSpred((int)Inventory[CurrentItemHeld].x, this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).x;
-                            //SpawnAttack.GetComponent<AttackScript>().Attacker = this.gameObject;
                             if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "103") {
                                 Additionals.Add("Power10");
                             } else {
                                 Additionals.Add("Power" + (Drunkenness / 10f));
                             }
-                            //SpawnAttack.GetComponent<AttackScript>().WchichItemWasHeld = CurrentItemHeld;
-                            //SpawnAttack.GetComponent<AttackScript>().Slimend = SlimEnd;
-                            //SpawnAttack.GetComponent<AttackScript>().BulletChamber = BulletChamber;
                             if (BulletsToSpanw > AmountOfGunFires) {
                                 Additionals.Add("HideGunFire");
                             }
@@ -2525,17 +2459,12 @@ public class PlayerScript : MonoBehaviour {
                             }
                             float RecX = (RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).z) * RecoilMP[0];
                             float RecY = (RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).w * YrecoilRandomizer) * RecoilMP[1];
-                            //if (ZoomValues[1] == ZoomValues[0]) {
-                            //    GunSpreadPC += (RS.ReceiveGunSpred((int)Inventory[CurrentItemHeld].x, this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).y) / 2f;
-                            //    ItemShakePos += new Vector3(
-                            //      (RS.ReceiveGunSpred((int)Inventory[CurrentItemHeld].x, this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).w / 3f), 
-                            //      RS.ReceiveGunSpred((int)Inventory[CurrentItemHeld].x, this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).z / 3f, 0f) / 25f;
-                            //} else {
-                                GunSpreadPC += RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).y;
-                                ItemShakePos = new Vector3(
-                                    (RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).w * RecoilMP[1] * -YrecoilRandomizer), 
-                                    RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).z * RecoilMP[0], 0f) * 10f;
-                            //}
+
+                            GunSpreadPC += RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).y;
+                            ItemShakePos = new Vector3(
+                                (RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).w * RecoilMP[1] * -YrecoilRandomizer), 
+                                RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).z * RecoilMP[0], 0f) * 10f;
+
                             if(RS.IsCausual){
                                 RecoilCam(new Vector3(RecX * -(GunSpreadPC * 5f), RecY * -(GunSpreadPC * 5f), 0f), 0.25f, 0f);
                                 GunSpreadPC = Mathf.Clamp(GunSpreadPC, 0f, 0.5f);
@@ -2544,7 +2473,7 @@ public class PlayerScript : MonoBehaviour {
                                 LookX -= RecX / 2f;
                                 LookY -= RecY / 2f;
                             }
-                            GunSpreadRegain = GunCooldown * 0.75f;
+                            GunSpreadRegain = GunCooldown[0] * 0.75f;
                         }
                     } else if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0 && CanFire == true) {
                         CantUseItem = 1f;
@@ -2657,8 +2586,8 @@ public class PlayerScript : MonoBehaviour {
                                 if(GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1"){
                                     Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+1");//Inventory[CurrentItemHeld].y += 1;
                                     ReloadInfo[0] = (int.Parse(ReloadInfo[0]) - 1).ToString();
-                                    CantUseItem = (ReloadVariables[2] / 3f) * 2f;
-                                    IsReloading = (ReloadVariables[2] / 3f) * 2f;
+                                    CantUseItem = (ReloadVariables[2] / 3f) * 1.1f;
+                                    IsReloading = (ReloadVariables[2] / 3f) * 1.1f;
                                     if(ReloadInfo[0] == "0") Stop = true;
                                 } else {
                                     bool HasABullet = false;
@@ -2668,8 +2597,8 @@ public class PlayerScript : MonoBehaviour {
                                                 Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+1");//Inventory[CurrentItemHeld].y += 1;
                                                 ReloadInfo[0] = (int.Parse(ReloadInfo[0]) - 1).ToString();
                                                 Inventory[CheckInv] = GS.SetSemiClass(Inventory[CheckInv], "va", "/+-1");//Inventory[CheckInv].y -= 1;
-                                                CantUseItem = (ReloadVariables[2] / 3f) * 2f;
-                                                IsReloading = (ReloadVariables[2] / 3f) * 2f;
+                                                CantUseItem = (ReloadVariables[2] / 3f) * 1.1f;
+                                                IsReloading = (ReloadVariables[2] / 3f) * 1.1f;
                                                 HasABullet = true;
                                             }
                                         }
@@ -2679,7 +2608,7 @@ public class PlayerScript : MonoBehaviour {
 
                                 if(!Stop){
                                     ItemsShown.GetComponent<Animator>().Play(ReloadingAnimation[0], 0, 0.33f);
-                                    PlaySoundBank(ReloadingAnimation[1], 1, 1f, ReloadVariables[2] * 0.2f, "Override");
+                                    PlaySoundBank(ReloadingAnimation[1], 1, 1f, ReloadVariables[2] * 0.33f, "Override");
                                 } else {
                                     ReloadInfo = new string[]{"0", "None"};
                                 }
@@ -4250,7 +4179,7 @@ public class PlayerScript : MonoBehaviour {
         } else {
             int ItemIDint = int.Parse(ItemID);
             switch (ItemIDint) {
-            case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 20: case 21: case 23: case 25: case 26: case 45: case 991: case 992: case 53: case 63: case 70: case 71: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 82: case 83: case 84: case 88: case 89: case 99: case 94: case 98: case 102: case 103: case 104: case 107: case 117: case 119: case 120: case 121: case 141: case 142: case 143: case 144: case 145: case 147:
+            case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 20: case 21: case 23: case 25: case 26: case 45: case 991: case 992: case 53: case 63: case 70: case 71: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 82: case 83: case 84: case 88: case 89: case 99: case 94: case 98: case 102: case 103: case 104: case 107: case 117: case 119: case 120: case 121: case 141: case 142: case 143: case 144: case 145: case 147: case 158:
                 PlayThis = "Hold-" + WhatAnim;
                 break;
             case 12: case 19: case 22: case 30: case 33: case 37: case 39: case 43: case 52: case 54: case 72: case 80: case 81: case 85: case 90: case 97: case 100: case 101: case 105: case 114: case 116: case 123: case 124:
@@ -4283,9 +4212,12 @@ public class PlayerScript : MonoBehaviour {
                 else if(ItemIDint == 58 && (WhatAnim == "SwitchItem")) PlayThis = "Uzi-" + WhatAnim;
                 if(Aditional == "Grip") PlayThis = "GripPistol-" + WhatAnim;
                 break;
-            case 34: case 56: case 65: case 113:
+            case 34: case 56: case 65: case 113: case 159: case 160:
                 PlayThis = "BoltAction-" + WhatAnim;
-                if((ItemIDint == 56 || ItemIDint == 113) && (WhatAnim == "SwitchItem")) PlayThis = "Garand-" + WhatAnim;
+                if(WhatAnim == "SwitchItem"){
+                    if((ItemIDint == 56 || ItemIDint == 113)) PlayThis = "Garand-" + WhatAnim;
+                    else if (ItemIDint == 159 || ItemIDint == 160) PlayThis = "BakerRifle-" + WhatAnim;
+                }
                 if(Aditional == "Grip") PlayThis = "GripBoltAction-" + WhatAnim;
                 else if(Aditional == "Bayonet" && PlayThis == "BoltAction-Shoot") PlayThis = "BoltAction-ShootNoReload";
                 break;
@@ -4314,6 +4246,9 @@ public class PlayerScript : MonoBehaviour {
                 break;
             case 64:
                 PlayThis = "Minigun-" + WhatAnim;
+                break;
+            case 157:
+                PlayThis = "Flintlock-" + WhatAnim;
                 break;
             case 134: case 993:
                 PlayThis = "Spear-" + WhatAnim;

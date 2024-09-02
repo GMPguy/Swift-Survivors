@@ -146,14 +146,11 @@ public class LandScript : MonoBehaviour {
                 FoundLand.gameObject.SetActive(true);
 
                 foreach (Transform LandInLand in FoundLand.transform) {
+                    float randomFactor = GS.FixedPerlinNoise(LandInLand.position.x, LandInLand.position.z);
                     if (LandInLand.name == "Tree"){
                         TreeChunks.Add(LandInLand);
                     } else if (LandInLand.GetComponent<MeshRenderer>() != null) {
-                        Color WallColor = new Color(Random.Range(0.5f, 1f), Random.Range(0.5f, 1f), Random.Range(0.5f, 1f), 1f);
-                        Color TreeColor = Color.Lerp(new Color(1f, 0.75f, 0f, 1f), new Color(0.3f, 0.5f, 0.3f, 1f), Random.Range(0f, 1f));
-                        if (GS.GetComponent<GameScript>().Biome == 5) {
-                            TreeColor = Color.white;
-                        }
+                        Color WallColor = Color.HSVToRGB(randomFactor, 0.5f, 1f);
                         foreach (Material Mat in LandInLand.GetComponent<MeshRenderer>().materials) {
                             if (Mat.name == "Grass1 (Instance)" || Mat.name == "Grass2 (Instance)" || Mat.name == "Grass3 (Instance)") {
                                 Mat.color = Color32.Lerp(Biome.GrassColor[0], Biome.GrassColor[1], Random.Range(0f, 1f));
@@ -162,13 +159,11 @@ public class LandScript : MonoBehaviour {
                             } else if (Mat.name == "HouseOuter2 (Instance)") {
                                 Mat.color = WallColor / 2f;
                             } else if (Mat.name == "HouseInner (Instance)") {
-                                Mat.color = new Color32((byte)Random.Range(75f, 255f), (byte)Random.Range(75f, 255f), (byte)Random.Range(75f, 255f), 255);
+                                Mat.color = Color.HSVToRGB((randomFactor + .5f) % 1f, 0.5f, 0.5f);
                             } else if (Mat.name == "HouseRoof (Instance)") {
-                                Mat.color = Color32.Lerp(new Color32(100, 75, 55, 255), new Color32(255, 225, 155, 255), Random.Range(0f, 1f));
+                                Mat.color = Color32.Lerp(new Color32(100, 75, 55, 255), new Color32(255, 225, 155, 255), randomFactor);
                             } else if (Mat.name == "WoodenFence1 (Instance)") {
-                                Mat.color = Color32.Lerp(new Color32(100, 75, 55, 255), new Color32(188, 155, 133, 255), Random.Range(0f, 1f));
-                            } else if (Mat.name == "Tree1 (Instance)" || Mat.name == "Tree2 (Instance)" || Mat.name == "Tree3 (Instance)") {
-                                Mat.color = TreeColor * Random.Range(0.5f, 1f);
+                                Mat.color = Color32.Lerp(new Color32(100, 75, 55, 255), new Color32(188, 155, 133, 255), randomFactor);
                             }
                         }
                     } else if (LandInLand.GetComponent<Spawner>() != null) {

@@ -555,7 +555,7 @@ public class CanvasScript : MonoBehaviour {
             } else {
                 CSWait[0] = 0f;
             }
-            if (IDofitemheld == "14" || IDofitemheld == "15" || IDofitemheld == "16" || IDofitemheld == "27" || IDofitemheld == "28" || IDofitemheld == "29" || IDofitemheld == "31" || IDofitemheld == "32" || IDofitemheld == "34" || IDofitemheld == "35" || IDofitemheld == "36" || IDofitemheld == "38" || IDofitemheld == "40" || IDofitemheld == "41" || IDofitemheld == "42" || IDofitemheld == "993" || IDofitemheld == "55" || IDofitemheld == "56" || IDofitemheld == "57" || IDofitemheld == "58" || IDofitemheld == "59" || IDofitemheld == "60" || IDofitemheld == "61" || IDofitemheld == "62" || IDofitemheld == "65" || IDofitemheld == "67" || IDofitemheld == "68" || IDofitemheld == "69" || IDofitemheld == "996" || IDofitemheld == "108" || IDofitemheld == "109" || IDofitemheld == "111" || IDofitemheld == "112" || IDofitemheld == "113" || IDofitemheld == "114" || IDofitemheld == "115" || IDofitemheld == "132" || IDofitemheld == "134" || IDofitemheld == "135" || IDofitemheld == "136" || IDofitemheld == "137" || IDofitemheld == "138" || IDofitemheld == "139" || IDofitemheld == "152" || IDofitemheld == "153" || IDofitemheld == "154" || IDofitemheld == "155" || IDofitemheld == "156") {
+            if (IDofitemheld == "14" || IDofitemheld == "15" || IDofitemheld == "16" || IDofitemheld == "27" || IDofitemheld == "28" || IDofitemheld == "29" || IDofitemheld == "31" || IDofitemheld == "32" || IDofitemheld == "34" || IDofitemheld == "35" || IDofitemheld == "36" || IDofitemheld == "38" || IDofitemheld == "40" || IDofitemheld == "41" || IDofitemheld == "42" || IDofitemheld == "993" || IDofitemheld == "55" || IDofitemheld == "56" || IDofitemheld == "57" || IDofitemheld == "58" || IDofitemheld == "59" || IDofitemheld == "60" || IDofitemheld == "61" || IDofitemheld == "62" || IDofitemheld == "65" || IDofitemheld == "67" || IDofitemheld == "68" || IDofitemheld == "69" || IDofitemheld == "996" || IDofitemheld == "108" || IDofitemheld == "109" || IDofitemheld == "111" || IDofitemheld == "112" || IDofitemheld == "113" || IDofitemheld == "114" || IDofitemheld == "115" || IDofitemheld == "132" || IDofitemheld == "134" || IDofitemheld == "135" || IDofitemheld == "136" || IDofitemheld == "137" || IDofitemheld == "138" || IDofitemheld == "139" || IDofitemheld == "152" || IDofitemheld == "153" || IDofitemheld == "154" || IDofitemheld == "155" || IDofitemheld == "156" || IDofitemheld == "157" || IDofitemheld == "159" || IDofitemheld == "160") {
                 if(RS.IsCausual) CS = Mathf.Clamp(RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id")), 0f, MainPlayer.GunSpreadPC).x, 1f, Mathf.Infinity);
                 else CS = Mathf.Clamp(RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id")), MainPlayer.GetComponent<Rigidbody>().velocity.magnitude / MainPlayer.Speed, MainPlayer.GunSpreadPC).x, 1f, Mathf.Infinity);
                 if (GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "at") == "103") {
@@ -1212,7 +1212,7 @@ public class CanvasScript : MonoBehaviour {
                     GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                     GS.SetString("Uses: ", "Użycia: ") + (int)(float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) / 10f) };
                 break;
-            case 29: case 31: case 32: case 34: case 35: case 36: case 38: case 40: case 41: case 42: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 64: case 65: case 113: case 135: case 137:
+            case 29: case 31: case 32: case 34: case 35: case 36: case 38: case 40: case 41: case 42: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 64: case 65: case 113: case 135: case 137: case 157: case 159: case 160:
                 // Guns
                 string SpareAmmo = "0";
                 if(GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" || int.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture) == 996) {
@@ -1238,6 +1238,10 @@ public class CanvasScript : MonoBehaviour {
                                 break;
                             case 62: case 64:
                                 if(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "id") == "63")
+                                SpareAmmo = (int.Parse(SpareAmmo) + int.Parse(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "va"))).ToString();
+                                break;
+                            case 157: case 159: case 160:
+                                if(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "id") == "158")
                                 SpareAmmo = (int.Parse(SpareAmmo) + int.Parse(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "va"))).ToString();
                                 break;
                         }

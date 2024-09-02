@@ -1195,7 +1195,7 @@ public class RoundScript : MonoBehaviour {
 
         FoodItems = new int[] { 1, 3, 4, 5, 6, 7, 8, 9, 10, 17, 18, 19, 20, 21, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 119, 120, 121, 122, 123 };
         Utilities = new int[] { 2, 11, 12, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 124, 125, 126, 127, 128, 129};
-        Weapons = new int[] { 14, 15, 16, 27, 28, 29, 31, 32, 34, 35, 36, 38, 40, 41, 42, 55, 56, 57, 58, 59, 60, 61, 62, 64, 65, 66, 67, 68, 69, 108, 109, 110, 111, 112, 113, 114, 115, 132, 133, 134, 135, 136, 137, 138, 139, 152, 153, 154, 155, 156};
+        Weapons = new int[] { 14, 15, 16, 27, 28, 29, 31, 32, 34, 35, 36, 38, 40, 41, 42, 55, 56, 57, 58, 59, 60, 61, 62, 64, 65, 66, 67, 68, 69, 108, 109, 110, 111, 112, 113, 114, 115, 132, 133, 134, 135, 136, 137, 138, 139, 152, 153, 154, 155, 156, 157, 159, 160};
         AmmoItems = new int[] { 30, 33, 37, 39, 63};
         HealingItems = new int[] { 22, 23, 24, 25, 26, 106, 107};
         AttachmentItems = new int[] { 100, 101, 102, 103, 104, 105 };
@@ -1246,8 +1246,10 @@ public class RoundScript : MonoBehaviour {
         "065/000-050-100/010-010/300-010",
         "113/015-060-100/000-000/300-050",
         "135/020-050-100/050-001/010-020",
-        "137/005-030-080/040-002/020-020"};
-
+        "137/005-030-080/040-002/020-020",
+        "157/030-060-120/040-000/300-050",
+        "159/000-030-060/000-000/300-050",
+        "160/030-060-120/100-001/060-060",};
     }
 
     public Vector4 ReceiveGunSpred(int GunID, float MaxSpeed, float Spread) {
@@ -1299,10 +1301,10 @@ public class RoundScript : MonoBehaviour {
 
         GameObject ThisAttack = GeneralAttack;
         switch(Args[0]){
-            case "Flashlight": case "Knife": case  "Bayonet": case  "Crowbar": case  "FireAxe": case  "Machete": case  "BaseballBat": case "SapphireSpear": case "Katana": case "Spear": case "Shovel": case "FryingPan": case "Sledgehammer": case "Plunger": case "Chainsaw": case "MutantBite": case "StrongMutantBite":
+            case "Flashlight": case "Knife": case  "Bayonet": case  "Crowbar": case  "FireAxe": case  "Machete": case  "BaseballBat": case "SapphireSpear": case "Katana": case "Spear": case "Shovel": case "FryingPan": case "Sledgehammer": case "Plunger": case "Chainsaw": case "MutantBite": case "StrongMutantBite": case "StoneAxe": case "Fokos": case "Sword": case "Pickaxe":
                 ThisAttack = InvisibleAttack;
                 break;
-            case "Colt": case  "Luger": case "Revolver": case "HunterRifle": case "DBShotgun": case "Thompson": case "AK-47": case "Shotgun": case "MP5": case "M4": case "Sten": case "Garand": case "GarandR": case "Famas": case "Uzi": case "G3": case "Scar": case "SPAS": case "SAW": case "Minigun": case "MosinNagant": case "Musket": case "G18": case "M1Carbine":
+            case "Colt": case  "Luger": case "Revolver": case "HunterRifle": case "DBShotgun": case "Thompson": case "AK-47": case "Shotgun": case "MP5": case "M4": case "Sten": case "Garand": case "GarandR": case "Famas": case "Uzi": case "G3": case "Scar": case "SPAS": case "SAW": case "Minigun": case "MosinNagant": case "Musket": case "G18": case "M1Carbine": case "Flintlock": case "BakerRifle": case "NockGun":
                 ThisAttack = GunAttack;
                 break;
             default:
