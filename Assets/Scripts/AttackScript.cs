@@ -592,7 +592,6 @@ public class AttackScript : MonoBehaviour {
                 FirearmType = "Blackpowder";
                 break;
             case "NockGun":
-                Debug.Log("NockGun fired");
                 AttackMobDamage = Random.Range(50f, 100f);
                 AttackPushForce = new float[] { 30f, 0f };
                 AttackPropertyDamage = Random.Range(50f, 100f);
@@ -610,7 +609,7 @@ public class AttackScript : MonoBehaviour {
 
         if(AttackType == "Gun"){
             AttackMechanic = "Projectile";
-            AttackSpeeds = new float[]{300f, 10f};
+            AttackSpeeds = new float[]{Random.Range(200f, 300f), 10f};
             if(GameObject.Find("_RoundScript").GetComponent<RoundScript>().IsCausual) AttackMechanic = "HitScan";
             else AttackMechanic = "Projectile";
         }
@@ -632,7 +631,7 @@ public class AttackScript : MonoBehaviour {
         // Gunfires
         string[] GunfiresoundSettings = {""};
         switch(GunName){
-            case "Flashlight": case "Knife": case  "Bayonet": case  "Crowbar": case  "FireAxe": case  "Machete": case  "BaseballBat": case "SapphireSpear": case "Katana": case "Spear": case "FryingPan": case "Sledgehammer": case "Plunger": case "StoneAxe": case "Fokos": case "Sword": case "Pickaxe":
+            case "Flashlight": case "Knife": case  "Bayonet": case  "Crowbar": case  "FireAxe": case  "Machete": case  "BaseballBat": case "SapphireSpear": case "Katana": case "Spear": case "FryingPan": case "Sledgehammer": case "Plunger": case "Shovel": case "StoneAxe": case "Fokos": case "Sword": case "Pickaxe":
                 string[] Swings = {"Swing1", "Swing2", "Swing3"};
                 GunfiresoundSettings = new string[]{ Swings[(int)Random.Range(0f, 2.9f)], "100", "Invisible" };
                 break;
@@ -886,30 +885,7 @@ public class AttackScript : MonoBehaviour {
         }
 
         // Bullet Effect
-        if (Bullet && Bullet.activeInHierarchy == true) {
-            /*if (Vector3.Distance(this.transform.position, Bullet.transform.GetChild(0).position) < Vector3.Distance(this.transform.position, HittedPositon)) {
-
-                Bullet.transform.position += Bullet.transform.GetChild(0).right * -(Vector3.Distance(this.transform.position, HittedPositon) / 10f);
-                //float DistanceFade = Vector3.Distance(this.transform.position, Bullet.transform.GetChild(0).position) / Vector3.Distance(this.transform.position, HittedPositon);
-                if (Vector3.Distance(this.transform.position, Bullet.transform.GetChild(0).position) < 5f) {
-                    Bullet.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 0.5f, 0f, 0f);
-                } else if (Vector3.Distance(this.transform.position, Bullet.transform.GetChild(0).position) >= 5f && Vector3.Distance(this.transform.position, Bullet.transform.GetChild(0).position) < 10f) {
-                    Bullet.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 0.5f, 0f, (Vector3.Distance(this.transform.position, Bullet.transform.GetChild(0).position) - 5f) / 5f);
-                } else {
-                    Bullet.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 0.5f, 0f, 1f);
-                }
-                Bullet.transform.GetChild(1).GetComponent<SpriteRenderer>().color = Bullet.transform.GetChild(0).GetComponent<SpriteRenderer>().color;
-
-                if (Vector3.Distance(Bullet.transform.position, GameObject.Find("MainCamera").transform.position) < 5f && Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) >= 10f && Bullet.transform.GetChild(2).name == "PassBy" && Bullet.transform.GetChild(2).GetComponent<AudioSource>().isPlaying == false) {
-                    Bullet.transform.GetChild(2).name = "PassedBy";
-                    Bullet.transform.GetChild(2).GetComponent<AudioSource>().Play();
-                    Bullet.transform.GetChild(2).GetComponent<AudioSource>().volume = 1f * (GameObject.Find("_GameScript").GetComponent<GameScript>().MasterVolumeA * GameObject.Find("_GameScript").GetComponent<GameScript>().SoundVolume);
-                }
-
-            } else {
-                Bullet.transform.GetChild(0).gameObject.SetActive(false);
-                Bullet.transform.GetChild(1).gameObject.SetActive(false);
-            }*/
+        if (AttackHit == 0 && Bullet && Bullet.activeInHierarchy == true) {
 
             if (Slimend && !HitWater && Vector3.Distance(Bullet.transform.position, GameObject.Find("MainCamera").transform.position) < 5f && Vector3.Distance(Slimend.transform.position, GameObject.Find("MainCamera").transform.position) >= 10f && Bullet.name == "S_Bullet" && Bullet.GetComponent<AudioSource>().isPlaying == false) {
                 Bullet.name = "S_Bulleted";
@@ -1008,15 +984,21 @@ public class AttackScript : MonoBehaviour {
                 }
             }
 
-            if (Attacker != null && GS.GetSemiClass(GS.RoundSetting, "G", "?") != "1") {
+            if (Attacker != null && GS.GameModePrefab.x == 0) {
                 if (Attacker.GetComponent<PlayerScript>() != null && ObjectHit != null) {
                     if(MeleeDurability != 0) Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld] = GS.SetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "va", "/+-" + MeleeDurability);//Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld].y -= MeleeDurability;
                     if (ObjectHit.GetComponent<FootstepMaterial>() != null) {
                         int Digup = Random.Range(0, 10);
-                        if (ObjectHit.GetComponent<FootstepMaterial>().WhatToPlay == "Grass" && GS.GetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "id") == "115" && GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" && Digup == 0) {
+                        if (ObjectHit.GetComponent<FootstepMaterial>().WhatToPlay == "Grass" && GS.GetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "id") == "115" && GS.GameModePrefab.x == 0 && Digup <= 3) {
                             GameObject DigupItem = Instantiate(ItemPrefab) as GameObject;
-                            DigupItem.transform.position = PointHit;
-                            DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[(int)Random.Range(1, GameObject.Find("_RoundScript").GetComponent<RoundScript>().TotalItems.Length - 0.1f)].getName();
+                            DigupItem.transform.position = PointHit + Vector3.up / 4f;
+
+                            if(Digup == 0)
+                                DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[(int)Random.Range(1, GameObject.Find("_RoundScript").GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables;
+                            else {
+                                int[] materials = new[]{142, 145, 147, 146, 146, 146};
+                                DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[materials[(int)Random.Range(0f, 5.9f)]].startVariables;
+                            }
                         }
                     }
                 }
@@ -1165,9 +1147,10 @@ public class AttackScript : MonoBehaviour {
                 Destroy(FlameThrower);
                 Destroy(BubblesFlameThrower);
             }
-            Destroy(HitDetector);
-
+            
         }
+
+        Destroy(HitDetector);
 
     }
 }

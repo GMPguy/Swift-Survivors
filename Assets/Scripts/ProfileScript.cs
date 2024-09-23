@@ -37,9 +37,6 @@ public class ProfileScript : MonoBehaviour{
     public string[] Achievements = {};
     public string[] Trophies = {};
 
-    // Messages
-    public List<string> Messages; // ti_Good;de_Description;vi_BonusVisuals;im_0; - importance levels 0-not 1-save 2-popup 3-popupinstant
-
     void Start(){
 
         SkinColors = new Color[]{
@@ -110,7 +107,7 @@ public class ProfileScript : MonoBehaviour{
     }
 
     public void profMessage(string title, string desc, int importance = 0, string icon = "PMmessage", string spec = "PMdefault"){
-        Messages.Insert(0, "ti_" + title + ";de_" + desc + ";im_" + importance + ";vi_" + icon + ";sp_" + spec + ";");
+        GS.Messages.Insert(0, "ti_" + title + ";de_" + desc + ";im_" + importance + ";vi_" + icon + ";sp_" + spec + ";");
     }
 
     public void SaveProfile(int What){
@@ -125,7 +122,6 @@ public class ProfileScript : MonoBehaviour{
                 for(int ac = 0; ac < MiscItems.Length; ac++) cols[1] += MiscItems[ac] + "/";
                 for(int ac = 0; ac < Clothes.Length; ac++) cols[2] += Clothes[ac] + "/";
                 for(int ac = 0; ac < Kits.Length; ac++) cols[3] += Kits[ac] + "/";
-                for(int ac = 0; ac < Messages.ToArray().Length; ac++) if(GS.GetSemiClass(Messages[ac], "im_") != "0") cols[4] += Messages[ac] + "/";
 
                 string DataToSave = "ID_" + ProfileID.ToString() +
                 "®PN_" + Profilename +
@@ -160,7 +156,9 @@ public class ProfileScript : MonoBehaviour{
 
                     print("Removing profile of id " + What.ToString());
                     string RemainingData = "";
-                    for (int AddOld = 0; AddOld < PrevProfs.Length; AddOld++) if (GS.GetSemiClass(PrevProfs[AddOld], "ID_", "®") != Mathf.Abs(What).ToString()) RemainingData += PrevProfs[AddOld];
+                    for (int AddOld = 0; AddOld < PrevProfs.Length; AddOld++) 
+                        if (GS.GetSemiClass(PrevProfs[AddOld], "ID_", "®") != Mathf.Abs(What).ToString()) 
+                            RemainingData += PrevProfs[AddOld] + "©";
                     PlayerPrefs.SetString("ProfileSaves", RemainingData);
 
                 } else {
@@ -186,8 +184,6 @@ public class ProfileScript : MonoBehaviour{
                         MiscItems = GS.ListSemiClass(GS.GetSemiClass(GottenProfile, "invMisc_", "®"), "/");
                         Clothes = GS.ListSemiClass(GS.GetSemiClass(GottenProfile, "invCl_", "®"), "/");
                         Kits = GS.ListSemiClass(GS.GetSemiClass(GottenProfile, "invKt_", "®"), "/");
-
-                        foreach(string pushback in GS.ListSemiClass(GS.GetSemiClass(GottenProfile, "pms_", "®"), "/")) Messages.Add(pushback);
 
                         AddAchievementsAndStuff("Add");
                         AddAchievementsAndStuff(GS.GetSemiClass(GottenProfile, "ach_", "®"));

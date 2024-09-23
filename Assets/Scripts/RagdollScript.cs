@@ -59,40 +59,6 @@ public class RagdollScript : MonoBehaviour {
             BodyParts[8].transform.SetParent(BodyParts[0].transform);
             BodyParts[9].transform.SetParent(BodyParts[8].transform);
             foreach (GameObject GetPart in BodyParts) {
-
-                //GetPart.layer = 13;
-                //Rigidbody NewRig = GetPart.AddComponent<Rigidbody>();
-                //NewRig.constraints = RigidbodyConstraints.FreezePosition;
-                //GetPart.AddComponent<BoxCollider>();
-                //GetPart.GetComponent<BoxCollider>().size = Vector3.one / 4f;
-
-                //GetPart.layer = 13;
-                //Rigidbody NewRig = GetPart.AddComponent<Rigidbody>();
-                //NewRig.constraints = RigidbodyConstraints.FreezePosition;
-                //BoxCollider Col = GetPart.AddComponent<BoxCollider>();
-                //Col.size = new Vector3(0.1f, 0.1f, 0.1f);
-
-                //GetPart.layer = 13;
-                //GetPart.AddComponent<Rigidbody>();
-                //SpringJoint Jointt = GetPart.AddComponent<SpringJoint>();
-                //Jointt.anchor = GetPart.transform.position;
-                //Jointt.connectedBody = GetPart.transform.parent.GetComponent<Rigidbody>();
-                //Jointt.transform.SetParent(this.transform);
-
-                //GetPart.layer = 13;
-                //GetPart.AddComponent<Rigidbody>();
-                //FixedJoint Jointt = GetPart.AddComponent<FixedJoint>();
-                //Jointt.connectedBody = GetPart.transform.parent.GetComponent<Rigidbody>();
-                //Jointt.transform.SetParent(this.transform);
-
-                //GetPart.layer = 13;
-                //BoxCollider Col = GetPart.AddComponent<BoxCollider>();
-                //Col.size = Vector3.one / 4f;
-                //GetPart.AddComponent<Rigidbody>();
-                //SpringJoint Jointt = GetPart.AddComponent<SpringJoint>();
-                //Jointt.connectedBody = GetPart.transform.parent.GetComponent<Rigidbody>();
-                //Jointt.transform.SetParent(this.transform);
-
                 GetPart.layer = 13;
                 foreach (Transform GetMesh in GetPart.transform) {
                     if (GetMesh.GetComponent<MeshRenderer>() != null && GetMesh.name != "Plunger") {
@@ -211,7 +177,6 @@ public class RagdollScript : MonoBehaviour {
                 }
             }
             Destroy(this.GetComponent<Rigidbody>());
-            this.enabled = false;
         }
 		
 	}

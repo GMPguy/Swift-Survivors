@@ -75,6 +75,10 @@ public class Interactions : MonoBehaviour {
             ReturnThis = GS.GetComponent<GameScript>().SetString(
                 "Loot", 
                 "Przeszukaj");
+        } else if (Options[ThisOption] == "GrabAmmo") {
+            ReturnThis = GS.GetComponent<GameScript>().SetString(
+                "Grab ammo (", 
+                "Bierz amunicję (") + (int)this.transform.parent.GetComponent<InteractableScript>().Variables.y + ")";
         }
 
         return ReturnThis;

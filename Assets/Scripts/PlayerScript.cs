@@ -9,6 +9,7 @@ public class PlayerScript : MonoBehaviour {
 
     // Main Variables
     public int State = 0; // 0 InActive   1 Alive   2 Dead
+    public bool IsCasual = false;
     // Stats
     public float[] Health = new float[] { 100f, 100f };
     public float[] Food = new float[] { 0f, 30f };
@@ -152,6 +153,8 @@ public class PlayerScript : MonoBehaviour {
     public Vector3[] CAMvectors;
     public float[] CAMvariables = {1f, 1f, 60f};
     // Camera position variables
+    List<GameObject> scans;
+    float scanBuffer = 0f;
 
     // Cants
     public float CantMove = 0f;
@@ -184,6 +187,7 @@ public class PlayerScript : MonoBehaviour {
         }
 
         State = 1;
+        IsCasual = RS.IsCausual;
         CameraShakeForce = new float[] { 0f, 0f, 0f };
         previousItem = new int[] { 0, 0 };
         MicroSiverts = new float[] { 0f, 0f, 0f };
@@ -233,6 +237,24 @@ public class PlayerScript : MonoBehaviour {
         }
         // Prepare buildings
 
+        // Get rewards and punishments
+        if (GS.ExistSemiClass(GS.PlaythroughStats, "RItemGot_")){
+            for(int ByThatMuch = int.Parse(GS.GetSemiClass(GS.PlaythroughStats, "RItemGot_")); ByThatMuch > 0; ByThatMuch--){
+                int GivenID = RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)];
+                InvGet(GS.itemCache[GivenID].startVariables, 0);
+            }
+            GS.PlaythroughStats = GS.RemoveSemiClass(GS.PlaythroughStats, "RItemGot_");
+        }
+
+        if (GS.ExistSemiClass(GS.PlaythroughStats, "RTreasure_")){
+            for(int ByThatMuch = int.Parse(GS.GetSemiClass(GS.PlaythroughStats, "RTreasure_")); ByThatMuch > 0; ByThatMuch--){
+                int GivenID = (int)Random.Range(990f, 999.9f);
+                InvGet(GS.itemCache[GivenID].startVariables, 0);
+            }
+            GS.PlaythroughStats = GS.RemoveSemiClass(GS.PlaythroughStats, "RTreasure_");
+        }
+        // Get rewards and punishments
+
     }
 
     void Update(){
@@ -260,7 +282,7 @@ public class PlayerScript : MonoBehaviour {
         // Prevent Leaving map
 
         // Reset map if not loaded
-        if (this.transform.position.y < GameObject.Find("_RoundScript").GetComponent<RoundScript>().ResetHeight && IsSwimming == false && GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0") {
+        if (this.transform.position.y < GameObject.Find("_RoundScript").GetComponent<RoundScript>().ResetHeight && IsSwimming == false && GS.GameModePrefab.x == 0) {
             GameObject.Find("_RoundScript").GetComponent<RoundScript>().SpecialEvent("Reset");
         }
         // Reset map if not loaded
@@ -423,7 +445,7 @@ public class PlayerScript : MonoBehaviour {
                     WhatWalkingOn = GroundDetectorObj.GetComponent<GroundDetector>().DetectedObject.GetComponent<FootstepMaterial>().WhatToPlay;
                     if (GroundDetectorObj.GetComponent<GroundDetector>().DetectedObject.GetComponent<FootstepMaterial>().WhatToPlay == "Water") {
                         InWater = true;
-                        if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") != "87" && GS.GetSemiClass(GS.RoundSetting, "G", "?") != "1") {
+                        if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") != "87" && GS.GameModePrefab.x != 1) {
                             Wet += 0.04f;
                         }
                     } else {
@@ -542,7 +564,9 @@ public class PlayerScript : MonoBehaviour {
                 Buffs("");
 
                 // Stats
-                Health[0] = Mathf.Clamp(Health[0], 0f, Health[1]);
+                Health[0] = Mathf.Clamp(Health[0], 0f, Mathf.Infinity);
+                if (Health[0] > Health[1]) 
+                    Health[0] = Mathf.Clamp(Health[0] - 0.02f, 100f, Mathf.Infinity);
                 Food[0] = Mathf.Clamp(Food[0], 0f, Mathf.Infinity);
                 Energy[0] = Mathf.Clamp(Energy[0], 0f, Energy[1]);
                 Oxygen[0] = Mathf.Clamp(Oxygen[0], 0f, Oxygen[1]);
@@ -551,7 +575,7 @@ public class PlayerScript : MonoBehaviour {
                     State = 2;
                     GS.Mess(KilledBy);
                     if(GS.Round > 1) GS.PS.AchProg("Ach_TheCycleBegins", "0");
-                    if(GS.Round == 19 && GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0") GS.PS.AchProg("Ach_AWholeWeek", "0");
+                    if(GS.Round == 19 && GS.GameModePrefab.x == 0) GS.PS.AchProg("Ach_AWholeWeek", "0");
                     Debug.LogError("Here, add a new game over screen!");
                     GS.NeueScore = new string[]{
                         "S" + GS.Score.ToString() + ";R" + GS.Round.ToString() + ";G" + GS.GetSemiClass(GS.RoundSetting, "G", "?") + ";D" + GS.GetSemiClass(GS.RoundSetting, "D", "?") + ";N" + GS.SaveFileName + ";P" + GS.GetSemiClass(GS.RoundSetting, "P", "?"),
@@ -829,6 +853,25 @@ public class PlayerScript : MonoBehaviour {
 
     }
 
+    bool CheckStamina(float amount, int importance) {
+        // Importance: 0 - normal action 1 - sprinting and jumping
+        if(IsCasual){
+            if (importance == 0 || CantUseItem <= 0f || Hydration > 0f || Adrenaline > 0f)
+                return true;
+        } else {
+            if (Energy[0] >= amount)
+                return true;
+        }
+        return false;
+    }
+
+    void StaminaDrain(float amount) {
+        if(!IsCasual) {
+            Energy[0] -= amount;
+            EnergyRegen = 1f;
+        }
+    }
+
     void Movement() {
 
         // Normal vs Swimming state
@@ -878,7 +921,7 @@ public class PlayerScript : MonoBehaviour {
             //if (IsGrounded == true) {
 
                 // Crouching
-                if (IsGrounded && (GS.ReceiveButtonPress("Crouch", "Hold") > 0f && InWater == false) || InBox == true) {
+                if ((GS.ReceiveButtonPress("Crouch", "Hold") > 0f && InWater == false) || InBox == true) {
                     IsCrouching = Mathf.MoveTowards(IsCrouching, 1f, 0.2f);
                 } else {
                     IsCrouching = Mathf.MoveTowards(IsCrouching, 0f, 0.2f);
@@ -896,25 +939,7 @@ public class PlayerScript : MonoBehaviour {
                 // Walking
                 float GotSpeed = 0f;
                 int moved = 0;
-                if (IsGrounded && GS.ReceiveButtonPress("Sprint", "Hold") > 0f){
-                    MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, this.transform.forward, 0.25f);
-                    moved = 2;
-                } else if (IsGrounded){
-                    MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, (this.transform.forward * GS.ReceiveButtonPress("MoveForward", "Hold")) + (this.transform.forward * -GS.ReceiveButtonPress("MoveBackwards", "Hold")) + (this.transform.right * GS.ReceiveButtonPress("MoveRight", "Hold")) + (this.transform.right * -GS.ReceiveButtonPress("MoveLeft", "Hold")), 0.25f);
-                    moved = 1;
-                } else if (GS.ReceiveButtonPress("MoveForward", "Hold") > 0f ||GS.ReceiveButtonPress("MoveBackwards", "Hold") > 0f||GS.ReceiveButtonPress("MoveRight", "Hold") > 0f || GS.ReceiveButtonPress("MoveLeft", "Hold") > 0f) {
-                    MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, (this.transform.forward * GS.ReceiveButtonPress("MoveForward", "Hold")) + (this.transform.forward * -GS.ReceiveButtonPress("MoveBackwards", "Hold")) + (this.transform.right * GS.ReceiveButtonPress("MoveRight", "Hold")) + (this.transform.right * -GS.ReceiveButtonPress("MoveLeft", "Hold")), 0.05f);
-                    moved = 1;
-                }
-                MoveDirNorm = Vector3.ClampMagnitude(MoveDirNorm, 1f);
-                PushbackForce = Vector3.Lerp(PushbackForce, Vector3.zero, 0.1f);
                 int SlowDown = 0; // 0 Normal   1 Can't sprint   2 Slow Movement   3 Can't jump
-
-                if (InWater == true) {
-                    GotSpeed = SwimmingSpeed;
-                } else {
-                    GotSpeed = Speed;
-                }
 
                 if ((InWater == true && GS.GetSemiClass(Inventory[CurrentItemHeld], "id") != "87") || BrokenBone == 1 || IsCrouching > 0f || GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "998") {
                     SlowDown = 3;
@@ -926,6 +951,26 @@ public class PlayerScript : MonoBehaviour {
                     SlowDown = 0;
                 }
 
+                if (IsCrouching <= 0f && IsGrounded && GS.ReceiveButtonPress("Sprint", "Hold") > 0f && GS.ReceiveButtonPress("Sprint", "Hold") > 0f && CheckStamina(10f, 1) && SlowDown == 0){
+                    MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, this.transform.forward, 0.25f);
+                    moved = 2;
+                } else if (IsGrounded){
+                    MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, (this.transform.forward * GS.ReceiveButtonPress("MoveForward", "Hold")) + (this.transform.forward * -GS.ReceiveButtonPress("MoveBackwards", "Hold")) + (this.transform.right * GS.ReceiveButtonPress("MoveRight", "Hold")) + (this.transform.right * -GS.ReceiveButtonPress("MoveLeft", "Hold")), 0.25f);
+                    moved = 1;
+                } else if (GS.ReceiveButtonPress("MoveForward", "Hold") > 0f ||GS.ReceiveButtonPress("MoveBackwards", "Hold") > 0f||GS.ReceiveButtonPress("MoveRight", "Hold") > 0f || GS.ReceiveButtonPress("MoveLeft", "Hold") > 0f) {
+                    MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, (this.transform.forward * GS.ReceiveButtonPress("MoveForward", "Hold")) + (this.transform.forward * -GS.ReceiveButtonPress("MoveBackwards", "Hold")) + (this.transform.right * GS.ReceiveButtonPress("MoveRight", "Hold")) + (this.transform.right * -GS.ReceiveButtonPress("MoveLeft", "Hold")), 0.05f);
+                    moved = 1;
+                }
+
+                MoveDirNorm = Vector3.ClampMagnitude(MoveDirNorm, 1f);
+                PushbackForce = Vector3.Lerp(PushbackForce, Vector3.zero, 0.1f);
+
+                if (InWater == true) {
+                    GotSpeed = SwimmingSpeed;
+                } else {
+                    GotSpeed = Speed;
+                }
+
                 float WetSlowDown = 1f;
                 if (InWater != true && Wet > 0f) {
                     WetSlowDown = (1f - (Wet / 150f));
@@ -933,9 +978,8 @@ public class PlayerScript : MonoBehaviour {
                     WetSlowDown = (1f + (Wet / 300f));
                 }
 
-                if (moved == 2 && GS.ReceiveButtonPress("Sprint", "Hold") > 0f && Energy[0] > 10f && SlowDown == 0) {
-                    EnergyRegen = 1f;
-                    Energy[0] -= 0.25f;
+                if (moved == 2) {
+                    StaminaDrain(.25f);
                     MoveDirSpeed = (MoveDirNorm * (GotSpeed * 2f)) * (1f - (Drunkenness / 150f)) * WetSlowDown;
                     FOVoffset = new float[]{Mathf.Lerp(FOVoffset[0], 7.5f, 0.2f), 0.1f};
                 } else if (moved == 1) {
@@ -948,11 +992,10 @@ public class PlayerScript : MonoBehaviour {
                 // Walking
 
                 // Jumping
-                if ((IsGrounded || this.GetComponent<Rigidbody>().velocity.magnitude <= 0f) && GS.ReceiveButtonPress("Jump", "Hold") > 0f && Energy[0] > 25f && JumpCooldown <= 0f && SlowDown != 3) {
+                if ((IsGrounded || this.GetComponent<Rigidbody>().velocity.magnitude <= 0f) && GS.ReceiveButtonPress("Jump", "Hold") > 0f && CheckStamina(25f, 1) && JumpCooldown <= 0f && SlowDown != 3) {
                     ReturnPushback = 0f;
                     JumpCooldown = 1f;
-                    EnergyRegen = 1f;
-                    Energy[0] -= 25f;
+                    StaminaDrain(25f);
                     this.transform.position += Vector3.up * 0.25f;
                     this.GetComponent<Rigidbody>().velocity = new Vector3(this.GetComponent<Rigidbody>().velocity.x, 0f, this.GetComponent<Rigidbody>().velocity.z);
                     this.GetComponent<Rigidbody>().AddForce(this.transform.up * 10f, ForceMode.VelocityChange);
@@ -1012,10 +1055,9 @@ public class PlayerScript : MonoBehaviour {
 
         if (InteractedGameobject != null) {
             if (InteractedGameobject.transform.parent != null && InteractedGameobject.transform.parent.tag == "Interactable" && GS.ReceiveButtonPress("Interaction", "Hold") > 0f) {
-                if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "BreakBarel" && CantInteract <= 0f && Energy[0] > 10f) {
+                if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "BreakBarel" && CantInteract <= 0f && CheckStamina(10f, 0)) {
                     CantInteract = 1f;
-                    Energy[0] -= 10f;
-                    EnergyRegen = 1f;
+                    StaminaDrain(10f);
                     InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Interaction("Break", 1f);
                 } else if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "EscapeTunel" && CantInteract <= 0f) {
                     CantInteract = 1f;
@@ -1026,7 +1068,7 @@ public class PlayerScript : MonoBehaviour {
                         InteractedGameobject.transform.position};
                     CAMvariables = new float[]{0.05f, 0.05f, 60f};
                     RS.SpecialEvent("ESCtunnel");
-                    if(GS.Round == 5 && GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0") GS.PS.AchProg("Ach_TheNextDay", "0");
+                    if(GS.Round == 5 && GS.GameModePrefab.x == 0) GS.PS.AchProg("Ach_TheNextDay", "0");
                     //CantInteract = 100f;
                     //RS.GetComponent<RoundScript>().SpecialEvent("Escape");
                 } else if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "Door" && CantInteract <= 0f) {
@@ -1041,6 +1083,9 @@ public class PlayerScript : MonoBehaviour {
                 } else if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "RingBell" && InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Variables.y == 0f && CantInteract <= 0f) {
                     CantInteract = 0.5f;
                     InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Interaction("RingTheBell", 0f);
+                } else if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "GrabAmmo" && InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Variables.y > 0f && CantInteract <= 0f) {
+                    CantInteract = 0.25f;
+                    InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Interaction("GatherAmmo", 0f);
                 }
             } else if (InteractedGameobject.tag == "Mob" && GS.ReceiveButtonPress("Interaction", "Hold") > 0f) {
                 if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "TalkTo" && CantInteract <= 0f) {
@@ -1057,14 +1102,14 @@ public class PlayerScript : MonoBehaviour {
 
         switch(Spec){
             case 0: // Add item
-                int stackable = 0;
-                if(GS.ExistSemiClass(What, "sq")) stackable = 1;
+                string cash = GS.GetSemiClass(What, "ch");
 
-                if(stackable == 1) {
+                if(cash == ""){
 
-                    //if(Inventory[CurrentItemHeld]){
+                    int stackable = 0;
+                    if(GS.ExistSemiClass(What, "sq")) stackable = 1;
 
-                    //} else {
+                    if(stackable == 1) {
                         for (int cfq = 0; cfq <= MaxInventorySlots; cfq++) {
                             if(cfq == MaxInventorySlots) stackable = 2;
                             else if ( GS.GetSemiClass(Inventory[cfq], "id") == GS.GetSemiClass(What, "id") && GS.RemoveSemiClass(Inventory[cfq], "sq") == GS.RemoveSemiClass(What, "sq") ) {
@@ -1072,25 +1117,37 @@ public class PlayerScript : MonoBehaviour {
                                 break;
                             }
                         }
-                    //}
-                }
+                    }
 
-                if(stackable != 1){
-                    if(GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "0"){
-                        Inventory[CurrentItemHeld] = What;
-                    } else {
-                        for (int ci = 0; ci <= MaxInventorySlots; ci++) {
-                            if(ci == MaxInventorySlots) {
-                                GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
-                                DropItem.transform.position = this.transform.position + LookDir.forward * 1f;
-                                DropItem.GetComponent<ItemScript>().Variables = What;
-                                DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
-                            } else if (GS.GetSemiClass(Inventory[ci], "id") == "0") {
-                                Inventory[ci] = What;
-                                break;
+                    if(stackable != 1){
+                        if(GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "0"){
+                            Inventory[CurrentItemHeld] = What;
+                        } else {
+                            for (int ci = 0; ci <= MaxInventorySlots; ci++) {
+                                if(ci == MaxInventorySlots) {
+                                    GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
+                                    DropItem.transform.position = this.transform.position + LookDir.forward * 1f;
+                                    DropItem.GetComponent<ItemScript>().Variables = What;
+                                    DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
+                                } else if (GS.GetSemiClass(Inventory[ci], "id") == "0") {
+                                    Inventory[ci] = What;
+                                    break;
+                                }
                             }
                         }
                     }
+
+                } else {
+
+                    switch (cash) {
+                        case "Money":
+                            GS.Money += int.Parse(GS.GetSemiClass(What, "va"));
+                            break;
+                        case "Ammo":
+                            GS.Ammo += int.Parse(GS.GetSemiClass(What, "va"));
+                            break;
+                    }
+
                 }
                 break;
             case 1: // remove item
@@ -1119,7 +1176,8 @@ public class PlayerScript : MonoBehaviour {
                         GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
                         DropItem.transform.position = this.transform.position + LookDir.forward * 0.5f;
                         DropItem.GetComponent<ItemScript>().Variables = What;
-                        if(GS.ExistSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq")) DropItem.GetComponent<ItemScript>().Variables = GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
+                        if(GS.ExistSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq")) 
+                            DropItem.GetComponent<ItemScript>().Variables = GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
                         if (Spec == -1) DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
                         else if (Spec == -2){
                             DropItem.transform.position = LookDir.position + LookDir.forward * 0.5f;
@@ -1128,7 +1186,6 @@ public class PlayerScript : MonoBehaviour {
                             DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
                             DropItem.GetComponent<ItemScript>().transform.forward = LookDir.forward;
                             ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Throw", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), ""), 0, 0f);
-                            InvGet(CurrentItemHeld.ToString(), 1);
                         }
                         InvGet(rs.ToString(), 1, stackAmount);
                         break;
@@ -1139,7 +1196,8 @@ public class PlayerScript : MonoBehaviour {
                     GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
                     DropItem.transform.position = this.transform.position + LookDir.forward * 0.5f;
                     DropItem.GetComponent<ItemScript>().Variables = Inventory[at];
-                    if(GS.ExistSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq")) DropItem.GetComponent<ItemScript>().Variables = GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
+                    if(GS.ExistSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq")) 
+                        DropItem.GetComponent<ItemScript>().Variables = GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
                     DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
                     if (Spec == -1) DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
                     else if (Spec == -2){
@@ -1149,7 +1207,6 @@ public class PlayerScript : MonoBehaviour {
                         DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
                         DropItem.GetComponent<ItemScript>().transform.forward = LookDir.forward;
                         ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Throw", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), ""), 0, 0f);
-                        InvGet(CurrentItemHeld.ToString(), 1);
                     }
                     InvGet(at.ToString(), 1, stackAmount);
                 }
@@ -1164,15 +1221,11 @@ public class PlayerScript : MonoBehaviour {
         if (InventoryToSet != "") {
 
             for (int SetInv = 0; SetInv <= 9; SetInv ++) {
-                //string RIS = InventoryToSet.Substring(SetInv * 9, 9);
-                //Inventory[SetInv] = new Vector3( float.Parse(RIS.Substring(0, 3)), float.Parse(RIS.Substring(3, 3)), float.Parse(RIS.Substring(6, 3)));
-                //Inventory[SetInv] = RIS.Substring(0, 3) + RIS.Substring(3, 3) + RIS.Substring(6, 3);
                 string[] LoadInv = GS.ListSemiClass(InventoryToSet, "/");
                 for(int Check = 0; Check <= 9; Check++){
                     if(Check <= LoadInv.Length) Inventory[Check] = LoadInv[Check];
                     else InvGet(Check.ToString(), 1);
                 }
-                //Inventory = GS.ListSemiClass(InventoryToSet, "/");
             }
 
         } else {
@@ -1294,7 +1347,7 @@ public class PlayerScript : MonoBehaviour {
                     MustSwitch = true;
                     ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("PickUpB", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition), 0, 0f);
                     for(int cfq = 0; cfq < MaxInventorySlots; cfq++) {
-                        if(GS.GetSemiClass(Inventory[cfq], "id") == "0" || (GS.ExistSemiClass(newItemVars, "sq") && GS.GetSemiClass(Inventory[cfq], "id") == GS.GetSemiClass(newItemVars, "id"))){
+                        if(GS.GetSemiClass(Inventory[cfq], "id") == "0" || GS.ExistSemiClass(newItemVars, "ch") || (GS.ExistSemiClass(newItemVars, "sq") && GS.GetSemiClass(Inventory[cfq], "id") == GS.GetSemiClass(newItemVars, "id"))){
                             MustSwitch = false;
                             break;
                         }
@@ -1350,11 +1403,9 @@ public class PlayerScript : MonoBehaviour {
                 if (DropOrThrow < 0.5f) {
                     // Drop
                     InvGet(CurrentItemHeld.ToString(), -1);
-                    //CantUseItem = Mathf.Clamp(CantUseItem, 0.5f, Mathf.Infinity);
                     CantSwitchItem = 0f;
                 } else {
                     // Throw
-                    print("threw");
                     InvGet(CurrentItemHeld.ToString(), -2);
                     CantUseItem = Mathf.Clamp(CantUseItem, 0.5f, Mathf.Infinity);
                     CantSwitchItem = CantUseItem;
@@ -1547,306 +1598,351 @@ public class PlayerScript : MonoBehaviour {
                     string FoodName = "";
                     string ConsumeAnimation = "Eat";
                     bool CanUse = true;
-                    if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "1") {
-                        FoodName = GS.SetString("Apple", "Jabłko");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 30f;
-                        FoodColor = new Color32(200, 0, 0, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "3") {
-                        FoodName = GS.SetString("Bread", "Chleb");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 120f;
-                        FoodColor = new Color32(234, 203, 174, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "4") {
-                        FoodName = GS.SetString("Soup", "Zupe");
-                        ConsumeAnimation = "Drink";
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 240f;
-                        FoodColor = new Color32(255, 155, 0, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "5") {
-                        FoodName = GS.SetString("Mackerel", "Makrelę");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 60f;
-                        FoodColor = new Color32(200, 225, 255, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "6") {
-                        FoodName = GS.SetString("Chocolate", "Czekoladę");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 60f;
-                        FoodColor = new Color32(155, 92, 85, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "7") {
-                        FoodName = GS.SetString("Sausage", "Kiełbasę");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 180f;
-                        FoodColor = new Color32(140, 46, 66, 255);
-                        FlashColor = new Color32(128, 255, 0, 155); 
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "8") {
-                        FoodName = GS.SetString("Jam", "Dżem");
-                        ConsumeAnimation = "Drink";
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 120f;
-                        FoodColor = new Color32(158, 0, 17, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "9") {
-                        FoodName = GS.SetString("Chips", "Czipsy");
-                        ConsumeAnimation = "Chips";
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 120f;
-                        FoodColor = new Color32(232, 214, 65, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "10") {
-                        FoodName = GS.SetString("Cheese", "Ser");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 120f;
-                        FoodColor = new Color32(242, 222, 130, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "17") {
-                        FoodName = GS.SetString("Water", "Wodę");
-                        ConsumeAnimation = "Drink";
-                        DrinkOrWhat = 1;
-                        HydrationToAdd = 60f;
-                        FoodColor = new Color32(0, 155, 255, 255);
-                        FlashColor = new Color32(128, 255, 255, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "18") {
-                        FoodName = GS.SetString("Energy Drink", "Energetyka");
-                        ConsumeAnimation = "Drink";
-                        DrinkOrWhat = 1;
-                        HydrationToAdd = 30f;
-                        TirednessToAdd = -25f;
-                        FoodColor = new Color32(200, 255, 0, 255);
-                        FlashColor = new Color32(128, 255, 255, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "19") {
-                        FoodName = GS.SetString("Candy Bar", "Batonik");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 60f;
-                        FoodColor = new Color32(255, 75, 0, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "20") {
-                        FoodName = GS.SetString("Beans", "Fasolki");
-                        ConsumeAnimation = "Chips";
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 240f;
-                        FoodColor = new Color32(255, 155, 0, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "21") {
-                        FoodName = GS.SetString("MRE", "MRE");
-                        ConsumeAnimation = "Chips";
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = (Food[1] - Food[0]);
-                        FoodColor = new Color32(200, 225, 255, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "22") {
-                        FoodName = GS.SetString("Bandage", "Bandażu");
-                        ConsumeAnimation = "Bandage";
-                        DrinkOrWhat = 2;
-                        HealthToAddSub = Mathf.Clamp(25, 0f, (Health[1] * 0.75f) - Health[0]);
-                        FoodColor = new Color32(200, 225, 255, 0);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                        if (Health[0] >= Health[1] * 0.75f) {
-                            CanUse = false;
-                        }
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "23") {
-                        FoodName = GS.SetString("Antibiotics", "Antybiotyki");
-                        ConsumeAnimation = "Chips";
-                        DrinkOrWhat = 1;
-                        InfectionToAdd = -25f;
-                        RadioactivityToAdd = -25f;
-                        FoodColor = new Color32(117, 158, 130, 255);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                        if (Infection <= 0f && Radioactivity <= 0f) {
-                            CanUse = false;
-                        }
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "24") {
-                        FoodName = GS.SetString("Vaccine", "Szczepionkę");
-                        DrinkOrWhat = 2;
-                        InfectionToAdd = -Infection;
-                        FoodColor = new Color32(117, 158, 130, 0);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                        if (Infection <= 0f)
-                        {
-                            CanUse = false;
-                        }
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "25") {
-                        FoodName = GS.SetString("Lugol's Solution", "Płyn Lugola");
-                        ConsumeAnimation = "Drink";
-                        DrinkOrWhat = 1;
-                        RadioactivityToAdd = -Radioactivity - 30f;
-                        FoodColor = new Color32(181, 97, 124, 255);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "26") {
-                        FoodName = GS.SetString("First Aid Kit", "Apteczka Pierwszej Pomocy");
-                        ConsumeAnimation = "Bandage";
-                        DrinkOrWhat = 2;
-                        HealthToAddSub = 50f;
-                        FoodColor = new Color32(181, 97, 124, 0);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "70") {
-                        FoodName = GS.SetString("Baguette", "Bagietę");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 120f;
-                        FoodColor = new Color32(204, 148, 109, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "71") {
-                        FoodName = GS.SetString("Pickles", "Ogórki Kiszone");
-                        ConsumeAnimation = "Chips";
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 60f;
-                        FoodColor = new Color32(102, 127, 58, 255);
-                        FlashColor = new Color32(128, 255, 255, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "72") {
-                        FoodName = GS.SetString("Meat", "Mięso");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 180f;
-                        FoodColor = new Color32(166, 116, 81, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "73") {
-                        FoodName = GS.SetString("Preztel", "Precla");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 60f;
-                        FoodColor = new Color32(204, 148, 109, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "74") {
-                        FoodName = GS.SetString("Cheeseburger", "Chesseburgera");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 120f;
-                        FoodColor = new Color32(255, 155, 0, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "75") {
-                        FoodName = GS.SetString("Waffle", "Gofra");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 60f;
-                        FoodColor = new Color32(226, 193, 127, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "76") {
-                        FoodName = GS.SetString("Donut", "Donuta");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 60f;
-                        FoodColor = new Color32(249, 147, 228, 255);
-                        FlashColor = new Color32(128, 255, 255, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "77") {
-                        FoodName = GS.SetString("Pâté", "Pasztet");
-                        ConsumeAnimation = "Chips";
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 60f;
-                        FoodColor = new Color32(234, 203, 174, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "78") {
-                        FoodName = GS.SetString("Crackers", "Krakersy");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 60f;
-                        FoodColor = new Color32(226, 192, 133, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "79") {
-                        FoodName = GS.SetString("Cola", "Kolę");
-                        ConsumeAnimation = "Drink";
-                        DrinkOrWhat = 1;
-                        HydrationToAdd = 30f;
-                        TirednessToAdd = -10f;
-                        FoodColor = new Color32(0, 0, 0, 255);
-                        FlashColor = new Color32(128, 255, 255, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "80") {
-                        FoodName = GS.SetString("Beer", "Piwo");
-                        ConsumeAnimation = "Drink";
-                        DrinkOrWhat = 1;
-                        DrunkToAdd = 25f;
-                        FoodColor = new Color32(255, 75, 0, 255);
-                        FlashColor = new Color32(128, 255, 255, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "81") {
-                        FoodName = GS.SetString("Vodka", "Wódkę");
-                        ConsumeAnimation = "Drink";
-                        DrinkOrWhat = 1;
-                        DrunkToAdd = 45f;
-                        FoodColor = new Color32(255, 75, 0, 255);
-                        FlashColor = new Color32(128, 255, 255, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "82") {
-                        FoodName = GS.SetString("Potato", "Ziemniaka");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 30f;
-                        FoodColor = new Color32(234, 203, 174, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "83") {
-                        FoodName = GS.SetString("Milk", "Mleko");
-                        ConsumeAnimation = "Drink";
-                        DrinkOrWhat = 1;
-                        HydrationToAdd = 60f;
-                        FoodColor = new Color32(255, 255, 255, 255);
-                        FlashColor = new Color32(128, 255, 255, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "84") {
-                        FoodName = GS.SetString("Biscuits", "Herbatniki");
-                        ConsumeAnimation = "Chips";
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 60f;
-                        FoodColor = new Color32(226, 211, 139, 255);
-                        FlashColor = new Color32(128, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "106") {
-                        FoodName = GS.SetString("Med Kit", "Apteczka");
-                        ConsumeAnimation = "Bandage";
-                        DrinkOrWhat = 2;
-                        HealthToAddSub = 75f;
-                        Infection = Mathf.Clamp(Random.Range(0f, 50f), 0f, Infection);
-                        Radioactivity = Mathf.Clamp(Random.Range(0f, 50f), 0f, Radioactivity);
-                        FoodColor = new Color32(181, 97, 124, 0);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "116") {
-                        FoodName = GS.SetString("Herring", "Śledzia");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 30f;
-                        FoodColor = new Color32(180, 190, 200, 0);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "117") {
-                        FoodName = GS.SetString("Salmon", "Łosośa");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 120f;
-                        FoodColor = new Color32(216, 224, 234, 0);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "118") {
-                        FoodName = GS.SetString("Carp", "Karpia");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 300f;
-                        FoodColor = new Color32(172, 188, 120, 0);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "119") {
-                        FoodName = GS.SetString("Coconut", "Kokosa");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 240f;
-                        HydrationToAdd = 30f;
-                        FoodColor = new Color32(172, 188, 120, 0);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "120") {
-                        FoodName = GS.SetString("Banana", "Banana");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 30f;
-                        FoodColor = new Color32(255, 225, 100, 0);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "121") {
-                        FoodName = GS.SetString("Sandwich", "Kanapke");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 240f;
-                        FoodColor = new Color32(255, 241, 202, 0);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "122") {
-                        FoodName = GS.SetString("Coffee", "Kawa");
-                        DrinkOrWhat = 1;
-                        HydrationToAdd = 30f;
-                        FoodColor = new Color32(255, 225, 100, 0);
-                        FlashColor = new Color32(128, 255, 255, 155);
-                        StaminaToAdd = Energy[1] - Energy[0];
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "123") {
-                        FoodName = GS.SetString("Popsicle", "Loda na patyku");
-                        DrinkOrWhat = 0;
-                        HungerToAddSub = 240f;
-                        FoodColor = new Color32(255, 241, 202, 0);
-                        FlashColor = new Color32(0, 255, 0, 155);
-                        ColdnessToAdd = 25f;
+                    switch(currID) {
+                        case 1:
+                            FoodName = GS.SetString("Apple", "Jabłko");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 30f;
+                            FoodColor = new Color32(200, 0, 0, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 3:
+                            FoodName = GS.SetString("Bread", "Chleb");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 120f;
+                            FoodColor = new Color32(234, 203, 174, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 4:
+                            FoodName = GS.SetString("Soup", "Zupe");
+                            ConsumeAnimation = "Drink";
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 240f;
+                            FoodColor = new Color32(255, 155, 0, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 5:
+                            FoodName = GS.SetString("Mackerel", "Makrelę");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 60f;
+                            FoodColor = new Color32(200, 225, 255, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 6:
+                            FoodName = GS.SetString("Chocolate", "Czekoladę");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 60f;
+                            FoodColor = new Color32(155, 92, 85, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 7:
+                            FoodName = GS.SetString("Sausage", "Kiełbasę");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 180f;
+                            FoodColor = new Color32(140, 46, 66, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 8:
+                            FoodName = GS.SetString("Jam", "Dżem");
+                            ConsumeAnimation = "Drink";
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 120f;
+                            FoodColor = new Color32(158, 0, 17, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 9:
+                            FoodName = GS.SetString("Chips", "Czipsy");
+                            ConsumeAnimation = "Chips";
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 120f;
+                            FoodColor = new Color32(232, 214, 65, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 10:
+                            FoodName = GS.SetString("Cheese", "Ser");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 120f;
+                            FoodColor = new Color32(242, 222, 130, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 17:
+                            FoodName = GS.SetString("Water", "Wodę");
+                            ConsumeAnimation = "Drink";
+                            DrinkOrWhat = 1;
+                            HydrationToAdd = 60f;
+                            FoodColor = new Color32(0, 155, 255, 255);
+                            FlashColor = new Color32(128, 255, 255, 155);
+                            break;
+                        case 18:
+                            FoodName = GS.SetString("Energy Drink", "Energetyka");
+                            ConsumeAnimation = "Drink";
+                            DrinkOrWhat = 1;
+                            HydrationToAdd = 30f;
+                            TirednessToAdd = -25f;
+                            FoodColor = new Color32(200, 255, 0, 255);
+                            FlashColor = new Color32(128, 255, 255, 155);
+                            break;
+                        case 19:
+                            FoodName = GS.SetString("Candy Bar", "Batonik");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 60f;
+                            FoodColor = new Color32(255, 75, 0, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 20:
+                            FoodName = GS.SetString("Beans", "Fasolki");
+                            ConsumeAnimation = "Chips";
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 240f;
+                            FoodColor = new Color32(255, 155, 0, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 21:
+                            FoodName = GS.SetString("MRE", "MRE");
+                            ConsumeAnimation = "Chips";
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = (Food[1] - Food[0]);
+                            FoodColor = new Color32(200, 225, 255, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 22:
+                            FoodName = GS.SetString("Bandage", "Bandażu");
+                            ConsumeAnimation = "Bandage";
+                            DrinkOrWhat = 2;
+                            HealthToAddSub = Mathf.Clamp(25, 0f, (Health[1] * 0.75f) - Health[0]);
+                            FoodColor = new Color32(200, 225, 255, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            if (Health[0] >= Health[1] * 0.75f)
+                                CanUse = false;
+                            break;
+                        case 23:
+                            FoodName = GS.SetString("Antibiotics", "Antybiotyki");
+                            ConsumeAnimation = "Chips";
+                            DrinkOrWhat = 1;
+                            InfectionToAdd = -25f;
+                            RadioactivityToAdd = -25f;
+                            FoodColor = new Color32(117, 158, 130, 255);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            if (Infection <= 0f && Radioactivity <= 0f)
+                                CanUse = false;
+                            break;
+                        case 24:
+                            FoodName = GS.SetString("Vaccine", "Szczepionkę");
+                            DrinkOrWhat = 2;
+                            InfectionToAdd = -Infection;
+                            FoodColor = new Color32(117, 158, 130, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            if (Infection <= 0f)
+                                CanUse = false;
+                            break;
+                        case 25:
+                            FoodName = GS.SetString("Lugol's Solution", "Płyn Lugola");
+                            ConsumeAnimation = "Drink";
+                            DrinkOrWhat = 1;
+                            RadioactivityToAdd = -Radioactivity - 30f;
+                            FoodColor = new Color32(181, 97, 124, 255);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            break;
+                        case 26:
+                            FoodName = GS.SetString("First Aid Kit", "Apteczka Pierwszej Pomocy");
+                            ConsumeAnimation = "Bandage";
+                            DrinkOrWhat = 2;
+                            HealthToAddSub = 50f;
+                            FoodColor = new Color32(181, 97, 124, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            break;
+                        case 70:
+                            FoodName = GS.SetString("Baguette", "Bagietę");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 120f;
+                            FoodColor = new Color32(204, 148, 109, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 71:
+                            FoodName = GS.SetString("Pickles", "Ogórki Kiszone");
+                            ConsumeAnimation = "Chips";
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 60f;
+                            FoodColor = new Color32(102, 127, 58, 255);
+                            FlashColor = new Color32(128, 255, 255, 155);
+                            break;
+                        case 72:
+                            FoodName = GS.SetString("Meat", "Mięso");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 180f;
+                            FoodColor = new Color32(166, 116, 81, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 73:
+                            FoodName = GS.SetString("Preztel", "Precla");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 60f;
+                            FoodColor = new Color32(204, 148, 109, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 74:
+                            FoodName = GS.SetString("Cheeseburger", "Chesseburgera");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 120f;
+                            FoodColor = new Color32(255, 155, 0, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 75:
+                            FoodName = GS.SetString("Waffle", "Gofra");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 60f;
+                            FoodColor = new Color32(226, 193, 127, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 76:
+                            FoodName = GS.SetString("Donut", "Donuta");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 60f;
+                            FoodColor = new Color32(249, 147, 228, 255);
+                            FlashColor = new Color32(128, 255, 255, 155);
+                            break;
+                        case 77:
+                            FoodName = GS.SetString("Pâté", "Pasztet");
+                            ConsumeAnimation = "Chips";
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 60f;
+                            FoodColor = new Color32(234, 203, 174, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 78:
+                            FoodName = GS.SetString("Crackers", "Krakersy");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 60f;
+                            FoodColor = new Color32(226, 192, 133, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 79:
+                            FoodName = GS.SetString("Cola", "Kolę");
+                            ConsumeAnimation = "Drink";
+                            DrinkOrWhat = 1;
+                            HydrationToAdd = 30f;
+                            TirednessToAdd = -10f;
+                            FoodColor = new Color32(0, 0, 0, 255);
+                            FlashColor = new Color32(128, 255, 255, 155);
+                            break;
+                        case 80:
+                            FoodName = GS.SetString("Beer", "Piwo");
+                            ConsumeAnimation = "Drink";
+                            DrinkOrWhat = 1;
+                            DrunkToAdd = 25f;
+                            FoodColor = new Color32(255, 75, 0, 255);
+                            FlashColor = new Color32(128, 255, 255, 155);
+                            break;
+                        case 81:
+                            FoodName = GS.SetString("Vodka", "Wódkę");
+                            ConsumeAnimation = "Drink";
+                            DrinkOrWhat = 1;
+                            DrunkToAdd = 45f;
+                            FoodColor = new Color32(255, 75, 0, 255);
+                            FlashColor = new Color32(128, 255, 255, 155);
+                            break;
+                        case 82:
+                            FoodName = GS.SetString("Potato", "Ziemniaka");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 30f;
+                            FoodColor = new Color32(234, 203, 174, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 83:
+                            FoodName = GS.SetString("Milk", "Mleko");
+                            ConsumeAnimation = "Drink";
+                            DrinkOrWhat = 1;
+                            HydrationToAdd = 60f;
+                            FoodColor = new Color32(255, 255, 255, 255);
+                            FlashColor = new Color32(128, 255, 255, 155);
+                            break;
+                        case 84:
+                            FoodName = GS.SetString("Biscuits", "Herbatniki");
+                            ConsumeAnimation = "Chips";
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 60f;
+                            FoodColor = new Color32(226, 211, 139, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 106:
+                            FoodName = GS.SetString("Med Kit", "Apteczka");
+                            ConsumeAnimation = "Bandage";
+                            DrinkOrWhat = 2;
+                            HealthToAddSub = 75f;
+                            Infection = Mathf.Clamp(Random.Range(0f, 50f), 0f, Infection);
+                            Radioactivity = Mathf.Clamp(Random.Range(0f, 50f), 0f, Radioactivity);
+                            FoodColor = new Color32(181, 97, 124, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            break;
+                        case 116:
+                            FoodName = GS.SetString("Herring", "Śledzia");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 30f;
+                            FoodColor = new Color32(180, 190, 200, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            break;
+                        case 117:
+                            FoodName = GS.SetString("Salmon", "Łosośa");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 120f;
+                            FoodColor = new Color32(216, 224, 234, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            break;
+                        case 118:
+                            FoodName = GS.SetString("Carp", "Karpia");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 300f;
+                            FoodColor = new Color32(172, 188, 120, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            break;
+                        case 119:
+                            FoodName = GS.SetString("Coconut", "Kokosa");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 240f;
+                            HydrationToAdd = 30f;
+                            FoodColor = new Color32(172, 188, 120, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            break;
+                        case 120:
+                            FoodName = GS.SetString("Banana", "Banana");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 30f;
+                            FoodColor = new Color32(255, 225, 100, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            break;
+                        case 121:
+                            FoodName = GS.SetString("Sandwich", "Kanapke");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 240f;
+                            FoodColor = new Color32(255, 241, 202, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            break;
+                        case 122:
+                            FoodName = GS.SetString("Coffee", "Kawa");
+                            DrinkOrWhat = 1;
+                            HydrationToAdd = 30f;
+                            FoodColor = new Color32(255, 225, 100, 0);
+                            FlashColor = new Color32(128, 255, 255, 155);
+                            StaminaToAdd = Energy[1] - Energy[0];
+                            break;
+                        case 123:
+                            FoodName = GS.SetString("Popsicle", "Loda na patyku");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 240f;
+                            FoodColor = new Color32(255, 241, 202, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            ColdnessToAdd = 25f;
+                            break;
                     }
                     // Get Food info
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && CanUse == true) {
                         CantUseItem = 1f;
                         CantSwitchItem = CantUseItem;
+
+                        if(IsCasual){
+                            HealthToAddSub += HungerToAddSub / 10f;
+                            HungerToAddSub = 0f;
+                        }
 
                         Food[0] += HungerToAddSub;
                         Health[0] += HealthToAddSub;
@@ -1858,14 +1954,14 @@ public class PlayerScript : MonoBehaviour {
                         Energy[0] += StaminaToAdd;
                         Coldness += ColdnessToAdd;
 
-                        if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "22") {
+                        if (currID == 22) {
                             Bleeding = 0f;
-                        } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "83") {
+                        } else if (currID == 83) {
                             int UnbrokeBone = Random.Range(0, 4);
                             if (UnbrokeBone == 0) {
                                 BrokenBone = 0;
                             }
-                        } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "106") {
+                        } else if (currID == 106) {
                             int UnbrokeBone = Random.Range(0, 2);
                             if (UnbrokeBone == 0) {
                                 BrokenBone = 0;
@@ -1875,43 +1971,31 @@ public class PlayerScript : MonoBehaviour {
                         }
 
                         string MessageAboutIt = "";
-                        if (DrinkOrWhat == 0) {
+                        if (DrinkOrWhat == 0)
                             MessageAboutIt += GS.SetString(FoodName + " consumed:", "Spożyto " + FoodName + ":");
-                        } else if (DrinkOrWhat == 1) {
+                        else if (DrinkOrWhat == 1)
                             MessageAboutIt += GS.SetString(FoodName + " drank:", "Wypito " + FoodName + ":");
-                        } else if (DrinkOrWhat == 2) {
+                        else if (DrinkOrWhat == 2)
                             MessageAboutIt += GS.SetString(FoodName + " used:", "Użyto " + FoodName + ":");
-                        }
-                        if (HungerToAddSub != 0) {
+
+                        if (HungerToAddSub != 0)
                             MessageAboutIt += GS.SetString(" (Hunger " + (int)HungerToAddSub + ")", " (Głód " + (int)HungerToAddSub + ")");
-                        }
-                        if (HealthToAddSub != 0) {
+                        if (HealthToAddSub != 0)
                             MessageAboutIt += GS.SetString(" (Health " + (int)HealthToAddSub + ")", " (Zdrowie " + (int)HealthToAddSub + ")");
-                        }
-                        if (HydrationToAdd != 0) {
+                        if (HydrationToAdd != 0)
                             MessageAboutIt += GS.SetString(" (Hydration " + (int)HydrationToAdd + ")", " (Nawodnienie " + (int)Hydration + ")");
-                        }
-                        if (TirednessToAdd != 0) {
+                        if (TirednessToAdd != 0)
                             MessageAboutIt += GS.SetString(" (Tiredness " + (int)TirednessToAdd + ")", " (Zmęczenie " + (int)Hydration + ")");
-                        }
-                        if (InfectionToAdd != 0) {
+                        if (InfectionToAdd != 0)
                             MessageAboutIt += GS.SetString(" (Infection " + (int)InfectionToAdd + ")", " (Infekcja " + (int)InfectionToAdd + ")");
-                        }
-                        if (RadioactivityToAdd != 0) {
+                        if (RadioactivityToAdd != 0)
                             MessageAboutIt += GS.SetString(" (Radioactivity " + (int)RadioactivityToAdd + ")", " (Radioaktywność " + (int)RadioactivityToAdd + ")");
-                        }
-                        if (DrunkToAdd != 0) {
+                        if (DrunkToAdd != 0)
                             MessageAboutIt += GS.SetString(" (Drunkenness " + (int)DrunkToAdd + ")", " (Pijaństwo " + (int)DrunkToAdd + ")");
-                        }
-                        /*if (Food != 0) {
-                            MessageAboutIt += GS.SetString(" (Bonus Health " + (int)Exceeding + ")", " (Bonusowe Zdrowie " + (int)Exceeding + ")");
-                        }*/
-                        if (ColdnessToAdd != 0) {
+                        if (ColdnessToAdd != 0)
                             MessageAboutIt += GS.SetString(" (Coldness " + (int)ColdnessToAdd + ")", " (Zimno " + (int)ColdnessToAdd + ")");
-                        }
-                        if (StaminaToAdd != 0) {
+                        if (StaminaToAdd != 0) 
                             MessageAboutIt += GS.SetString(" (Stamina " + (int)StaminaToAdd + ")", " (Wytrzymałość " + (int)StaminaToAdd + ")");
-                        }
                         MainCanvas.Flash(FlashColor, new float[]{0.5f, 0.5f});
                         GS.Mess(MessageAboutIt, "Good");
 
@@ -1964,142 +2048,151 @@ public class PlayerScript : MonoBehaviour {
                     float EnergyDrain = 0f;
                     float ParryDrain = -1f;
                     float UseDamage = 0f;
-                    if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "2") {
-                        UseDamage = 5f;
-                        AttackType = "Flashlight";
-                        AttackCooldown = 0.5f;
-                        EnergyDrain = 5f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "14") {
-                        UseDamage = 5f;
-                        AttackType = "Knife";
-                        AttackCooldown = 0.5f;
-                        EnergyDrain = 5f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "15") {
-                        UseDamage = 3f;
-                        AttackType = "Crowbar";
-                        AttackCooldown = 0.75f;
-                        EnergyDrain = 25f;
-                        ParryDrain = 5f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "16") {
-                        UseDamage = 3f;
-                        AttackType = "FireAxe";
-                        AttackCooldown = 0.75f;
-                        EnergyDrain = 25f;
-                        ParryDrain = 5f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "27") {
-                        UseDamage = 3f;
-                        AttackType = "Machete";
-                        AttackCooldown = 0.5f;
-                        EnergyDrain = 5f;
-                        ParryDrain = 15f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "28") {
-                        UseDamage = 5f;
-                        AttackType = "BaseballBat";
-                        AttackCooldown = 0.75f;
-                        EnergyDrain = 10f;
-                        ParryDrain = 15f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "993") {
-                        UseDamage = 10f;
-                        AttackType = "SapphireSpear";
-                        AttackCooldown = 2f;
-                        EnergyDrain = 50f;
-                        ParryDrain = 0f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "68") {
-                        UseDamage = 0f;
-                        AttackType = "Chainsaw";
-                        AttackCooldown = 0.05f;
-                        EnergyDrain = 0f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "108") {
-                        UseDamage = 5f;
-                        AttackType = "Plunger";
-                        AttackCooldown = 0.5f;
-                        EnergyDrain = 5f;
-                        ParryDrain = 15f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "115") {
-                        UseDamage = 5f;
-                        AttackType = "Shovel";
-                        AttackCooldown = 0.75f;
-                        EnergyDrain = 25f;
-                        ParryDrain = 10f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "132") {
-                        UseDamage = 5f;
-                        AttackType = "Katana";
-                        AttackCooldown = 0.25f;
-                        EnergyDrain = 5f;
-                        ParryDrain = 25f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "134") {
-                        UseDamage = 3f;
-                        AttackType = "Spear";
-                        AttackCooldown = 1f;
-                        EnergyDrain = 10f;
-                        ParryDrain = 15f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "136") {
-                        UseDamage = 5f;
-                        AttackType = "FryingPan";
-                        AttackCooldown = 0.5f;
-                        EnergyDrain = 5f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "138") {
-                        UseDamage = 1f;
-                        AttackType = "Sledgehammer";
-                        AttackCooldown = 2f;
-                        EnergyDrain = 50f;
-                        ParryDrain = 2f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "152") {
-                        UseDamage = 3f;
-                        AttackType = "FireAxe";
-                        AttackCooldown = 0.75f;
-                        EnergyDrain = 25f;
-                        ParryDrain = 5f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "153") {
-                        UseDamage = 5f;
-                        AttackType = "StoneAxe";
-                        AttackCooldown = 0.75f;
-                        EnergyDrain = 25f;
-                        ParryDrain = 5f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "154") {
-                        UseDamage = 3f;
-                        AttackType = "Fokos";
-                        AttackCooldown = 0.5f;
-                        EnergyDrain = 10f;
-                        ParryDrain = 0f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "155") {
-                        UseDamage = 3f;
-                        AttackType = "Sword";
-                        AttackCooldown = 2f;
-                        EnergyDrain = 25f;
-                        ParryDrain = 25f;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "156") {
-                        UseDamage = 2f;
-                        AttackType = "Pickaxe";
-                        AttackCooldown = 0.5f;
-                        EnergyDrain = 10f;
-                        ParryDrain = 10f;
+                    switch (currID) {
+                        case 2:
+                            UseDamage = 5f;
+                            AttackType = "Flashlight";
+                            AttackCooldown = 0.5f;
+                            EnergyDrain = 5f;
+                            break;
+                        case 14:
+                            UseDamage = 5f;
+                            AttackType = "Knife";
+                            AttackCooldown = 0.5f;
+                            EnergyDrain = 5f;
+                            break;
+                        case 15:
+                            UseDamage = 3f;
+                            AttackType = "Crowbar";
+                            AttackCooldown = 0.75f;
+                            EnergyDrain = 25f;
+                            ParryDrain = 5f;
+                            break;
+                        case 16:
+                            UseDamage = 3f;
+                            AttackType = "FireAxe";
+                            AttackCooldown = 0.75f;
+                            EnergyDrain = 25f;
+                            ParryDrain = 5f;
+                            break;
+                        case 27:
+                            UseDamage = 3f;
+                            AttackType = "Machete";
+                            AttackCooldown = 0.5f;
+                            EnergyDrain = 5f;
+                            ParryDrain = 15f;
+                            break;
+                        case 28:
+                            UseDamage = 5f;
+                            AttackType = "BaseballBat";
+                            AttackCooldown = 0.75f;
+                            EnergyDrain = 10f;
+                            ParryDrain = 15f;
+                            break;
+                        case 993:
+                            UseDamage = 10f;
+                            AttackType = "SapphireSpear";
+                            AttackCooldown = 2f;
+                            EnergyDrain = 50f;
+                            ParryDrain = 0f;
+                            break;
+                        case 68:
+                            UseDamage = 0f;
+                            AttackType = "Chainsaw";
+                            AttackCooldown = 0.05f;
+                            EnergyDrain = 0f;
+                            break;
+                        case 108:
+                            UseDamage = 5f;
+                            AttackType = "Plunger";
+                            AttackCooldown = 0.5f;
+                            EnergyDrain = 5f;
+                            ParryDrain = 15f;
+                            break;
+                        case 115:
+                            UseDamage = 5f;
+                            AttackType = "Shovel";
+                            AttackCooldown = 0.75f;
+                            EnergyDrain = 25f;
+                            ParryDrain = 10f;
+                            break;
+                        case 132:
+                            UseDamage = 5f;
+                            AttackType = "Katana";
+                            AttackCooldown = 0.25f;
+                            EnergyDrain = 5f;
+                            ParryDrain = 25f;
+                            break;
+                        case 134:
+                            UseDamage = 3f;
+                            AttackType = "Spear";
+                            AttackCooldown = 1f;
+                            EnergyDrain = 10f;
+                            ParryDrain = 15f;
+                            break;
+                        case 136:
+                            UseDamage = 5f;
+                            AttackType = "FryingPan";
+                            AttackCooldown = 0.5f;
+                            EnergyDrain = 5f;
+                            break;
+                        case 138:
+                            UseDamage = 1f;
+                            AttackType = "Sledgehammer";
+                            AttackCooldown = 2f;
+                            EnergyDrain = 50f;
+                            ParryDrain = 2f;
+                            break;
+                        case 152:
+                            UseDamage = 3f;
+                            AttackType = "FireAxe";
+                            AttackCooldown = 0.75f;
+                            EnergyDrain = 25f;
+                            ParryDrain = 5f;
+                            break;
+                        case 153:
+                            UseDamage = 5f;
+                            AttackType = "StoneAxe";
+                            AttackCooldown = 0.75f;
+                            EnergyDrain = 25f;
+                            ParryDrain = 5f;
+                            break;
+                        case 154:
+                            UseDamage = 3f;
+                            AttackType = "Fokos";
+                            AttackCooldown = 0.5f;
+                            EnergyDrain = 10f;
+                            ParryDrain = 0f;
+                            break;
+                        case 155:
+                            UseDamage = 3f;
+                            AttackType = "Sword";
+                            AttackCooldown = 2f;
+                            EnergyDrain = 25f;
+                            ParryDrain = 25f;
+                            break;
+                        case 156:
+                            UseDamage = 2f;
+                            AttackType = "Pickaxe";
+                            AttackCooldown = 0.5f;
+                            EnergyDrain = 10f;
+                            ParryDrain = 10f;
+                            break;
                     }
 
                     // Get Melee info
-                    if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && Energy[0] >= EnergyDrain) {
+                    if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && CheckStamina(EnergyDrain, 0)) {
                         CantUseItem = AttackCooldown;
                         CantSwitchItem = CantUseItem;
-                        Energy[0] -= EnergyDrain;
-                        EnergyRegen = 1f;
+                        StaminaDrain(EnergyDrain);
                         ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Swing", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition), 0, 0f);
-                        //GameObject SpawnAttack = Instantiate(AttackPrefab) as GameObject;
-                        //SpawnAttack.transform.position = LookDir.position;
-                        //SpawnAttack.transform.eulerAngles = LookDir.eulerAngles;
-                        //SpawnAttack.GetComponent<AttackScript>().GunName = AttackType;
-                        //SpawnAttack.GetComponent<AttackScript>().MeleeDurability = UseDamage;
-                        //SpawnAttack.GetComponent<AttackScript>().Attacker = this.gameObject;
-                        //SpawnAttack.GetComponent<AttackScript>().DrunknessPower = (Drunkenness / 10f);
-                        //SpawnAttack.GetComponent<AttackScript>().WchichItemWasHeld = CurrentItemHeld;
-                        //SpawnAttack.GetComponent<AttackScript>().Slimend = SlimEnd;
                         RS.Attack(new string[]{ AttackType, "MeleeDurability" + UseDamage, "Power" + (Drunkenness / 10f), "Inventory" + CurrentItemHeld }, LookDir.position, LookDir.forward, this.gameObject, SlimEnd);
                     }
 
-                   if (GS.ReceiveButtonPress("AltAction", "Hold") > 0f && CantUseItem <= 0f && Energy[0] >= ParryDrain && ParryDrain> -1f) {
+                   if (GS.ReceiveButtonPress("AltAction", "Hold") > 0f && CantUseItem <= 0f && CheckStamina(ParryDrain, 0) && ParryDrain> -1f) {
                         CantUseItem = 1f;
                         CantSwitchItem = 1f;
-                        Energy[0] -= ParryDrain;
-                        EnergyRegen = 1f;
+                        StaminaDrain(ParryDrain);
                         ParryingDamage = UseDamage;
                         ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Parry", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition));
                         GameObject Swoosh = Instantiate(EffectPrefab) as GameObject;
@@ -2107,13 +2200,13 @@ public class PlayerScript : MonoBehaviour {
                         Swoosh.GetComponent<EffectScript>().EffectName = "Parry";
                    }
 
-                    if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "2") {
-                        Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-0.032"); //Inventory[CurrentItemHeld].y -= 0.032f;
+                    if (currID == 2) {
+                        Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-0.0066"); //Inventory[CurrentItemHeld].y -= 0.032f;
                         if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0f) {
                             InvGet(CurrentItemHeld.ToString(), 1); //Inventory[CurrentItemHeld] = "id";
                             GS.Mess(GS.SetString("Flashlight ran out of battery!", "Latarce wyczerpała się bateria!"), "Error");
                         }
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "68") {
+                    } else if (currID == 68) {
                         Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-0.032"); //Inventory[CurrentItemHeld].y -= 0.032f;
                         if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0f) {
                             InvGet(CurrentItemHeld.ToString(), 1); //Inventory[CurrentItemHeld] = "id";
@@ -2137,6 +2230,7 @@ public class PlayerScript : MonoBehaviour {
                     float AmmoInUse = 1f;
                     float AimZoom = 0f;
                     string[] ReloadingAnimation = new string[] { "ItemReload", "Reloading" };
+                    string[] AimingAnimation = new[]{"", ""};
                     float[] ReloadVariables = new float[] { 0f, 0f, 0f };
                     int AmountToShoot = 1;
                     int AmountOfGunFires = 1;
@@ -2144,210 +2238,247 @@ public class PlayerScript : MonoBehaviour {
                     float[] RecoilPhysics = new float[]{1f, 1f};
                     float DelayFire = 0f;
                     string[] DelayFireEffects = new string [0];
-                    if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "29") {
-                        GunType = "Colt";
-                        FireAnimation = new string[]{"Pistol-Shoot", ""};
-                        GunCooldown[0] = 0.25f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "Pistol-Reload", "ReloadingShort", "FullLoad" };
-                        ReloadVariables = new float[] { 7f, 30f, 2f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "31") {
-                        GunType = "Luger";
-                        FireAnimation = new string[]{"Pistol-Shoot", ""};
-                        GunCooldown[0] = 0.25f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "Pistol-Reload", "ReloadingShort", "FullLoad" };
-                        ReloadVariables = new float[] { 8f, 30f, 2f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "32") {
-                        GunType = "Revolver";
-                        FireAnimation = new string[]{"Pistol-Shoot", ""};
-                        GunCooldown[0] = 1f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "Revolver-Reload", "ReloadingShort", "FullLoad" };
-                        ReloadVariables = new float[] { 6f, 33f, 2f };
-                        RecoilPhysics = new float[]{0f, 100f};
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "34") {
-                        GunType = "HunterRifle";
-                        FireAnimation = new string[]{"BoltAction-Shoot", "BoltAction-ShootNoReload"};
-                        GunCooldown[0] = 1f;
-                        AimZoom = 25f;
-                        ReloadingAnimation = new string[] { "BoltAction-Reload", "Reloading1BL", "OneByOne" };
-                        ReloadVariables = new float[] { 5f, 33f, 2f };
-                        RecoilPhysics = new float[]{0f, 100f};
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "35") {
-                        GunType = "DBShotgun";
-                        FireAnimation = new string[]{"DBshotgun-Shoot", ""};
-                        GunCooldown[0] = 0.5f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "DBshotgun-Reload", "Reloading1BL", "FullLoad" };
-                        ReloadVariables = new float[] { 2f, 33f, 2f };
-                        RecoilPhysics = new float[]{0f, 100f};
-                        AmountToShoot = 3;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "36") {
-                        GunType = "Thompson";
-                        FireAnimation = new string[]{"Thompson-Shoot", ""};
-                        GunCooldown[0] = 0.075f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "Thompson-Reload", "ReloadingShort", "FullLoad" };
-                        ReloadVariables = new float[] { 30f, 37f, 2f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "38" || GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "996") {
-                        GunType = "AK-47";
-                        FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown[0] = 0.08f;
-                        AimZoom = 40f;
-                        ReloadingAnimation = new string[] { "AK-Reload", "Reloading", "FullLoad" };
-                        ReloadVariables = new float[] { 30f, 39f, 3f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "40") {
-                        GunType = "Shotgun";
-                        FireAnimation = new string[]{"Shotgun-Shoot", "Shotgun-ShootNoReload"};
-                        GunCooldown[0] = 1.5f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "Shotgun-Reload", "Reloading1BL", "OneByOne" };
-                        ReloadVariables = new float[] { 5f, 33f, 2f };
-                        RecoilPhysics = new float[]{0f, 100f};
-                        AmountToShoot = 3;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "41") {
-                        GunType = "MP5";
-                        FireAnimation = new string[]{"Thompson-Shoot", ""};
-                        GunCooldown[0] = 0.05f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "MP5-Reload", "ReloadingShort", "FullLoad" };
-                        ReloadVariables = new float[] { 30f, 37f, 2f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "42") {
-                        GunType = "M4";
-                        FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown[0] = 0.1f;
-                        AimZoom = 40f;
-                        ReloadingAnimation = new string[] { "M4-Reload", "Reloading", "FullLoad" };
-                        ReloadVariables = new float[] { 30f, 39f, 3f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "55") {
-                        GunType = "Sten";
-                        FireAnimation = new string[]{"Sten-Shoot", ""};
-                        GunCooldown[0] = 0.075f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "Sten-Reload", "ReloadingShort", "FullLoad" };
-                        ReloadVariables = new float[] { 32f, 37f, 2f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "56") {
-                        if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) > 1f) {
-                            GunType = "Garand";
-                        } else {
-                            GunType = "GarandR";
-                        }
-                        FireAnimation = new string[]{"BoltAction-ShootNoReload", ""};
-                        GunCooldown[0] = 0.25f;
-                        AimZoom = 30f;
-                        ReloadingAnimation = new string[] { "Garand-Reload", "ReloadingShort", "FullLoad" };
-                        ReloadVariables = new float[] { 8f, 33f, 2f };
-                        RecoilPhysics = new float[]{0f, 100f};
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "57") {
-                        GunType = "Famas";
-                        FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown = new[] {0.5f, 0.075f};
-                        BurstFire = 3;
-                        AimZoom = 40f;
-                        ReloadingAnimation = new string[] { "FAMAS-Reload", "Reloading", "FullLoad" };
-                        ReloadVariables = new float[] { 25f, 39f, 3f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "58") {
-                        GunType = "Uzi";
-                        FireAnimation = new string[]{"Pistol-Shoot", ""};
-                        GunCooldown[0] = 0.075f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "Uzi-Reload", "ReloadingShort", "FullLoad" };
-                        ReloadVariables = new float[] { 25, 37f, 1.5f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "59") {
-                        GunType = "G3";
-                        FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown[0] = 0.1f;
-                        AimZoom = 40f;
-                        ReloadingAnimation = new string[] { "G3-Reload", "Reloading", "FullLoad" };
-                        ReloadVariables = new float[] { 20f, 39f, 3f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "60") {
-                        GunType = "Scar";
-                        FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown[0] = 0.08f;
-                        AimZoom = 40f;
-                        ReloadingAnimation = new string[] { "SCAR-Reload", "Reloading", "FullLoad" };
-                        ReloadVariables = new float[] { 28f, 39f, 3f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "61") {
-                        GunType = "SPAS";
-                        FireAnimation = new string[]{"Shotgun-ShootNoReload", ""};
-                        GunCooldown[0] = 0.5f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "Shotgun-Reload", "Reloading1BL", "OneByOne" };
-                        ReloadVariables = new float[] { 8f, 33f, 2f };
-                        RecoilPhysics = new float[]{0f, 100f};
-                        AmountToShoot = 3;
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "62") {
-                        GunType = "SAW";
-                        FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown[0] = 0.05f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "SAW-Reload", "ReloadingMG", "FullLoad" };
-                        ReloadVariables = new float[] { 100f, 63f, 7f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "64") {
-                        GunType = "Minigun";
-                        FireAnimation = new string[]{"Minigun-Shoot", ""};
-                        GunCooldown[0] = 0.025f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "Minigun-Reload", "ReloadingMG", "FullLoad" };
-                        ReloadVariables = new float[] { 500f, 63f, 7f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "65") {
-                        GunType = "MosinNagant";
-                        FireAnimation = new string[]{"BoltAction-Shoot", "BoltAction-ShootNoReload"};
-                        GunCooldown[0] = 1.5f;
-                        AimZoom = 25f;
-                        ReloadingAnimation = new string[] { "BoltAction-Reload", "Reloading1BL", "OneByOne" };
-                        ReloadVariables = new float[] { 5f, 33f, 2f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "113") {
-                        GunType = "Musket";
-                        FireAnimation = new string[]{"BoltAction-ShootNoReload", ""};
-                        GunCooldown[0] = 0.1f;
-                        AimZoom = 30f;
-                        ReloadingAnimation = new string[] { "BoltAction-Reload", "Reloading1BL", "FullLoad" };
-                        ReloadVariables = new float[] { 1f, 33f, 2f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "135") {
-                        GunType = "G18";
-                        FireAnimation = new string[]{"Pistol-Shoot", ""};
-                        GunCooldown = new []{0.5f, 0.08f};
-                        BurstFire = 3;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "Pistol-Reload", "ReloadingShort", "FullLoad" };
-                        ReloadVariables = new float[] { 17f, 30f, 1.5f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "137") {
-                        GunType = "M1Carbine";
-                        FireAnimation = new string[]{"AR-Shoot", ""};
-                        GunCooldown[0] = 0.15f;
-                        AimZoom = 30f;
-                        ReloadingAnimation = new string[] { "AK-Reload", "Reloading", "FullLoad" };
-                        ReloadVariables = new float[] { 15f, 39f, 3f };
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "157") {
-                        GunType = "Flintlock";
-                        FireAnimation = new string[]{"Flintlock-Shoot", ""};
-                        GunCooldown[0] = 1f;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "Flintlock-Reload", "ReloadingFlintlock", "FullLoad" };
-                        ReloadVariables = new float[] { 1f, 158f, 5f };
-                        DelayFire = Random.Range(.1f, .5f);
-                        DelayFireEffects = new string[] {"Flintlock-Trigger", "GunEmpty"};
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "159") {
-                        GunType = "BakerRifle";
-                        FireAnimation = new string[]{"BakerRifle-Shoot", ""};
-                        GunCooldown[0] = 1f;
-                        AimZoom = 25f;
-                        ReloadingAnimation = new string[] { "BakerRifle-Reload", "ReloadingBakerRifle", "FullLoad" };
-                        ReloadVariables = new float[] { 1f, 158f, 10f };
-                        DelayFire = Random.Range(.1f, .5f);
-                        DelayFireEffects = new string[] {"BakerRifle-Trigger", "GunEmpty"};
-                    } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "160") {
-                        GunType = "NockGun";
-                        FireAnimation = new string[]{"NockGun-Shoot", ""};
-                        GunCooldown = new[] {1f, Random.Range(0f, .1f)};
-                        BurstFire = 7;
-                        AimZoom = 55f;
-                        ReloadingAnimation = new string[] { "NockGun-Reload", "ReloadingNockGun", "OneByOne" };
-                        ReloadVariables = new float[] { 7f, 158f, 10f };
-                        DelayFire = Random.Range(.1f, .5f);
-                        DelayFireEffects = new string[] {"BakerRifle-Trigger", "GunEmpty"};
+                    switch (currID) {
+                        case 29:
+                            GunType = "Colt";
+                            FireAnimation = new string[]{"Pistol-Shoot", ""};
+                            AimingAnimation = new string[]{"Pistol-Aim", "Pistol-AimShoot"};
+                            GunCooldown[0] = 0.25f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "Pistol-Reload", "ReloadingShort", "FullLoad" };
+                            ReloadVariables = new float[] { 7f, 30f, 2f };
+                            break;
+                        case 31:
+                            GunType = "Luger";
+                            FireAnimation = new string[]{"Pistol-Shoot", ""};
+                            AimingAnimation = new string[]{"Pistol-Aim", "Pistol-AimShoot"};
+                            GunCooldown[0] = 0.25f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "Pistol-Reload", "ReloadingShort", "FullLoad" };
+                            ReloadVariables = new float[] { 8f, 30f, 2f };
+                            break;
+                        case 32:
+                            GunType = "Revolver";
+                            FireAnimation = new string[]{"Pistol-Shoot", ""};
+                            AimingAnimation = new string[]{"Pistol-Aim", "Pistol-AimShoot"};
+                            GunCooldown[0] = 1f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "Revolver-Reload", "ReloadingShort", "FullLoad" };
+                            ReloadVariables = new float[] { 6f, 33f, 2f };
+                            RecoilPhysics = new float[]{0f, 100f};
+                            break;
+                        case 34:
+                            GunType = "HunterRifle";
+                            FireAnimation = new string[]{"BoltAction-Shoot", "BoltAction-ShootNoReload"};
+                            AimingAnimation = new string[]{"", "BoltAction-Shoot"};
+                            GunCooldown[0] = 1f;
+                            AimZoom = 25f;
+                            ReloadingAnimation = new string[] { "BoltAction-Reload", "Reloading1BL", "OneByOne" };
+                            ReloadVariables = new float[] { 5f, 33f, 2f };
+                            RecoilPhysics = new float[]{0f, 100f};
+                            break;
+                        case 35:
+                            GunType = "DBShotgun";
+                            FireAnimation = new string[]{"DBshotgun-Shoot", ""};
+                            GunCooldown[0] = 0.5f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "DBshotgun-Reload", "Reloading1BL", "FullLoad" };
+                            ReloadVariables = new float[] { 2f, 33f, 2f };
+                            RecoilPhysics = new float[]{0f, 100f};
+                            AmountToShoot = 3;
+                            break;
+                        case 36:
+                            GunType = "Thompson";
+                            FireAnimation = new string[]{"Thompson-Shoot", ""};
+                            GunCooldown[0] = 0.075f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "Thompson-Reload", "ReloadingShort", "FullLoad" };
+                            ReloadVariables = new float[] { 30f, 37f, 2f };
+                            break;
+                        case 38: case 996:
+                            GunType = "AK-47";
+                            FireAnimation = new string[]{"AR-Shoot", ""};
+                            GunCooldown[0] = 0.08f;
+                            AimZoom = 40f;
+                            ReloadingAnimation = new string[] { "AK-Reload", "Reloading", "FullLoad" };
+                            ReloadVariables = new float[] { 30f, 39f, 3f };
+                            break;
+                        case 40:
+                            GunType = "Shotgun";
+                            FireAnimation = new string[]{"Shotgun-Shoot", "Shotgun-ShootNoReload"};
+                            AimingAnimation = new string[]{"", "Shotgun-Shoot"};
+                            GunCooldown[0] = 1.5f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "Shotgun-Reload", "Reloading1BL", "OneByOne" };
+                            ReloadVariables = new float[] { 5f, 33f, 2f };
+                            RecoilPhysics = new float[]{0f, 100f};
+                            AmountToShoot = 3;
+                            break;
+                        case 41:
+                            GunType = "MP5";
+                            FireAnimation = new string[]{"Thompson-Shoot", ""};
+                            GunCooldown[0] = 0.05f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "MP5-Reload", "ReloadingShort", "FullLoad" };
+                            ReloadVariables = new float[] { 30f, 37f, 2f };
+                            break;
+                        case 42:
+                            GunType = "M4";
+                            FireAnimation = new string[]{"AR-Shoot", ""};
+                            GunCooldown[0] = 0.1f;
+                            AimZoom = 40f;
+                            ReloadingAnimation = new string[] { "M4-Reload", "Reloading", "FullLoad" };
+                            ReloadVariables = new float[] { 30f, 39f, 3f };
+                            break;
+                        case 55:
+                            GunType = "Sten";
+                            FireAnimation = new string[]{"Sten-Shoot", ""};
+                            AimingAnimation = new string[]{"Sten-Aim", ""};
+                            GunCooldown[0] = 0.075f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "Sten-Reload", "ReloadingShort", "FullLoad" };
+                            ReloadVariables = new float[] { 32f, 37f, 2f };
+                            break;
+                        case 56:
+                            if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) > 1f) {
+                                GunType = "Garand";
+                            } else {
+                                GunType = "GarandR";
+                            }
+                            FireAnimation = new string[]{"BoltAction-ShootNoReload", ""};
+                            GunCooldown[0] = 0.25f;
+                            AimZoom = 30f;
+                            ReloadingAnimation = new string[] { "Garand-Reload", "ReloadingShort", "FullLoad" };
+                            ReloadVariables = new float[] { 8f, 33f, 2f };
+                            RecoilPhysics = new float[]{0f, 100f};
+                            break;
+                        case 57:
+                            GunType = "Famas";
+                            FireAnimation = new string[]{"AR-Shoot", ""};
+                            GunCooldown = new[] {0.5f, 0.075f};
+                            BurstFire = 3;
+                            AimZoom = 40f;
+                            ReloadingAnimation = new string[] { "FAMAS-Reload", "Reloading", "FullLoad" };
+                            ReloadVariables = new float[] { 25f, 39f, 3f };
+                            break;
+                        case 58:
+                            GunType = "Uzi";
+                            FireAnimation = new string[]{"Pistol-Shoot", ""};
+                            AimingAnimation = new string[]{"Pistol-Aim", "Pistol-AimShoot"};
+                            GunCooldown[0] = 0.075f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "Uzi-Reload", "ReloadingShort", "FullLoad" };
+                            ReloadVariables = new float[] { 25, 37f, 1.5f };
+                            break;
+                        case 59:
+                            GunType = "G3";
+                            FireAnimation = new string[]{"AR-Shoot", ""};
+                            GunCooldown[0] = 0.1f;
+                            AimZoom = 40f;
+                            ReloadingAnimation = new string[] { "G3-Reload", "Reloading", "FullLoad" };
+                            ReloadVariables = new float[] { 20f, 39f, 3f };
+                            break;
+                        case 60:
+                            GunType = "Scar";
+                            FireAnimation = new string[]{"AR-Shoot", ""};
+                            GunCooldown[0] = 0.08f;
+                            AimZoom = 40f;
+                            ReloadingAnimation = new string[] { "SCAR-Reload", "Reloading", "FullLoad" };
+                            ReloadVariables = new float[] { 28f, 39f, 3f };
+                            break;
+                        case 61:
+                            GunType = "SPAS";
+                            FireAnimation = new string[]{"Shotgun-ShootNoReload", ""};
+                            GunCooldown[0] = 0.5f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "Shotgun-Reload", "Reloading1BL", "OneByOne" };
+                            ReloadVariables = new float[] { 8f, 33f, 2f };
+                            RecoilPhysics = new float[]{0f, 100f};
+                            AmountToShoot = 3;
+                            break;
+                        case 62:
+                            GunType = "SAW";
+                            FireAnimation = new string[]{"AR-Shoot", ""};
+                            GunCooldown[0] = 0.05f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "SAW-Reload", "ReloadingMG", "FullLoad" };
+                            ReloadVariables = new float[] { 100f, 63f, 7f };
+                            break;
+                        case 64:
+                            GunType = "Minigun";
+                            FireAnimation = new string[]{"Minigun-Shoot", ""};
+                            GunCooldown[0] = 0.025f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "Minigun-Reload", "ReloadingMG", "FullLoad" };
+                            ReloadVariables = new float[] { 500f, 63f, 7f };
+                            break;
+                        case 65:
+                            GunType = "MosinNagant";
+                            FireAnimation = new string[]{"BoltAction-Shoot", "BoltAction-ShootNoReload"};
+                            AimingAnimation = new string[]{"", "BoltAction-Shoot"};
+                            GunCooldown[0] = 1.5f;
+                            AimZoom = 25f;
+                            ReloadingAnimation = new string[] { "BoltAction-Reload", "Reloading1BL", "OneByOne" };
+                            ReloadVariables = new float[] { 5f, 33f, 2f };
+                            break;
+                        case 113:
+                            GunType = "Musket";
+                            FireAnimation = new string[]{"BoltAction-ShootNoReload", ""};
+                            GunCooldown[0] = 0.1f;
+                            AimZoom = 30f;
+                            ReloadingAnimation = new string[] { "BoltAction-Reload", "Reloading1BL", "FullLoad" };
+                            ReloadVariables = new float[] { 1f, 33f, 2f };
+                            break;
+                        case 135:
+                            GunType = "G18";
+                            FireAnimation = new string[]{"Pistol-Shoot", ""};
+                            AimingAnimation = new string[]{"Pistol-Aim", "Pistol-AimShoot"};
+                            GunCooldown = new []{0.5f, 0.08f};
+                            BurstFire = 3;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "Pistol-Reload", "ReloadingShort", "FullLoad" };
+                            ReloadVariables = new float[] { 17f, 30f, 1.5f };
+                            break;
+                        case 137:
+                            GunType = "M1Carbine";
+                            FireAnimation = new string[]{"AR-Shoot", ""};
+                            GunCooldown[0] = 0.15f;
+                            AimZoom = 30f;
+                            ReloadingAnimation = new string[] { "AK-Reload", "Reloading", "FullLoad" };
+                            ReloadVariables = new float[] { 15f, 39f, 3f };
+                            break;
+                        case 157:
+                            GunType = "Flintlock";
+                            FireAnimation = new string[]{"Flintlock-Shoot", ""};
+                            AimingAnimation = new string[]{"", "Flintlock-Shoot"};
+                            GunCooldown[0] = 1f;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "Flintlock-Reload", "ReloadingFlintlock", "FullLoad" };
+                            ReloadVariables = new float[] { 1f, 158f, 5f };
+                            DelayFire = Random.Range(.1f, .5f);
+                            DelayFireEffects = new string[] {"Trigger", "GunEmpty"};
+                            break;
+                        case 159:
+                            GunType = "BakerRifle";
+                            FireAnimation = new string[]{"BakerRifle-Shoot", ""};
+                            GunCooldown[0] = 1f;
+                            AimZoom = 25f;
+                            ReloadingAnimation = new string[] { "BakerRifle-Reload", "ReloadingBakerRifle", "FullLoad" };
+                            ReloadVariables = new float[] { 1f, 158f, 10f };
+                            DelayFire = Random.Range(.1f, .5f);
+                            DelayFireEffects = new string[] {"Trigger", "GunEmpty"};
+                            break;
+                        case 160:
+                            GunType = "NockGun";
+                            FireAnimation = new string[]{"NockGun-Shoot", ""};
+                            GunCooldown = new[] {1f, Random.Range(0f, .1f)};
+                            BurstFire = 7;
+                            AimZoom = 55f;
+                            ReloadingAnimation = new string[] { "NockGun-Reload", "ReloadingNockGun", "OneByOne" };
+                            ReloadVariables = new float[] { 7f, 158f, 10f };
+                            DelayFire = Random.Range(.1f, .5f);
+                            DelayFireEffects = new string[] {"Trigger", "GunEmpty"};
+                            break;
                     }
                     if(FireAnimation[1] == "") FireAnimation[1] = FireAnimation[0];
                     // Get range info
@@ -2357,7 +2488,9 @@ public class PlayerScript : MonoBehaviour {
                         FireAnimation[0] = "Grip" + FireAnimation[0];
                         FireAnimation[1] = "Grip" + FireAnimation[1];
                         ReloadingAnimation[0] = "Grip" + ReloadingAnimation[0];
-                        if(GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "55") FireAnimation = new string[]{"GripThompson-Shoot", "GripTHompson-Shoot"};
+                        AimingAnimation = new [] {"", FireAnimation[0]};
+                        if(currID == 55) 
+                            FireAnimation = new string[]{"GripThompson-Shoot", "GripTHompson-Shoot"};
                     } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "103") {
                         AimZoom = 5f;
                         BurstFire = 1;
@@ -2388,8 +2521,15 @@ public class PlayerScript : MonoBehaviour {
                             if (IsReloading <= 0f) {
                                 ZoomValues[0] = AimZoom + FOVoffset[0];
                                 ZoomValues[3] = 0.03f;
-                                if (ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(PlayItemAnim("Idle", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition)) && ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.001f) {
-                                    ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Idle", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition), 0, 0f);
+                                if (AimingAnimation[0] == "" || GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "101") {
+                                    if (ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(PlayItemAnim("Idle", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition)) && ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.001f) {
+                                        ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Idle", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition), 0, 0f);
+                                    }
+                                } else {
+                                    if (ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(PlayItemAnim("Idle", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition)))
+                                        ItemsShown.GetComponent<Animator>().Play(AimingAnimation[0], 0, 0f);
+                                    else if (ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.5f)
+                                        ItemsShown.GetComponent<Animator>().Play(AimingAnimation[0], 0, 0.45f);
                                 }
                             }
                         }
@@ -2405,7 +2545,7 @@ public class PlayerScript : MonoBehaviour {
                         UseDelay = new float[] {0f, DelayFire};
                         CantUseItem = UseDelay[1];
                         if(DelayFireEffects.Length >= 1) {
-                            ItemsShown.GetComponent<Animator>().Play(DelayFireEffects[0], 0, 0f);
+                            ItemsShown.GetComponent<Animator>().Play(PlayItemAnim(DelayFireEffects[0], GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition), 0, 0f);
                             if(DelayFireEffects.Length == 2)
                                 PlaySoundBank(DelayFireEffects[1], 1);
                         }
@@ -2415,14 +2555,18 @@ public class PlayerScript : MonoBehaviour {
                         BulletsLoaded -= 1;
                         CantUseItem = BulletsLoaded == 0 ? GunCooldown[0] : GunCooldown[1];
                         CantSwitchItem = CantUseItem;
-                        Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-" + AmmoInUse); //Inventory[CurrentItemHeld].y -= AmmoInUse;
-                        if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "103" || FireAnimation[0] == "BoltAction-Shoot" || FireAnimation[0] == "Shotgun-Shoot" || FireAnimation[0] == "Flintlock-Shoot" || ZoomValues[1] > ZoomValues[0] + 1) {
-                            ItemsShown.GetComponent<Animator>().Play(FireAnimation[0], 0, 0f);
-                        } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "104") {
-                            ItemsShown.GetComponent<Animator>().Play(FireAnimation[0], 0, 0.8f);
+                        Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-" + AmmoInUse);
+
+                        if (ZoomValues[1] <= ZoomValues[0] + 1) {
+                            if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "103") {
+                                ItemsShown.GetComponent<Animator>().Play(FireAnimation[0], 0, 0f);
+                            } else if (AimingAnimation[1] != "") {
+                                ItemsShown.GetComponent<Animator>().Play(AimingAnimation[1], 0, 0f);
+                            }
                         } else {
-                            ItemsShown.GetComponent<Animator>().Play(FireAnimation[0], 0, 0.5f);
+                            ItemsShown.GetComponent<Animator>().Play(FireAnimation[0], 0, 0f);
                         }
+
                         for (int BulletsToSpanw = AmountToShoot; BulletsToSpanw > 0; BulletsToSpanw--) {
                             List<string> Additionals = new List<string>();
                             Additionals.Add(GunType);
@@ -2450,22 +2594,22 @@ public class PlayerScript : MonoBehaviour {
                             float GunspreadMP = 1f;
                             float YrecoilRandomizer = (Mathf.PerlinNoise(Time.time / 3f, Time.time / -3f) * 2f) - 1f;
                             if (GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "101") RecoilMP = new float[] { 0.3f, 0.3f };
-                            if (RS.IsCausual) {
+                            if (IsCasual) {
                                 RecoilMP = new float[] {RecoilMP[0] / 2f, RecoilMP[1] / 2f};
                             }
                             if (ZoomValues[1] <= ZoomValues[0] + 1) { 
                                 RecoilMP = new float[]{RecoilMP[0] / 2f, RecoilMP[1] / 2f}; 
                                 GunspreadMP /= 3f;
                             }
-                            float RecX = (RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).z) * RecoilMP[0];
-                            float RecY = (RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).w * YrecoilRandomizer) * RecoilMP[1];
+                            float RecX = (RS.ReceiveGunSpred(currID, this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).z) * RecoilMP[0];
+                            float RecY = (RS.ReceiveGunSpred(currID, this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).w * YrecoilRandomizer) * RecoilMP[1];
 
-                            GunSpreadPC += RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).y;
+                            GunSpreadPC += RS.ReceiveGunSpred(currID, this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).y;
                             ItemShakePos = new Vector3(
-                                (RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).w * RecoilMP[1] * -YrecoilRandomizer), 
-                                RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id")), this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).z * RecoilMP[0], 0f) * 10f;
+                                (RS.ReceiveGunSpred(currID, this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).w * RecoilMP[1] * -YrecoilRandomizer), 
+                                RS.ReceiveGunSpred(currID, this.GetComponent<Rigidbody>().velocity.magnitude / Speed, GunSpreadPC).z * RecoilMP[0], 0f) * 10f;
 
-                            if(RS.IsCausual){
+                            if(IsCasual){
                                 RecoilCam(new Vector3(RecX * -(GunSpreadPC * 5f), RecY * -(GunSpreadPC * 5f), 0f), 0.25f, 0f);
                                 GunSpreadPC = Mathf.Clamp(GunSpreadPC, 0f, 0.5f);
                             } else {
@@ -2481,7 +2625,7 @@ public class PlayerScript : MonoBehaviour {
                     }
 
                     bool CanReload = false;
-                    if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "56") {
+                    if (currID == 56) {
                         if (GS.GetSemiClass(Inventory[CurrentItemHeld], "va") == "0") {
                             CanReload = true;
                         } else if (GS.ReceiveButtonPress("Reload", "Hold") > 0f && CantUseItem <= 0f && float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) < ReloadVariables[0]) {
@@ -2496,14 +2640,20 @@ public class PlayerScript : MonoBehaviour {
 
                     // Get permission for reloading
                     if (GS.ReceiveButtonPress("Reload", "Hold") > 0f && CantUseItem <= 0f && CanReload == true) {
-                        if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                        if (GS.GameModePrefab.x == 1 || IsCasual) {
 
-                            int ToLoad = (int)(ReloadVariables[0] - float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture));
-                            ReloadInfo = new string[]{ToLoad.ToString(), ReloadingAnimation[2]};
-                            ItemsShown.GetComponent<Animator>().Play(ReloadingAnimation[0], 0, 0f);
-                            PlaySoundBank(ReloadingAnimation[1], 1, 1f, 0f, "Override");
-                            CantUseItem = ReloadVariables[2];
-                            IsReloading = ReloadVariables[2];
+                            int ToLoad = (int)Mathf.Clamp((ReloadVariables[0] - float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture)), 0, GS.Ammo);
+                            
+                            if (ToLoad > 0) {
+                                ReloadInfo = new string[]{ToLoad.ToString(), ReloadingAnimation[2]};
+                                ItemsShown.GetComponent<Animator>().Play(ReloadingAnimation[0], 0, 0f);
+                                PlaySoundBank(ReloadingAnimation[1], 1, 1f, 0f, "Override");
+                                CantUseItem = ReloadVariables[2];
+                                IsReloading = ReloadVariables[2];
+                            } else {
+                                CantUseItem = 0.5f;
+                                GS.Mess(GS.SetString("You don't have any spare ammo!", "Nie masz zapasowej amunicji!"), "Error");
+                            }
 
                         } else {
 
@@ -2542,9 +2692,10 @@ public class PlayerScript : MonoBehaviour {
 
                             if(ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f){
                                 
-                                if(GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1"){
-                                    int ToLoad = int.Parse(ReloadInfo[0]);
+                                if(GS.GameModePrefab.x == 1 || IsCasual){
+                                    int ToLoad = Mathf.Clamp(int.Parse(ReloadInfo[0]), 0, GS.Ammo);
                                     Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+" + int.Parse(ReloadInfo[0])); //Inventory[CurrentItemHeld].y += int.Parse(ReloadInfo[0]);
+                                    GS.Ammo -= ToLoad;
                                 } else {
                                     int ToLoad = 0;
                                     List<Vector2> ConsumedAmmo = new List<Vector2>();
@@ -2560,8 +2711,8 @@ public class PlayerScript : MonoBehaviour {
                                         }
                                         if (ToLoad == int.Parse(ReloadInfo[0])) break;
                                     }
-                                    if (ToLoad > 0 || GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "996") {
-                                        if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "996") {
+                                    if (ToLoad > 0 || currID == 996) {
+                                        if (currID == 996) {
                                             Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", ReloadVariables[0].ToString()); //Inventory[CurrentItemHeld].y = ReloadVariables[0];
                                         } else {
                                             Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+" + ToLoad.ToString()); //Inventory[CurrentItemHeld].y += ToLoad;
@@ -2583,12 +2734,14 @@ public class PlayerScript : MonoBehaviour {
                             if(ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.66f){
                                 bool Stop = false;
 
-                                if(GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1"){
+                                if(GS.GameModePrefab.x == 1 || IsCasual){
                                     Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+1");//Inventory[CurrentItemHeld].y += 1;
                                     ReloadInfo[0] = (int.Parse(ReloadInfo[0]) - 1).ToString();
+                                    GS.Ammo -= 1;
                                     CantUseItem = (ReloadVariables[2] / 3f) * 1.1f;
                                     IsReloading = (ReloadVariables[2] / 3f) * 1.1f;
-                                    if(ReloadInfo[0] == "0") Stop = true;
+                                    if(ReloadInfo[0] == "0" || GS.Ammo <= 0) 
+                                        Stop = true;
                                 } else {
                                     bool HasABullet = false;
                                     for (int CheckInv = 0; CheckInv < MaxInventorySlots; CheckInv++) {
@@ -2645,28 +2798,18 @@ public class PlayerScript : MonoBehaviour {
                         MainCanvas.Flash(new Color32(255, 128, 0, 255), new float[]{0.5f, 0.5f});
                         GS.Mess(GS.SetString("You feel energetic", "Czujesz się energetycznie"), "Good");
                         InvGet(CurrentItemHeld.ToString(), 1);
+                        ItemsShown.GetComponent<Animator>().Play("Syringe-Eat", 0, 0f);
+                        CantUseItem = CantSwitchItem = 1f;
                     }
                     break;
                 case 45: case 46: case 47: case 48: case 49: case 994: case 51: case 53: case 86: case 94: case 125: case 126:
                     // Get Clothing Infos
                     string ClothingName = GS.itemCache[currID].getName();
                     Color32 WearColor = new Color32(255, 255, 255, 255);
-                    string Category = "0";
-                    switch(currID){
-                        case 45: Category = "1"; break;
-                        case 46: Category = "1"; break;
-                        case 47: Category = "1"; break;
-                        case 48: Category = "2"; break;
-                        case 49: Category = "2"; break;
-                        case 994: Category = "2"; break;
-                        case 51: Category = "3"; break;
-                        case 53: Category = "4"; break;
-                        case 86: Category = "5"; break;
-                        case 94: Category = "6"; break;
-                        case 125: Category = "4"; break;
-                        case 126: Category = "3"; break;
-                    }
+
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f) {
+
+                        string Category = GS.GetSemiClass(Inventory[CurrentItemHeld], "ct");
 
                         int AddHere = -1;
                         for (int CheckEq = 0; CheckEq < 4; CheckEq ++) {
@@ -2677,7 +2820,7 @@ public class PlayerScript : MonoBehaviour {
                                 if (Category == "1") {
                                     WhatCategory = GS.itemCache[int.Parse(GS.GetSemiClass(Equipment[CheckEq], "id"))].getName();
                                 }
-                                GS.Mess(GS.SetString("Can't wear that, unequip " + GS.itemCache[int.Parse(GS.GetSemiClass(Equipment[CheckEq], "id"))] + " first!", "Nie można tego ubrać, " + GS.itemCache[int.Parse(GS.GetSemiClass(Equipment[CheckEq], "id"))].getName() + " zajmuje miejsce!"), "Error");
+                                GS.Mess(GS.SetString("Can't wear that, unequip " + GS.itemCache[int.Parse(GS.GetSemiClass(Equipment[CheckEq], "id"))].getName() + " first!", "Nie można tego ubrać, " + GS.itemCache[int.Parse(GS.GetSemiClass(Equipment[CheckEq], "id"))].getName() + " zajmuje miejsce!"), "Error");
                                 break;
                             } else if (GS.GetSemiClass(Equipment[CheckEq], "id") == "0") {
                                 AddHere = CheckEq;
@@ -2687,7 +2830,7 @@ public class PlayerScript : MonoBehaviour {
 
                         if (AddHere >= 0) {
 
-                            Equipment[AddHere] = Inventory[CurrentItemHeld] + "ct" + Category + ";";//new Vector4(Inventory[CurrentItemHeld].x, Inventory[CurrentItemHeld].y, Inventory[CurrentItemHeld].z, Category);
+                            Equipment[AddHere] = Inventory[CurrentItemHeld];//new Vector4(Inventory[CurrentItemHeld].x, Inventory[CurrentItemHeld].y, Inventory[CurrentItemHeld].z, Category);
 
                             MainCanvas.Flash(new Color32(255, 255, 255, 75), new float[]{0.5f, 0.5f});
                             GS.Mess(GS.SetString(ClothingName + " worn", "Ubrano: " + ClothingName), "Wear");
@@ -2805,16 +2948,10 @@ public class PlayerScript : MonoBehaviour {
                         CantUseItem = 1f;
                         CantSwitchItem = 1f;
                         PermissionToFireBow = true;
+                        UseDelay = new[] {0f, 1f};
                     }
-                    if (ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(PlayItemAnim("Shoot", "69", AnimationAddition)) && ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0.9f && PermissionToFireBow == true) {
+                    if (UseDelay[0] >= 0.9f && PermissionToFireBow == true) {
                         PermissionToFireBow = false;
-                        //GameObject SpawnAttack = Instantiate(AttackPrefab) as GameObject;
-                        //SpawnAttack.transform.position = LookDir.position;
-                        //SpawnAttack.transform.eulerAngles = LookDir.eulerAngles;
-                        //SpawnAttack.GetComponent<AttackScript>().GunName = "Arrow";
-                        //SpawnAttack.GetComponent<AttackScript>().Attacker = this.gameObject;
-                        //SpawnAttack.GetComponent<AttackScript>().WchichItemWasHeld = CurrentItemHeld;
-                        //SpawnAttack.GetComponent<AttackScript>().Slimend = SlimEnd;
                         RS.Attack( new string[]{ "Arrow" , "Inventory" + CurrentItemHeld }, LookDir.position, MainCamera.forward, this.gameObject, SlimEnd );
                         Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-1");//Inventory[CurrentItemHeld].y -= 1;
                         if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0) {
@@ -3029,6 +3166,7 @@ public class PlayerScript : MonoBehaviour {
                         InvGet(CurrentItemHeld.ToString(), 1);
                         MainCanvas.Flash(new Color32(255, 255, 255, 75), new float[]{0.5f, 0.5f});
                         GS.Mess(GS.SetString("Your bones are no longer broken!", "Twoje kości nie są już połamane!"), "Good");
+                        ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Bandage", "107"));
                     }
                     break;
                 case 109:
@@ -3040,13 +3178,6 @@ public class PlayerScript : MonoBehaviour {
                         CantUseItem = 0.1f;
                         CantSwitchItem = 0.1f;
                         Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-1"); //Inventory[CurrentItemHeld].y -= 1f;
-                        //GameObject SpawnAttack = Instantiate(AttackPrefab) as GameObject;
-                        //SpawnAttack.transform.position = LookDir.transform.position;
-                        //SpawnAttack.transform.eulerAngles = LookDir.transform.eulerAngles;
-                        //SpawnAttack.GetComponent<AttackScript>().GunName = "FlameThrower";
-                        //SpawnAttack.GetComponent<AttackScript>().Attacker = this.gameObject;
-                        //SpawnAttack.GetComponent<AttackScript>().WchichItemWasHeld = CurrentItemHeld;
-                        //SpawnAttack.GetComponent<AttackScript>().Slimend = SlimEnd;
                         RS.Attack(new string[]{"FlameThrower", "Inventory" + CurrentItemHeld}, LookDir.position, LookDir.forward, this.gameObject, SlimEnd);
                         ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Pullup", "109", AnimationAddition), 0, 0.9f);
                     }
@@ -3059,13 +3190,6 @@ public class PlayerScript : MonoBehaviour {
                         CantUseItem = 1f;
                         CantSwitchItem = 1f;
                         Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-1"); //Inventory[CurrentItemHeld].y -= 1f;
-                        //GameObject SpawnAttack = Instantiate(AttackPrefab) as GameObject;
-                        //SpawnAttack.transform.position = LookDir.position;
-                        //SpawnAttack.transform.eulerAngles = LookDir.eulerAngles;
-                        //SpawnAttack.GetComponent<AttackScript>().GunName = "GrenadeLauncher";
-                        //SpawnAttack.GetComponent<AttackScript>().Attacker = this.gameObject;
-                        //SpawnAttack.GetComponent<AttackScript>().WchichItemWasHeld = CurrentItemHeld;
-                        //SpawnAttack.GetComponent<AttackScript>().Slimend = SlimEnd;
                         RS.Attack(new string[]{"GrenadeLauncher", "Inventory" + CurrentItemHeld}, LookDir.position, LookDir.forward, this.gameObject, SlimEnd);
                         if(float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) > 0f) ItemsShown.GetComponent<Animator>().Play("M97-Shoot", 0, 0f);
                         else ItemsShown.GetComponent<Animator>().Play("M97-LastShot", 0, 0f);
@@ -3089,14 +3213,7 @@ public class PlayerScript : MonoBehaviour {
                         CantUseItem = 1.5f;
                         CantSwitchItem = 1.5f;
                         Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-1"); //Inventory[CurrentItemHeld].y -= 1f;
-                        //GameObject SpawnAttack = Instantiate(AttackPrefab) as GameObject;
-                        //SpawnAttack.transform.position = LookDir.position;
-                        //SpawnAttack.transform.eulerAngles = LookDir.eulerAngles;
-                        //SpawnAttack.GetComponent<AttackScript>().GunName = "Arrow";
-                        //SpawnAttack.GetComponent<AttackScript>().Attacker = this.gameObject;
-                        //SpawnAttack.GetComponent<AttackScript>().WchichItemWasHeld = CurrentItemHeld;
-                        //SpawnAttack.GetComponent<AttackScript>().Slimend = SlimEnd;
-                        RS.Attack(new string[]{"Arrow", "Inventory" + CurrentItemHeld}, LookDir.position, LookDir.forward, SlimEnd);
+                        RS.Attack(new string[]{"Arrow", "Inventory" + CurrentItemHeld}, LookDir.position, LookDir.forward, this.gameObject, SlimEnd);
                         if(float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) > 0f) ItemsShown.GetComponent<Animator>().Play("Crossbow-Shoot", 0, 0f);
                         else ItemsShown.GetComponent<Animator>().Play("Crossbow-LastShot", 0, 0f);
                     }
@@ -3238,7 +3355,7 @@ public class PlayerScript : MonoBehaviour {
                             }
                             Scanner.transform.GetChild(0).GetChild(0).localScale = Vector3.one;
                             Scanner.transform.GetChild(0).GetChild(1).localScale = Vector3.zero;
-                            Scanner.transform.GetChild(1).GetComponent<Camera>().backgroundColor = MainCamera.GetComponent<Camera>().backgroundColor * 0.75f;
+                            Scanner.transform.GetChild(1).GetComponent<Camera>().backgroundColor = MainCamera.GetComponent<Camera>().backgroundColor;
                             ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Idle", "130", AnimationAddition), 0, 0f);
                             ZoomValues[0] = 15f;
                             ZoomValues[3] = 0.03f;
@@ -3249,69 +3366,92 @@ public class PlayerScript : MonoBehaviour {
                             }
 
                             // Scanning
-                            foreach (Transform ClearScans in Scanner.transform.GetChild(1)) {
-                                Destroy(ClearScans.gameObject);
+                            if(scanBuffer <= 0f){
+                                scanBuffer = 1f;
+                                scans = new ();
+
+                                foreach (Transform ClearScans in Scanner.transform.GetChild(1)) {
+                                    Destroy(ClearScans.gameObject);
+                                }
+
+                                if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "0") {
+                                    // Items
+                                    Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "ItemScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
+                                    foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Item")) {
+                                        if (Vector3.Distance(this.transform.position, ScanItem.transform.position) < 200f) {
+                                            scans.Add(ScanItem);
+                                        }
+                                    }
+                                } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "1") {
+                                    // Mobs
+                                    Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "PulseScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
+                                    foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Mob")) {
+                                        if (Vector3.Distance(this.transform.position, ScanItem.transform.position) < 200f) {
+                                            scans.Add(ScanItem);
+                                        }
+                                    }
+                                    foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("MobPH"))
+                                        scans.Add(ScanItem);
+                                } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "2") {
+                                    // Interactables
+                                    Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "UtilityScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
+                                    foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Interactable")) {
+                                        if (Vector3.Distance(this.transform.position, ScanItem.transform.position) < 200f && ((int)ScanItem.GetComponent<InteractableScript>().Variables.x == 1 || (int)ScanItem.GetComponent<InteractableScript>().Variables.x == 4)) {
+                                            scans.Add(ScanItem);
+                                        }
+                                    }
+                                } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "3") {
+                                    // Exit
+                                    Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "ExitScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
+                                    foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Interactable"))
+                                        if ((int)ScanItem.GetComponent<InteractableScript>().Variables.x == 2)
+                                            scans.Add(ScanItem);
+                                }
+
+                                for (int spawnScan = 0; spawnScan < scans.Count; spawnScan++) {
+                                    GameObject CreateScan = Instantiate(ScannersScan) as GameObject;
+                                    CreateScan.transform.position = Scanner.transform.GetChild(1).position;
+                                    CreateScan.transform.SetParent(Scanner.transform.GetChild(1));
+                                }
+
+                            } else {
+
+                                scanBuffer -= 0.02f;
+
+                                for (int updateScan = 0; updateScan < scans.Count; updateScan++) if (scans[updateScan]) {
+                                    Transform getScan = Scanner.transform.GetChild(1).GetChild(updateScan);
+                                    getScan.LookAt(scans[updateScan].transform.position);
+                                    getScan.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, Mathf.Clamp((15f - Quaternion.Angle(Scanner.transform.GetChild(1).rotation, getScan.transform.rotation)) / 15f, 0f, 1f));
+                                    getScan.Rotate(new Vector3(0f, 0f, Random.Range(0f, 360f)));
+                                }
+
                             }
-                            if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "Items") {
-                                // Items
-                                Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "ItemScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
-                                foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Item")) {
-                                    if (Vector3.Distance(this.transform.position, ScanItem.transform.position) < 200f) {
-                                        GameObject CreateScan = Instantiate(ScannersScan) as GameObject;
-                                        CreateScan.transform.position = Scanner.transform.GetChild(1).position;
-                                        CreateScan.transform.LookAt(ScanItem.transform.position);
-                                        CreateScan.transform.SetParent(Scanner.transform.GetChild(1));
-                                        CreateScan.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, Mathf.Clamp((15f - Quaternion.Angle(Scanner.transform.GetChild(1).rotation, CreateScan.transform.rotation)) / 15f, 0f, 1f));
-                                        CreateScan.transform.Rotate(new Vector3(0f, 0f, Random.Range(0f, 360f)));
-                                    }
-                                }
-                            } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "Mobs") {
-                                // Mobs
-                                Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "PulseScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
-                                foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Mob")) {
-                                    if (Vector3.Distance(this.transform.position, ScanItem.transform.position) < 200f) {
-                                        GameObject CreateScan = Instantiate(ScannersScan) as GameObject;
-                                        CreateScan.transform.position = Scanner.transform.GetChild(1).position;
-                                        CreateScan.transform.LookAt(ScanItem.transform.position);
-                                        CreateScan.transform.SetParent(Scanner.transform.GetChild(1));
-                                        CreateScan.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, Mathf.Clamp((15f - Quaternion.Angle(Scanner.transform.GetChild(1).rotation, CreateScan.transform.rotation)) / 15f, 0f, 1f));
-                                        CreateScan.transform.Rotate(new Vector3(0f, 0f, Random.Range(0f, 360f)));
-                                    }
-                                }
-                            } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "Interactables") {
-                                // Interactables
-                                Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "UtilityScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
-                                foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Interactable")) {
-                                    if (Vector3.Distance(this.transform.position, ScanItem.transform.position) < 200f && ((int)ScanItem.GetComponent<InteractableScript>().Variables.x == 1 || (int)ScanItem.GetComponent<InteractableScript>().Variables.x == 2 || (int)ScanItem.GetComponent<InteractableScript>().Variables.x == 4)) {
-                                        GameObject CreateScan = Instantiate(ScannersScan) as GameObject;
-                                        CreateScan.transform.position = Scanner.transform.GetChild(1).position;
-                                        CreateScan.transform.LookAt(ScanItem.transform.position);
-                                        CreateScan.transform.SetParent(Scanner.transform.GetChild(1));
-                                        CreateScan.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, Mathf.Clamp((15f - Quaternion.Angle(Scanner.transform.GetChild(1).rotation, CreateScan.transform.rotation)) / 15f, 0f, 1f));
-                                        CreateScan.transform.Rotate(new Vector3(0f, 0f, Random.Range(0f, 360f)));
-                                    }
-                                }
-                            }
+                            
                         } else {
                             Scanner.transform.GetChild(0).GetChild(0).localScale = Vector3.zero;
                             Scanner.transform.GetChild(0).GetChild(1).localScale = Vector3.one;
                             // ClearScans
-                            foreach (Transform ClearScans in Scanner.transform.GetChild(1)) {
-                                Destroy(ClearScans.gameObject);
+                            if (scans != null && scans.Count > 0){
+                                foreach (Transform ClearScans in Scanner.transform.GetChild(1)) {
+                                    Destroy(ClearScans.gameObject);
+                                }
+                                scans = new List<GameObject>();
                             }
                         }
                         if (GS.ReceiveButtonPress("AltAction", "Hold") > 0f && CantUseItem <= 0f) {
                             CantUseItem = 0.5f;
                             CantSwitchItem = 0.5f;
                             MainCanvas.PlaySoundBank("S_NVON");
-                            //Inventory[CurrentItemHeld].z += 1f;
-                            if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "Items") {
-                                Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "sw", "Mobs");
-                            } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "Mobs") {
-                                Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "sw", "Interactables");
-                            } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "Interactables") {
-                                Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "sw", "Items");
+                            if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "0") {
+                                Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "sw", "1");
+                            } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "1") {
+                                Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "sw", "2");
+                            } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "2") {
+                                Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "sw", "3");
+                            } else if (GS.GetSemiClass(Inventory[CurrentItemHeld], "sw") == "3") {
+                                Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "sw", "0");
                             }
+                            scanBuffer = 0f;
                         }
                     }
                     break;
@@ -3408,7 +3548,7 @@ public class PlayerScript : MonoBehaviour {
 
             // Scan equipment
             int MIStoset = 4;
-            if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+            if (GS.GameModePrefab.x == 1) {
                 MIStoset = 6;
             }
             float Healthtoset = 100f;
@@ -3446,7 +3586,7 @@ public class PlayerScript : MonoBehaviour {
                         SetNV = false;
                     } else {
                         SetNV = true;
-                        Equipment[ScanEq] = GS.SetSemiClass(Equipment[ScanEq], "va", "/+-0.04");//Equipment[ScanEq].y -= 0.04f;
+                        Equipment[ScanEq] = GS.SetSemiClass(Equipment[ScanEq], "va", "/+-0.011");//Equipment[ScanEq].y -= 0.04f;
                     }
                     if (float.Parse(GS.GetSemiClass(Equipment[ScanEq], "va"), CultureInfo.InvariantCulture) <= 0f) {
                         SetNV = false;
@@ -3455,7 +3595,8 @@ public class PlayerScript : MonoBehaviour {
                 } else if (GS.GetSemiClass(Equipment[ScanEq], "id") == "86") {
                     SetHZ = true;
                     if (float.Parse(GS.GetSemiClass(Equipment[ScanEq], "va"), CultureInfo.InvariantCulture) > 0f) {
-                        Equipment[ScanEq] = GS.SetSemiClass(Equipment[ScanEq], "va", "/+-" + (MicroSiverts[0] / 500f).ToString() );//Equipment[ScanEq].y -= MicroSiverts[0] / 500f;
+                        if(MicroSiverts[0] > 0f)
+                            Equipment[ScanEq] = GS.SetSemiClass(Equipment[ScanEq], "va", "/+-0.02" );//Equipment[ScanEq].y -= MicroSiverts[0] / 500f;
                         if (Fire > 0f) {
                             Equipment[ScanEq] = GS.SetSemiClass(Equipment[ScanEq], "va", "/+-" + Fire.ToString());//Equipment[ScanEq].y -= Fire;
                             Fire = 0f;
@@ -3516,7 +3657,7 @@ public class PlayerScript : MonoBehaviour {
             if (IsHS == false && SetHZ == true) {
                 IsHS = true;
                 MainCanvas.Flash(new Color32(0, 0, 0, 255), new float[]{1f, 1f});
-                SetArmModel("Hazmat", false);
+                SetArmModel("HazmatSuit", false);
             } else if (IsHS == true && SetHZ == false) {
                 IsHS = false;
                 MainCanvas.Flash(new Color32(0, 0, 0, 255), new float[]{1f, 1f});
@@ -3641,11 +3782,16 @@ public class PlayerScript : MonoBehaviour {
 
             string TextShortcuts = "";
             if (Bleeding > 0f) {
-                Bleeding -= 0.02f;
-                Hurt(0.02f, "Bleeding", false, Vector3.zero);
-                string NumbersToAdd = "00" + (int)Bleeding;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "B" + NumbersToAdd;
+                if (IsCasual){
+                    Hurt(Bleeding / 4f, "Bleeding", false, Vector3.zero);
+                    Bleeding = 0f;
+                } else {
+                    Bleeding -= 0.02f;
+                    Hurt(0.02f, "Bleeding", false, Vector3.zero);
+                    string NumbersToAdd = "00" + (int)Bleeding;
+                    NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
+                    TextShortcuts += "B" + NumbersToAdd;
+                }
             }
             if (Hydration > 0f) {
                 Hydration -= 0.02f;
@@ -3662,10 +3808,14 @@ public class PlayerScript : MonoBehaviour {
             }
             Tiredness = Mathf.Clamp(Tiredness, 0f, 75f);
             if (Tiredness > 0f) {
-                Energy[0] = Mathf.Clamp(Energy[0], 0f, Energy[1] - (Energy[1] * (Tiredness / 100f)));
-                string NumbersToAdd = "00" + (int)Tiredness;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "T" + NumbersToAdd;
+                if (IsCasual) {
+                    Tiredness = 0;
+                } else {
+                    Energy[0] = Mathf.Clamp(Energy[0], 0f, Energy[1] - (Energy[1] * (Tiredness / 100f)));
+                    string NumbersToAdd = "00" + (int)Tiredness;
+                    NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
+                    TextShortcuts += "T" + NumbersToAdd;
+                }
             }
 
             if (RS.GotTerrain != null) {
@@ -3735,6 +3885,7 @@ public class PlayerScript : MonoBehaviour {
                 TextShortcuts += "D" + NumbersToAdd;
             }
             if (BrokenBone == 1) {
+                if (IsCasual) BrokenBone = 0;
                 string NumbersToAdd = "00" + (int)BrokenBone;
                 NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
                 TextShortcuts += "b" + NumbersToAdd;
@@ -3893,21 +4044,8 @@ public class PlayerScript : MonoBehaviour {
                 }
             } else {
 
-                if(DamageType == "Canibalism"){
-                    Health[0] -= GotDamage;
-                    if(Health[0] <= 0f) GS.PS.AchProg("Ach_StarveDeath", "0");
-                } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
-                    Health[0] -= GotDamage * 0.5f;
-                } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "2") {
-                    Health[0] -= GotDamage;
-                } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "3") {
-                    Health[0] -= GotDamage * 2f;
-                } else {
-                    Health[0] -= GotDamage * 4f;
-                }
-
                 if (Indicate == true) {
-                    if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" && !MainCanvas.HintsTold.Contains("Hurt")) {
+                    if (GS.GameModePrefab.x == 1 && !MainCanvas.HintsTold.Contains("Hurt")) {
                         MainCanvas.HintsCooldown.Add("Hurt");
                     }
                     RecoilCam(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), Random.Range(-15f, 15f)), 0.5f, 0f);
@@ -3925,6 +4063,7 @@ public class PlayerScript : MonoBehaviour {
                 }
 
                 bool HardcoreInstaKill = false;
+                int CasualEase = 1;
                 bool Gib = false;
                 if (DamageType == "Nuke") {
                     KilledBy = GS.SetString("You've been obliterated by a nuke.", "Zostałeś rozszarpany przez bombę atomową.");
@@ -3957,6 +4096,7 @@ public class PlayerScript : MonoBehaviour {
                 } else if (DamageType == "Electricity") {
                     KilledBy = GS.SetString("You were electrocuted.", "Poraził cię prąd.");
                     HardcoreInstaKill = true;
+                    CasualEase = 4;
                     Gib = true;
                 } else if (DamageType == "Suicide") {
                     KilledBy = GS.SetString("You gave up and died.", "Poddałeś się i umarłeś.");
@@ -3965,6 +4105,7 @@ public class PlayerScript : MonoBehaviour {
                 } else if (DamageType == "MutantBite") {
                     KilledBy = GS.SetString("You've been eaten by mutants.", "Zostałeś pożarty przez mutantów.");
                     HardcoreInstaKill = true;
+                    CasualEase = 2;
                     int InfectionChance = Random.Range(0, 5);
                     if (InfectionChance == 0) {
                         Infection += Random.Range(5f, 10f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
@@ -3974,6 +4115,7 @@ public class PlayerScript : MonoBehaviour {
                     GameObject CreateCanvasSplash = Instantiate(GameObject.Find("MainCanvas").GetComponent<CanvasScript>().EnvSplash);
                     CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectName = "AcidSplash";
                     HardcoreInstaKill = true;
+                    CasualEase = 2;
                     int InfectionChance = Random.Range(0, 2);
                     if (InfectionChance == 0) {
                         Infection += Random.Range(10f, 25f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
@@ -3981,6 +4123,7 @@ public class PlayerScript : MonoBehaviour {
                 } else if (DamageType == "Melee") {
                     KilledBy = GS.SetString("You died in a melee fight.", "Umarłeś zabity z broni białej.");
                     HardcoreInstaKill = true;
+                    CasualEase = 2;
                     int InfectionChance = Random.Range(0, 10);
                     if (InfectionChance == 0) {
                         Bleeding += Random.Range(5f, 20f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
@@ -3988,6 +4131,7 @@ public class PlayerScript : MonoBehaviour {
                 } else if (DamageType == "Gun" || DamageType == "Arrow") {
                     KilledBy = GS.SetString("You were shot.", "Zostałeś zastrzelony.");
                     HardcoreInstaKill = true;
+                    CasualEase = 4;
                     int InfectionChance = Random.Range(0, 10);
                     if (InfectionChance == 0) {
                         Bleeding += Random.Range(5f, 20f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
@@ -3995,6 +4139,7 @@ public class PlayerScript : MonoBehaviour {
                 } else if (DamageType == "Explosion") {
                     KilledBy = GS.SetString("You blew up.", "Zostałeś wysadzony w powietrze.");
                     HardcoreInstaKill = true;
+                    CasualEase = 4;
                     Gib = true;
                     int InfectionChance = Random.Range(0, 2);
                     if (InfectionChance == 0) {
@@ -4007,6 +4152,22 @@ public class PlayerScript : MonoBehaviour {
                     Bleeding += Random.Range(5f, 20f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
                 } else {
                     KilledBy = GS.SetString("You died.", "Umarłeś.");
+                }
+
+                if (IsCasual)
+                    GotDamage /= CasualEase;
+
+                if(DamageType == "Canibalism"){
+                    Health[0] -= GotDamage;
+                    if(Health[0] <= 0f) GS.PS.AchProg("Ach_StarveDeath", "0");
+                } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
+                    Health[0] -= GotDamage * 0.5f;
+                } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "2") {
+                    Health[0] -= GotDamage;
+                } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "3") {
+                    Health[0] -= GotDamage * 2f;
+                } else {
+                    Health[0] -= GotDamage * 4f;
                 }
 
                 if (HardcoreInstaKill == true && GS.GetSemiClass(GS.RoundSetting, "D", "?") == "5") {
@@ -4132,7 +4293,7 @@ public class PlayerScript : MonoBehaviour {
                                     break;
                             }
                             break;
-                        case "Hazmat":
+                        case "HazmatSuit":
                             switch (MatRef.name) {
                                 case "TIPS2 (Instance)":
                                     MatRef.color = new Color32(255, 240, 124, 255);
@@ -4206,7 +4367,7 @@ public class PlayerScript : MonoBehaviour {
             case 24: case 44: case 990:
                 PlayThis = "Syringe-" + WhatAnim;
                 break;
-            case 29: case 31: case 32: case 135: case 58:
+            case 29: case 31: case 32: case 135: case 58: case 130:
                 PlayThis = "Pistol-" + WhatAnim;
                 if(ItemIDint == 32 && WhatAnim == "SwitchItem") PlayThis = "Revolver-" + WhatAnim;
                 else if(ItemIDint == 58 && (WhatAnim == "SwitchItem")) PlayThis = "Uzi-" + WhatAnim;
@@ -4219,9 +4380,10 @@ public class PlayerScript : MonoBehaviour {
                     else if (ItemIDint == 159 || ItemIDint == 160) PlayThis = "BakerRifle-" + WhatAnim;
                 }
                 if(Aditional == "Grip") PlayThis = "GripBoltAction-" + WhatAnim;
+                if(WhatAnim == "Trigger") PlayThis = Aditional + "BakerRifle-" + WhatAnim;
                 else if(Aditional == "Bayonet" && PlayThis == "BoltAction-Shoot") PlayThis = "BoltAction-ShootNoReload";
                 break;
-            case 35:
+            case 35: case 997:
                 PlayThis = "DBshotgun-" + WhatAnim;
                 break;
             case 36: case 41:
@@ -4247,6 +4409,13 @@ public class PlayerScript : MonoBehaviour {
             case 64:
                 PlayThis = "Minigun-" + WhatAnim;
                 break;
+            case 68:
+                PlayThis = "Chainsaw-" + WhatAnim;
+                if (WhatAnim == "Swing") {
+                    PlayThis = "Chainsaw-Attack";
+                    ShakeCam(0.1f, 0.1f);
+                }
+                break;
             case 157:
                 PlayThis = "Flintlock-" + WhatAnim;
                 break;
@@ -4258,9 +4427,8 @@ public class PlayerScript : MonoBehaviour {
                 break;
             case 2: case 127:
                 PlayThis = "Flashlight-" + WhatAnim;
-                if(WhatAnim == "Swing"){
+                if(WhatAnim == "Swing")
                     RecoilCam(new Vector3(-10f, -25f, 0f), 0.25f, 0.1f);
-                }
                 break;
             case 14:
                 PlayThis = "Knife-" + WhatAnim;

@@ -11312,7 +11312,6 @@ RectTransform:
   - {fileID: 2021871543181407490}
   - {fileID: 8991867108186630399}
   - {fileID: 5748857973309068952}
-  - {fileID: 1530266059076116870}
   - {fileID: 7259457444586566132}
   m_Father: {fileID: 6024097590779373839}
   m_RootOrder: -1
@@ -11646,6 +11645,7 @@ RectTransform:
   m_Children:
   - {fileID: 6402930274527390081}
   - {fileID: 7582224328045998639}
+  - {fileID: 1530266059076116870}
   - {fileID: 8107547191996329400}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -12010,6 +12010,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 56f3ace2ad697b94fa5bfb3ff15cd5a3, type: 3}
   - {fileID: 8300000, guid: 7f2fe92eda119ac419fee0cb43ad51e5, type: 3}
   - {fileID: 8300000, guid: 825a270c42b62d94cada9309a96fdbdf, type: 3}
+  - {fileID: 8300000, guid: 6d4b564825fadf64bbc3d51e571f7951, type: 3}
   PopupWindow: {fileID: 6402930274527390081}
   PWachievement: {fileID: 6141889661339831389}
   PopupQueue: []
@@ -13213,13 +13214,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4335161090080125971}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -315.72656, y: -205.41034, z: 186.1818}
+  m_LocalPosition: {x: -315.72656, y: -205.41032, z: 186.18178}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2054315565472213780}
   - {fileID: 4146567136828190003}
-  m_Father: {fileID: 8107547191996329400}
+  m_Father: {fileID: 6024097590779373839}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4342997815205506472

@@ -285,10 +285,11 @@ public class EffectScript : MonoBehaviour {
             } else if (EffectName == "Flash" && Flash.GetComponent<Light>().intensity > 0f) {
                 Flash.GetComponent<Light>().intensity -= 0.04f;
             } else if (EffectName == "Cowbell" && Lifetime >= 1.9f) {
-                foreach (GameObject Mob in GameObject.FindGameObjectsWithTag("Mob")) {
-                    if (Vector3.Distance(Mob.transform.position, this.transform.position) < 100f) {
-                        Mob.GetComponent<MobScript>().React("Curious", 20f, this.transform.position);
-                    }
+                foreach (GameObject MobHeard in GameObject.FindGameObjectsWithTag("Mob")) if (Vector3.Distance(this.transform.position, MobHeard.transform.position) < 100f) {
+                    MobHeard.GetComponent<MobScript>().React("Curious", 20f, this.transform.position);
+                }
+                foreach (GameObject MobHeard in GameObject.FindGameObjectsWithTag("MobPH")) if (MobHeard.GetComponent<MobPH>().Curious && Vector3.Distance(this.transform.position, MobHeard.transform.position) < 100f) {
+                    MobHeard.GetComponent<MobPH>().Attract(this.transform.position, 10f);
                 }
             } else if (EffectName == "BloodSplat" && Lifetime < 5f) {
                 BloodSplat.transform.GetChild(0).GetChild(PickSplat).GetComponent<SpriteRenderer>().color -= new Color(0f, 0f, 0f, 0.0025f);

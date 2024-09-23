@@ -55,6 +55,7 @@ public class NewMenuScript : MonoBehaviour {
     public MenuSliderScript OptionSlider;
     // While pick game
     public Transform PickGame;
+    string[] ListOfSaveFiles = new string[]{}; 
     public Transform[] PGbuttons;
     public Text PGdesc;
     public Transform[] PGdescButts;
@@ -152,7 +153,7 @@ public class NewMenuScript : MonoBehaviour {
 
     void Start(){
 
-        mainAnchor = this.transform.GetChild(0).gameObject;
+        mainAnchor = this.transform.GetChild(2).gameObject;
 
         if(GameObject.Find("_GameScript")) {
             GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
@@ -250,7 +251,7 @@ public class NewMenuScript : MonoBehaviour {
         }
 
         // Displaying
-        if(hide && mainAnchor.activeSelf) mainAnchor.SetActive(false);
+        if(hide && mainAnchor.activeSelf && FromStart > 1f) mainAnchor.SetActive(false);
         else if(!hide && !mainAnchor.activeSelf) mainAnchor.SetActive(true);
 
         if(ForceHidden > 0f){
@@ -295,7 +296,7 @@ public class NewMenuScript : MonoBehaviour {
                     WhileProfileMenu();
                     WhileCredits();
                     WhileManual();
-                    if(SceneManager.GetActiveScene().name == "MainGame" && Input.GetKeyDown(KeyCode.Escape) && intActive <= 0f)
+                    if(SceneManager.GetActiveScene().name == "MainGame" && Warning[0] == "" && Input.GetKeyDown(KeyCode.Escape) && intActive <= 0f)
                         GameObject.Find("MainCanvas").GetComponent<CanvasScript>().IsPaused = false;
                     break;
                 case "Options":
@@ -551,17 +552,26 @@ public class NewMenuScript : MonoBehaviour {
             case "Unwear": MessyAudio = "Paper"; break;
             case "Draw": MessyColor = new Color32(255, 255, 200, 255); MessyAudio = "Drawing"; break;
             case "Good": MessyColor = Color.green; break;
-            case "Craft": MessyColor = Color.green; MessyAudio = "Microwave"; break;
+            case "Craft": MessyColor = Color.green; MessyAudio = "Microvawe"; break;
             case "Buy": MessyColor = Color.green; MessyAudio = "CashOut"; break;
             case "Teal": MessyColor = Color.cyan; MessyAudio = "Teal"; break;
-            default: MessyColor = Color.white; MessyAudio = ""; break;
+            default: 
+                MessyColor = Color.white;
+                if(TypeOMess != "") 
+                    MessyAudio = TypeOMess;
+                break;
         }
-        if(TypeOMess != "" && TypeOMess.Substring(0,1) == "ś") MessyAudio = TypeOMess.Substring(1);
-        for(int ac = 0; ac < CommentSounds.Length; ac++) if(CommentSounds[ac].name == MessyAudio){
-            Comments[0].transform.parent.GetComponent<AudioSource>().clip = CommentSounds[ac];
-            Comments[0].transform.parent.GetComponent<AudioSource>().Play();
-            break;
-        }
+
+        if(MessyAudio != "")
+            for(int ac = 0; ac <= CommentSounds.Length; ac++)
+                if(ac == CommentSounds.Length)
+                    Debug.LogError("No message audio " + TypeOMess);
+                else if(CommentSounds[ac].name == MessyAudio){
+                    Comments[0].transform.parent.GetComponent<AudioSource>().clip = CommentSounds[ac];
+                    Comments[0].transform.parent.GetComponent<AudioSource>().Play();
+                    break;
+                }
+
         Comments[0].GetComponent<Outline>().effectColor = MessyColor;
         Comments[0].GetComponent<Text>().color = MessyColor;
         Comments[0].GetComponent<Text>().text = Message;
@@ -1017,23 +1027,23 @@ public class NewMenuScript : MonoBehaviour {
             // Messages tray
             MessagesTray.localScale = Vector3.one;
             for(int mt = 0; mt < 6; mt++){
-                if(mt < GS.PS.Messages.ToArray().Length){
+                if(mt < GS.Messages.ToArray().Length){
                     MessagesTray.GetChild(mt).localScale = Vector3.one;
                     if(MessagesTray.GetChild(mt).GetComponent<ButtonScript>().IsSelected) {
-                        MessagesTray.GetChild(mt).GetChild(1).GetComponent<Text>().text = GS.GetSemiClass(GS.PS.Messages[mt], "ti_") + GS.SetString("\n[Read more]", "\n[Czytaj dalej]");
+                        MessagesTray.GetChild(mt).GetChild(1).GetComponent<Text>().text = GS.GetSemiClass(GS.Messages[mt], "ti_") + GS.SetString("\n[Read more]", "\n[Czytaj dalej]");
                         MessagesTray.GetChild(mt).GetChild(1).GetComponent<Text>().color = new Color(1f,1f,1f, Mathf.Clamp(MessagesTray.GetChild(mt).GetChild(1).GetComponent<Text>().color.a + Time.unscaledDeltaTime*3f, 0f, 1f) );
                     } else {
                         MessagesTray.GetChild(mt).GetChild(1).GetComponent<Text>().color = new Color(1f,1f,1f,0f);
                     }
 
-                    for(int gi = 0; gi < MessageIcons.Length; gi++) if (MessageIcons[gi].name == GS.GetSemiClass(GS.PS.Messages[mt], "vi_")) {
+                    for(int gi = 0; gi < MessageIcons.Length; gi++) if (MessageIcons[gi].name == GS.GetSemiClass(GS.Messages[mt], "vi_")) {
                         MessagesTray.GetChild(mt).GetChild(0).GetComponent<Image>().sprite = MessageIcons[gi];
                         break;
                     }
 
-                    if( (MessagesTray.GetChild(mt).GetComponent<ButtonScript>().IsSelected && Input.GetMouseButtonDown(0)) || (GS.GetSemiClass(GS.PS.Messages[mt], "im_") == "2") ){
-                        Warning = new string[]{GS.GetSemiClass(GS.PS.Messages[mt], "sp_"), GS.PS.Messages[mt]};
-                        GS.PS.Messages.RemoveAt(mt);
+                    if( (MessagesTray.GetChild(mt).GetComponent<ButtonScript>().IsSelected && Input.GetMouseButtonDown(0)) || (GS.GetSemiClass(GS.Messages[mt], "im_") == "2") ){
+                        Warning = new string[]{GS.GetSemiClass(GS.Messages[mt], "sp_"), GS.Messages[mt]};
+                        GS.Messages.RemoveAt(mt);
                     }
                 } else {
                     MessagesTray.GetChild(mt).localScale = Vector3.zero;
@@ -1396,8 +1406,7 @@ public class NewMenuScript : MonoBehaviour {
                     PickGame.GetChild(0).GetChild(0).GetComponent<Text>().text = GS.SetString("CHOOSE A GAME FILE", "WYBIERZ PLIK Z GRĄ");
 
                     // Choosing files
-                    string[] ListOfSaveFiles = new string[]{}; 
-                    if(PlayerPrefs.HasKey("Saves")) {
+                    if(PlayerPrefs.HasKey("Saves") && ListOfSaveFiles.Length <= 0 ) {
                         List<string> AvaSaves = new List<string>();
                         foreach(string chick in GS.ListSemiClass(PlayerPrefs.GetString("Saves"), "©")) if (GS.GetSemiClass(GS.GetSemiClass(chick, "rs", "®"), "P", "?") == PS.ProfileID.ToString() || GS.GetSemiClass(GS.GetSemiClass(chick, "rs", "®"), "P", "?") == "1")
                             AvaSaves.Add(chick);
@@ -1411,15 +1420,9 @@ public class NewMenuScript : MonoBehaviour {
 
                         if (sb < ListOfSaveFiles.Length){
                             string SaveInfo = ListOfSaveFiles[sb];
-                            if(GS.GetSemiClass(GS.GetSemiClass(SaveInfo, "rs", "®"), "P", "?") == "1") PGtext.text = "> " + GS.GetSemiClass(SaveInfo, "sn", "®");
-                            else {
-                                string OwnerProfile = "";
-                                for(int gp = 0; gp < GS.ListSemiClass(PlayerPrefs.GetString("ProfileSaves"), "©").Length; gp++) if (GS.GetSemiClass(GS.ListSemiClass(PlayerPrefs.GetString("ProfileSaves"), "©")[gp], "ID_", "®") == GS.GetSemiClass(GS.GetSemiClass(SaveInfo, "rs", "®"), "P", "?")){
-                                    OwnerProfile = GS.GetSemiClass(GS.ListSemiClass(PlayerPrefs.GetString("ProfileSaves"), "©")[gp], "PN_", "®");
-                                    break;
-                                }
-                                PGtext.text = "> " + OwnerProfile + " - " + GS.GetSemiClass(SaveInfo, "sn", "®");
-                            }
+
+                            if(GS.GetSemiClass(GS.GetSemiClass(SaveInfo, "rs", "®"), "P", "?") == "1") PGtext.text = "> " + GS.GetSemiClass(SaveInfo, "sn", "®") + GS.SetString(" - Independent", " - Niezależne");
+                            else PGtext.text = "> " + GS.GetSemiClass(SaveInfo, "sn", "®");
 
                             if(PGbuttons[sb].GetComponent<ButtonScript>().IsSelected && Input.GetMouseButtonDown(0)){
                                 SelectedFile = sb;
@@ -1469,6 +1472,7 @@ public class NewMenuScript : MonoBehaviour {
 
                     break;
                 case "NewGame":
+                    ListOfSaveFiles = new string[0];
                     SelectedFile = -1;
                     PGbuttons[0].parent.localScale = Vector3.zero;
                     GMimage.transform.parent.localScale = Vector3.one;
@@ -1604,6 +1608,7 @@ public class NewMenuScript : MonoBehaviour {
             PickGame.position = SH[1].position;
             PickGame.localScale = Vector3.zero;
             SelectedFile = -1;
+            ListOfSaveFiles = new string[0];
 
         }
 
@@ -1617,7 +1622,9 @@ public class NewMenuScript : MonoBehaviour {
             ResultsMenu.localScale = Vector3.one;
 
             // Stages
-            string[] RoundTypeName = {GS.SetString(" round", " rundy"), GS.SetString(" wave", " fali"), GS.SetString(" rounds", " rund"), GS.SetString(" waves", " fal")};
+            string[] RoundTypeName = {
+                GS.SetString(" round", " rundy"), GS.SetString(" wave", " fali"), GS.SetString(" casual round", " rundy"),
+                GS.SetString(" rounds", " rund"), GS.SetString(" waves", " fal"), GS.SetString(" casual rounds", " swobodnych rund"),};
             switch(CheckoutStage){
                 case 0:
                     // Preparations
@@ -1670,7 +1677,7 @@ public class NewMenuScript : MonoBehaviour {
                     } else if (ToCheckout < RSrounds){
                         ToCheckout ++;
                         FadeInValue = Mathf.Lerp(0.5f, 0.02f, RSrounds/100f);
-                        ScoreRoundText.text = GS.SetString("You have survived ", "Przetrwałeś ") + ToCheckout.ToString() + RoundTypeName[RSgamemode+2];
+                        ScoreRoundText.text = GS.SetString("You have survived ", "Przetrwałeś ") + ToCheckout.ToString() + RoundTypeName[RSgamemode+3];
                     } else if (ToCheckout == RSrounds){
                         ToCheckout ++;
                         FadeInValue = 1f;
@@ -1682,7 +1689,7 @@ public class NewMenuScript : MonoBehaviour {
                 case 3:
                     // Amount of score
                     string Prevtext = GS.SetString("You haven't survived a single ", "Nie przetrwałeś żadnej") + RoundTypeName[RSgamemode] + "\n";
-                    if (RSrounds > 0) Prevtext = GS.SetString("You have survived ", "Przetrwałeś ") + RSrounds.ToString() + RoundTypeName[RSgamemode+2] + "\n";
+                    if (RSrounds > 0) Prevtext = GS.SetString("You have survived ", "Przetrwałeś ") + RSrounds.ToString() + RoundTypeName[RSgamemode+3] + "\n";
 
                     if(FadeInValue > 0f){
                         FadeInValue -= 0.02f * (Time.unscaledDeltaTime*50f);
@@ -1742,7 +1749,7 @@ public class NewMenuScript : MonoBehaviour {
 
                     // Quickly set the data again
                     if(RSrounds <= 0) ScoreRoundText.text = GS.SetString("You haven't survived a single ", "Nie przetrwałeś żadnej ") + RoundTypeName[RSgamemode] + "\n";
-                    else ScoreRoundText.text = GS.SetString("You have survived ", "Przetrwałeś ") + RSrounds.ToString() + RoundTypeName[RSgamemode+2] + "\n";
+                    else ScoreRoundText.text = GS.SetString("You have survived ", "Przetrwałeś ") + RSrounds.ToString() + RoundTypeName[RSgamemode+3] + "\n";
 
                     if(RSscore <= 0) ScoreRoundText.text += GS.SetString("nor have you gained any score ", "i nie zdobyłeś żadnego wyniku ")+ "\n\n";
                     else ScoreRoundText.text += GS.SetString("Score gained ", "Zdobyty wynik ") + RSscore.ToString() + "\n\n";
@@ -1900,6 +1907,9 @@ public class NewMenuScript : MonoBehaviour {
 
     }
 
+    string prevTab = ";";
+    string[] ProfileStrings;
+
     void WhileProfileMenu(string Tab = ""){
 
         if (Tab != ""){
@@ -1932,6 +1942,13 @@ public class NewMenuScript : MonoBehaviour {
 
             WhatTabs.text = "";
             string tabName = Tab;
+            bool justSwitched = false;
+
+            if(Tab != prevTab){
+                prevTab = Tab;
+                justSwitched = true;
+            }
+
             for(int pt = 0; pt < ProfileButtons.Length; pt++){
                 if(ProfileButtons[pt].name == "WhatTab"){
                     Text pbt = ProfileButtons[pt].GetComponent<Text>();
@@ -1967,12 +1984,14 @@ public class NewMenuScript : MonoBehaviour {
                         case "Stats":
                             PMslots = new string[]{};
                             SliderValues = new int[]{1,32,PMstats.Length};
-                            GetTab.GetChild(0).GetComponent<Text>().text = "";
-                            int Scroll = (int)Mathf.Lerp(0, Mathf.Clamp( ProfileSlider.MaxB-ProfileSlider.MaxA, 0, ProfileSlider.MaxB-ProfileSlider.MaxA ), ProfileSlider.Current);
-                            for(int Printeh = 0; Printeh < 32; Printeh++){
-                                int Offset = (int)Mathf.Lerp(0, Mathf.Clamp(SliderValues[2]-32, 0, 9999), ProfileSlider.Current);
-                                if(Printeh < PMstats.Length) GetTab.GetChild(0).GetComponent<Text>().text += PMstats[Printeh+Offset] + "\n";
-                                else break;
+                            if (justSwitched){
+                                GetTab.GetChild(0).GetComponent<Text>().text = "";
+                                int Scroll = (int)Mathf.Lerp(0, Mathf.Clamp( ProfileSlider.MaxB-ProfileSlider.MaxA, 0, ProfileSlider.MaxB-ProfileSlider.MaxA ), ProfileSlider.Current);
+                                for(int Printeh = 0; Printeh < 32; Printeh++){
+                                    int Offset = (int)Mathf.Lerp(0, Mathf.Clamp(SliderValues[2]-32, 0, 9999), ProfileSlider.Current);
+                                    if(Printeh < PMstats.Length) GetTab.GetChild(0).GetComponent<Text>().text += PMstats[Printeh+Offset] + "\n";
+                                    else break;
+                                }
                             }
                             break;
                         case "Settings":
@@ -2000,7 +2019,10 @@ public class NewMenuScript : MonoBehaviour {
                         case "Profiles":
                             PMstats = new string[]{};
                             PMslots = new string[]{};
-                            string[] ProfileStrings = GS.ListSemiClass(PlayerPrefs.GetString("ProfileSaves"), "©");
+
+                            if (justSwitched)
+                                ProfileStrings = GS.ListSemiClass(PlayerPrefs.GetString("ProfileSaves"), "©");
+
                             for(int P = 0; P < ProManButtons.Length; P++){
                                 if(P == ProfileStrings.Length){
                                     GetTab.GetChild(P).GetChild(0).GetComponent<Text>().text = GS.SetString("< Create a new profile >", "< Stwórz nowy profil >");
@@ -2475,8 +2497,9 @@ public class NewMenuScript : MonoBehaviour {
             List<string> ParseNames = new List<string>();
             if(PlayerPrefs.HasKey("Saves") && WhichArray == 0)
                 foreach(string GitSave in GS.ListSemiClass(PlayerPrefs.GetString("Saves"), "©")) ParseNames.Add(GS.GetSemiClass(GitSave, "sn", "®"));
-            else if(PlayerPrefs.HasKey("ProfilesSaves") && WhichArray == 1)
+            else if(PlayerPrefs.HasKey("ProfileSaves") && WhichArray == 1)
                 foreach(string GitSave in GS.ListSemiClass(PlayerPrefs.GetString("ProfileSaves"), "©")) ParseNames.Add(GS.GetSemiClass(GitSave, "PN_", "®"));
+
             CheckNames = ParseNames.ToArray();
 
             for(int cn = 0; cn <= CheckNames.Length; cn++){
@@ -2484,7 +2507,7 @@ public class NewMenuScript : MonoBehaviour {
                     return tc;
                 } else if(CheckNames[cn] == tc){
                     string orgTC = tc;
-                    for(int GetNumb = 2; GetNumb < 1000; GetNumb++){
+                    for(int GetNumb = 1; GetNumb < 1000; GetNumb++){
                         string Duplicated = orgTC + "-" + GetNumb.ToString();
                         bool isFine = true;
 
@@ -2559,18 +2582,7 @@ public class NewMenuScript : MonoBehaviour {
                 }
 
                 if (RecordSort == "AZ" || RecordSort == "ZA") {
-                    char[] charA = samples[2].ToCharArray();
-                    char[] charB = samples[3].ToCharArray();
-                    bool kSwitch = false;
-                    for(int sc = 0; sc < charA.Length; sc++){
-                        if(sc >= charB.Length){
-                            break;
-                        } else if( (!Rev && charA[sc] < charB[sc]) || (Rev && charA[sc] > charB[sc]) ){
-                            kSwitch = true;
-                            break;
-                        }
-                    }
-                    if(kSwitch){
+                    if( (!Rev && samples[2].CompareTo(samples[3]) > 0) || (Rev && samples[2].CompareTo(samples[3]) < 0) ){
                         string moveAss = bubbles[bubcek];
                         bubbles[bubcek] = bubbles[bubcek-1];
                         bubbles[bubcek-1] = moveAss;

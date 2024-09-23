@@ -22,12 +22,13 @@ public class GameScript : MonoBehaviour {
     public string SaveFileName = "";
 
     public string RoundSetting = "G0?D0?P1";
-    public int GameModePrefab = 0;
+    public int2 GameModePrefab = new (0, 0);
     public int Round = 0;
     public int Biome = 0;
     public int Score = 0;
     public int Money = 0;
-    public Vector2 LandSeed;
+    public int Ammo = 0;
+    public string RoundSeed = "12121212";
     public Vector2 HealthSave;
     public Vector2 HungerSave;
     public float PlayerSpeed;
@@ -127,6 +128,9 @@ public class GameScript : MonoBehaviour {
     public List<Vector2> Resolutions;
     // Misc
 
+    // Profile messages
+    public List<string> Messages; // ti_Good;de_Description;vi_BonusVisuals;im_0; - importance levels 0-not 1-save 2-popup 3-popupinstant
+
     // Improved item classification
     public itemClass[] itemCache;
     public class itemClass{
@@ -156,7 +160,6 @@ public class GameScript : MonoBehaviour {
         if (GameObject.Find("_GameScript") != null) {
             Destroy(this.gameObject);
         } else {
-            setItemData();
             MainPP.TryGetSettings(out PPBloom);
             GunsPP.TryGetSettings(out PPAmbient);
             MainPP.TryGetSettings(out PPBlur);
@@ -230,10 +233,14 @@ public class GameScript : MonoBehaviour {
             print("AutoDestructionIniciated");
         }
 
+        if(Input.GetKey(KeyCode.P) && Input.GetKey(KeyCode.O) && Input.GetKey(KeyCode.L)){
+            Debug.LogError("Profile logs: " + PlayerPrefs.GetString("ProfileSaves"));
+        }
+
         if (SaveSettingsTime > 0f) {
             SaveSettingsTime -= Time.unscaledDeltaTime;
         } else {
-            SaveSettingsTime = 1f;
+            SaveSettingsTime = 60f;
             if (CanSaveSettings == true) {
                 SaveSettings(0);
             }
@@ -298,7 +305,7 @@ public class GameScript : MonoBehaviour {
                 }
             }
             Biome = AvailableBiomes.ToArray()[(int)Random.Range(0f, AvailableBiomes.ToArray().Length - 0.1f)];
-            LandSeed = new Vector2(Random.Range(-100f, 100f), Random.Range(-100f, 100f));
+            RoundSeed = Random.Range(10000000, 99999999).ToString();
             HealthSave = new Vector2(FoundPlayer.GetComponent<PlayerScript>().Health[0], FoundPlayer.GetComponent<PlayerScript>().Health[1]);
             HungerSave = new Vector2(FoundPlayer.GetComponent<PlayerScript>().Food[0], FoundPlayer.GetComponent<PlayerScript>().Food[1]);
             PlayerSpeed = FoundPlayer.GetComponent<PlayerScript>().Speed;
@@ -435,9 +442,9 @@ public class GameScript : MonoBehaviour {
                 + "®so" + Score.ToString()
                 + "®bo" + Biome.ToString()
                 + "®mo" + Money.ToString()
+                + "®am" + Ammo.ToString()
 
-                + "®Lx" + LandSeed.x.ToString()
-                + "®Ly" + LandSeed.y.ToString()
+                + "®sr" + RoundSeed.ToString()
 
                 + "®l0" + HealthSave.x.ToString()
                 + "®l1" + HealthSave.y.ToString()
@@ -484,9 +491,9 @@ public class GameScript : MonoBehaviour {
                     Score = int.Parse(GetSemiClass(Receiver, "so", "®"));
                     Biome = int.Parse(GetSemiClass(Receiver, "bo", "®"));
                     Money = int.Parse(GetSemiClass(Receiver, "mo", "®"));
+                    Ammo = int.Parse(GetSemiClass(Receiver, "am", "®"));
 
-                    LandSeed.x = float.Parse(GetSemiClass(Receiver, "Lx", "®"));
-                    LandSeed.y = float.Parse(GetSemiClass(Receiver, "Ly", "®"));
+                    RoundSeed = GetSemiClass(Receiver, "sr", "®");
 
                     HealthSave.x = float.Parse(GetSemiClass(Receiver, "l0", "®"));
                     HealthSave.y = (int)float.Parse(GetSemiClass(Receiver, "l1", "®"));
@@ -518,6 +525,9 @@ public class GameScript : MonoBehaviour {
                 for(int to = 0; to <= Checkers.Length; to++){
                     if (GetSemiClass(Checkers[to], "id", "®") == SaveID.ToString()) return Checkers[to];
                 }
+                break;
+            case 4: // DeleteAll
+                PlayerPrefs.DeleteKey("Saves");
                 break;
         }
         return "";
@@ -623,7 +633,10 @@ public class GameScript : MonoBehaviour {
 
         for(int sv = 0; sv < 4; sv++) if (prevVolumes[sv] != Volumes[sv]){
             prevVolumes[sv] = Volumes[sv];
-            mainMixer.SetFloat(mixerChannels[sv], Mathf.Log10(Volumes[sv])*20f);
+            if(Volumes[sv] > 0.01f)
+                mainMixer.SetFloat(mixerChannels[sv], Mathf.Log10(Volumes[sv])*20f);
+            else
+                mainMixer.SetFloat(mixerChannels[sv], -80f);
         }
         // Volumes
 
@@ -641,7 +654,6 @@ public class GameScript : MonoBehaviour {
                 PPVignette.enabled.value = false;
                 PPDepth.enabled.value = false;
                 GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = 50f;
-                RenderSettings.fogEndDistance = 50f;
             } else if (QualitySettings.GetQualityLevel() == 1) {
                 // Low
                 PPBloom.enabled.value = false;
@@ -762,14 +774,14 @@ public class GameScript : MonoBehaviour {
 
         switch(WhatToDo){
             case 0: // Save everything
+
                 string OptionToSave = 
                 "Lang_" + Language +
                 ";Msens_" + MouseSensitivity.ToString(CultureInfo.InvariantCulture) +
                 ";Msmooth_" + MouseSmoothness.ToString(CultureInfo.InvariantCulture) +
                 ";Minv_" + InvertedMouse.ToString(CultureInfo.InvariantCulture) +
-                // add inverted X axis
-                // add earpiercing
-                // add ragdolls
+                ";EarPier_" + EarpiercingAllowed.ToString(CultureInfo.InvariantCulture) +
+                ";RagDoll_" + Ragdolls.ToString(CultureInfo.InvariantCulture) +
                 ";CamBob_" + CameraBobbing.ToString(CultureInfo.InvariantCulture) +
                 ";CamShi_" + CameraShifting.ToString(CultureInfo.InvariantCulture) +
                 ";MasterV_" + Volumes[0].ToString(CultureInfo.InvariantCulture) +
@@ -791,16 +803,25 @@ public class GameScript : MonoBehaviour {
                 ";UiResY_" + UIResolution.y.ToString(CultureInfo.InvariantCulture) +
                 ";";
                 PlayerPrefs.SetString("Options", OptionToSave);
+
                 PlayerPrefs.SetInt("PrevProfile", PS.ProfileID);
                 PS.SaveProfile(-1);
 
+                string MessagesToSave = "";
+                for (int getMess = 0; getMess < Messages.Count; getMess++)
+                    MessagesToSave += Messages[getMess] + "^";
+                PlayerPrefs.SetString("Messages", MessagesToSave);
+
                 break;
             case 1: // LoadEverything
+
                 if(PlayerPrefs.HasKey("Options")){
                     Language = GetSemiClass(PlayerPrefs.GetString("Options"), "Lang_" );
                     MouseSensitivity = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "Msens_" ), CultureInfo.InvariantCulture);
                     MouseSmoothness = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "Msmooth_" ), CultureInfo.InvariantCulture);
                     InvertedMouse = bool.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "Minv_" ));
+                    EarpiercingAllowed = bool.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "EarPier_" ));
+                    Ragdolls = bool.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "RagDoll_" ));
                     CameraBobbing = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "CamBob_" ), CultureInfo.InvariantCulture);
                     CameraShifting = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "CamShi_" ), CultureInfo.InvariantCulture);
                     Volumes[0] = float.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "MasterV_" ), CultureInfo.InvariantCulture);
@@ -825,10 +846,19 @@ public class GameScript : MonoBehaviour {
                         float.Parse(GetSemiClass(PlayerPrefs.GetString("Options"), "UiResY_"), CultureInfo.InvariantCulture)
                     );
                 }
+
                 if(PlayerPrefs.HasKey("PrevProfile")) PS.SaveProfile( PlayerPrefs.GetInt("PrevProfile") );
+
+                if(PlayerPrefs.HasKey("Messages")){
+                    foreach(string loadMessage in ListSemiClass(PlayerPrefs.GetString("Messages"), "^"))
+                        Messages.Add(loadMessage);
+                }
+
                 break;
             case 2: // DeleteEverything
+                PlayerPrefs.DeleteKey("Saves");
                 PlayerPrefs.DeleteKey("Options");
+                PlayerPrefs.DeleteKey("Messages");
                 PlayerPrefs.DeleteKey("PrevProfile");
                 PlayerPrefs.DeleteKey("ProfileSaves");
                 break;
@@ -837,7 +867,9 @@ public class GameScript : MonoBehaviour {
     }
 
     // Item functions
-    void setItemData(){
+    public void setItemData(bool isCausal){
+        string casualAmmo = isCausal ? "chAmmo;" : "";
+
         itemCache = new itemClass[]{
             new(),
             new(this, new string[]{"Apple", "Jabłko"},
@@ -845,7 +877,7 @@ public class GameScript : MonoBehaviour {
                 "id1;va0;sq1;"
             ),
             new(this, new string[]{"Flashlight", "Latarka"},
-                new string[]{"It shines light in front of you. Can also used be as a weak weapon.", "Oświeca teren przed tobą. Działa również jako prosta broń biała."},
+                new string[]{"It shines light in front of you for 5 minutes. Can also used be as a weak weapon.", "Oświeca teren przed tobą przez 5 minut. Działa również jako prosta broń biała."},
                 "id2;va100;"
             ),
             new(this, new string[]{"Bread", "Chleb"},
@@ -958,7 +990,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Pistol magazine", "Magazynek do pistoletu"},
                 new string[]{"It contains ammo which can be used to reload pistols. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać pistolety. Można go naładować paczkami z amunicją."},
-                "id30;va" + (4 * Random.Range(1, 5)).ToString() + ";"
+                "id30;va" + (4 * Random.Range(1, 5)).ToString() + ";" + casualAmmo
             ),
             new(this, new string[]{"Luger", "Luger"},
                 new string[]{"A fast firing pistol. Not very accurate, but does decent damage.", "Szybko strzelający pistolet. Niezbyt celny, ale zadaje dużo obrażeń."},
@@ -970,7 +1002,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Ammo pack", "Paczka z amunicją"},
                 new string[]{"It contains ammo which can be used to reload guns that don't have magazines. It also can be used to reload other magazines.", "To zawiera amunicję, którą można przeładowywać bronie które nie mają magazynków. Można nią także naładowywać inne magazynki."},
-                "id33;va" + (5 * Random.Range(1, 10)).ToString() + ";"
+                "id33;va" + (5 * Random.Range(1, 10)).ToString() + ";" + casualAmmo
             ),
             new(this, new string[]{"Hunting rifle", "Karabin myśliwski"},
                 new string[]{"A slow bolt-action rifle. Has a decent range, good accuracy, but doesn't do much damage.", "Powolny karabin powtarzalny. Posiada dobry dystans, niski rozrzut broni, ale nie zadaje dużo obrażeń."},
@@ -986,7 +1018,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"SMG Magazine", "Magazynek do PM"},
                 new string[]{"It contains ammo which can be used to reload SMGs. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać pistolety maszynowe. Można go naładować paczkami z amunicją."},
-                "id37;va" + (15 * Random.Range(1, 5)).ToString() + ";"
+                "id37;va" + (15 * Random.Range(1, 5)).ToString() + ";" + casualAmmo
             ),
             new(this, new string[]{"AK47", "AK47"},
                 new string[]{"Popular, reliable, and very deadly. This is one of the best assault rifle you can get.", "Popularny, niezawodny, i niosiący śmierć. To jest jeden z najlepszych karabinów szturmowych"},
@@ -994,7 +1026,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Rifle magazine", "Magazynek do karabinów"},
                 new string[]{"It can be used to reload rifles. You can reload it using ammo packs.", "To zawiera amunicję, którą można przeładowywać karabiny. Można go naładować paczkami z amunicją."},
-                "id39;va" + (15 * Random.Range(1, 5)).ToString()
+                "id39;va" + (15 * Random.Range(1, 5)).ToString() + ";" + casualAmmo
             ),
             new(this, new string[]{"Shotgun", "Strzelba"},
                 new string[]{"A very powerful gun that fires many bullets per shot, but doesn't do as much damage as the double-barrelled variant.", "Potężna broń która wystrzeliwuje wiele kul na jeden strzał, jednak nie zadaje tylu obrażeń co dubeltówka."},
@@ -1018,23 +1050,23 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Fanny pack", "Torba na pas"},
                 new string[]{"Upon wearing it, you'll have +1 inventory slot.", "Po jej założeniu, dostaniesz +1 miejsce w inwentarzu."},
-                "id45;va0;sq1;"
+                "id45;va0;ct1;"
             ),
             new(this, new string[]{"Backpack", "Plecak"},
                 new string[]{"Upon wearing it, you'll have +2 inventory slots.", "Po jego założeniu, dostaniesz +2 miejsc w inwentarzu."},
-                "id46;va0;sq1;"
+                "id46;va0;ct1;"
             ),
             new(this, new string[]{"Military backpack", "Plecak wojskowy"},
                 new string[]{"Upon wearing it, you'll have +4 inventory slots.", "Po jego założeniu, dostaniesz +4 miejsc w inwentarzu."},
-                "id47;va0;sq1;"
+                "id47;va0;ct1;"
             ),
             new(this, new string[]{"Bulletproof vest", "Kamizelka kuloodporna"},
                 new string[]{"Upon wearing it, you'll have 150 max health.", "Po jej założeniu, będziesz miał maksymalnie 150pz."},
-                "id48;va0;sq1;"
+                "id48;va0;ct2;"
             ),
             new(this, new string[]{"Military vest", "Kamizelka wojskowa"},
                 new string[]{"Upon wearing it, you'll have 250 max health, +4 inventory slots, but your walking speed decrease by 3m/s.", "Po jej założeniu, będziesz miał maksymalnie 250pz, +4 miejsc w inwentarzu, jednak twoja prędkość spadnie o 3m/s."},
-                "id49;va0;sq1;"
+                "id49;va0;ct2;"
             ),
             new(this, new string[]{"Sleeping bag", "Śpiwór"},
                 new string[]{"Upon escaping, all of the tiredness will be removed.", "Po opuszczeniu mapy, całe twoje zmęczenie zniknie."},
@@ -1042,15 +1074,15 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Sport shoes", "Buty sportowe"},
                 new string[]{"Upon wearing it, your speed will increase by 3m/s.", "Po ich ubraniu, twoja prędkość wzrośnie o 3m/s."},
-                "id51;va0;sq1;"
+                "id51;va0;ct3;"
             ),
             new(this, new string[]{"Money", "Pieniądze"},
                 new string[]{"It can be used to trade, when you don't have the item the trader wants.", "Możesz tym handlować, jeśli nie posiadasz przedmiotu, którego chce handlujący."},
-                "id52;va0;sq1;"
+                "id52;va" + (Random.Range(1, 10) * 5) + ";chMoney;"
             ),
             new(this, new string[]{"Night vision goggles", "Noktowizor"},
-                new string[]{"Upon using these goggles, you'll be able to see anything in the dark. They last for 60 seconds, you can turn them on/off them at any time, and you don't need to constantly hold them.", "Po założeniu tych gogli, będziesz widzieć w ciemności. Starczają na 60 sekund, możesz je włączyć/wyłączyć w każdej chwili, i nie musisz ich cały czas trzymać."},
-                "id53;va0;sq1;"
+                new string[]{"Upon using these goggles, you'll be able to see anything in the dark. They last for 180 seconds, you can turn them on/off them at any time, and you don't need to constantly hold them.", "Po założeniu tych gogli, będziesz widzieć w ciemności. Starczają na 180 sekund, możesz je włączyć/wyłączyć w każdej chwili, i nie musisz ich cały czas trzymać."},
+                "id53;va100;ct4;tr1;"
             ),
             new(this, new string[]{"Grappling hook", "Hak mocujący"},
                 new string[]{"If you throw it while standing, you may create a rope bridge from the point where you're standing, and where the hook lands. Might break when throwing.", "Gdy tym rzucisz stojąc w miejscu, stworzysz most liniowy, znajdujący pomiędzy sobą, a miejscem gdzie uderzy hak. Może się zniszczyć."},
@@ -1090,7 +1122,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Ammo chain", "Taśma nabojowa"},
                 new string[]{"A bunch of bullets, on a chain. This can be used to reload machine guns.", "Łańcuch z kulami. Można tego użyć do przeładowywania karabinów maszynowych."},
-                "id63;va" + (250 * Random.Range(1, 4)).ToString() + ";"
+                "id63;va" + (250 * Random.Range(1, 4)).ToString() + ";" + casualAmmo
             ),
             new(this, new string[]{"Minigun", "Minigun"},
                 new string[]{"A very powerful gun. Fires really fast, does a lot of damage, and can contain a lot of ammo. Although, mobility is decreased when firing.", "Bardzo potężna broń. Strzela bardzo szybko, zadaje dużo obrażeń, jednak mobilność podczas strzelania jest dość niska."},
@@ -1182,7 +1214,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Hazmat suit", "Kombinezon materiałów niebezpiecznych"},
                 new string[]{"Upon wearing it, you'll be protected from any radiation and fire, though you'll move very slow. Prolonged exposure might damage this suit.", "Po założeniu, nie będziesz otrzymywał obrażeń od promieniowania i ognia, jednak będziesz się powoli poruszał. Nadmierne promieniowanie może jednak uszkodzić ten kombinezon."},
-                "id86;va100;rep;"
+                "id86;va100;ct5;rep;"
             ),
             new(this, new string[]{"Lifebuoy", "Koło ratunkowe"},
                 new string[]{"When held, it allows you to move normally in water, and you won't get wet from it.", "Gdy go trzymasz, pozwala ci normalnie chodzić w wodzie, bez moknięcia."},
@@ -1214,7 +1246,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Scarf", "Szalik"},
                 new string[]{"Upon using it, you'll be protected from coldness. Will cause overheating when not cold.", "Po użyciu tego, będziesz chroniony od zimna. Możesz się przegrzać jeśli nie będzie ci zimno"},
-                "id94;va0;sq1;"
+                "id94;va0;ct6;"
             ),
             new(this, new string[]{"Riot shield", "Tarcza policyjna"},
                 new string[]{"A tactical shield, that can block bullets, melee weapons, mutant attacks, and explosions. It may break after few blocks.", "Taktyczna tarcza, która blokuje kule, bronie białe, ataki mutantów, i eksplozje. Może się popsuć po długim użytku."},
@@ -1338,11 +1370,11 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Scuba tank", "Butla do nurkowania"},
                 new string[]{"Upon equipping it, you'll be breathing oxygen from this tank. It can provide a maximum of 5 minutes of oxygen.", "Po jej założeniu, będziesz oddychał tlenem z tej butli. Może zapewnić maksimum 5 minut tlenu."},
-                "id125;va100;"
+                "id125;va100;ct4;"
             ),
             new(this, new string[]{"Flippers", "Płetwy"},
                 new string[]{"Upon wearing those, your swimming speed will increase by 7m/s.", "Po ich założeniu, twoja prędkość pływania wzrośnie o 7m/s."},
-                "id126;va0;sq1;"
+                "id126;va0;ct3;"
             ),
             new(this, new string[]{"Crank flashlight", "Latarka na korbkę"},
                 new string[]{"It shines light in front of you. Battery lasts for a short time, but it can be recharged by cranking it.", "Oświeca teren przed tobą. Bateria starcza na krótką chwilę, ale można ją ręcznie naładować."},
@@ -1358,7 +1390,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Scanner", "Skaner"},
                 new string[]{"This advanced electronic device allows you to scan the entire map for items, and other stuff.", "To zaawansowane elektroniczne urządzenie pozwala skanować mapę w poszukiwaniu przedmiotów i innych rzeczy."},
-                "id130;va100;"
+                "id130;va100;sw0;"
             ),
             new(this, new string[]{"Flashbang", "Granat hukowy"},
                 new string[]{"A throwable explosive. It doesn't deal any damage, but it'll stun anyone nearby. It's stun effect decreases with distance.", "Materiał wybuchowy do rzucania. Nie zadaje żadnych obrażeń, ale potrafi ogłuszyć każdego w pobliżu. Efekt ogłuszenia jest silniejszy im bliżej wybuchu."},
@@ -1446,39 +1478,39 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Metal axe", "Metalowa siekiera"},
                 new string[]{"A slow, yet powerful melee weapon. Can chop down trees.", "Powolna, lecz silna broń biała. Można nią ścinać drzewa."},
-                "id152;va100;"
+                "id152;va100;rep;"
             ),
             new(this, new string[]{"Celt", "Celt"},
                 new string[]{"A makeshift stone axe. It's slow and blunt, but can chop down trees pretty well.", "Domowej roboty kamienna siekiera. Jest powolna i tępa, ale dobrze ścina drzewa."},
-                "id153;va100;"
+                "id153;va100;rep;"
             ),
             new(this, new string[]{"Fokos", "Ciupaga"},
                 new string[]{"An axe, with long handle and small head. It's bad at chopping stuff, but you can parry attacks with it pretty well.", "Siekierka z długą rękojeścią i małą główką. Nie nadaje się do siekania, ale można nią dobrze parować ataki."},
-                "id154;va100;"
+                "id154;va100;rep;"
             ),
             new(this, new string[]{"Sword", "Miecz"},
                 new string[]{"A great two-handed sword. It's slow, but does great damage.", "Potężny miecz oburęczny. Jest powolny, ale zadaje potężne obrażenia."},
-                "id155;va100;"
+                "id155;va100;rep;"
             ),
             new(this, new string[]{"Pickaxe", "Kilof"},
                 new string[]{"The pointy head allows to break solid construction down quite well. It can also be used to climb up walls.", "Szpiczasta główka pozwala na niszczenie solidnych konstrukcji. Można również tego użyć do wspinaczki po ścianach."},
-                "id156;va100;"
+                "id156;va100;rep;"
             ),
             new(this, new string[]{"Flintlock", "Pistolet skałkowy"},
                 new string[]{"A single shot blackpowder pistol. It's not very accurate, and takes long to reload, but deals a lot of damage.", "Jednostrzałowy pistolet czarnoprochowy. Jest niedokładny, i długo się go przeładowuje, ale zadaje duże obrażenia."},
-                "id157;va1;"
+                "id157;va1;at0;"
             ),
             new(this, new string[]{"Blackpowder", "Czarny proch"},
                 new string[]{"A wooden box with blackpowder cartridges. Can be used to reload blackpowder guns.", "Drewniane pudełko z czarnoprochowymi nabojami. Można je użyć do przeładowania czarnoprochowców."},
-                "id158;va" + (Random.Range(1, 4) * 5).ToString() + ";"
+                "id158;va" + (Random.Range(1, 4) * 5).ToString() + ";" + casualAmmo
             ),
             new(this, new string[]{"Baker rifle", "Karabin Bakera"},
                 new string[]{"A single shot blackpowder rifle. It takes very long to reload, but the rifled barrel allows for very accurate - and deadly - shots.", "Jednostrzałowy karabin czarnoprochowy. Bardzo długo się go przeładowuje, ale gwintowana lufa gwarantuje bardzo dokładne - i zabójcze - strzały."},
-                "id159;va1;"
+                "id159;va1;at0;"
             ),
             new(this, new string[]{"Nock gun", "Karabin Nocka"},
                 new string[]{"Blackpowder musket, that can fire 7 shots at once! The price for obliterating everything near your crosshair, is low accuracy, and VERY long reload time.", "Karabin czarnoprochowy, będący w stanie wystrzelić 7 pocisków na raz! Ceną za anihilację wszystkiego w pobliżu celownika, jest BARDZO długi czas przeładowania, i niska celność."},
-                "id160;va7;"
+                "id160;va7;at0;"
             )
         };
 
@@ -1509,7 +1541,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"White gold armor", "Zbroja z białego złota"},
                 new string[]{"Treasure found in quarries. It is an armor, that gives you: 300 max health, +6 inventory slots, and +3m/s walking speed.", "Skarb znajdywalny w kamieniołomach. Jest to zbroja, po której założeniu otrzymujesz: 300 maksymalnej ilości zdrowia, +6 miejsc w inwentarzu, oraz +3m/s prędkości chodzenia."},
-                "id994;va0;sq1;"
+                "id994;va0;ct2;"
             ),
             new(this, new string[]{"Spark", "Iskra"},
                 new string[]{"Treasure found in castles. A blue, bright light source that has infinite lifetime.", "Skarb znajdywalny w zamkach. Jasne niebieskie źródło światła, z nieskończoną żywotnością."},
@@ -1537,12 +1569,19 @@ public class GameScript : MonoBehaviour {
 
     }
 
-    public float SeedPerlin(string Seed, Vector2 Offset = default){
-        if(Offset == default) Offset = Vector2.one/2f;
-        string[] sh = new string[]{ Seed.Substring(0, (int)(Seed.Length/2f)), Seed.Substring((int)(Seed.Length/2f), Seed.Length - (int)(Seed.Length/2f) ) };
-        return Mathf.Clamp((Mathf.PerlinNoise(   
-            Offset.x * float.Parse(sh[0]) / Mathf.Pow(10, (int)Mathf.Clamp(sh[0].Length/2f, 1, Mathf.Infinity)),   
-            Offset.y * float.Parse(sh[1]) / Mathf.Pow(10, (int)Mathf.Clamp(sh[1].Length/2f, 1, Mathf.Infinity))
+    public float SeedPerlin(string Seed){
+        string[] sh = new string[]{ Seed[..(int)(Seed.Length / 2f)], Seed[(int)(Seed.Length / 2f)..] };
+        return Mathf.Clamp((FixedPerlinNoise(   
+            float.Parse(sh[0]) / Mathf.Pow(10, (int)Mathf.Clamp(sh[0].Length/2f, 1, Mathf.Infinity)),   
+            float.Parse(sh[1]) / Mathf.Pow(10, (int)Mathf.Clamp(sh[1].Length/2f, 1, Mathf.Infinity))
+        ) * 2f)-0.5f, 0f, 1f);
+    }
+
+    public float SeedPerlin2D(string Seed, float x, float y){
+        string[] sh = new string[]{ Seed[..(int)(Seed.Length / 2f)], Seed[(int)(Seed.Length / 2f)..] };
+        return Mathf.Clamp((FixedPerlinNoise(   
+            x * float.Parse(sh[0]) / Mathf.Pow(10, (int)Mathf.Clamp(sh[0].Length/2f, 1, Mathf.Infinity)),   
+            y * float.Parse(sh[1]) / Mathf.Pow(10, (int)Mathf.Clamp(sh[1].Length/2f, 1, Mathf.Infinity))
         ) * 2f)-0.5f, 0f, 1f);
     }
 
@@ -1580,11 +1619,7 @@ public class GameScript : MonoBehaviour {
 
     public string GetSemiClass(string From, string What, string Separator = ";"){
 
-        // Bugtest semiclasses
-        //print("GetSemiClass( from: " + From + " - what: " + What + ")");
-        //Debug.Break();
-
-        string Result = "null";//"null";
+        string Result = "null";
 
         if (From != "" && What != "") {
             int SepLeng = Separator.Length;
@@ -1832,7 +1867,7 @@ public class GameScript : MonoBehaviour {
     }
 
     string SecondsToTime(int Second){
-        string TimeToDisp = "";
+        string TimeToDisp;
         if(Second <= 60){
             TimeToDisp = Second.ToString();
         } else if (Second <= 3600){
@@ -1841,11 +1876,17 @@ public class GameScript : MonoBehaviour {
             TimeToDisp = ((int)(Second/60f)).ToString() + ":" + Sex;
         } else {
             string Minor = "0" + ((int)((Second/60f)%60f)).ToString();
+            Minor = Minor.Substring(Minor.Length-2, 2);
             string Sex = "0" + (Second%60).ToString();
             Sex = Sex.Substring(Sex.Length-2, 2);
             TimeToDisp = ((int)(Second/3600f)).ToString() + ":" + Minor + ":" + Sex;
         }
         return TimeToDisp;
+    }
+
+    void OnApplicationQuit(){
+        if(CanSaveSettings)
+            SaveSettings(0);
     }
 
 }

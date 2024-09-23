@@ -40,16 +40,12 @@ public class ArmTextureControl : MonoBehaviour {
                 ArmMaterialNames.Add(Mat.name);
 
                 switch(Mat.name){
-                    case "ConscriptJacket3 (Instance)":
-                        ColorsDefault.Add(new Color32(125, 163, 134, 255));
-                        ColorsWet.Add(ColorsDefault.ToArray()[GetMat] * 0.25f);
+                    case "HazmatSuit1 (Instance)": case "HazmatSuit2 (Instance)":
+                        ColorsDefault.Add(Mat.color);
+                        ColorsWet.Add(ColorsDefault.ToArray()[GetMat]);
                         break;
-                    case "ConscriptJacket2 (Instance)":
-                        ColorsDefault.Add(new Color32(225, 225, 225, 255));
-                        ColorsWet.Add(ColorsDefault.ToArray()[GetMat] * 0.5f);
-                        break;
-                    case "ConscriptJacket1 (Instance)":
-                        ColorsDefault.Add(new Color32(145, 188, 156, 255));
+                    default:
+                        ColorsDefault.Add(Mat.color);
                         ColorsWet.Add(ColorsDefault.ToArray()[GetMat] * 0.25f);
                         break;
                 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class ItemScript : MonoBehaviour {
@@ -221,13 +222,7 @@ public class ItemScript : MonoBehaviour {
                     if (GS.GetSemiClass(Variables, "id") == "110") {
                         Boom.GetComponent<SpecialScript>().ExplosionRange = 3f;
                         for (int shootFrag = 32; shootFrag > 0; shootFrag --) {
-                            string[] Ids = new string[]{"Luger", "Revolver", "Garand", "M4", "Musket", "AK-47"};
-                            Bubbles.transform.parent = null;
-                            Bubbles.GetComponent<ParticleSystem>().Stop();
-                            int Yturn = shootFrag - ((int)(shootFrag / 6) * 6);
-                            int Xturn = (int)(shootFrag / 6);
-                            this.transform.eulerAngles = new Vector3(Xturn * Random.Range(0f, -10f), Yturn * Random.Range(0f, 60f), 0f);
-                            GameObject.Find("_RoundScript").GetComponent<RoundScript>().Attack(new string[]{Ids[(int)Random.Range(0f, 5.9f)], "CanHurtSelf", "Power100;"}, this.transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(0.25f, 1f), Random.Range(-1f, 1f)), this.transform.forward, DroppedBy, Bubbles, Bubbles);
+                            GameObject.Find("_RoundScript").GetComponent<RoundScript>().FragElements.Add(this.transform.position);
                         }
                     }
                     Destroy(this.gameObject);
@@ -329,7 +324,7 @@ public class ItemScript : MonoBehaviour {
                             GameObject Attachment = Instantiate(GameObject.Find("_RoundScript").GetComponent<RoundScript>().ItemPrefab) as GameObject;
                             Attachment.GetComponent<ItemScript>().Variables = GS.itemCache[int.Parse(GS.GetSemiClass(Variables, "at"))].startVariables;
                             Attachment.transform.position = this.transform.position;
-                            Variables = GS.RemoveSemiClass(Variables, "at"); //Variables = new Vector3(Variables.x, Variables.y, 0f);
+                            Variables = GS.SetSemiClass(Variables, "at", "0"); //Variables = new Vector3(Variables.x, Variables.y, 0f);
                             setAtt();
                         } else {
                             if (ChanceOfDestruction <= ThrownVariables.y) {

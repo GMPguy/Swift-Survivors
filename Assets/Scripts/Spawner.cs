@@ -33,7 +33,7 @@ public class Spawner : MonoBehaviour {
 
         if (Special == "HouseStuff" || Special == "CabinStuff") {
             //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(Mathf.Clamp(Random.Range(1f, 20f + (RS.GetComponent<RoundScript>().DifficultySlider * 2f) * (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 20f)), 0f, (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f))) };
-            NewStuffToSpawn = new string[]{GS.itemCache[(int)Mathf.Clamp(Random.Range(1f, 20f + RS.GetComponent<RoundScript>().DifficultySlider * 2f * (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 20f)), 0f, (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f))].startVariables};
+            NewStuffToSpawn = new string[]{GS.itemCache[(int)Mathf.Clamp(Random.Range(1f, 20f + RS.GetComponent<RoundScript>().DifficultySliderB * 2f * (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 20f)), 0f, (int)(RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f))].startVariables};
             if (GS.GetSemiClass(NewStuffToSpawn[0], "id") == "13") {
                 NewStuffToSpawn[0] = GS.SetSemiClass(NewStuffToSpawn[0], "id", "1");
             }
@@ -111,7 +111,7 @@ public class Spawner : MonoBehaviour {
         }
 
         float PickChance = Random.Range(0f, 100f);
-        if (Chance.Length >= 2 && PickChance <= Mathf.Lerp(Chance[0], Chance[1], RS.GetComponent<RoundScript>().DifficultySlider)) {
+        if (Chance.Length >= 2 && PickChance <= Mathf.Lerp(Chance[0], Chance[1], RS.GetComponent<RoundScript>().DifficultySliderB)) {
             if (ObjectToSpawn.tag == "Item") {
                 GameObject SpawnItem = Instantiate(ObjectToSpawn) as GameObject;
                 SpawnItem.transform.position = this.transform.position;

@@ -132,9 +132,9 @@ public class CanvasScript : MonoBehaviour {
         }
 
         HintsCooldown.Add("Movement");
-        if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0") {
+        if (GS.GameModePrefab.x == 0) {
             HintsCooldown.Add("Biome");
-        } else if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+        } else if (GS.GameModePrefab.x == 1) {
             HintsCooldown.Add("HordeStart");
         }
         HintsCooldown.Add("Tab");
@@ -373,7 +373,7 @@ public class CanvasScript : MonoBehaviour {
 
             // Round start info
             if (SetRoundTextOnStart == true) {
-                if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0") {
+                if (GS.GameModePrefab.x == 0) {
                     GS.SetText(RoundStartInfo.transform.GetChild(0).GetComponent<Text>(), "Round " + GS.Round, "Runda " + GS.Round);
                     GS.SetText(RoundStartInfo.transform.GetChild(1).GetComponent<Text>(), RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[0], RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[1]);
                 } else {
@@ -400,31 +400,14 @@ public class CanvasScript : MonoBehaviour {
             SBGHealth.transform.GetChild(0).GetComponent<Image>().fillAmount = HealthPC;
             SBGHealth.transform.GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1f - HealthPC;
             SBGHealth.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Health:\n", "Zdrowie:\n") + Mathf.Floor(MainPlayer.Health[0]).ToString() + " / " + Mathf.Floor(MainPlayer.Health[1]).ToString();
-            if (HealthPC > 0.5f) {
+            if (HealthPC > 1f) {
+                SBGHealth.transform.GetChild(0).GetComponent<Image>().color = new Color(0f, 1f, 1f, 0.5f);
+            } else if (HealthPC > 0.5f) {
                 SBGHealth.transform.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 1f, 0f, 0.5f);
             } else if (HealthPC > 0.25f) {
                 SBGHealth.transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 0.75f, 0f, 0.5f);
             } else {
                 SBGHealth.transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 0.25f, 0f, 0.5f);
-            }
-
-            float HungerPC = (MainPlayer.Food[0] / MainPlayer.Food[1]);
-            SBGHunger.transform.GetChild(0).GetComponent<Image>().fillAmount = HungerPC;
-            SBGHunger.transform.GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1f - HungerPC;
-            if (HungerPC <= 0f){
-                SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Get something to eat - ", "Zjedz coś - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
-            } else if (HungerPC < MainPlayer.FoodLimits[0] / MainPlayer.Food[1]) {
-                SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 0.25f, 0f, 0.5f);
-                SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Hungry - ", "Głodny - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
-            } else if (HungerPC < MainPlayer.FoodLimits[1] / MainPlayer.Food[1]) {
-                SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 0.75f, 0f, 0.5f);
-                SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Fine - ", "W porządku - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
-            } else if (HungerPC >= 1f) {
-                SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(0f, 1f, 0f, 0.5f);
-                SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Full - ", "Pełen - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
-            } else {
-                SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 1f, 0f, 0.5f);
-                SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Well fed - ", "Najedzony - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
             }
 
             float EnergyPC = MainPlayer.Energy[0] / MainPlayer.Energy[1];
@@ -465,10 +448,29 @@ public class CanvasScript : MonoBehaviour {
                 SBGOxygen.GetComponent<RectTransform>().anchoredPosition = Vector2.MoveTowards(SBGOxygen.GetComponent<RectTransform>().anchoredPosition, new Vector2(-80f, 4f), 1f);
             }
 
-            if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+            if (GS.GameModePrefab.x == 1 || GS.GameModePrefab.y == 1) {
                 SBGHunger.SetActive(false);
             } else {
                 SBGHunger.SetActive(true);
+
+                float HungerPC = (MainPlayer.Food[0] / MainPlayer.Food[1]);
+                SBGHunger.transform.GetChild(0).GetComponent<Image>().fillAmount = HungerPC;
+                SBGHunger.transform.GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1f - HungerPC;
+                if (HungerPC <= 0f){
+                    SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Get something to eat - ", "Zjedz coś - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                } else if (HungerPC < MainPlayer.FoodLimits[0] / MainPlayer.Food[1]) {
+                    SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 0.25f, 0f, 0.5f);
+                    SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Hungry - ", "Głodny - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                } else if (HungerPC < MainPlayer.FoodLimits[1] / MainPlayer.Food[1]) {
+                    SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 0.75f, 0f, 0.5f);
+                    SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Fine - ", "W porządku - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                } else if (HungerPC >= 1f) {
+                    SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(0f, 1f, 0f, 0.5f);
+                    SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Full - ", "Pełen - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                } else {
+                    SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 1f, 0f, 0.5f);
+                    SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Well fed - ", "Najedzony - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                }
             }
             // Needs
 
@@ -509,6 +511,9 @@ public class CanvasScript : MonoBehaviour {
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text = "";
                         } else if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(0, 1) == "B") {
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = 1f - (float.Parse(GS.GetSemiClass(ItemHeld, "va"), CultureInfo.InvariantCulture) / 100f);
+                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text = "";
+                        } else if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(0, 1) == "b") {
+                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = float.Parse(GS.GetSemiClass(ItemHeld, "va"), CultureInfo.InvariantCulture) / 100f;
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text = "";
                         } else if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(0, 1) == "C") {
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = 0f;
@@ -691,7 +696,7 @@ public class CanvasScript : MonoBehaviour {
                     OffsetB -= 32f;
 
                     if(Hovered) BuffText = GS.SetString(
-                        "Your blood is leaking, and you're losing health per second.",
+                        "Your blood is leaking, and you're losing health.",
                         "Twoja krew się leje, i tracisz punkty zdrowia co sekundę.");
                 } else if (GetBuffA.name == "Hydration" && MainPlayer.Hydration > 0f) {
                     GetBuffA.SetActive(true);
@@ -706,9 +711,16 @@ public class CanvasScript : MonoBehaviour {
                     GetBuffB.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, OffsetB);
                     OffsetB -= 32f;
 
-                    if(Hovered) BuffText = GS.SetString(
-                        "Your stamina regenerates twice as fast.",
-                        "Twoja energia regeneruje się z podwójną prędkością.");
+                    if(Hovered) {
+                        if (RS.IsCausual)
+                            BuffText = GS.SetString(
+                                "Allows you to sprint and jump, when doing stuff.",
+                                "Pozwala na bieganie i skakanie, podczas wykonywania akcji.");
+                        else
+                            BuffText = GS.SetString(
+                                "Your stamina regenerates twice as fast.",
+                                "Twoja energia regeneruje się z podwójną prędkością.");
+                    }
                 } else if (GetBuffA.name == "Infection" && MainPlayer.Infection > 0f) {
                     GetBuffA.SetActive(true);
                     GetBuffA.transform.GetChild(0).GetComponent<Text>().text = (int)MainPlayer.Infection + "%";
@@ -786,9 +798,16 @@ public class CanvasScript : MonoBehaviour {
                     GetBuffB.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, OffsetB);
                     OffsetB -= 32f;
 
-                    if(Hovered) BuffText = GS.SetString(
-                        "Your stamina is not drained.",
-                        "Twoja energia się nie wyczerpuje.");
+                    if(Hovered) {
+                        if (RS.IsCausual)
+                            BuffText = GS.SetString(
+                                "Allows you to sprint and jump, when doing stuff.",
+                                "Pozwala na bieganie i skakanie, podczas wykonywania akcji.");
+                        else
+                            BuffText = GS.SetString(
+                                "Your stamina is not drained.",
+                                "Twoja energia się nie wyczerpuje.");
+                    }
                 } else if (GetBuffA.name == "Drunkenness" && MainPlayer.Drunkenness > 0f) {
                     GetBuffA.SetActive(true);
                     GetBuffA.transform.GetChild(0).GetComponent<Text>().text = (int)MainPlayer.Drunkenness + "%";
@@ -914,7 +933,7 @@ public class CanvasScript : MonoBehaviour {
                         "Witaj mój przyjacielu! Jak mogę ci pomóc?");
                     DialogOptions = new string[] { "TIP", "TRADE", "PLACES", "TREASURES", "EXIT", "", "", "" };
                 } else if (DialogSetting == "VendingMachine") {
-                    if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                    if (GS.GameModePrefab.x == 1) {
                         if (RS.RoundState == "BeforeWave") {
                             GS.SetText(DialogDesc,
                             "\n\nYou can buy these items for your earned money.",
@@ -933,7 +952,7 @@ public class CanvasScript : MonoBehaviour {
                         DialogOptions = new string[] { "1TRADE", "2TRADE", "3TRADE", "4TRADE", "5TRADE", "6TRADE", "EXIT", "" };
                     }
                 } else if (DialogSetting == "VendingMachineDone") {
-                    if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                    if (GS.GameModePrefab.x == 1) {
                         GS.SetText(DialogDesc,
                         "\n\nOut of order. Supplies will be replenished after this wave.",
                         "\n\nAutomat przestał działać. Zasoby zostaną uzupełnione po tej fali.");
@@ -1029,7 +1048,7 @@ public class CanvasScript : MonoBehaviour {
                             if (DialogedMob.GetComponent<MobScript>() != null) {
                                 TradeOptions = DialogedMob.GetComponent<MobScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1];
                             } else {
-                                if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                                if (GS.GameModePrefab.x == 1) {
                                     TradeOptions.x = DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1];
                                     TradeOptions.y = DialogedMob.GetComponent<InteractableScript>().TradePrices[int.Parse(CheckedButton.name.Substring(0, 1)) - 1];
                                 } else {
@@ -1043,7 +1062,7 @@ public class CanvasScript : MonoBehaviour {
                                 "SOLD",
                                 "SPRZEDANE");
                             } else {
-                                if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" && DialogedMob.GetComponent<InteractableScript>() != null) {
+                                if (GS.GameModePrefab.x == 1 && DialogedMob.GetComponent<InteractableScript>() != null) {
                                     GS.SetText(CheckedButton.GetComponent<Text>(),
                                     "- Get " + GS.itemCache[(int)TradeOptions.x].getName() + " for " + TradeOptions.y + "$",
                                     "- Dostaniesz " + GS.itemCache[(int)TradeOptions.x].getName() + " za " + TradeOptions.y + "$");
@@ -1064,12 +1083,12 @@ public class CanvasScript : MonoBehaviour {
                                     break;
                                 }
                             }
-                            if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" && CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GS.Money >= TradeOptions.y && Input.GetMouseButtonDown(0)) {
+                            if (GS.GameModePrefab.x == 1 && CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GS.Money >= TradeOptions.y && Input.GetMouseButtonDown(0)) {
                                 MainPlayer.InvGet(GS.itemCache[(int)TradeOptions.x].startVariables, 0);
                                 GS.Mess(GS.SetString("Item purchased!", "Kupiono ten przedmiot!"), "Buy");
                                 DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = -1;
                                 GS.Money -= (int)TradeOptions.y;
-                            } else if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0" && CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GotTradedItem != -1 && Input.GetMouseButtonDown(0)) {
+                            } else if (GS.GameModePrefab.x == 0 && CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GotTradedItem != -1 && Input.GetMouseButtonDown(0)) {
                                 if (DialogedMob.GetComponent<MobScript>() != null) {
                                     GS.Mess(GS.SetString("Items traded!", "Zdobyto ten przedmiot!"), "Buy");
                                     DialogSetting = "TradeGood";
@@ -1080,6 +1099,7 @@ public class CanvasScript : MonoBehaviour {
                                     GS.Mess(GS.SetString("Item purchased!", "Kupiono ten przedmiot!"), "Buy");
                                     DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = -1;
                                 }
+                                MainPlayer.InvGet(GS.itemCache[(int)TradeOptions.x].startVariables, 0);
                                 MainPlayer.InvGet(GotTradedItem.ToString(), 1);//MainPlayer.Inventory[GotTradedItem] = GS.ReceiveItemVariables(TradeOptions.x);
 
                                 GS.Score += 50;
@@ -1190,7 +1210,7 @@ public class CanvasScript : MonoBehaviour {
         // ReceiveInfos
         switch(int.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture)){
             case 0: Infos = new string[]{}; break;
-            case  14: case  15: case  16: case  27: case  28: case  993: case 88: case 95: case 96: case 132: case 134: case 136: case 138:
+            case  14: case  15: case  16: case  27: case  28: case  993: case 88: case 95: case 96: case 115: case 132: case 134: case 136: case 138: case 152: case 153: case 154: case 155: case 156:
                 // Mele weapons
                 Infos = new string[]{
                     GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
@@ -1215,8 +1235,10 @@ public class CanvasScript : MonoBehaviour {
             case 29: case 31: case 32: case 34: case 35: case 36: case 38: case 40: case 41: case 42: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 64: case 65: case 113: case 135: case 137: case 157: case 159: case 160:
                 // Guns
                 string SpareAmmo = "0";
-                if(GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" || int.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture) == 996) {
+                if(int.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture) == 996) {
                     SpareAmmo = "∞";
+                } else if(GS.GameModePrefab.x == 1 || RS.IsCausual) {
+                    SpareAmmo = GS.Ammo.ToString();
                 } else {
                     for(int GetSA = 0; GetSA < MainPlayer.MaxInventorySlots; GetSA ++){
                         switch(int.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture)){
@@ -1232,7 +1254,7 @@ public class CanvasScript : MonoBehaviour {
                                 if(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "id") == "37")
                                 SpareAmmo = (int.Parse(SpareAmmo) + int.Parse(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "va"))).ToString();
                                 break;
-                            case 38: case 42: case 57: case 59: case 60:
+                            case 38: case 42: case 57: case 59: case 60: case 137:
                                 if(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "id") == "39")
                                 SpareAmmo = (int.Parse(SpareAmmo) + int.Parse(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "va"))).ToString();
                                 break;
@@ -1313,7 +1335,7 @@ public class CanvasScript : MonoBehaviour {
                 ITMenuCraft.GetComponent<RectTransform>().position = Vector2.MoveTowards(ITMenuCraft.GetComponent<RectTransform>().position, HideWindow.GetComponent<RectTransform>().position, (Screen.height / 10f) * (Time.deltaTime * 50f));
                 MinimapRefresh("Map");
                 // Infos
-                if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0") {
+                if (GS.GameModePrefab.x == 0) {
                     float TimeOfDayA = RS.TimeOfDay[1];
                     string Weather = "";
                     if (RS.Weather == 0) {
@@ -1340,7 +1362,7 @@ public class CanvasScript : MonoBehaviour {
                     GS.SetText(ITRoundInfo.transform.GetChild(0).GetComponent<Text>(),
                         "Round " + GS.Round + "\n" + GS.DisplayTime(RS.TimeOfDay[1]) + " (" + Day + ") - " + RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] + " - " + Weather,
                         "Runda " + GS.Round + "\n" + GS.DisplayTime(RS.TimeOfDay[1]) + " (" + Day + ") - " + RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[1] + " - " + Weather);
-                } else if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                } else if (GS.GameModePrefab.x == 1) {
                     GS.SetText(ITRoundInfo.transform.GetChild(0).GetComponent<Text>(),
                         "Wave " + GS.Round + " - " + RS.GotTerrain.GetComponent<MapInfo>().MapName[0],
                         "Fala " + GS.Round + " - " + RS.GotTerrain.GetComponent<MapInfo>().MapName[1]);
@@ -1365,7 +1387,7 @@ public class CanvasScript : MonoBehaviour {
                         ITDetails.transform.GetChild(0).GetComponent<Text>().text + "- Survive the wave! Horde stats:\n" + "Amount " + RS.HordeVariables[0] + " (" + RS.HordeVariables[1] + " at once), Mutants power " + RS.HordeVariables[2] + "%, Amount of special mutants " + RS.HordeVariables[3] + "%\n",
                         ITDetails.transform.GetChild(0).GetComponent<Text>().text + "- Przetrwaj tą falę! Statystyki hordy:\n" + "Ilość " + RS.HordeVariables[0] + " (" + RS.HordeVariables[1] + " at once), Moc mutantów " + RS.HordeVariables[2] + "%, Ilość specialnych mutantów " + RS.HordeVariables[3] + "%\n");
                 }
-                if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                if (GS.GameModePrefab.x == 1) {
                     GS.SetText(ITDetails.transform.GetChild(0).GetComponent<Text>(), ITDetails.transform.GetChild(0).GetComponent<Text>().text + "- Gather money, ammo, weaponary, and survive as many waves as possible!\n", ITDetails.transform.GetChild(0).GetComponent<Text>().text + "- Zbieraj pieniądze, ammunicję, uzbrojenie, i przeżyj jak najwięcej fal!\n");
                 } else {
                     GS.SetText(ITDetails.transform.GetChild(0).GetComponent<Text>(), ITDetails.transform.GetChild(0).GetComponent<Text>().text + "- Gather resources, food, weaponary, and watch out for any possible dangers!\n", ITDetails.transform.GetChild(0).GetComponent<Text>().text + "- Zbieraj zasoby, jedzenie, uzbrojenie, oraz uważaj na wszelkie zagrożenia!\n");
@@ -1586,11 +1608,20 @@ public class CanvasScript : MonoBehaviour {
                         GetSVObj.SetActive(false);
                     }
                 } else if (GetSVObj.name == "Money") {
-                    if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                    if (GS.Money > 0) {
                         GetSVObj.SetActive(true);
                         GetSVObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(6f, AddPos * -16f);
                         AddPos += 1f;
                         GetSVObj.transform.GetChild(0).GetComponent<Text>().text = GS.Money.ToString();
+                    } else {
+                        GetSVObj.SetActive(false);
+                    }
+                } else if (GetSVObj.name == "Ammo") {
+                    if (GS.Ammo > 0) {
+                        GetSVObj.SetActive(true);
+                        GetSVObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(6f, AddPos * -16f);
+                        AddPos += 1f;
+                        GetSVObj.transform.GetChild(0).GetComponent<Text>().text = GS.Ammo.ToString();
                     } else {
                         GetSVObj.SetActive(false);
                     }
@@ -1648,42 +1679,67 @@ public class CanvasScript : MonoBehaviour {
             if(EscapedTextes[2].text == ""){
 
                 // Hunger stats
-                if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "0"){
-                    EscapedTextes[2].text = GS.SetString("You were hungry, and therefore: ", "Byłeś głodny, przez co:") + "\n";
-                    EscapedTextes[2].color = new Color(1f, 0.75f, 0.75f, 1f);
-                } else if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "1"){
-                    EscapedTextes[2].text = GS.SetString("Your food was at normal level.", "Twoje zaspokojenie głodu było na normalnym poziomie.") + "\n";
-                    EscapedTextes[2].color = new Color(1f, 1f, 0.75f, 1f);
-                } else if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "2"){
-                    EscapedTextes[2].text = GS.SetString("You were well fed, and therefore: ", "Byłeś najedzony, przez co:") + "\n";
-                    EscapedTextes[2].color = new Color(0.75f, 1f, 0.5f, 1f);
-                } else if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "3"){
-                    EscapedTextes[2].text = GS.SetString("You've managed to eat to your fullest, and therefore: ", "Najadłeś się do pełna, przez co:") + "\n";
-                    EscapedTextes[2].color = new Color(0f, 1f, 0f, 1f);
-                }
+                if (!RS.IsCausual){
+                    if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "0"){
+                        EscapedTextes[2].text = GS.SetString("You were hungry, and therefore: ", "Byłeś głodny, przez co:") + "\n";
+                        EscapedTextes[2].color = new Color(1f, 0.75f, 0.75f, 1f);
+                    } else if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "1"){
+                        EscapedTextes[2].text = GS.SetString("Your food was at normal level.", "Twoje zaspokojenie głodu było na normalnym poziomie.") + "\n";
+                        EscapedTextes[2].color = new Color(1f, 1f, 0.75f, 1f);
+                    } else if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "2"){
+                        EscapedTextes[2].text = GS.SetString("You were well fed, and therefore: ", "Byłeś najedzony, przez co:") + "\n";
+                        EscapedTextes[2].color = new Color(0.75f, 1f, 0.5f, 1f);
+                    } else if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "3"){
+                        EscapedTextes[2].text = GS.SetString("You've managed to eat to your fullest, and therefore: ", "Najadłeś się do pełna, przez co:") + "\n";
+                        EscapedTextes[2].color = new Color(0f, 1f, 0f, 1f);
+                    }
 
-                if(GS.ExistSemiClass(RS.TempStats, "PItemLost_"))
-                    EscapedTextes[2].text += GS.SetString("- You lost ", "- Straciłeś ") + GS.GetSemiClass(RS.TempStats, "PItemLost_") + GS.SetString(" random item/s", " losowych przedmiot/ów") + "\n";
-                if(GS.ExistSemiClass(RS.TempStats, "PTired_"))
-                    EscapedTextes[2].text += GS.SetString("- You got tired by ", "- Zmęczyłeś się o ") + GS.GetSemiClass(RS.TempStats, "PTired_") + "%\n";
-                if(GS.ExistSemiClass(RS.TempStats, "PWet_"))
-                    EscapedTextes[2].text += GS.SetString("- You got yourself completely wet", "- Całkowicie się zmoczyłeś") + "\n";
-                if(GS.ExistSemiClass(RS.TempStats, "PDamaged_"))
-                    EscapedTextes[2].text += GS.SetString("- You lost ", "- Straciłeś ") + GS.GetSemiClass(RS.TempStats, "PDamaged_") + GS.SetString(" points of health", " punktów życia") + "\n";
-                if(GS.ExistSemiClass(RS.TempStats, "PNoAmmo_"))
-                    EscapedTextes[2].text += GS.SetString("- All variables of your items, have been set to zero", "- Wszystkie zmienne twoich przedmiotów, spadły do zera") + "\n";
-                if(GS.ExistSemiClass(RS.TempStats, "RItemGot_"))
-                    EscapedTextes[2].text += GS.SetString("+ You were given ", "+ Otrzymałeś ") + GS.GetSemiClass(RS.TempStats, "RItemGot_") + GS.SetString(" random item/s", " losowych przedmiot/ów") + "\n";
-                if(GS.ExistSemiClass(RS.TempStats, "RHealed_"))
-                    EscapedTextes[2].text += GS.SetString("+ Your health went back to 100%", "+ Twoje zdrowie zostało zregenerowane do 100%") + "\n";
-                if(GS.ExistSemiClass(RS.TempStats, "RAdrenalined_"))
-                    EscapedTextes[2].text += GS.SetString("+ You were given a full shot of adrenaline, without taking damage", "+ Otrzymałeś pełen zastrzyk adrenaliny, bez utraty zdrowia") + "\n";
-                if(GS.ExistSemiClass(RS.TempStats, "RTreasure_"))
-                    EscapedTextes[2].text += GS.SetString("+ You were given a treasure, usually found in monuments", "+ Otrzymałeś skarb, znajdywalny w monumentach") + "\n";
-                if(GS.ExistSemiClass(RS.TempStats, "RDrunk_"))
-                    EscapedTextes[2].text += GS.SetString("+ You drank a little, and you've gained ", "+ Wypiłeś trochę, i otrzymałeś ") + GS.GetSemiClass(RS.TempStats, "RDrunk_") + GS.SetString("% of drunkeness", "% pijaństwa") + "\n";
-                if(MainPlayer.Food[0] > MainPlayer.Food[1])
-                    EscapedTextes[2].text += GS.SetString("+ The excess ", "+ Nadmiar jedzenia w wysokości ") + (MainPlayer.Food[1] - MainPlayer.Food[0]) + GS.SetString(" food, will be carried over to next round", " pójdzie do następnej rundy");
+                    if(GS.ExistSemiClass(RS.TempStats, "PItemLost_"))
+                        EscapedTextes[2].text += GS.SetString("- You lost ", "- Straciłeś ") + GS.GetSemiClass(RS.TempStats, "PItemLost_") + GS.SetString(" random item/s", " losowych przedmiot/ów") + "\n";
+                    if(GS.ExistSemiClass(RS.TempStats, "PTired_"))
+                        EscapedTextes[2].text += GS.SetString("- You got tired by ", "- Zmęczyłeś się o ") + GS.GetSemiClass(RS.TempStats, "PTired_") + "%\n";
+                    if(GS.ExistSemiClass(RS.TempStats, "PWet_"))
+                        EscapedTextes[2].text += GS.SetString("- You got yourself completely wet", "- Całkowicie się zmoczyłeś") + "\n";
+                    if(GS.ExistSemiClass(RS.TempStats, "PDamaged_"))
+                        EscapedTextes[2].text += GS.SetString("- You lost ", "- Straciłeś ") + GS.GetSemiClass(RS.TempStats, "PDamaged_") + GS.SetString(" points of health", " punktów życia") + "\n";
+                    if(GS.ExistSemiClass(RS.TempStats, "PNoAmmo_"))
+                        EscapedTextes[2].text += GS.SetString("- All variables of your items, have been set to zero", "- Wszystkie zmienne twoich przedmiotów, spadły do zera") + "\n";
+                    if(GS.ExistSemiClass(RS.TempStats, "RItemGot_"))
+                        EscapedTextes[2].text += GS.SetString("+ You were given ", "+ Otrzymałeś ") + GS.GetSemiClass(RS.TempStats, "RItemGot_") + GS.SetString(" random item/s", " losowych przedmiot/ów") + "\n";
+                    if(GS.ExistSemiClass(RS.TempStats, "RHealed_"))
+                        EscapedTextes[2].text += GS.SetString("+ Your health went back to 100%", "+ Twoje zdrowie zostało zregenerowane do 100%") + "\n";
+                    if(GS.ExistSemiClass(RS.TempStats, "RAdrenalined_"))
+                        EscapedTextes[2].text += GS.SetString("+ You were given a full shot of adrenaline, without taking damage", "+ Otrzymałeś pełen zastrzyk adrenaliny, bez utraty zdrowia") + "\n";
+                    if(GS.ExistSemiClass(RS.TempStats, "RTreasure_"))
+                        EscapedTextes[2].text += GS.SetString("+ You were given a treasure, usually found in monuments", "+ Otrzymałeś skarb, znajdywalny w monumentach") + "\n";
+                    if(GS.ExistSemiClass(RS.TempStats, "RDrunk_"))
+                        EscapedTextes[2].text += GS.SetString("+ You drank a little, and you've gained ", "+ Wypiłeś trochę, i otrzymałeś ") + GS.GetSemiClass(RS.TempStats, "RDrunk_") + GS.SetString("% of drunkeness", "% pijaństwa") + "\n";
+                    if(MainPlayer.Food[0] > MainPlayer.Food[1])
+                        EscapedTextes[2].text += GS.SetString("+ The excess ", "+ Nadmiar jedzenia w wysokości ") + (MainPlayer.Food[1] - MainPlayer.Food[0]) + GS.SetString(" food, will be carried over to next round", " pójdzie do następnej rundy");
+                } else {
+                    EscapedTextes[2].color = new Color(0.75f, 1f, 0.5f, 1f);
+
+                    int response = Random.Range(0, 5);
+
+                    string congrats = response switch {
+                        0 => GS.SetString("Good job!", "Dobra robota!"),
+                        1 => GS.SetString("Admirable performance!", "Dostateczne wykonanie!"),
+                        2 => GS.SetString("Congratulations!", "Gratulacje!"),
+                        3 => GS.SetString("Cool", "Fajnie"),
+                        4 => GS.SetString("But will you escape next time?\n", "Ale czy podołasz następnym razem?\n"),
+                        _ => GS.SetString("If you'd play the classic mode\nyou could get a reward for that!\n", "Gdybyście grali w klasycznym trybie\ndostalibyście nagrodę za to!\n")
+                    };
+
+                    if (response < 4)
+                        congrats += Random.Range(0, 9) switch {
+                            0 => GS.SetString("\nOnto the next one.\n", "\nIdziemy dalej.\n"),
+                            1 => GS.SetString("\nNow do that again.\n", "\nZrób to jeszcze raz.\n"),
+                            2 => GS.SetString("\nGood luck on the next run.\n", "\nPowodzenia w dalszych działaniach.\n"),
+                            _ => "\n"
+                        };
+                    
+                    EscapedTextes[2].text = congrats;
+                }
 
                 // Stats
                 foreach(string PushData in GS.ListSemiClass(RS.TempStats)){
@@ -1776,11 +1832,13 @@ public class CanvasScript : MonoBehaviour {
         } else {
 
             EnvironmentalWindow.transform.position = ShowWindow.position;
+
             if(!EnvironmentalObject.gameObject.activeInHierarchy) {
                 EnvironmentalObject.gameObject.SetActive(true);
                 EnvironmentalObject.parent = MainCamera.transform;
-                EnvironmentalObject.localPosition = Vector3.zero;
             }
+
+            EnvironmentalObject.localPosition = Vector3.zero;
 
             for(int CSEO = 0; CSEO < EnvironmentalObject.transform.childCount; CSEO++){
                 Transform SetEnvObj = EnvironmentalObject.GetChild(CSEO);
@@ -1893,7 +1951,7 @@ public class CanvasScript : MonoBehaviour {
                     }
                 }
 
-                if (RS.GetComponent<RoundScript>().TimeOfDay[0] != 0 || GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                if (RS.GetComponent<RoundScript>().TimeOfDay[0] != 0 || GS.GameModePrefab.x == 1) {
 
                     MiniMap.transform.GetChild(0).localScale = Vector3.one;
                     MiniMap.transform.GetChild(3).GetComponent<Text>().text = "";
@@ -1962,7 +2020,7 @@ public class CanvasScript : MonoBehaviour {
                         }
                     }
 
-                } else if (GS.GetSemiClass(GS.RoundSetting, "G", "?") != "1" && RS.GetComponent<RoundScript>().TimeOfDay[0] == 0) {
+                } else if (GS.GameModePrefab.x != 1 && RS.GetComponent<RoundScript>().TimeOfDay[0] == 0) {
 
                     MiniMap.transform.GetChild(0).localScale = Vector3.zero;
                     GS.GetComponent<GameScript>().SetText(MiniMap.transform.GetChild(3).GetComponent<Text>(),
@@ -1981,7 +2039,7 @@ public class CanvasScript : MonoBehaviour {
             MiniMap.transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, ITBG.GetComponent<HudColorControl>().Alpha / 0.75f);
 
             Vector2 MapSize = new Vector2(250f, 250f);
-            if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+            if (GS.GameModePrefab.x == 1) {
                 MapSize = RS.GetComponent<RoundScript>().GotTerrain.GetComponent<MapInfo>().MapSize;
             }
 
@@ -2051,7 +2109,7 @@ public class CanvasScript : MonoBehaviour {
                     }
                 }
 
-                if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0") {
+                if (GS.GameModePrefab.x == 0) {
                     ITMap.transform.GetChild(1).gameObject.SetActive(true);
                     ITMap.transform.GetChild(2).gameObject.SetActive(false);
                     for (int MapScan = 0; MapScan <= 99; MapScan++) {
@@ -2094,7 +2152,7 @@ public class CanvasScript : MonoBehaviour {
                             StampFlare.GetComponent<RectTransform>().anchoredPosition = new Vector2((FlareStamp.transform.position.z / 250f) * 120f, (FlareStamp.transform.position.x / 250f) * -120f);
                         }
                     }
-                } else if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                } else if (GS.GameModePrefab.x == 1) {
                     ITMap.transform.GetChild(1).gameObject.SetActive(false);
                     ITMap.transform.GetChild(2).gameObject.SetActive(true);
                     foreach (Transform GetRightMap in ITMap.transform.GetChild(1)) {
@@ -2192,10 +2250,10 @@ public class CanvasScript : MonoBehaviour {
             }
 
             // Round Info
-            if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0" && RS.GetComponent<RoundScript>().RoundTime < 60f && !HintsTold.Contains("Nuke1")) {
+            if (GS.GameModePrefab.x == 0 && RS.GetComponent<RoundScript>().RoundTime < 60f && !HintsTold.Contains("Nuke1")) {
                 HintsTold.Add("Nuke1");
                 HintsCooldown.Add("Nuke1");
-            } else if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0" && RS.GetComponent<RoundScript>().RoundTime < 0f && !HintsTold.Contains("Nuke2")) {
+            } else if (GS.GameModePrefab.x == 0 && RS.GetComponent<RoundScript>().RoundTime < 0f && !HintsTold.Contains("Nuke2")) {
                 HintsTold.Add("Nuke2");
                 HintsCooldown.Add("Nuke2");
             }

@@ -35,6 +35,9 @@ public class RoundScript : MonoBehaviour {
     public GameObject InvisibleAttack;
     public GameObject GunAttack;
     public AudioClip[] GunfireSounds;
+
+    public List<Vector3> FragElements;
+    GameObject FragTransform;
     // Attacks
     // Effects
     int EffectQuerryID = 0;
@@ -69,7 +72,8 @@ public class RoundScript : MonoBehaviour {
     // Nuke variables
 
     public float DetectionRange = 0f;
-    public float DifficultySlider = 0f;
+    public float DifficultySliderA = 0f;
+    public float DifficultySliderB = 0f;
     public float Sunnyness = 1f;
     public float[] TimeOfDay = {0, 0, 0}; // Time of day, hour (is displayed in minutes), dynamic time change
     public int Weather = 0;
@@ -97,16 +101,16 @@ public class RoundScript : MonoBehaviour {
 
         if(GameObject.Find("_GameScript")) GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
         if(GameObject.Find("MainCanvas")) CS = GameObject.Find("MainCanvas").GetComponent<CanvasScript>();
-        SetItemArrays();
 
         if (GS.WhatOnStart == 0 || GS.WhatOnStart == -1) {
+            GS.Score = 0;
+            GS.Money = 0;
+            GS.Ammo = 0;
             if (GS.WhatOnStart != -1) {
                 GS.Round = 1;
                 GS.Biome = 1;
             }
-            GS.Score = 0;
-            GS.Money = 0;
-            GS.LandSeed = new Vector2(Random.Range(-100f, 100f), Random.Range(-100f, 100f));
+            GS.RoundSeed = Random.Range(10000000, 99999999).ToString();
             GS.HealthSave = new Vector2(100f, 100f);
             GS.HungerSave = new Vector2(240f, 240f);
             GS.PlayerSpeed = 5f;
@@ -116,7 +120,24 @@ public class RoundScript : MonoBehaviour {
 
         ActiveDestructs = new List<DestructionScript>();
         ActiveBuildings = new List<BuildingScript>();
+        FragElements = new List<Vector3>();
+        FragTransform = new ("FragTransform");
 
+        switch (GS.GetSemiClass(GS.RoundSetting, "G", "?")) {
+            case "0": 
+                GS.GameModePrefab = new (0, 0);
+                break;
+            case "1": 
+                GS.GameModePrefab = new (1, 0);
+                break;
+            case "2": 
+                GS.GameModePrefab = new (0, 1);
+                IsCausual = true;
+                break;
+        }
+
+        SetItemArrays();
+        GS.setItemData(IsCausual);
     }
 	
 	// Update is called once per frame
@@ -143,13 +164,28 @@ public class RoundScript : MonoBehaviour {
             }
 
             // Manage destructors
-            if(ActiveDestructs != null && ActiveDestructs.ToArray().Length >= 1f){
+            if(ActiveDestructs.ToArray().Length >= 1f){
                 for(int ad = 0; ad < ActiveDestructs.ToArray().Length; ad++) if(ActiveDestructs[ad]) ActiveDestructs[ad].Do();
             }
 
             // Manage buildings
-            if(ActiveDestructs != null && ActiveBuildings.ToArray().Length >= 1f){
+            if(ActiveBuildings.ToArray().Length >= 1f){
                 for(int ad = 0; ad < ActiveBuildings.ToArray().Length; ad++) if(ActiveBuildings[ad]) ActiveBuildings[ad].Do();
+            }
+
+            // Fragment elements
+            if(FragElements.ToArray().Length >= 1f && Time.time > 0f){
+                for (int shoot = Mathf.Clamp(2, 0, FragElements.ToArray().Length); shoot > 0; shoot--) {
+                    int fragID = FragElements.ToArray().Length;
+                    string[] Ids = new string[]{"Flintlock", "BakerRifle", "NockGun", "Garand", "Revolver", "M4", "Scar", "AK-47"};
+                    int Yturn = fragID % 8;
+                    int Xturn = fragID % 32 / 8;
+                    FragTransform.transform.position = FragElements[0] + new Vector3(Random.Range(-1f, 1f), Random.Range(0.25f, 1f), Random.Range(-1f, 1f));
+                    FragTransform.transform.eulerAngles = new Vector3((Xturn * -11) + Random.Range(-5f, 5f), (Yturn * 45f) + Random.Range(-22f, 22f), 0f);
+                    GameObject.Find("_RoundScript").GetComponent<RoundScript>().Attack(new string[]{Ids[(int)Random.Range(0f, 7.9f)], "CanHurtSelf", "Power100;"}, FragTransform.transform.position, FragTransform.transform.forward);
+                    FragElements.RemoveAt(0);
+                    FragElements.TrimExcess();
+                }
             }
 
             // Count survived time
@@ -183,10 +219,14 @@ public class RoundScript : MonoBehaviour {
             if (RoundState == "Prepeare" && DonePrepare == false) {
 
                 DonePrepare = true;
-                DifficultySlider = Mathf.Clamp(GS.Round / (30f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 5f)), 0f, 1f);
+                DifficultySliderA = Mathf.Clamp(GS.Round / (30f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 5f)), 0f, 1f);
+                if (IsCausual)
+                    DifficultySliderB = GS.Round > 1 ? GS.SeedPerlin(GS.RoundSeed) : .1f;
+                else
+                    DifficultySliderB = DifficultySliderA;
 
                 // Set Terrain Stuff
-                if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0") {
+                if (GS.GameModePrefab.x == 0) {
 
                     foreach (Transform FindBiome in BiomeList.transform) {
                         if (FindBiome.transform.GetSiblingIndex() == GS.Biome) {
@@ -200,11 +240,11 @@ public class RoundScript : MonoBehaviour {
                     if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
                         RoundTime = 300f;
                     } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "2") {
-                        RoundTime = Mathf.Clamp(300f - (DifficultySlider * 180f), 120f, 300f);
+                        RoundTime = Mathf.Clamp(300f - (DifficultySliderA * 180f), 120f, 300f);
                     } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "3") {
-                        RoundTime = Mathf.Clamp(240f - (DifficultySlider * 120f), 120f, 240f);
+                        RoundTime = Mathf.Clamp(240f - (DifficultySliderA * 120f), 120f, 240f);
                     } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "4") {
-                        RoundTime = Mathf.Clamp(180f - (DifficultySlider * 60f), 120f, 240f);
+                        RoundTime = Mathf.Clamp(180f - (DifficultySliderA * 60f), 120f, 240f);
                     } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "5") {
                         RoundTime = 120f;
                     }
@@ -214,82 +254,64 @@ public class RoundScript : MonoBehaviour {
                     //print("The round is " + GS.Round + ", minus the repeat " + (GS.Round / 4) + ", round minus repeat is " + (GS.Round - (GS.Round / 4)) + ", and so the results should be " + TimeOfDay[0]);
                     switch(TimeOfDay[0]){
                         case 0: 
-                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(0f, 3f, Mathf.PerlinNoise(GS.LandSeed.x * GS.Round, GS.LandSeed.y * GS.Round)));
+                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(0f, 3f, GS.SeedPerlin(GS.RoundSeed)));
                             TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 0f, (3f * 60f) - (RoundTime / 2f));
                             break;
                         case 1: 
-                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(7f, 12f, Mathf.PerlinNoise(GS.LandSeed.x * GS.Round, GS.LandSeed.y * GS.Round)));
+                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(7f, 12f, GS.SeedPerlin(GS.RoundSeed)));
                             TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 7f * 60f, (12f * 60f) - (RoundTime / 2f));
                             break;
                         case 2: 
-                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(12f, 18f, Mathf.PerlinNoise(GS.LandSeed.x * GS.Round, GS.LandSeed.y * GS.Round))); 
+                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(12f, 18f, GS.SeedPerlin(GS.RoundSeed))); 
                             TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 12f * 60f, (18f * 60f) - (RoundTime / 2f));
                             break;
                         case 3: 
-                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(18f, 21f, Mathf.PerlinNoise(GS.LandSeed.x * GS.Round, GS.LandSeed.y * GS.Round))); 
+                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(18f, 21f, GS.SeedPerlin(GS.RoundSeed))); 
                             TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 18f * 60f, (21f * 60f) - (RoundTime / 2f));
                             break;
                     }
 
                     if (Weather == -1) {
-                        Weather = Mathf.Clamp((int)Mathf.Lerp(-0.5f, 6.5f, Mathf.PerlinNoise(GS.LandSeed.x, GS.LandSeed.y)), 0, 5);
+                        Weather = Mathf.Clamp((int)Mathf.Lerp(-0.5f, 6.5f, GS.SeedPerlin(GS.RoundSeed + "89665776")), 0, 5);
                         if ((GS.Biome == 5 || GS.Round == 1) && (Weather >= 2)) {
                             Weather = 1;
                         }
                     }
 
                     if (Weather == 0) {
-                        Sunnyness = Mathf.Lerp(0.75f, 1f, GS.FixedPerlinNoise(GS.LandSeed.y * GS.Round, GS.LandSeed.y * GS.Round));
+                        Sunnyness = Mathf.Lerp(0.75f, 1f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
                     } else if (Weather == 1) {
-                        Sunnyness = Mathf.Lerp(0.5f, 0.75f, GS.FixedPerlinNoise(GS.LandSeed.y * GS.Round, GS.LandSeed.y * GS.Round));
+                        Sunnyness = Mathf.Lerp(0.5f, 0.75f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
                     } else if (Weather == 2) {
-                        Sunnyness = Mathf.Lerp(0.25f, 0.5f, GS.FixedPerlinNoise(GS.LandSeed.y * GS.Round, GS.LandSeed.y * GS.Round));
+                        Sunnyness = Mathf.Lerp(0.25f, 0.5f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
                     } else if (Weather == 3) {
-                        Sunnyness = Mathf.Lerp(0f, 0.25f, GS.FixedPerlinNoise(GS.LandSeed.y * GS.Round, GS.LandSeed.y * GS.Round));
+                        Sunnyness = Mathf.Lerp(0f, 0.25f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
                     } else if (Weather == 4) {
                         Sunnyness = 0f;
                     } else if (Weather == 5) {
                         Sunnyness = 0f;
                     }
 
-                    //if (TimeOfDay >= 6 && TimeOfDay <= 12) {
-                    //    SkyColor = Color32.Lerp(GotTerrain.GetComponent<BiomeInfo>().DaytimeColors[0], GotTerrain.GetComponent<BiomeInfo>().DaytimeColors[1], Sunnyness);
-                    //    DrawDistance = 25f + (Sunnyness * 50f);
-                    //    AmbientColor = new Color32(55, 55, 100, 255);
-                    //    SunColor = Color32.Lerp(new Color32(55, 55, 55, 255), new Color32(255, 255, 200, 255), Sunnyness);
-                    //} else if (TimeOfDay == 18) {
-                    //    SkyColor = Color32.Lerp(new Color32(155, 55, 75, 255), new Color32(225, 125, 25, 255), Sunnyness);
-                    //    DrawDistance = 25f + (Sunnyness * 50f);
-                    //    AmbientColor = new Color32(25, 0, 55, 255);
-                    //    SunColor = Color32.Lerp(new Color32(55, 55, 55, 255), new Color32(255, 200, 155, 255), Sunnyness);
-                    //} else if (TimeOfDay == 0) {
-                    //    SkyColor = Color32.Lerp(new Color32(0, 0, 0, 255), new Color32(0, 25, 75, 255), Sunnyness);
-                    //    DrawDistance = 20f + (Sunnyness * 40f);
-                    //    AmbientColor = new Color32(0, 0, 0, 255);
-                    //    SunColor = Color32.Lerp(new Color32(10, 10, 10, 255), new Color32(25, 25, 75, 255), Sunnyness);
-                    //}
-
                     AmbientSet("Normal");
                     MainTerrain.GetComponent<LandScript>().TheStart();
 
                     // Set Monuments
-                    int MonumentsToSpawn = (int)Mathf.Lerp(0f, 2.9f, Mathf.PerlinNoise(GS.LandSeed.y, -GS.LandSeed.x));
+                    int MonumentsToSpawn = (int)Mathf.Lerp(0f, 2.9f, GS.SeedPerlin(GS.RoundSeed + "1233"));
                     for (int SetMonuments = MonumentsToSpawn; SetMonuments > 0; SetMonuments--) {
-                        int PickMonument = (int)Mathf.Lerp(0f, 100f, Mathf.PerlinNoise(GS.LandSeed.y * SetMonuments, GS.LandSeed.x * SetMonuments));
-                        int WhichMonument = (int)Random.Range(0f, 9.9f);
-                        if (WhichMonument == 9 && GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] == "Battleground") {
-                            WhichMonument = 0;
+                        int PickMonument = (int)Mathf.Lerp(0f, 9.9f, GS.SeedPerlin2D(GS.RoundSeed, SetMonuments / 3f, SetMonuments / 3f));
+                        if ((PickMonument == 9 || PickMonument == 2) && GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] == "Battleground") {
+                            PickMonument = 0;
                         }
-                        MainTerrain.GetComponent<LandScript>().SetLand(MainTerrain.GetComponent<LandScript>().Lands[PickMonument], WhichMonument.ToString(), 0);
+                        MainTerrain.GetComponent<LandScript>().SetLand(MainTerrain.GetComponent<LandScript>().Lands[PickMonument], PickMonument.ToString(), 0);
                     }
 
                     // Set Lands
                     foreach (GameObject LandToSet in MainTerrain.GetComponent<LandScript>().Lands) {
                         if (LandToSet.name.Substring(2, 1) != "M") {
-                            float PickTerrain = GS.FixedPerlinNoise(LandToSet.transform.GetSiblingIndex() + GS.LandSeed.x, LandToSet.transform.GetSiblingIndex() + GS.LandSeed.y);
+                            float PickTerrain = GS.SeedPerlin2D(GS.RoundSeed, LandToSet.transform.position.x + 1000, LandToSet.transform.position.z + 1000);
                             //print(PickTerrain);
-                            string PickBiomeAvailableTerrains = GotTerrain.GetComponent<BiomeInfo>().AvailableTerrainTypes[(int)(3f * DifficultySlider)];
-                            Vector2 RadioactivityRange = new Vector2(Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().Radioactivity[0], GotTerrain.GetComponent<BiomeInfo>().Radioactivity[2], DifficultySlider), Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().Radioactivity[1], GotTerrain.GetComponent<BiomeInfo>().Radioactivity[3], DifficultySlider));
+                            string PickBiomeAvailableTerrains = GotTerrain.GetComponent<BiomeInfo>().AvailableTerrainTypes[(int)(3f * DifficultySliderB)];
+                            Vector2 RadioactivityRange = new Vector2(Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().Radioactivity[0], GotTerrain.GetComponent<BiomeInfo>().Radioactivity[2], DifficultySliderB), Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().Radioactivity[1], GotTerrain.GetComponent<BiomeInfo>().Radioactivity[3], DifficultySliderB));
                             MainTerrain.GetComponent<LandScript>().SetLand(LandToSet, PickBiomeAvailableTerrains.Substring((int)Mathf.Clamp(PickTerrain * (PickBiomeAvailableTerrains.Length), 0f, PickBiomeAvailableTerrains.Length - 1f), 1), (int)Mathf.Lerp(RadioactivityRange.x, RadioactivityRange.y, PickTerrain));
                         }
                     }
@@ -297,88 +319,18 @@ public class RoundScript : MonoBehaviour {
 
                     // Spawn mobs
                     List<MobPH> newMobPHs = new List<MobPH>();
-                    for(int spawnMPH = (int)Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().AmountOfMobs[0], GotTerrain.GetComponent<BiomeInfo>().AmountOfMobs[1], DifficultySlider); spawnMPH > 0; spawnMPH--){
+                    for(int spawnMPH = (int)Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().AmountOfMobs[0], GotTerrain.GetComponent<BiomeInfo>().AmountOfMobs[1], DifficultySliderB); spawnMPH > 0; spawnMPH--){
                         GameObject SpawnMobPH = Instantiate(MobPHprefab) as GameObject;
                         SpawnMobPH.GetComponent<MobPH>().spawnType = GotTerrain.GetComponent<BiomeInfo>().MobPHsuggestion;
-                        SpawnMobPH.GetComponent<MobPH>().DifficultyLevel = DifficultySlider;
+                        SpawnMobPH.GetComponent<MobPH>().DifficultyLevel = DifficultySliderB;
                         newMobPHs.Add(SpawnMobPH.GetComponent<MobPH>());
                     }
                     MobPHeses = newMobPHs.ToArray();
-                    /*
-                    float MoarMutants;
-                    if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
-                        MoarMutants = 0.5f;
-                    } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "2") {
-                        MoarMutants = 1f;
-                    } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "3") {
-                        MoarMutants = 1.5f;
-                    } else {
-                        MoarMutants = 2f;
-                    }
-                    if (GS.Platform == 2 && MoarMutants > 1f) {
-                        MoarMutants = 1f;
-                    }
-                    int MaxMutantsToSpawn = (int)Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().AmountOfMutants[0] * MoarMutants, GotTerrain.GetComponent<BiomeInfo>().AmountOfMutants[1] * MoarMutants, DifficultySlider);
-                    MaxMutantsToSpawn = (int)Mathf.Clamp(MaxMutantsToSpawn, 0f, 50f);
-                    for (int MutantsToSpawn = MaxMutantsToSpawn; MutantsToSpawn > 0; MutantsToSpawn--) {
-                        GameObject SpawnMutant = Instantiate(MobPrefab) as GameObject;
-                        int NegOrPosX = Random.Range(1, 3);
-                        if (NegOrPosX != 1) {
-                            NegOrPosX = -1;
-                        }
-                        int NegOrPosY = Random.Range(1, 3);
-                        if (NegOrPosY != 1) {
-                            NegOrPosY = -1;
-                        }
-                        SpawnMutant.transform.position = new Vector3(Random.Range(50f, 225f) * NegOrPosX, 500f, Random.Range(50f, 225f) * NegOrPosY);
-                        if (MutantsToSpawn < MaxMutantsToSpawn * DifficultySlider) {
-                            int[] MutantTypes = new int[] { 1, 4, 5, 6, 7, 9, 10, 11, 12, 13 };
-                            SpawnMutant.GetComponent<MobScript>().TypeOfMob = MutantTypes[(int)Random.Range(0f, MutantTypes.Length - 0.1f)];
-                        } else {
-                            SpawnMutant.GetComponent<MobScript>().TypeOfMob = 1;
-                        }
-                    }
-
-                    for (int SquadsToSpawn = (int)Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().AmountOfBandits[0], GotTerrain.GetComponent<BiomeInfo>().AmountOfBandits[1], DifficultySlider); SquadsToSpawn > 0; SquadsToSpawn--) {
-
-                        int NegOrPosX = Random.Range(1, 3);
-                        if (NegOrPosX != 1) {
-                            NegOrPosX = -1;
-                        }
-                        int NegOrPosY = Random.Range(1, 3);
-                        if (NegOrPosY != 1) {
-                            NegOrPosY = -1;
-                        }
-
-                        Vector3 Origin = new Vector3(Random.Range(50f, 225f) * NegOrPosX, 500f, Random.Range(50f, 225f) * NegOrPosY);
-                        int SurvivorChance = Random.Range(0, 100);
-                        int ToSpawn = Random.Range(1, 3);
-                        for (int BanditsToSpawn = ToSpawn; BanditsToSpawn > 0; BanditsToSpawn--) {
-                            GameObject SpawnMutant = Instantiate(MobPrefab) as GameObject;
-                            SpawnMutant.transform.position = Origin + new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
-
-                            if (ToSpawn > 1) {
-                                SpawnMutant.GetComponent<MobScript>().Squad = new int[] { SquadsToSpawn, BanditsToSpawn };
-                            }
-
-                            if (GS.Biome == 10 && SurvivorChance < 25f) {
-                                SpawnMutant.GetComponent<MobScript>().TypeOfMob = 3;
-                            } else if (GS.Biome != 10 && SurvivorChance < (5f - int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"))) * 5f) {
-                                SpawnMutant.GetComponent<MobScript>().TypeOfMob = 3;
-                            } else {
-                                SpawnMutant.GetComponent<MobScript>().TypeOfMob = 2;
-                            }
-
-                        }
-
-                    }
-                    */
-
                     // Spawn mobs
 
                     // Set Escape Roots
                     string WhichWall = "NESW";
-                    for (int AmountOfTunnels = 5 - Mathf.Clamp((int)(DifficultySlider * 3f), 1, 3); AmountOfTunnels > 0; AmountOfTunnels--) {
+                    for (int AmountOfTunnels = 5 - Mathf.Clamp((int)(DifficultySliderB * 3f), 1, 3); AmountOfTunnels > 0; AmountOfTunnels--) {
                         int PickedWall = Random.Range(0, (int)(WhichWall.Length - 1f));
                         string WhichWallA = WhichWall.Substring(PickedWall, 1);
                         WhichWall = WhichWall.Remove(PickedWall, 1);
@@ -441,7 +393,7 @@ public class RoundScript : MonoBehaviour {
 
                     RoundState = "Normal";
 
-                } else if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                } else if (GS.GameModePrefab.x == 1) {
 
                     foreach (Transform SetMap in HordeMapList.transform) {
                         if (int.Parse(SetMap.name.Substring(0, 2)) == int.Parse(GS.GetSemiClass(GS.RoundSetting, "H", "?"))) {
@@ -510,9 +462,10 @@ public class RoundScript : MonoBehaviour {
                 } else {
                     MainPlayer.Food = new float[]{0f, 100f};
                     MainPlayer.FoodLimits = new float[]{MainPlayer.Food[1] * MainPlayer.FoodLimits[0], MainPlayer.Food[1] * MainPlayer.FoodLimits[1]};
-                    GS.LandSeed = new Vector2(Random.Range(-100f, 100f), Random.Range(-100f, 100f));
-                    if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+
+                    if (GS.GameModePrefab.x == 1) {
                         MainPlayer.MaxInventorySlots = 6;
+                        GS.Ammo = 100;
                     }
                 }
                 // Set Player Stuff
@@ -730,9 +683,9 @@ public class RoundScript : MonoBehaviour {
                         }
 
                         if (GS.GetComponent<GameScript>().Round > 1) {
-                            DifficultySlider = Mathf.Clamp(GS.Round / (55f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 5f)), 0f, 1f);
+                            DifficultySliderA = Mathf.Clamp(GS.Round / (55f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 5f)), 0f, 1f);
                         } else {
-                            DifficultySlider = 0;
+                            DifficultySliderA = 0;
                         }
                         float DifficultyDifference = 1f;
                         if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
@@ -745,17 +698,17 @@ public class RoundScript : MonoBehaviour {
                             DifficultyDifference = 3f;
                         }
                         HordeVariables = new int[] {
-                            (int)(Mathf.Lerp(10f, 100f, DifficultySlider) * DifficultyDifference),
-                            (int)(Mathf.Lerp(5f, 30f, DifficultySlider)),
-                            (int)Mathf.Clamp((DifficultySlider * 3f) * 100f, 0f, 100f),
-                            (int)Mathf.Clamp((DifficultySlider * 3f) * 100f, 0f, 100f)
+                            (int)(Mathf.Lerp(10f, 100f, DifficultySliderA) * DifficultyDifference),
+                            (int)(Mathf.Lerp(5f, 30f, DifficultySliderA)),
+                            (int)Mathf.Clamp((DifficultySliderA * 3f) * 100f, 0f, 100f),
+                            (int)Mathf.Clamp((DifficultySliderA * 3f) * 100f, 0f, 100f)
                         };
                         if (GS.Platform == 2 && HordeVariables[1] > 10f) {
                             HordeVariables[1] = 10;
                         }
                         foreach (GameObject GetInt in GameObject.FindGameObjectsWithTag("Interactable")){
                             if (GetInt.GetComponent<InteractableScript>().Variables.x == 5f) {
-                                int pickItem = (int)Mathf.Clamp(GS.FixedPerlinNoise(GS.LandSeed.x + GetInt.transform.position.x + GS.Round, GS.LandSeed.y + GetInt.transform.position.y + GS.Round) * GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount, 0f, GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount - 0.1f);
+                                int pickItem = (int)Mathf.Clamp(GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.x + GS.Round, GetInt.transform.position.y + GS.Round) * GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount, 0f, GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount - 0.1f);
                                 if (GS.Round <= 1 && (pickItem == 3 || pickItem == 4 || pickItem == 6 || pickItem == 7 || pickItem == 8)) {
                                     pickItem = 0;
                                 }
@@ -765,7 +718,7 @@ public class RoundScript : MonoBehaviour {
                                     List<int> AvailableOffers = new List<int>();
                                     //int WhichCategory = (int)(Mathf.PerlinNoise(GS.GetComponent<GameScript>().LandSeed.y + GS.GetComponent<GameScript>().Round + (float)AddTradeOptions, GS.GetComponent<GameScript>().LandSeed.y + GS.GetComponent<GameScript>().Round + (float)AddTradeOptions) * 3.9f);
                                     //int WhichCategory = (int)Random.Range(0f, 3.9f);
-                                    int WhichCategory =  (int)(Mathf.Clamp(GS.FixedPerlinNoise(GS.LandSeed.x + (int)GetInt.transform.position.x + GS.Round + AddTradeOptions, GS.LandSeed.y + (int)GetInt.transform.position.y + GS.Round + AddTradeOptions), 0f, 1f) * 5.9f);
+                                    int WhichCategory =  (int)(Mathf.Clamp(GS.SeedPerlin2D(GS.RoundSeed, (int)GetInt.transform.position.x + GS.Round + AddTradeOptions, (int)GetInt.transform.position.y + GS.Round + AddTradeOptions), 0f, 1f) * 5.9f);
                                     if (WhichCategory <= 2) {
                                         foreach (int GetWeapon in Weapons) {
                                             AvailableOffers.Add(GetWeapon);
@@ -782,10 +735,10 @@ public class RoundScript : MonoBehaviour {
                                         AvailableOffers.Add(80);
                                         AvailableOffers.Add(81);
                                     }
-                                    float PickBargain = Mathf.Clamp(-0.5f + (GS.FixedPerlinNoise(GS.LandSeed.x + GetInt.transform.position.x + GS.Round + AddTradeOptions, GS.LandSeed.y + GetInt.transform.position.y + GS.Round + AddTradeOptions) * 2f), 0f, 1f);
-                                    float PickPrice = Mathf.Clamp(-0.5f + (GS.FixedPerlinNoise(GS.LandSeed.y + GetInt.transform.position.y + GS.Round + AddTradeOptions, GS.LandSeed.x + GetInt.transform.position.x + GS.Round + AddTradeOptions) * 2f), 0f, 1f);
+                                    float PickBargain = GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.x + GS.Round + AddTradeOptions, GetInt.transform.position.y + GS.Round + AddTradeOptions);
+                                    float PickPrice = GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.y + GS.Round + AddTradeOptions, GetInt.transform.position.x + GS.Round + AddTradeOptions);
                                     GetInt.GetComponent<InteractableScript>().TradeOptions[AddTradeOptions] = AvailableOffers.ToArray()[(int)(PickBargain * AvailableOffers.ToArray().Length - 0.1f)];
-                                    GetInt.GetComponent<InteractableScript>().TradePrices[AddTradeOptions] = (int)(Mathf.Lerp(5f, 100f, DifficultySlider) + (PickPrice * Mathf.Lerp(20f, 750f, DifficultySlider)));
+                                    GetInt.GetComponent<InteractableScript>().TradePrices[AddTradeOptions] = (int)(Mathf.Lerp(5f, 100f, DifficultySliderA) + (PickPrice * Mathf.Lerp(20f, 750f, DifficultySliderA)));
                                     //GetInt.GetComponent<InteractableScript>().TradeOptions[AddTradeOptions] = AvailableOffers.ToArray()[(int)(Mathf.PerlinNoise(GS.GetComponent<GameScript>().LandSeed.x + GetInt.transform.position.x + GS.GetComponent<GameScript>().Round + AddTradeOptions, GS.GetComponent<GameScript>().LandSeed.y + GetInt.transform.position.y + GS.GetComponent<GameScript>().Round + AddTradeOptions) * AvailableOffers.ToArray().Length - 0.1f)];
                                     //GetInt.GetComponent<InteractableScript>().TradePrices[AddTradeOptions] = (int)(Mathf.PerlinNoise(GS.GetComponent<GameScript>().LandSeed.x + GetInt.transform.position.x + GS.GetComponent<GameScript>().Round + AddTradeOptions, GS.GetComponent<GameScript>().LandSeed.y + GetInt.transform.position.y + GS.GetComponent<GameScript>().Round + AddTradeOptions) * Mathf.Lerp(20f, 750f, DifficultySlider));
                                 }
@@ -793,7 +746,7 @@ public class RoundScript : MonoBehaviour {
                         }
                     }
                 } else {
-                    DifficultySlider = Mathf.Clamp(GS.Round / (25f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 2f)), 0f, 1f);
+                    DifficultySliderA = Mathf.Clamp(GS.Round / (25f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 2f)), 0f, 1f);
                     HordeAmount = HordeVariables[0];
                     Odds = 2;
                     RoundState = "HordeWave";
@@ -970,11 +923,11 @@ public class RoundScript : MonoBehaviour {
                     SkyboxChild.transform.GetChild(0).GetComponent<SpriteRenderer>().color = RenderSettings.fogColor;
                     SkyboxChild.transform.localScale = new Vector3(1f, Mathf.Lerp(1f, 0.5f, Quaternion.Angle(SkyboxChild.transform.rotation, SkyboxObj.transform.rotation) / 180f), 1f);
                 } else if (SkyboxChild.name == "Clouds1" || SkyboxChild.name == "Clouds2"){
-                    float CRotation = Mathf.PerlinNoise((GS.LandSeed.x * GS.Round) + (Time.time / 10000f) + (TimeOfDay[1] / 100f), (GS.LandSeed.y * GS.Round) + (Time.time / 10000f)) * 360f;
-                    float CAlpha = Mathf.PerlinNoise((GS.LandSeed.y * GS.Round) + (Time.time / 10000f), (GS.LandSeed.x * GS.Round) + (Time.time / 10000f) + (TimeOfDay[1] / 100f)) * 0.75f;
+                    float CRotation = GS.FixedPerlinNoise(GS.Round + (Time.time / 10000f) + (TimeOfDay[1] / 100f), GS.Round + (Time.time / 10000f)) * 360f;
+                    float CAlpha = GS.FixedPerlinNoise(GS.Round + (Time.time / 10000f), GS.Round + (Time.time / 10000f) + (TimeOfDay[1] / 100f)) * 0.75f;
                     if(SkyboxChild.name == "Clouds1"){
-                        CRotation = Mathf.PerlinNoise((-GS.LandSeed.x * GS.Round) + (Time.time / 20000f), (GS.LandSeed.y * -GS.Round) + (Time.time / 20000f) + (TimeOfDay[1] / 200f)) * 360f;
-                        CAlpha = Mathf.PerlinNoise((GS.LandSeed.y * -GS.Round) + (Time.time / 20000f) + (TimeOfDay[1] / 200f), (-GS.LandSeed.x * GS.Round) + (Time.time / 20000f)) * 0.75f;
+                        CRotation = GS.FixedPerlinNoise(GS.Round + (Time.time / 20000f), -GS.Round + (Time.time / 20000f) + (TimeOfDay[1] / 200f)) * 360f;
+                        CAlpha = GS.FixedPerlinNoise(-GS.Round + (Time.time / 20000f) + (TimeOfDay[1] / 200f), GS.Round + (Time.time / 20000f)) * 0.75f;
                     }
                     SkyboxChild.transform.localEulerAngles = new Vector3(90f, 0f, CRotation);
                     Color SetAlpha = SkyboxChild.GetComponent<SpriteRenderer>().color;
@@ -1010,7 +963,6 @@ public class RoundScript : MonoBehaviour {
         if (Event == "Escape") {
             MainPlayer.InventoryFunctions("");
             MainPlayer.EquipmentFunctions("");
-            MainPlayer.Tiredness += Random.Range(0f, 5f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
             MainPlayer.Buffs("");
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.LoadingTime = Random.Range(0.5f, 1f);
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.AfterLoading = "f_EscapeMap";
@@ -1029,7 +981,7 @@ public class RoundScript : MonoBehaviour {
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.LoadingTime = Random.Range(0.5f, 1f);
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.AfterLoading = "f_GameOver";
         } else if (Event == "SaveHordeProgress") {
-            GS.LandSeed = new Vector2(Random.Range(-100f, 100f), Random.Range(-100f, 100f));
+            GS.RoundSeed = Random.Range(10000000, 99999999).ToString();
             GS.HealthSave = new Vector2(MainPlayer.Health[0], MainPlayer.Health[1]);
             GS.PlayerSpeed = MainPlayer.Speed;
             GS.PlayerInventory = MainPlayer.InventoryText;
@@ -1039,7 +991,7 @@ public class RoundScript : MonoBehaviour {
             GS.SaveManipulation(GS.CurrentSave, 0);
         } else if (Event.Substring(0, 3) == "ESC"){
 
-            if(MainPlayer.Food[0] <= 0f){
+            if(MainPlayer.Food[0] <= 0f && !IsCausual){
 
                 MainPlayer.ReleaseCamera = 0f;
                 int SelfEat = (int)Random.Range(1f, MainPlayer.FoodLimits[0]);
@@ -1050,133 +1002,124 @@ public class RoundScript : MonoBehaviour {
 
                 MainPlayer.State = 0;
 
-                string[] Punishments = {"0", "01234"};
-                string[] Rewards = {"0", "01234"};
+                if (!IsCausual) {
 
-                if(MainPlayer.Food[0] < MainPlayer.FoodLimits[0]){
-                    // Hungry
-                    SetScore("Hunger_", "0");
-                    Punishments[0] = "1";
-                } else if(MainPlayer.Food[0] < MainPlayer.FoodLimits[1]){
-                    // Normal
-                    SetScore("Hunger_", "1");
-                } else if(MainPlayer.Food[0] < MainPlayer.Food[1]){
-                    // Well fed
-                    SetScore("Hunger_", "2");
-                    Rewards[0] = "1";
-                } else {
-                    // Full
-                    SetScore("Hunger_", "3");
-                    Rewards[0] = "2";
-                }
+                    string[] Punishments = {"0", "01234"};
+                    string[] Rewards = {"0", "01234"};
 
-                // Punish
-                for(int Punish = int.Parse(Punishments[0]); Punish > 0; Punish--){
-                    int ReceivedPunish = (int)Random.Range(0f, Punishments[1].Length - 0.1f);
-
-                    // Getting punishments
-                    switch(Punishments[1].Substring(ReceivedPunish, 1)){
-                        case "0":
-                            // Lose items
-                            SetScore("PItemLost_", "1");
-                            int CheckThisOne = Random.Range(0, MainPlayer.MaxInventorySlots);
-                            for(int Unlucky = MainPlayer.MaxInventorySlots; Unlucky > 0; Unlucky --){
-                                int offset = CheckThisOne + Unlucky;
-                                if(offset > MainPlayer.MaxInventorySlots) offset -= MainPlayer.MaxInventorySlots;
-                                if(MainPlayer.Inventory[offset] != "id0;") {
-                                    MainPlayer.Inventory[offset] = "id0;";
-                                    break;
-                                }
-                            }
-                            break;
-                        case "1":
-                            // Tired
-                            int HowMuch = (int)Random.Range(5f, 25f);
-                            MainPlayer.Tiredness = Mathf.Clamp(MainPlayer.Tiredness + HowMuch, 0, 75);
-                            SetScore("PTired_", HowMuch.ToString());
-                            break;
-                        case "2":
-                            // Wet
-                            MainPlayer.Wet = 100;
-                            SetScore("PWet_", "1");
-                            break;
-                        case "3":
-                            // Damaged
-                            float HealthToLose = Random.Range(0f, Mathf.Clamp(25f, MainPlayer.Health[0] - 1f, 25f));
-                            MainPlayer.Health[0] -= HealthToLose;
-                            SetScore("PDamaged_", ((int)HealthToLose).ToString());
-                            break;
-                        case "4":
-                            // NoAmmo
-                            for(int LoseAmmo = 0; LoseAmmo < MainPlayer.MaxInventorySlots; LoseAmmo ++){
-                                if(GS.ExistSemiClass(MainPlayer.Inventory[LoseAmmo], "va")) GS.SetSemiClass(MainPlayer.Inventory[LoseAmmo], "va", "/*0.3");
-                            }
-                            SetScore("PNoAmmo_", "1");
-                            break;
+                    if(MainPlayer.Food[0] < MainPlayer.FoodLimits[0]){
+                        // Hungry
+                        SetScore("Hunger_", "0");
+                        Punishments[0] = "1";
+                    } else if(MainPlayer.Food[0] < MainPlayer.FoodLimits[1]){
+                        // Normal
+                        SetScore("Hunger_", "1");
+                    } else if(MainPlayer.Food[0] < MainPlayer.Food[1]){
+                        // Well fed
+                        SetScore("Hunger_", "2");
+                        Rewards[0] = "1";
+                    } else {
+                        // Full
+                        SetScore("Hunger_", "3");
+                        Rewards[0] = "2";
                     }
 
-                    if(ReceivedPunish == Punishments.Length - 1 && Punishments.Length > 1)
-                        Punishments[1] = Punishments[1].Substring(0, ReceivedPunish);
-                    else if (Punishments.Length > 1)
-                        Punishments[1] = Punishments[1].Substring(0, ReceivedPunish) + Punishments[1].Substring(ReceivedPunish + 1);
-                    else
-                        break;
+                    // Punish
+                    for(int Punish = int.Parse(Punishments[0]); Punish > 0; Punish--){
+                        int ReceivedPunish = (int)Random.Range(0f, Punishments[1].Length - 0.1f);
 
-                }
-
-                // Reward
-                for(int Reward = int.Parse(Rewards[0]); Reward > 0; Reward--){
-                    int ReceiveReward = (int)Random.Range(0f, Rewards[1].Length - 0.1f);
-
-                    // Getting punishments
-                    switch(Rewards[1].Substring(ReceiveReward, 1)){
-                        case "0":
-                            // Random item
-                            int ByThatMuch = (int)Random.Range(1f, 2.9f);
-                            SetScore("RItemGot_", ByThatMuch.ToString());
-                            for(int Give = 0; Give < Mathf.Clamp(MainPlayer.MaxInventorySlots + 1, 0, 9); Give ++){
-                                if(MainPlayer.Inventory[Give] == "id0;"){
-                                    ByThatMuch--;
-                                    int GivenID = TotalItems[(int)Random.Range(0f, TotalItems.Length - 0.1f)];
-                                    MainPlayer.Inventory[Give] = GS.itemCache[GivenID].startVariables;
+                        // Getting punishments
+                        switch(Punishments[1].Substring(ReceivedPunish, 1)){
+                            case "0":
+                                // Lose items
+                                SetScore("PItemLost_", "1");
+                                int CheckThisOne = Random.Range(0, MainPlayer.MaxInventorySlots);
+                                for(int Unlucky = MainPlayer.MaxInventorySlots; Unlucky > 0; Unlucky --){
+                                    int offset = CheckThisOne + Unlucky;
+                                    if(offset > MainPlayer.MaxInventorySlots) offset -= MainPlayer.MaxInventorySlots;
+                                    if(MainPlayer.Inventory[offset] != "id0;") {
+                                        MainPlayer.Inventory[offset] = "id0;";
+                                        break;
+                                    }
                                 }
-                                if(ByThatMuch <= 0) break;
-                            }
-                            break;
-                        case "1":
-                            // Healed
-                            SetScore("RHealed_", "1");
-                            MainPlayer.Health[0] = MainPlayer.Health[1];
-                            break;
-                        case "2":
-                            // Adrenalined
-                            SetScore("RAdrenalined_", "1");
-                            MainPlayer.Adrenaline = 100f;
-                            break;
-                        case "3":
-                            // Treasure
-                            SetScore("RTreasure_", "1");
-                            for(int GiveT = 0; GiveT < Mathf.Clamp(MainPlayer.MaxInventorySlots + 1, 0, 9); GiveT++){
-                                if(MainPlayer.Inventory[GiveT] == "id0;"){
-                                    MainPlayer.Inventory[GiveT] = GS.itemCache[990 + (int)Random.Range(0f, 9.9f)].startVariables;
-                                    break;
+                                break;
+                            case "1":
+                                // Tired
+                                int HowMuch = (int)Random.Range(5f, 25f);
+                                MainPlayer.Tiredness = Mathf.Clamp(MainPlayer.Tiredness + HowMuch, 0, 75);
+                                SetScore("PTired_", HowMuch.ToString());
+                                break;
+                            case "2":
+                                // Wet
+                                MainPlayer.Wet = 100;
+                                SetScore("PWet_", "1");
+                                break;
+                            case "3":
+                                // Damaged
+                                float HealthToLose = Random.Range(0f, Mathf.Clamp(25f, MainPlayer.Health[0] - 1f, 25f));
+                                MainPlayer.Health[0] -= HealthToLose;
+                                SetScore("PDamaged_", ((int)HealthToLose).ToString());
+                                break;
+                            case "4":
+                                // NoAmmo
+                                for(int LoseAmmo = 0; LoseAmmo < MainPlayer.MaxInventorySlots; LoseAmmo ++){
+                                    if(GS.ExistSemiClass(MainPlayer.Inventory[LoseAmmo], "va")) 
+                                        MainPlayer.Inventory[LoseAmmo] = GS.SetSemiClass(MainPlayer.Inventory[LoseAmmo], "va", "0");
                                 }
-                            }
+                                SetScore("PNoAmmo_", "1");
+                                break;
+                        }
+
+                        if(ReceivedPunish == Punishments.Length - 1 && Punishments.Length > 1)
+                            Punishments[1] = Punishments[1].Substring(0, ReceivedPunish);
+                        else if (Punishments.Length > 1)
+                            Punishments[1] = Punishments[1].Substring(0, ReceivedPunish) + Punishments[1].Substring(ReceivedPunish + 1);
+                        else
                             break;
-                        case "4":
-                            // Drunk
-                            float DrunkBy = (int)Random.Range(25f, 75f);
-                            MainPlayer.Drunkenness = DrunkBy;
-                            SetScore("RDrunk_", DrunkBy.ToString());
-                            break;
+
                     }
 
-                    if(ReceiveReward == Rewards.Length - 1 && Rewards.Length > 1)
-                        Rewards[1] = Rewards[1].Substring(0, ReceiveReward);
-                    else if (Rewards.Length > 1)
-                        Rewards[1] = Rewards[1].Substring(0, ReceiveReward) + Rewards[1].Substring(ReceiveReward + 1);
-                    else
-                        break;
+                    // Reward
+                    for(int Reward = int.Parse(Rewards[0]); Reward > 0; Reward--){
+                        int ReceiveReward = (int)Random.Range(0f, Rewards[1].Length - 0.1f);
+
+                        // Getting punishments
+                        switch(Rewards[1].Substring(ReceiveReward, 1)){
+                            case "0":
+                                // Random item
+                                int ByThatMuch = (int)Random.Range(1f, 2.9f);
+                                SetScore("RItemGot_", ByThatMuch.ToString());
+                                break;
+                            case "1":
+                                // Healed
+                                SetScore("RHealed_", "1");
+                                MainPlayer.Health[0] = MainPlayer.Health[1];
+                                break;
+                            case "2":
+                                // Adrenalined
+                                SetScore("RAdrenalined_", "1");
+                                MainPlayer.Adrenaline = 100f;
+                                break;
+                            case "3":
+                                // Treasure
+                                SetScore("RTreasure_", "1");
+                                break;
+                            case "4":
+                                // Drunk
+                                float DrunkBy = (int)Random.Range(25f, 75f);
+                                MainPlayer.Drunkenness = DrunkBy;
+                                SetScore("RDrunk_", DrunkBy.ToString());
+                                break;
+                        }
+
+                        if(ReceiveReward == Rewards.Length - 1 && Rewards.Length > 1)
+                            Rewards[1] = Rewards[1].Substring(0, ReceiveReward);
+                        else if (Rewards.Length > 1)
+                            Rewards[1] = Rewards[1].Substring(0, ReceiveReward) + Rewards[1].Substring(ReceiveReward + 1);
+                        else
+                            break;
+
+                    }
 
                 }
 
@@ -1375,7 +1318,7 @@ public class RoundScript : MonoBehaviour {
         if (RoundState == "TealState" || RoundState == "Nuked") {
             Default = false;
         }
-        if(WhatSet == "Normal" && GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") WhatSet = "Horde";
+        if(WhatSet == "Normal" && GS.GameModePrefab.x == 1) WhatSet = "Horde";
 
         Color32 FogColor = new Color32(0, 0, 0, 0);
         Color32 SkyColor = new Color32(0, 0, 0, 0);
@@ -1393,19 +1336,19 @@ public class RoundScript : MonoBehaviour {
         else if(TimeOfDay[1] > 1140 && TimeOfDay[1] < 1200) SunPower *= (1f - ((TimeOfDay[1] - 1140) / 60f));
         else if((TimeOfDay[1] >= 1200 && TimeOfDay[1] <= 1260) || (TimeOfDay[1] >= 360f && TimeOfDay[1] <= 390)) SunPower = 0f;
 
-        if(WhatSet == "Normal" || WhatSet == "NormalEnding" || WhatSet == "Swimming"){
+        if(GotTerrain && (WhatSet == "Normal" || WhatSet == "NormalEnding" || WhatSet == "Swimming")){
             BiomeInfo GitBI = GotTerrain.GetComponent<BiomeInfo>();
             if(Default){
                 if(TimeOfDay[1] >= 360f && TimeOfDay[1] <= 480){
                     // Morning NIGHT-DUSK-DAY
                     if(TimeOfDay[1] < 360f) ColorLerpValues = new float[]{2f, 1f, ((float)TimeOfDay[1] - 360f) / 60f};
                     else ColorLerpValues = new float[]{1f, 0f, ((float)TimeOfDay[1] - 360f) / 60f};
-                    DrawDistance = 25f + (Sunnyness * 50f);
+                    DrawDistance = 25f + (Sunnyness * 75f);
                     SunRotation = Vector3.Lerp(new Vector3(0, -90, 0f), new Vector3(30f, -45f, 0f), (TimeOfDay[1] - 360f) / 120f);
                 } else if (TimeOfDay[1] > 480 && TimeOfDay[1] < 1080){
                     // Day
                     ColorLerpValues = new float[]{0f, 0f, 0f};
-                    DrawDistance = 25f + (Sunnyness * 50f);
+                    DrawDistance = 25f + (Sunnyness * 75f);
                     if(TimeOfDay[1] < 750) SunRotation = Vector3.Lerp(new Vector3(30f, -45, 0f), new Vector3(60f, 0, 0f), (TimeOfDay[1] - 480) / 270f);
                     else SunRotation = Vector3.Lerp(new Vector3(60f, 0, 0f), new Vector3(30f, 90f, 0f), (TimeOfDay[1] - 750) / 270f);
                 } else if (TimeOfDay[1] >= 1080f && TimeOfDay[1] <= 1320f){
@@ -1413,15 +1356,18 @@ public class RoundScript : MonoBehaviour {
                     if(TimeOfDay[1] < 1200f) ColorLerpValues = new float[]{0f, 1f, ((float)TimeOfDay[1] - 1080f) / 120f};
                     else ColorLerpValues = new float[]{1f, 2f, ((float)TimeOfDay[1] - 1200f) / 120f};
                     SunRotation = Vector3.Lerp(new Vector3(30f, 90f, 0f), new Vector3(0f, 135f, 0f), (TimeOfDay[1] - 1080) / 240f);
-                    DrawDistance = 25f + (Sunnyness * 50f);
+                    DrawDistance = 25f + (Sunnyness * 75f);
                 } else {
                     // Night
                     ColorLerpValues = new float[]{2f, 2f, 0f};
-                    DrawDistance = 20f + (Sunnyness * 40f);
+                    DrawDistance = 20f + (Sunnyness * 50f);
                     if(TimeOfDay[1] > 1260) SunRotation = Vector3.Lerp(new Vector3(0f, -90f, 0f), new Vector3(60f, 0f, 0f), (TimeOfDay[1] - 1260) / 180f);
                     else SunRotation = Vector3.Lerp(new Vector3(60f, 0f, 0f), new Vector3(0f, 135f, 0f), TimeOfDay[1] / 480f);
                 }
             }
+
+            if(QualitySettings.GetQualityLevel() == 0)
+                DrawDistance = Mathf.Clamp(DrawDistance, 0f, 50f);
 
             FogColor = Color32.Lerp( 
                 Color32.Lerp(GitBI.FogColors[(int)ColorLerpValues[0] + 3], GitBI.FogColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
@@ -1588,7 +1534,7 @@ public class RoundScript : MonoBehaviour {
                         GameObject GetCloud = GotSkybox.transform.GetChild(GC).gameObject;
                         switch(GetCloud.name){
                             case "Clouds1": case "Clouds2":
-                                GetCloud.transform.localEulerAngles = new Vector3(0f, 0f, GS.FixedPerlinNoise(GS.LandSeed.x, -GS.LandSeed.y) * 360f);
+                                GetCloud.transform.localEulerAngles = new Vector3(0f, 0f, GS.SeedPerlin(GS.RoundSeed) * 360f);
                                 Color CloudColorToSet = CloudColor;
                                 GetCloud.GetComponent<SpriteRenderer>().color = CloudColorToSet;
                                 break;

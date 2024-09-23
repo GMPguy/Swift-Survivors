@@ -17,6 +17,7 @@ public class SpecialScript : MonoBehaviour {
     public GameObject FlashbangEffect;
     public GameObject MolotowEffect;
     public GameObject Lightning;
+    Transform SB;
     public float ExplosionRange = 1f;
     public float[] Struck;
     Color32 OriginalSkyColor;
@@ -109,12 +110,16 @@ public class SpecialScript : MonoBehaviour {
             Lightning.SetActive(true);
             ExplosionRange = 12f;
             lifetime = 10f;
-            Struck = new float[]{ 0f, Random.Range(4f, 8f)};
+            Struck = new float[]{ 0f, Random.Range(1f, 4f)};
             OriginalSkyColor = GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor;
             this.GetComponent<Light>().enabled = true;
             this.GetComponent<Light>().intensity = 10f;
             this.GetComponent<Light>().range = 500f;
             this.GetComponent<Light>().color = new Color32(0, 125, 255, 255);
+
+            SB = GameObject.Find("Skybox").transform;
+            if(SB)
+                Lightning.transform.GetChild(2).transform.localScale *= 0.001f;
         }
 		
 	}
@@ -191,11 +196,11 @@ public class SpecialScript : MonoBehaviour {
             }
         } else if (TypeOfSpecial == "Lightning") {
             if (Struck[0] <= 0f && Struck[1] > 0f) {
-                Struck[0] = Random.Range(0.025f, 0.05f);
+                Struck[0] = Random.Range(0f, 0.05f);
                 Struck[1] -= 1f;
                 this.transform.LookAt(this.transform.position - (Vector3.up * 100f) + new Vector3(Random.Range(-12f, 12f), 0f, Random.Range(-12f, 12f)));
-                this.transform.localScale = new Vector3(Random.Range(1f, 3f), 1f, 1f);
-                this.transform.Rotate(new Vector3(0f, 0f, Random.Range(0f, 360f)));
+                //this.transform.localScale = new Vector3(Random.Range(1f, 3f), 1f, 1f);
+                //this.transform.Rotate(new Vector3(0f, 0f, Random.Range(0f, 360f)));
                 Lightning.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, Random.Range(0.5f, 1f));
                 Ray CheckStruck = new Ray(this.transform.position, this.transform.forward);
                 RaycastHit CheckStruckHIT;
@@ -218,10 +223,17 @@ public class SpecialScript : MonoBehaviour {
                 Lightning.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
                 GameObject.Find("_RoundScript").GetComponent<RoundScript>().AmbientSet("Normal");
                 this.GetComponent<Light>().enabled = false;
-            }
+            } 
         }
 		
 	}
+
+    void LateUpdate(){
+        if(TypeOfSpecial == "Lightning" && SB){
+            Lightning.transform.GetChild(2).transform.position = Vector3.Lerp(SB.position, this.transform.position, 0.001f);
+            Lightning.transform.GetChild(2).GetComponent<SpriteRenderer>().color = Lightning.GetComponent<SpriteRenderer>().color;
+        }
+    }
 
     void BoomDetect(Vector3 Where) {
 
@@ -273,7 +285,7 @@ public class SpecialScript : MonoBehaviour {
             if (Vector3.Distance(FoundItem.transform.position, Where) > 0.01f && Vector3.Distance(FoundItem.transform.position, Where) < ExplosionRange) {
                 string specID = GS.GetSemiClass(FoundItem.GetComponent<ItemScript>().Variables, "id");
                 if((specID == "110" || specID == "66") &&  GS.GetSemiClass(FoundItem.GetComponent<ItemScript>().Variables, "va") == "0"){
-                    FoundItem.GetComponent<ItemScript>().Variables = GS.SetSemiClass(FoundItem.GetComponent<ItemScript>().Variables, "va", Random.Range(1f, 99f).ToString());
+                    FoundItem.GetComponent<ItemScript>().Variables = GS.SetSemiClass(FoundItem.GetComponent<ItemScript>().Variables, "va", Random.Range(0, 99).ToString());
                     FoundItem.GetComponent<ItemScript>().enabled = true;
                 }
             }
@@ -287,6 +299,11 @@ public class SpecialScript : MonoBehaviour {
         foreach(DestructionScript Destruct in GameObject.FindObjectsOfType<DestructionScript>()){
             if(Vector3.Distance(Destruct.transform.position, Where) < ExplosionRange)
                 Destruct.Hit(Mathf.Clamp(Vector3.Distance(Destruct.transform.position, Where) * 200f, 0f, 100f), new[]{"Explosion"}, Where);
+        }
+
+        foreach(RagdollScript RagdollFlip in GameObject.FindObjectsOfType<RagdollScript>()){
+            if(Vector3.Distance(RagdollFlip.transform.position, Where) < ExplosionRange) 
+                RagdollFlip.Freeze = 9999f;
         }
 
     }

@@ -64,11 +64,11 @@ public class HordeDropScript : MonoBehaviour {
             if (WhatToDrop == "Weapon" && SetModel.name == "Item" + SpecificValue) {
                 SetModel.gameObject.SetActive(true);
                 SetColor = new Color32(255, 0, 128, 255);
-                SoundWhenFlash = "śHordeDropWeapon";
+                SoundWhenFlash = "HordeDropWeapon";
             } else if (WhatToDrop == "Health" && SetModel.name == "Health"){
                 SetModel.gameObject.SetActive(true);
                 SetColor = new Color32(0, 255, 0, 255);
-                SoundWhenFlash = "śDucktape";
+                SoundWhenFlash = "Ducktape";
             } else if (WhatToDrop == "Attachment" && SetModel.name == "Item" + SpecificValue){
                 SetModel.gameObject.SetActive(true);
                 SetColor = new Color32(255, 255, 0, 255);
@@ -86,23 +86,23 @@ public class HordeDropScript : MonoBehaviour {
                         }
                     }
                 }
-                SoundWhenFlash = "śHordeDropWeapon";
+                SoundWhenFlash = "HordeDropWeapon";
             } else if (WhatToDrop == "Money" && SetModel.name == "Money"){
                 SetModel.gameObject.SetActive(true);
                 SetColor = new Color32(128, 255, 0, 255);
-                SoundWhenFlash = "śCashOut";
+                SoundWhenFlash = "CashOut";
             } else if (WhatToDrop == "Drunk" && SetModel.name == "Vodka"){
                 SetModel.gameObject.SetActive(true);
                 SetColor = new Color32(0, 255, 255, 255);
-                SoundWhenFlash = "śDrinking";
+                SoundWhenFlash = "Drinking";
             } else if (WhatToDrop == "Camera" && SetModel.name == "Camera"){
                 SetModel.gameObject.SetActive(true);
                 SetColor = new Color32(100, 100, 255, 255);
-                SoundWhenFlash = "śFlash";
+                SoundWhenFlash = "Flash";
             } else if (WhatToDrop == "Nuke" && SetModel.name == "Nuke"){
                 SetModel.gameObject.SetActive(true);
                 SetColor = new Color32(255, 255, 255, 255);
-                SoundWhenFlash = "śNuke";
+                SoundWhenFlash = "Nuke";
             } else {
                 SetModel.gameObject.SetActive(false);
             }
@@ -159,14 +159,14 @@ public class HordeDropScript : MonoBehaviour {
                 }
                 other.GetComponent<PlayerScript>().Inventory[FreeSpace] = GS.itemCache[SpecificValue].startVariables;
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
-                GS.Mess(GS.SetString("Picked up weapon", "Podniesiono broń"), "ś" + SoundWhenFlash);
+                GS.Mess(GS.SetString("Picked up weapon", "Podniesiono broń"), SoundWhenFlash);
             } else if (WhatToDrop == "Health") {
                 other.GetComponent<PlayerScript>().Infection = 0f;
                 other.GetComponent<PlayerScript>().Bleeding = 0f;
                 other.GetComponent<PlayerScript>().BrokenBone = 0;
                 other.GetComponent<PlayerScript>().Health[0] += SpecificValue;
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
-                GS.Mess(GS.SetString("Healed +" + SpecificValue, "Uleczono +" + SpecificValue), "ś" + SoundWhenFlash);
+                GS.Mess(GS.SetString("Healed +" + SpecificValue, "Uleczono +" + SpecificValue), SoundWhenFlash);
             } else if (WhatToDrop == "Attachment") {
                 SpecificValue = int.Parse(GS.GetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "id"));
                 int[] AvailableAttachments = new int[] { 0 };
@@ -192,22 +192,22 @@ public class HordeDropScript : MonoBehaviour {
                     SpecificValue = AvailableAttachments[(int)Random.Range(0f, AvailableAttachments.Length - 0.1f)];
                     other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld] = GS.SetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "at", SpecificValue.ToString());//other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].z = SpecificValue;
                     GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
-                    GS.Mess(GS.SetString("New attachement: " + GS.itemCache[SpecificValue].getName(), "Nowy dodatek: " + GS.itemCache[SpecificValue].getName()), "ś" + SoundWhenFlash);
+                    GS.Mess(GS.SetString("New attachement: " + GS.itemCache[SpecificValue].getName(), "Nowy dodatek: " + GS.itemCache[SpecificValue].getName()), SoundWhenFlash);
                 }
             } else if (WhatToDrop == "Money") {
                 GS.GetComponent<GameScript>().Money += SpecificValue;
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
-                GS.Mess(GS.SetString("Money collected +" + SpecificValue, "Zebrano pieniądze +" + SpecificValue), "ś" + SoundWhenFlash);
+                GS.Mess(GS.SetString("Money collected +" + SpecificValue, "Zebrano pieniądze +" + SpecificValue), SoundWhenFlash);
             } else if (WhatToDrop == "Drunk") {
                 other.GetComponent<PlayerScript>().Drunkenness += SpecificValue;
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
-                GS.Mess(GS.SetString("Drunkenness +" + SpecificValue, "Upicie +" + SpecificValue), "ś" + SoundWhenFlash);
+                GS.Mess(GS.SetString("Drunkenness +" + SpecificValue, "Upicie +" + SpecificValue), SoundWhenFlash);
             } else if (WhatToDrop == "Camera") {
                 foreach (GameObject Blinded in GameObject.FindGameObjectsWithTag("Mob")) {
                     Blinded.GetComponent<MobScript>().React("Blinded", SpecificValue, this.transform.position);
                 }
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
-                GS.Mess(GS.SetString("Mutants blinded for " + SpecificValue + " seconds!", "Mutanci oślepieni na " + SpecificValue + " sekund!"), "ś" + SoundWhenFlash);
+                GS.Mess(GS.SetString("Mutants blinded for " + SpecificValue + " seconds!", "Mutanci oślepieni na " + SpecificValue + " sekund!"), SoundWhenFlash);
                 GameObject Flash = Instantiate(EffectPrefab);
                 Flash.GetComponent<EffectScript>().EffectName = "Flash";
                 Flash.transform.position = GameObject.FindGameObjectWithTag("Player").transform.position;

@@ -20,6 +20,8 @@ public class MapInfo : MonoBehaviour {
     public float Sunnyness = 0f;
     public GameObject[] Waters;
     public GameObject[] DynamicObjects;
+    public Transform[] AmmoCratePoints;
+    InteractableScript AmmoCrate;
     GameScript GS;
     RoundScript RS;
     // Misc
@@ -31,6 +33,11 @@ public class MapInfo : MonoBehaviour {
 
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
         RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
+
+        GameObject createCrate = Instantiate (RS.InteractablePrefab);
+        createCrate.transform.position = Vector3.one * -999f;
+        AmmoCrate = createCrate.GetComponent<InteractableScript>();
+        AmmoCrate.Variables = new Vector3(7, 0, 0);
 
         foreach (Transform SetColorable in ColorableProps.transform) {
             Color WallColor = new Color(Random.Range(0.5f, 1f), Random.Range(0.5f, 1f), Random.Range(0.5f, 1f), 1f);
@@ -118,6 +125,31 @@ public class MapInfo : MonoBehaviour {
                     KillFallen.GetComponent<MobScript>().Hurt(9999f, null, true, Vector3.zero, "Explosion");
                 }
             }
+        } else if (GS.GetSemiClass(GS.RoundSetting, "H", "?") == "5") {
+            foreach (GameObject KillFallen in GameObject.FindGameObjectsWithTag("Mob")) {
+                if (KillFallen.transform.position.y < -2.7f) {
+                    KillFallen.GetComponent<MobScript>().Hurt(9999f, null, true, Vector3.zero, "");
+                }
+            }
+        }
+
+        // Ammo crate
+        if (GS.Ammo < 10 && AmmoCrate.Variables.y <= 0f) {
+            float prevDist = 0f;
+            Vector3 ammoPoint = Vector3.zero;
+            int maxGac = (int)Mathf.Clamp((float)AmmoCratePoints.Length / Random.Range(1f, 2f), 1f, Mathf.Infinity);
+
+            for (int gac = 0; gac < maxGac; gac++) {
+                Vector3 findAway = AmmoCratePoints[gac].position;
+                float newDist = Vector3.Distance(findAway, RS.MainPlayer.transform.position);
+                if (newDist > prevDist) {
+                    prevDist = newDist;
+                    ammoPoint = findAway;
+                }
+            }
+
+            AmmoCrate.transform.position = ammoPoint;
+            AmmoCrate.Interaction("SetUpAmmo", 0f);
         }
 
     }

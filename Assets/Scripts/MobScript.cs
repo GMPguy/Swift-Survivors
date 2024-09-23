@@ -88,7 +88,6 @@ public class MobScript : MonoBehaviour {
     // For dialog options
     string MobAudio = "";
     GameObject leadAggresor;
-    bool IsCrouching = false;
     bool InWater = false;
     public bool TooFar = false;
     int WeaponToDrop = -1;
@@ -125,10 +124,10 @@ public class MobScript : MonoBehaviour {
         MobHealth = new float[] { 0f, 0f };
         ToAttack = new int[] { 0, 1, 1 };
         
-        if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+        if (GS.GameModePrefab.x == 1) {
             PowerLevel = RS.HordeVariables[2] / 100f;
         } else {
-            PowerLevel = RS.DifficultySlider;
+            PowerLevel = RS.DifficultySliderB;
         }
 
         switch((int)TypeOfMob){
@@ -752,7 +751,7 @@ public class MobScript : MonoBehaviour {
         }
 
         // Get Starting Waypoint
-        if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+        if (GS.GameModePrefab.x == 1) {
             foreach (GameObject SWP in RS.GotTerrain.GetComponent<MapInfo>().HordeWayPoints) {
                 if (SWP.name.Substring(0, 2) == CurrentWaypoint.name.Substring(0, 2)) {
                     CurrentWaypoint = SWP;
@@ -772,7 +771,7 @@ public class MobScript : MonoBehaviour {
 
     void FixedUpdate() {
 
-        if ((Angered > 0f) || State == 1 || (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" || Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < RS.DetectionRange)) {
+        if ((Angered > 0f) || State == 1 || (GS.GameModePrefab.x == 1 || Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < RS.DetectionRange)) {
             TooFar = false;
         } else {
             TooFar = true;
@@ -903,7 +902,7 @@ public class MobScript : MonoBehaviour {
                 Ray CheckIfBlocked = new Ray(this.transform.position + (this.transform.up * (ChechkEach / 5f)), this.transform.forward);
                 RaycastHit CheckIfBlockedHIT;
                 if (Physics.Raycast(CheckIfBlocked, out CheckIfBlockedHIT, 0.75f)) {
-                    if (CheckIfBlockedHIT.collider.GetComponent<MobScript>() != null && GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                    if (CheckIfBlockedHIT.collider.GetComponent<MobScript>() != null && GS.GameModePrefab.x == 1) {
                         CheckIfBlockedHIT.collider.GetComponent<MobScript>().CurrentWaypoint = CurrentWaypoint;
                     } else if (CheckIfBlockedHIT.collider.name != "MayGoThrough" && CheckIfBlockedHIT.transform.root.tag != "Mob" && CheckIfBlockedHIT.transform.root.tag != "Player") {
                         BlockedWay = true;
@@ -1056,7 +1055,7 @@ public class MobScript : MonoBehaviour {
             }
 
             // HordeAI
-            if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1" && GameObject.FindGameObjectWithTag("Player") != null) {
+            if (GS.GameModePrefab.x == 1 && GameObject.FindGameObjectWithTag("Player") != null) {
                 Angered = 10f;
                 AiTarget = GameObject.FindGameObjectWithTag("Player");
             }
@@ -1133,7 +1132,7 @@ public class MobScript : MonoBehaviour {
                     }
                 } else if (ClassOfMob == "Mutant") {
                     int SpawnChance = (int)Random.Range(-10f, 1.9f);
-                    if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                    if (GS.GameModePrefab.x == 1) {
                         SpawnChance = (int)Random.Range(Mathf.Lerp(-1f, -3f, float.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) / 5f), 1.9f);
                     } else {
                         if (BasicMutantJob == "Police" || BasicMutantJob == "Builder" || BasicMutantJob == "Doctor" || BasicMutantJob == "Cook") {
@@ -1143,7 +1142,7 @@ public class MobScript : MonoBehaviour {
                         }
                     }
                     for (int DropLoot = SpawnChance; DropLoot > 0; DropLoot--) {
-                        if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                        if (GS.GameModePrefab.x == 1) {
                             GameObject DropedLoot = Instantiate(HordeDropPrefab) as GameObject;
                             DropedLoot.transform.position = this.transform.position;
                         } else {
@@ -1171,7 +1170,7 @@ public class MobScript : MonoBehaviour {
                     }
                 }
 
-                if (WeaponToDrop > -1 && GS.GetSemiClass(GS.RoundSetting, "G", "?") != "1") {
+                if (WeaponToDrop > -1 && GS.GameModePrefab.x != 1) {
                     GameObject DropedLoot = Instantiate(ItemPrefab) as GameObject;
                     DropedLoot.transform.position = this.transform.position + this.transform.forward * 0.5f;
                     DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[WeaponToDrop].startVariables;
@@ -1185,7 +1184,7 @@ public class MobScript : MonoBehaviour {
                     if (leadAggresor.tag == "Player") {
                         GiveCredit = true;
                     }
-                } else if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+                } else if (GS.GameModePrefab.x == 1) {
                     GiveCredit = true;
                 }
 
@@ -1350,9 +1349,12 @@ public class MobScript : MonoBehaviour {
                     if(leadAggresor.tag == "Player"){
                         RS.SetScore("Kill" + ClassOfMob + "_", "/+1");
                         RS.SetScore("Killed_", "/+1");
-                        if(ClassOfMob == "Mutant" && GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0")GS.PS.AchProg("Ach_Liquidator", "/+-1");
-                        if(ClassOfMob != "Mutant")GS.PS.AchProg("Ach_Murderer", "/+-1");
-                        if(Ach_Headshot == 3) GS.PS.AchProg("Ach_Headshot", "0");
+                        if(ClassOfMob == "Mutant" && GS.GameModePrefab.x == 0)
+                            GS.PS.AchProg("Ach_Liquidator", "/+-1");
+                        if(ClassOfMob != "Mutant")
+                            GS.PS.AchProg("Ach_Murderer", "/+-1");
+                        if(Ach_Headshot == 3) 
+                            GS.PS.AchProg("Ach_Headshot", "0");
                     }
                 }
             }
@@ -1423,7 +1425,7 @@ public class MobScript : MonoBehaviour {
             EyeSight.transform.LookAt(AiTarget.transform.position);
             Ray CheckForTarget = new Ray(EyeSight.transform.position, EyeSight.transform.forward);
             float CheckDistance = 0f;
-            if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+            if (GS.GameModePrefab.x == 1) {
                 CheckDistance = 50f;
             } else {
                 CheckDistance = DetectA;
@@ -1444,7 +1446,7 @@ public class MobScript : MonoBehaviour {
             }
 
             // Check if target is hiding
-            if (Vector3.Distance(this.transform.position, AiTarget.transform.position) > DetectionRange[1] && GS.GetSemiClass(GS.RoundSetting, "G", "?") != "1") {
+            if (Vector3.Distance(this.transform.position, AiTarget.transform.position) > DetectionRange[1] && GS.GameModePrefab.x != 1) {
                 AiTarget = null;
                 Angered = 0f;
                 CharacterSeen = false;
@@ -1525,7 +1527,7 @@ public class MobScript : MonoBehaviour {
                     AiTargetLastSeen = AiTarget.transform.position;
                 }
                 SwitchPosition = 0f;
-            } else if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "0") {
+            } else if (GS.GameModePrefab.x == 0) {
                 //PreventJamming[0] = 1f;
                 if (SwitchPosition > 0f) {
                     SwitchPosition -= 0.02f * FixedTimeDelay;
@@ -1533,7 +1535,7 @@ public class MobScript : MonoBehaviour {
                     SwitchPosition = Random.Range(0.5f, 1f);
                     AiPosition = AiTargetLastSeen + new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
                 }
-            } else if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+            } else if (GS.GameModePrefab.x == 1) {
                 //PreventJamming[0] = 1f;
                 if (ReturnToWayPoint <= 0f) {
                     if (Vector3.Distance(this.transform.position, new Vector3(CurrentWaypoint.transform.position.x, this.transform.position.y, CurrentWaypoint.transform.position.z)) < 1.5f) {

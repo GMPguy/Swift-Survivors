@@ -21,6 +21,8 @@ public class InteractableScript : MonoBehaviour {
     // Misc
     public bool Discovered = false;
     bool TooFar = false;
+    int ammoID;
+    Vector3[] ammoScale;
     // Misc
 
 	// Use this for initialization
@@ -41,7 +43,7 @@ public class InteractableScript : MonoBehaviour {
 
         if (Variables.x == 1f) {
             // Barrels
-            int PickBarrel = (int)Mathf.Clamp(Random.Range(3f, 5.9f) * RS.GetComponent<RoundScript>().DifficultySlider, 1f, 5f);
+            int PickBarrel = (int)Mathf.Clamp(Random.Range(3f, 5.9f) * RS.GetComponent<RoundScript>().DifficultySliderB, 1f, 5f);
             if (PickBarrel == 1f) {
                 Variables.z = 1f;
             } else if (PickBarrel == 2f) {
@@ -95,9 +97,9 @@ public class InteractableScript : MonoBehaviour {
         } else if (Variables.x == 3f) {
             // Door
             Name = GS.SetString("Door", "Drzwi");
-            float LockChance = Random.Range(0f, 1.5f);
+            float LockChance = RS.IsCausual ? 2 : Random.Range(0f, 1.5f);
             Variables.y = 200f;
-            if (LockChance < RS.DifficultySlider) {
+            if (LockChance < RS.DifficultySliderB) {
                 Variables.z = 2f;
             } else {
                 Variables.z = 0f;
@@ -105,9 +107,9 @@ public class InteractableScript : MonoBehaviour {
         } else if (Variables.x == 4f) {
             // VendingMachine
 
-            if (GS.GetSemiClass(GS.RoundSetting, "G", "?") == "1") {
+            if (GS.GameModePrefab.x == 1) {
 
-                Variables.z = Mathf.PerlinNoise(GS.LandSeed.x * this.transform.position.x, GS.LandSeed.y * this.transform.position.y);
+                Variables.z = GS.FixedPerlinNoise(this.transform.position.x, this.transform.position.z);
                 Color32[] MachineColors = new Color32[] { Color.white, Color.white };
                 TradeOptions = new int[] { 0, 0, 0, 0, 0, 0 };
                 TradePrices = new int[] { 0, 0, 0, 0, 0, 0 };
@@ -185,6 +187,13 @@ public class InteractableScript : MonoBehaviour {
         } else if (Variables.x == 6f) {
             // EmergencyItem
             Name = GS.SetString("SKIPWAIT", "SKIPWAIT");
+        } else if (Variables.x == 7f) {
+            // AmmoBox
+            Name = GS.SetString("Ammo box", "Paczka z amunicją");
+
+            ammoScale = new Vector3[15];
+            for (int i = 0; i < 15; i++)
+                ammoScale[i] = SelectedModel.transform.GetChild(0).GetChild(i).localScale;
         }
 		
 	}
@@ -282,6 +291,22 @@ public class InteractableScript : MonoBehaviour {
                 SelectedModel.GetComponent<Interactions>().Options = new string[] {""};
             }
 
+        } else if (Variables.x == 7f) {
+
+            if (ammoID != (int)Variables.y) {
+                ammoID = (int)Variables.y;
+
+                for (int getProp = 0; getProp < 15; getProp++) {
+                    Transform getObj = SelectedModel.transform.GetChild(0).GetChild(getProp);
+
+                    if (getProp < ammoID) {
+                        getObj.localScale = ammoScale[getProp];
+                        if (getProp == ammoID - 1)
+                            SelectedModel.GetComponent<Interactions>().Offset = getObj.transform.localPosition;
+                    } else
+                        getObj.localScale = Vector3.zero;
+                }
+            }
         }
 
     }
@@ -421,6 +446,16 @@ public class InteractableScript : MonoBehaviour {
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().RoundStartInfo.transform.GetChild(1).GetComponent<Text>().color = new Color(1f, 1f, 1f, 1f);
             GS.GetComponent<GameScript>().SetText(GameObject.Find("MainCanvas").GetComponent<CanvasScript>().RoundStartInfo.transform.GetChild(0).GetComponent<Text>(), "Get ready!", "Przygotuj się!");
             GS.GetComponent<GameScript>().SetText(GameObject.Find("MainCanvas").GetComponent<CanvasScript>().RoundStartInfo.transform.GetChild(1).GetComponent<Text>(), "Wave " + GS.GetComponent<GameScript>().Round + " incoming", "Nadchodzi fala " + GS.GetComponent<GameScript>().Round);
+        } else if (WhatToDo == "GatherAmmo") {
+            Variables.y -= 1;
+            int ammo = Random.Range(1, 10) * 5;
+            GS.Ammo += ammo;
+            GS.Mess(GS.SetString("Ammo +", "Amunicja +") + ammo, "HordeDropWeapon");
+            if (Variables.y <= 0f)
+                this.transform.position = Vector3.one * -999f;
+        } else if (WhatToDo == "SetUpAmmo") {
+            Variables.y = Random.Range(5, 15);
+            GS.Mess(GS.SetString("An ammo crate has been deployed somewhere on the map!", "Gdzieś na mapie dostarczono skrzynię z amunicją!"), "Draw");
         }
 
     }
