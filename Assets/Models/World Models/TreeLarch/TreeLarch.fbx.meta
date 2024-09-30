@@ -1,14 +1,44 @@
 fileFormatVersion: 2
 guid: f2fe0b57601c9004a81ab42cc2194d92
 ModelImporter:
-  serializedVersion: 22103
+  serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Larch1
+    second: {fileID: 2100000, guid: c65b359dc1cfb5d439e14050797b39ff, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Larch2
+    second: {fileID: 2100000, guid: 52b3883a7cca7ff41801cb17ef1a558f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Larch3
+    second: {fileID: 2100000, guid: 68c5b6f0f0738074098f360a87f3246d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LarchBark1
+    second: {fileID: 2100000, guid: a8ab6b23427defa47a9439c1e5838b62, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LarchBark2
+    second: {fileID: 2100000, guid: c47d4225d7dcbf7458f533b1513c8982, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LarchBark3
+    second: {fileID: 2100000, guid: 5d8e04b24beed524086144bdd861163d, type: 2}
   materials:
     materialImportMode: 2
     materialName: 1
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -40,6 +70,7 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1

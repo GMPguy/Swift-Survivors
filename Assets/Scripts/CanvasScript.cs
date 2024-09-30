@@ -512,7 +512,7 @@ public class CanvasScript : MonoBehaviour {
                         } else if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(0, 1) == "B") {
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = 1f - (float.Parse(GS.GetSemiClass(ItemHeld, "va"), CultureInfo.InvariantCulture) / 100f);
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text = "";
-                        } else if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(0, 1) == "b") {
+                        } else if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(0, 1) == "G") {
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = float.Parse(GS.GetSemiClass(ItemHeld, "va"), CultureInfo.InvariantCulture) / 100f;
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text = "";
                         } else if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(0, 1) == "C") {
@@ -887,6 +887,21 @@ public class CanvasScript : MonoBehaviour {
                     if(Hovered) BuffText = GS.SetString(
                         "You're on fire! GET IN WATER OR SPLASH YOURSELF WITH SOMETHING!!!",
                         "Palisz się! WŁAŹ DO WODY ALBO SIĘ CZYMŚ OBLEJ!!!");
+                } else if (GetBuffA.name == "Campfire" && MainPlayer.Campfire > 0f) {
+                    GetBuffA.SetActive(true);
+                    GetBuffA.GetComponent<RectTransform>().anchoredPosition = new Vector2(OffsetA, 0f);
+                    OffsetA += 32f;
+
+                    GetBuffB.SetActive(true);
+                    GetBuffB.transform.GetChild(1).GetComponent<Text>().text = GS.SetString(
+                        "Campfire",
+                        "Ognisko");
+                    GetBuffB.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, OffsetB);
+                    OffsetB -= 32f;
+
+                    if(Hovered) BuffText = GS.SetString(
+                        "You're near a campfire. It can warm you, and you can craft items that need fire.",
+                        "Jesteś obok ogniska. Może cię ogrzać, i można przy nim tworzyć przedmioty wymagające ognia.");
                 } else {
                     GetBuffA.SetActive(false);
                     GetBuffB.SetActive(false);

@@ -1,14 +1,44 @@
 fileFormatVersion: 2
 guid: 87f5e9353c3c50b48a94b08af21b10ec
 ModelImporter:
-  serializedVersion: 22103
+  serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pine1
+    second: {fileID: 2100000, guid: 22ad621165cd2254a9b51f8843cd7a44, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pine2
+    second: {fileID: 2100000, guid: 7215b53104095824d8516ccb6d8e1dba, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pine3
+    second: {fileID: 2100000, guid: 80ddc21c138f5ae45980b83f2e19c8ef, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PineBark1
+    second: {fileID: 2100000, guid: 6970830f1e47fa34f9300f8822336b81, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PineBark2
+    second: {fileID: 2100000, guid: 82714d8bf5782e74f8b40ce9274fa15e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PineBark3
+    second: {fileID: 2100000, guid: 7092adf9de3b7e64f8d1101139dc904d, type: 2}
   materials:
     materialImportMode: 2
     materialName: 1
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -40,6 +70,7 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1

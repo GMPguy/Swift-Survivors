@@ -1,14 +1,44 @@
 fileFormatVersion: 2
 guid: 9d383ea9918f040418ffd845ddcc88d7
 ModelImporter:
-  serializedVersion: 22103
+  serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Spruce1
+    second: {fileID: 2100000, guid: 31f90e3a0a3e57e43bace835d6f05322, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Spruce2
+    second: {fileID: 2100000, guid: 8bfb50d87900c9b4fb2b8c61951e9a1f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Spruce3
+    second: {fileID: 2100000, guid: 19f149adb8421444a9ce29a36d2003cd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SpruceBark1
+    second: {fileID: 2100000, guid: b45d3dfebdfaec84b98bf43b6446943e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SpruceBark2
+    second: {fileID: 2100000, guid: cf3604998bdd42547a16ab31019cd068, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SpruceBark3
+    second: {fileID: 2100000, guid: bb356e83ef7938742b3c36b645217766, type: 2}
   materials:
     materialImportMode: 2
     materialName: 1
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -40,6 +70,7 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1

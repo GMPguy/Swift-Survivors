@@ -57,6 +57,7 @@ public class PlayerScript : MonoBehaviour {
     public float Hot = 0f;
     public float Fire = 0f;
     public GameObject FireObj;
+    public float Campfire = 0f;
     // Buffs
     // Look
     public int HairColor = 0;
@@ -3608,10 +3609,10 @@ public class PlayerScript : MonoBehaviour {
                 } else if (GS.GetSemiClass(Equipment[ScanEq], "id") == "94") {
                     if (RS.GotTerrain != null) {
                         if (RS.GotTerrain.GetComponent<BiomeInfo>() != null) {
-                            if (RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] == "Snowy Area" && Coldness > -1f) {
-                                Coldness = Mathf.Clamp(Coldness - 0.06f, -2f, 100f);
+                            if (RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] == "Snowy Area") {
+                                Coldness = Mathf.Clamp(Coldness - 0.04f, -1f, 100f);
                             } else {
-                                Hot = Mathf.Clamp(Hot + 0.06f, 0f, 100f); 
+                                Hot = Mathf.Clamp(Hot + 0.04f, 0f, 100f); 
                             }
                         }
                     }
@@ -3995,6 +3996,10 @@ public class PlayerScript : MonoBehaviour {
                 }
             }
 
+            if (Campfire > 0f) {
+                Campfire -= 0.02f;
+                Coldness = Mathf.Clamp(Coldness - .02f, 0f, 100f);
+            }
 
             if(Fire > 0f && PrevWet != (int)Fire){
                 PrevWet = (int)Fire;

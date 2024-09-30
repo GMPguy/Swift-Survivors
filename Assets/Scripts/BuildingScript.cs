@@ -8,6 +8,7 @@ public class BuildingScript : MonoBehaviour {
     public bool isStatic = true;
     public AudioClip[] audioClips;
     PlayerScript PS;
+    Transform PStransform;
     GameScript GS;
     RoundScript RS;
     public Light mainLight;
@@ -22,6 +23,7 @@ public class BuildingScript : MonoBehaviour {
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
         RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
         PS = GameObject.FindObjectOfType<PlayerScript>();
+        PStransform = PS.GetComponent<Transform>();
         baseDestruct = this.GetComponent<DestructionScript>();
         if(!isStatic) RS.ActiveBuildings.Add(this);
     }
@@ -41,6 +43,9 @@ public class BuildingScript : MonoBehaviour {
             mainAudio.Play();
             Destroy(mainLight.gameObject);
             Destroy(this);
+        } else {
+            if (Vector3.Distance(this.transform.position, PStransform.position) < 3f)
+                PS.Campfire = 1f;
         }
     }
 
