@@ -45,7 +45,7 @@ public class CraftingOption : MonoBehaviour {
                 foreach (string V in MainPlayer.Inventory) {
                     GotItems.Add(V);
                 }
-                List<Vector3> AcquiredItems = new List<Vector3>();
+                List<Vector3Int> AcquiredItems = new List<Vector3Int>();
                 for (int CheckRes = 0; CheckRes < Resources.Length; CheckRes ++) {
                     int requiredAmount = 1;
                     
@@ -54,13 +54,13 @@ public class CraftingOption : MonoBehaviour {
                     for (int CheckItem = 0; CheckItem < MainPlayer.MaxInventorySlots; CheckItem ++) {
                         if (GS.GetSemiClass(Resources[CheckRes], "do") == "0" && GS.GetSemiClass(GotItems[CheckItem], "id") == GS.GetSemiClass(Resources[CheckRes], "id")) {
                             if(!GS.ExistSemiClass(GotItems[CheckItem], "sq")) {
-                                AcquiredItems.Add(new Vector3(CheckItem, 1f, 0f));
+                                AcquiredItems.Add(new Vector3Int(CheckItem, 1, 0));
                                 requiredAmount--;
                             } else if ( int.Parse( GS.GetSemiClass(GotItems[CheckItem], "sq") ) < requiredAmount ) {
-                                AcquiredItems.Add(new Vector3(CheckItem, int.Parse(GS.GetSemiClass(GotItems[CheckItem], "sq")), 0f));
+                                AcquiredItems.Add(new Vector3Int(CheckItem, int.Parse(GS.GetSemiClass(GotItems[CheckItem], "sq")), 0));
                                 requiredAmount -= int.Parse(GS.GetSemiClass(GotItems[CheckItem], "sq"));
                             } else if ( int.Parse( GS.GetSemiClass(GotItems[CheckItem], "sq") ) >= requiredAmount ) {
-                                AcquiredItems.Add(new Vector3(CheckItem, requiredAmount, 0f));
+                                AcquiredItems.Add(new Vector3Int(CheckItem, requiredAmount, 0));
                                 requiredAmount = 0;
                             }
                             GotItems[CheckItem] = "id-1;";//new Vector3(-1f, 0f, 0f);
@@ -73,6 +73,14 @@ public class CraftingOption : MonoBehaviour {
                         //break;
                     }
                 }
+
+                switch (Special) {
+                    case "Fire":
+                        if (MainPlayer.Campfire <= 0f)
+                            CanCraft = "NoFire";
+                        break;
+                }
+
                 // Craft button
                 CraftButton.transform.GetChild(1).GetComponent<Image>().fillAmount = CraftingTime[1] / CraftingTime[0];
                 if (CanCraft == "") {
@@ -84,13 +92,16 @@ public class CraftingOption : MonoBehaviour {
                     if (CanCraft == "NoResources") {
                         GS.SetText(CraftButton.transform.GetChild(0).GetComponent<Text>(), "Items?", "Surowce?");
                         CraftButton.transform.GetChild(0).GetComponent<Text>().color = new Color32(255, 0, 0, 255);
+                    } else if (CanCraft == "NoFire") {
+                        GS.SetText(CraftButton.transform.GetChild(0).GetComponent<Text>(), "Fire?", "Ogień?");
+                        CraftButton.transform.GetChild(0).GetComponent<Text>().color = new Color32(255, 0, 0, 255);
                     }
                     CraftButton.GetComponent<Image>().color = new Color32(75, 55, 55, 255);
                 }
 
                 if(CraftButton.GetComponent<ButtonScript>().IsSelected == true){
                     MainCanvas.CDTdisplaye[1] = this.transform.GetSiblingIndex();
-                    MainCanvas.CDTdisplaye[0] += Time.unscaledDeltaTime*3f;
+                    MainCanvas.CDTdisplaye[0] = Mathf.Clamp( MainCanvas.CDTdisplaye[0] + Time.unscaledDeltaTime*12f, 0f, 1.25f);
 
                     string ToDisplay = ""; 
 
@@ -102,6 +113,9 @@ public class CraftingOption : MonoBehaviour {
                     }
 
                     switch(Special){
+                        case "Fire":
+                            ToDisplay += "\n" + GS.SetString("Needs fire", "Potrzebuje ognia");
+                            break;
                         default:
                             ToDisplay += "\n" + GS.SetString("Handmade", "Rękodzieło");
                             break;
@@ -111,8 +125,8 @@ public class CraftingOption : MonoBehaviour {
 
                     for(int sr = 0; sr < Resources.Length; sr++){
                         if(sr == 0) ToDisplay += "\nResources:";
-                        ToDisplay += "\n- " + GS.itemCache[int.Parse(GS.GetSemiClass(Resources[sr], "id"))].getName();//GS.ReceiveItemName(float.Parse(GS.GetSemiClass(Resources[sr], "id")));
-                        if(GS.ExistSemiClass(WhatToCraft[0], "sq") && GS.GetSemiClass(WhatToCraft[0], "sq") != "1") ToDisplay += " x" + GS.GetSemiClass(WhatToCraft[0], "sq");
+                        ToDisplay += "\n- " + GS.itemCache[int.Parse(GS.GetSemiClass(Resources[sr], "id"))].getName();
+                        if(GS.ExistSemiClass(Resources[sr], "sq") && GS.GetSemiClass(Resources[sr], "sq") != "1") ToDisplay += " x" + GS.GetSemiClass(Resources[sr], "sq");
                     }
 
                     MainCanvas.CDTstring = ToDisplay;
@@ -128,7 +142,7 @@ public class CraftingOption : MonoBehaviour {
                             GS.Mess(GS.SetString(GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName() + " crafted!", "Stworzono " + GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName() + "!"), "Craft");
                             MainPlayer.CantCraft = Mathf.Clamp(MainPlayer.CantCraft, 0.5f, Mathf.Infinity);
                             // Retrive resources
-                            foreach (Vector3 GetResource in AcquiredItems) {
+                            foreach (Vector3Int GetResource in AcquiredItems) {
                                 if (GetResource.z == 0f) {
                                     MainPlayer.InvGet(GetResource.x.ToString(), 1, (int)GetResource.y); //MainPlayer.Inventory[(int)GetResource.x] = "id0;";//Vector3.zero;
                                 }
@@ -136,22 +150,17 @@ public class CraftingOption : MonoBehaviour {
                             // Craft item
                             foreach (string SpawnItem in WhatToCraft) {
                                 MainPlayer.InvGet(SpawnItem, 0);
-                                /*for (int CheckInv = 0; CheckInv <= MainPlayer.MaxInventorySlots; CheckInv ++) {
-                                    if (float.Parse(GS.GetSemiClass(MainPlayer.Inventory[CheckInv], "id")) <= 0f) {
-                                        MainPlayer.Inventory[CheckInv] = SpawnItem;
-                                        break;
-                                    } else if (CheckInv == MainPlayer.MaxInventorySlots) {
-                                        GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
-                                        DropItem.transform.position = MainPlayer.transform.position + MainPlayer.transform.forward;
-                                    }
-                                }*/
                             }
 
                             MainCanvas.SetCraftOptions();
                         }
-                    } else if (CanCraft == "NoResources") {
+                    } else {
                         CraftingTime[1] = 0f;
-                        GS.Mess(GS.SetString("You lack the resources!", "Brakuje ci surowców!"), "Error");
+                        string craftingError = CanCraft switch {
+                            "NoFire" => GS.SetString("You need a campfire!", "Brakuje ci ogniska!"),
+                            _ => GS.SetString("You lack the resources!", "Brakuje ci surowców!")
+                        };
+                        GS.Mess(craftingError, "Error");
                         MainPlayer.CantCraft = Mathf.Clamp(MainPlayer.CantCraft, 0.5f, Mathf.Infinity);
                     }
                 } else {

@@ -1530,6 +1530,7 @@ public class CanvasScript : MonoBehaviour {
                 }
 
                 // Crafting detailed text
+                CDTdisplaye[0] = Mathf.Clamp(CDTdisplaye[0] - Time.unscaledDeltaTime * 9f, 0f, 1f);
                 if(CDTdisplaye[1] != CDTdisplaye[2]){
                     CDTdisplaye[2] = CDTdisplaye[1];
                     CDTdisplaye[0] = 0f;

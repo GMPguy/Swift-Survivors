@@ -246,15 +246,11 @@ public class ItemScript : MonoBehaviour {
             HitDetector.SetActive(true);
             HitDetector.transform.parent = null;
             MainCollider.enabled = false;
-            //this.transform.position += (ThrownDirection * (ThrownVariables.x / 100f)) * (Time.deltaTime * 100f);
-            /*if (GS.GetSemiClass(Variables, "id") != "993" && GS.GetSemiClass(Variables, "id") != "134") {
-                this.transform.Rotate(new Vector3(0.25f, 0.25f, 0.25f) * ThrownVariables.x * (Time.deltaTime * 100f));
-            }*/
-            // Check For Hit
+
             if (HitDetector.transform.position != this.transform.position) {
                 HitDetector.transform.LookAt(this.transform.position);
                 if (GS.GetSemiClass(Variables, "id") == "993" || GS.GetSemiClass(Variables, "id") == "134") {
-                    this.transform.forward = HitDetector.transform.forward * 1000f;
+                    this.transform.right = HitDetector.transform.forward * 1000f;
                 }
                 Ray CheckObstacle = new Ray(HitDetector.transform.position, HitDetector.transform.forward);
                 RaycastHit CheckObstacleHIT;
@@ -391,9 +387,6 @@ public class ItemScript : MonoBehaviour {
     public string ReceiveName() {
 
         string ItemNameA = "";
-
-
-
         return ItemNameA;
 
     }

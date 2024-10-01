@@ -1511,6 +1511,10 @@ public class GameScript : MonoBehaviour {
             new(this, new string[]{"Nock gun", "Karabin Nocka"},
                 new string[]{"Blackpowder musket, that can fire 7 shots at once! The price for obliterating everything near your crosshair, is low accuracy, and VERY long reload time.", "Karabin czarnoprochowy, będący w stanie wystrzelić 7 pocisków na raz! Ceną za anihilację wszystkiego w pobliżu celownika, jest BARDZO długi czas przeładowania, i niska celność."},
                 "id160;va7;at0;"
+            ),
+            new(this, new string[]{"Fish fillet", "Filet z ryby"},
+                new string[]{"A slice of fish, obtained by cutting and roasting fish.", "Kawałek ryby, pozyskany po przez cięcie i smażenie ryby."},
+                "id161;va0;sq1;"
             )
         };
 

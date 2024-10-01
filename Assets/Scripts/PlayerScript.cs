@@ -1108,13 +1108,16 @@ public class PlayerScript : MonoBehaviour {
                 if(cash == ""){
 
                     int stackable = 0;
-                    if(GS.ExistSemiClass(What, "sq")) stackable = 1;
+                    if(GS.ExistSemiClass(What, "sq")) {
+                        stackable = 1;
+                        stackAmount = int.Parse(GS.GetSemiClass(What, "sq"));
+                    }
 
                     if(stackable == 1) {
                         for (int cfq = 0; cfq <= MaxInventorySlots; cfq++) {
                             if(cfq == MaxInventorySlots) stackable = 2;
                             else if ( GS.GetSemiClass(Inventory[cfq], "id") == GS.GetSemiClass(What, "id") && GS.RemoveSemiClass(Inventory[cfq], "sq") == GS.RemoveSemiClass(What, "sq") ) {
-                                Inventory[cfq] = GS.SetSemiClass(Inventory[cfq], "sq", "/+" + stackAmount.ToString());
+                                Inventory[cfq] = GS.SetSemiClass(Inventory[cfq], "sq", "/+" + stackAmount);
                                 break;
                             }
                         }
@@ -1582,7 +1585,7 @@ public class PlayerScript : MonoBehaviour {
             currBuild = "";
             int currID = int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"));
             switch(currID) {
-                case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 19: case 20: case 21: case 22: case 23: case 24: case 25: case 26: case 70: case 71: case 72: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 80: case 81: case 82: case 83: case 84: case 106: case 116: case 117: case 118: case 119: case 120: case 121: case 122: case 123:
+                case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 19: case 20: case 21: case 22: case 23: case 24: case 25: case 26: case 70: case 71: case 72: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 80: case 81: case 82: case 83: case 84: case 106: case 116: case 117: case 118: case 119: case 120: case 121: case 122: case 123: case 161:
                     // Get Food info
                     int DrinkOrWhat = 0; // 0 Eat   1 Drink   2 Other
                     float HungerToAddSub = 0f;
@@ -1912,7 +1915,7 @@ public class PlayerScript : MonoBehaviour {
                             FlashColor = new Color32(0, 255, 0, 155);
                             break;
                         case 121:
-                            FoodName = GS.SetString("Sandwich", "Kanapke");
+                            FoodName = GS.SetString("Sandwich", "Kanapkę");
                             DrinkOrWhat = 0;
                             HungerToAddSub = 240f;
                             FoodColor = new Color32(255, 241, 202, 0);
@@ -1933,6 +1936,13 @@ public class PlayerScript : MonoBehaviour {
                             FoodColor = new Color32(255, 241, 202, 0);
                             FlashColor = new Color32(0, 255, 0, 155);
                             ColdnessToAdd = 25f;
+                            break;
+                        case 161:
+                            FoodName = GS.SetString("Fish fillet", "Filet z ryby");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 100f;
+                            FoodColor = new Color32(204, 100, 81, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
                             break;
                     }
                     // Get Food info
@@ -4345,7 +4355,7 @@ public class PlayerScript : MonoBehaviour {
         } else {
             int ItemIDint = int.Parse(ItemID);
             switch (ItemIDint) {
-            case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 20: case 21: case 23: case 25: case 26: case 45: case 991: case 992: case 53: case 63: case 70: case 71: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 82: case 83: case 84: case 88: case 89: case 99: case 94: case 98: case 102: case 103: case 104: case 107: case 117: case 119: case 120: case 121: case 141: case 142: case 143: case 144: case 145: case 147: case 158:
+            case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 20: case 21: case 23: case 25: case 26: case 45: case 991: case 992: case 53: case 63: case 70: case 71: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 82: case 83: case 84: case 88: case 89: case 99: case 94: case 98: case 102: case 103: case 104: case 107: case 117: case 119: case 120: case 121: case 141: case 142: case 143: case 144: case 145: case 147: case 158: case 161:
                 PlayThis = "Hold-" + WhatAnim;
                 break;
             case 12: case 19: case 22: case 30: case 33: case 37: case 39: case 43: case 52: case 54: case 72: case 80: case 81: case 85: case 90: case 97: case 100: case 101: case 105: case 114: case 116: case 123: case 124:
