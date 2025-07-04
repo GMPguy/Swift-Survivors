@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using UnityEngine;
 
 public class AttackScript : MonoBehaviour {
@@ -885,18 +886,21 @@ public class AttackScript : MonoBehaviour {
         }
 
         // Bullet Effect
-        if (AttackHit == 0 && Bullet && Bullet.activeInHierarchy == true) {
+        if (Bullet && Bullet.activeInHierarchy == true) {
 
-            if (Slimend && !HitWater && Vector3.Distance(Bullet.transform.position, GameObject.Find("MainCamera").transform.position) < 5f && Vector3.Distance(Slimend.transform.position, GameObject.Find("MainCamera").transform.position) >= 10f && Bullet.name == "S_Bullet" && Bullet.GetComponent<AudioSource>().isPlaying == false) {
-                Bullet.name = "S_Bulleted";
-                Bullet.GetComponent<AudioSource>().Play();
+            if (AttackHit == 0) {
+                if (Slimend && !HitWater && Vector3.Distance(Bullet.transform.position, GameObject.Find("MainCamera").transform.position) < 5f && Vector3.Distance(Slimend.transform.position, GameObject.Find("MainCamera").transform.position) >= 10f && Bullet.name == "S_Bullet" && Bullet.GetComponent<AudioSource>().isPlaying == false) {
+                    Bullet.name = "S_Bulleted";
+                    Bullet.GetComponent<AudioSource>().Play();
+                }
             }
 
             if(HitWater && BubblesHitScan){
-                Bullet.GetComponent<ParticleSystem>().Clear();
+                Bullet.SetActive(false);
                 BubblesHitScan.GetComponent<ParticleSystem>().Play();
                 ParticleSystem.MainModule SetCol = BubblesHitScan.GetComponent<ParticleSystem>().main;
                 SetCol.startColor = RenderSettings.fogColor;
+                Debug.Log("Bloop");
             }
 
         } else if (FlameThrower != null) {
@@ -972,7 +976,7 @@ public class AttackScript : MonoBehaviour {
                     AttackMobDamage = 0f;
                     AttackPropertyDamage = 0f;
                     Lifetime = new float[]{0f, 3f};
-                    Bullet.GetComponent<ParticleSystem>().Clear();
+                    Bullet.GetComponent<ParticleSystem>().Stop();
                     Bullet.name = "S_Bulleted";
                 } else if (FlameThrower && FlameThrower.activeInHierarchy == true) {
                     Lifetime[1] = 10f;
@@ -986,19 +990,32 @@ public class AttackScript : MonoBehaviour {
 
             if (Attacker != null && GS.GameModePrefab.x == 0) {
                 if (Attacker.GetComponent<PlayerScript>() != null && ObjectHit != null) {
-                    if(MeleeDurability != 0) Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld] = GS.SetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "va", "/+-" + MeleeDurability);//Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld].y -= MeleeDurability;
-                    if (ObjectHit.GetComponent<FootstepMaterial>() != null) {
-                        int Digup = Random.Range(0, 10);
-                        if (ObjectHit.GetComponent<FootstepMaterial>().WhatToPlay == "Grass" && GS.GetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "id") == "115" && GS.GameModePrefab.x == 0 && Digup <= 3) {
-                            GameObject DigupItem = Instantiate(ItemPrefab) as GameObject;
-                            DigupItem.transform.position = PointHit + Vector3.up / 4f;
+                    if(MeleeDurability != 0) {
+                        if (GS.GameModePrefab.y == 1)
+                            MeleeDurability /= 4f;
 
-                            if(Digup == 0)
-                                DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[(int)Random.Range(1, GameObject.Find("_RoundScript").GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables;
-                            else {
-                                int[] materials = new[]{142, 145, 147, 146, 146, 146};
-                                DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[materials[(int)Random.Range(0f, 5.9f)]].startVariables;
+                        Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld] = GS.SetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "va", "/+-" + MeleeDurability.ToString(CultureInfo.InvariantCulture));//Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld].y -= MeleeDurability;
+                    }
+                    if (ObjectHit.GetComponent<FootstepMaterial>() != null) {
+                        string ItemID = GS.GetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "id");
+
+                        if (ItemID == "115") {
+                            int Digup = Random.Range(0, 10);
+
+                            if (ObjectHit.GetComponent<FootstepMaterial>().WhatToPlay == "Grass" && GS.GameModePrefab.x == 0 && Digup <= 3) {
+                                GameObject DigupItem = Instantiate(ItemPrefab) as GameObject;
+                                DigupItem.transform.position = PointHit + Vector3.up / 4f;
+
+                                if(Digup == 0)
+                                    DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[(int)Random.Range(1, GameObject.Find("_RoundScript").GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables;
+                                else {
+                                    int[] materials = new[]{142, 145, 147, 146, 146, 146};
+                                    DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[materials[(int)Random.Range(0f, 5.9f)]].startVariables;
+                                }
                             }
+                        } else if (ItemID == "156") {
+                            Attacker.GetComponent<PlayerScript>().PushbackForce = Vector3.up * 12f;
+                            Attacker.GetComponent<PlayerScript>().ReturnPushback = 1f;
                         }
                     }
                 }

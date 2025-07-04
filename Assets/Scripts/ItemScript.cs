@@ -19,6 +19,7 @@ public class ItemScript : MonoBehaviour {
 
     // References
     public GameScript GS;
+    public RoundScript RS;
     public GameObject EffectPrefab;
     public GameObject SelectedMesh;
     public Collider MainCollider;
@@ -39,7 +40,10 @@ public class ItemScript : MonoBehaviour {
 
         if(Variables == "") Variables = "id1;";
 
-        if(GameObject.Find("_GameScript")) GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
+        if(GameObject.Find("_RoundScript")) {
+            RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
+            GS = RS.GS;
+        }
 
         HitDetector.transform.position = this.transform.position;
 
@@ -323,12 +327,54 @@ public class ItemScript : MonoBehaviour {
                             Variables = GS.SetSemiClass(Variables, "at", "0"); //Variables = new Vector3(Variables.x, Variables.y, 0f);
                             setAtt();
                         } else {
+                            // Hit
                             if (ChanceOfDestruction <= ThrownVariables.y) {
                                 Destroy(this.gameObject);
                                 GameObject DropEffect = Instantiate(EffectPrefab) as GameObject;
                                 DropEffect.GetComponent<EffectScript>().EffectName = "ItemBreak";
                                 DropEffect.transform.position = this.transform.position;
                                 DropEffect.transform.LookAt(Vector3.up);
+
+                                switch (GS.GetSemiClass(Variables, "id")) {
+                                    case "111": case "139": // Grenade launcher, bazooka
+                                        int ammo = int.Parse(GS.GetSemiClass(Variables, "va"));
+
+                                        for (int dup = ammo; dup > 0; dup--) {
+                                            GameObject BoomA = Instantiate(SpecialPrefab) as GameObject;
+                                            float upperLerp = (float)dup / ammo;
+                                            BoomA.transform.position = transform.position + new Vector3 (Random.Range(-10f, 10f) * upperLerp, dup * Random.Range(1f, 6f), Random.Range(-10f, 10f) * upperLerp);
+                                            BoomA.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
+                                            BoomA.GetComponent<SpecialScript>().ExplosionRange = 6f;
+                                        }
+                                        break;
+                                    case "67": // Panzerfaust
+                                        RS.Attack(new string[]{ "Rocket" }, transform.position + Vector3.up, transform.forward, DroppedBy, gameObject);
+                                        break;
+                                    case "89": // Blowtorch
+                                        GameObject Boom = Instantiate(SpecialPrefab) as GameObject;
+                                        Boom.transform.position = transform.position;
+                                        Boom.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
+                                        Boom.GetComponent<SpecialScript>().ExplosionRange = 6f;
+                                        break;
+                                    case "109": // Flame thrower
+                                        GameObject BoomB = Instantiate(SpecialPrefab) as GameObject;
+                                        BoomB.transform.position = transform.position;
+                                        BoomB.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
+                                        BoomB.GetComponent<SpecialScript>().ExplosionRange = 6f;
+
+                                        GameObject FlameUp = Instantiate(SpecialPrefab) as GameObject;
+                                        FlameUp.transform.position = this.transform.position;
+                                        FlameUp.GetComponent<SpecialScript>().TypeOfSpecial = "Molotow";
+                                        FlameUp.GetComponent<SpecialScript>().ExplosionRange = 6f;
+                                        FlameUp.GetComponent<SpecialScript>().CausedBy = DroppedBy;
+                                        break;
+                                    case "128": // Fire extinguisher
+                                        for (int fe = 0; fe < 10; fe++) {
+                                            Vector3 dir = new (Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+                                            RS.Attack(new string[]{ "FireExtinguisher" }, transform.position, dir, DroppedBy, gameObject);
+                                        }
+                                        break;
+                                }
                             } else if (CheckObstacleHIT.collider.gameObject.layer == 4 || CheckObstacleHIT.collider.gameObject.layer == 16) {
                                 GameObject DropEffect = Instantiate(EffectPrefab) as GameObject;
                                 DropEffect.GetComponent<EffectScript>().EffectName = "BullethitWater";

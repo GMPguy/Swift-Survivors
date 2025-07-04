@@ -1457,7 +1457,7 @@ public class NewMenuScript : MonoBehaviour {
                             }
 
 
-                        string[] GameModes = {GS.SetString("Classic", "Klasyczny"), GS.SetString("Horde", "Horda"), GS.SetString("Casual", "Niedzielny")};
+                        string[] GameModes = {GS.SetString("Classic", "Klasyczny"), GS.SetString("Horde", "Horda"), GS.SetString("Casual", "Swobodny")};
                         string[] DiffLevels = {GS.SetString("Easy", "Łatwy"), GS.SetString("Normal", "Normalny"), GS.SetString("Hard", "Trudny"), GS.SetString("Very hard", "Bardzo trudny"), GS.SetString("HARDCORE", "HARDKOROWY")};
                         int[] MD = {int.Parse(GS.GetSemiClass(GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "rs", "®"), "G", "?")), int.Parse(GS.GetSemiClass(GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "rs", "®"), "D", "?"))};
                         PGdesc.text = GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "sn", "®") + GS.SetString("\nGame mode: ", "\nTryb gry:") + GameModes[MD[0]] + GS.SetString("\nDifficulty level: ", "\nPoziom trudności:") + DiffLevels[MD[1]-1];
@@ -1924,9 +1924,12 @@ public class NewMenuScript : MonoBehaviour {
                 List<string> Misc = new List<string>();
                 for(int ps = 0; ps < ReadProfileStats.Length; ps++){
                     string n = GS.GetStatName(ReadProfileStats[ps], 1);
-                    if(n == "TotalScore" || n == "TotalRounds" || n == "HighestScore" || n == "TotalWaves" || n == "MostWaves"|| n == "MostRounds" || n == "LongestSurvivedTime" || n == "SurvivedTime") Main.Add(GS.GetStatName(ReadProfileStats[ps]));
-                    else if (n == "MapDiscovered" && GS.ExistSemiClass(PS.Statistics, "TotalRounds_")) Misc.Add(GS.SetString("Average map discovery: ", "Przeciętne zbadanie mapy: ") + (int.Parse(GS.GetStatName(ReadProfileStats[ps], 2)) / Mathf.Clamp(int.Parse(GS.GetSemiClass(PS.Statistics, "TotalRounds_")), 0, 9999) ).ToString() + "%" );
-                    else Misc.Add(GS.GetStatName(ReadProfileStats[ps]));
+                    if(n == "TotalScore" || n == "TotalRounds" || n == "TotalCasualScore" || n == "TotalCasualRounds" || n == "HighestScore" || n == "TotalWaves" || n == "MostWaves"|| n == "MostRounds" || n == "LongestSurvivedTime" || n == "SurvivedTime") 
+                        Main.Add(GS.GetStatName(ReadProfileStats[ps]));
+                    else if (n == "MapDiscovered" && GS.ExistSemiClass(PS.Statistics, "TotalRounds_")) 
+                        Misc.Add(GS.SetString("Average map discovery: ", "Przeciętne zbadanie mapy: ") + (int.Parse(GS.GetStatName(ReadProfileStats[ps], 2)) / Mathf.Clamp(int.Parse(GS.GetSemiClass(PS.Statistics, "TotalRounds_")), 0, 9999) ).ToString() + "%" );
+                    else 
+                        Misc.Add(GS.GetStatName(ReadProfileStats[ps]));
                 }
                 for(int adder = 0; adder < Main.ToArray().Length + Misc.ToArray().Length; adder++){
                     if(adder < Main.ToArray().Length) {

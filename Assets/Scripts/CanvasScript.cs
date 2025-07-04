@@ -1166,9 +1166,10 @@ public class CanvasScript : MonoBehaviour {
                                 foreach (int SellTreasure in TreausresGot)
                                 {
                                     GS.Score += 10000;
+                                    GS.Money += 250;
                                     MainPlayer.InvGet(SellTreasure.ToString(), 1);//MainPlayer.Inventory[SellTreasure] = "id0;";
                                     GS.PS.AchProg("Ach_Collectioner", "/+-1");
-                                    RS.SetScore("TreasureSold_", "/+1");
+                                    RS.SetScore("TreasuresSold_", "/+1");
                                 }
                             } else if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TreausresGot.ToArray().Length <= 0f && Input.GetMouseButtonDown(0)) {
                                 DialogSetting = "TreasureNot";

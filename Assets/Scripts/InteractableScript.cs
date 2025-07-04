@@ -333,26 +333,36 @@ public class InteractableScript : MonoBehaviour {
                         AmountToSpawn = Random.Range(1, 3);
                     } else if (Variables.z == 2f) {
                         //ItemsToSpawn = new Vector3[] { new Vector3(2f, 100f, 0f), new Vector3(3f, 0f, 0f), new Vector3(14f, 100f, 0f), new Vector3(17f, 0f, 0f), new Vector3(18f, 0f, 0f), new Vector3(6f, 0f, 0f), new Vector3(22f, 0f, 0f), new Vector3(23f, 0f, 0f), new Vector3(15f, 100f, 0f) };
-                        ItemsToSpawn = new string[]{ GS.itemCache[(int)Random.Range(1f, 20f)].getName(), GS.itemCache[(int)Random.Range(1f, 20f)].startVariables, GS.itemCache[(int)Random.Range(1f, 20f)].startVariables };//new Vector3[] { GS.GetComponent<GameScript>().ReceiveItemVariables(Random.Range(1f, 20f)), GS.GetComponent<GameScript>().ReceiveItemVariables(Random.Range(1f, 20f)), GS.GetComponent<GameScript>().ReceiveItemVariables(Random.Range(1f, 20f)) };
+                        ItemsToSpawn = new string[]{ GS.itemCache[(int)Random.Range(1f, 20f)].startVariables, GS.itemCache[(int)Random.Range(1f, 20f)].startVariables, GS.itemCache[(int)Random.Range(1f, 20f)].startVariables };//new Vector3[] { GS.GetComponent<GameScript>().ReceiveItemVariables(Random.Range(1f, 20f)), GS.GetComponent<GameScript>().ReceiveItemVariables(Random.Range(1f, 20f)), GS.GetComponent<GameScript>().ReceiveItemVariables(Random.Range(1f, 20f)) };
                         AmountToSpawn = Random.Range(2, 5);
                     } else if (Variables.z == 3f) {
                         //ItemsToSpawn = new Vector3[] { new Vector3(15f, 100f, 0f), new Vector3(4f, 0f, 0f), new Vector3(27f, 100f, 0f), new Vector3(22f, 0f, 0f), new Vector3(23f, 0f, 0f), new Vector3(29f, 0f, 0f), new Vector3(18f, 0f, 0f), new Vector3(16f, 100f, 0f) };
                         ItemsToSpawn = new string[] { GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables, GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables, GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables };//new Vector3[] { GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)) };
                         AmountToSpawn = Random.Range(2, 5);
                     } else if (Variables.z == 4f) {
-                        ItemsToSpawn = new string[]{ "id14;va100;", "id15;va100;", "id16;va100;", "id27;va100;", "id28;va100", "id29;", "id30;", "id26;", "id21;", "id31;va8;", "id32;va6;", "id35;va2;", "id33;", "id36;va30;", "id37;", "id38;va30;", "id39;" };//new Vector3[] { new Vector3(14f, 100f, 0f), new Vector3(15f, 100f, 0f), new Vector3(16f, 100f, 0f), new Vector3(27f, 100f, 0f), new Vector3(28f, 100f, 0f), new Vector3(29f, 0f, 0f), new Vector3(30f, 0f, 0f), new Vector3(26f, 0, 0f), new Vector3(21f, 0f, 0f), new Vector3(31f, 8f, 0f), new Vector3(32f, 6f, 0f), new Vector3(35f, 2f, 0f), new Vector3(33f, 0f, 0f), new Vector3(36f, 30f, 0f), new Vector3(37f, 0f, 0f), new Vector3(38f, 30f, 0f), new Vector3(39f, 0f, 0f) };
+                        ItemsToSpawn = new string[]{
+                            GS.itemCache[RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - .1f)]].startVariables,
+                            GS.itemCache[RS.GetComponent<RoundScript>().AmmoItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AmmoItems.Length - .1f)]].startVariables,
+                            GS.itemCache[RS.GetComponent<RoundScript>().AttachmentItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AttachmentItems.Length - .1f)]].startVariables
+                        };
                         AmountToSpawn = Random.Range(1, 2);
                     } else if (Variables.z == 5f) {
                         //ItemsToSpawn = new Vector3[] { new Vector3(2f, 100f, 0f), new Vector3(11f, 0f, 0f), new Vector3(12f, 0f, 0f), new Vector3(4f, 0f, 0f), new Vector3(20f, 0f, 0f), new Vector3(16f, 100f, 0f), new Vector3(27f, 100f, 0f), new Vector3(19f, 0f, 0f), new Vector3(17f, 0f, 0f), new Vector3(18f, 0f, 0f), new Vector3(32f, 5f, 0f), new Vector3(33f, 0f, 0f), new Vector3(42f, 30f, 0f), new Vector3(40f, 6f, 0f) };
-                        ItemsToSpawn = new string[]{GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables, GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables, GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables};//new Vector3[] { GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), };
+                        ItemsToSpawn = new string[]{
+                            GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
+                            GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
+                            GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables
+                        };//new Vector3[] { GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), };
                         AmountToSpawn = Random.Range(5, 10);
                     }
+                
                     for (int SpawnStuff = AmountToSpawn; SpawnStuff > 0; SpawnStuff--) {
                         GameObject CreateItem = Instantiate(ItemPrefab) as GameObject;
                         CreateItem.transform.position = this.transform.position + (Vector3.up * 1f) + (Vector3.up * (SpawnStuff / 2f));
                         string[] PickRandomItem = ItemsToSpawn;
                         CreateItem.GetComponent<ItemScript>().Variables = PickRandomItem[(int)Random.Range(0f, PickRandomItem.Length - 0.1f)];
                     }
+                    
                     Destroy(this.gameObject);
                 }
 

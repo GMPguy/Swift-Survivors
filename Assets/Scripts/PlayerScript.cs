@@ -1705,7 +1705,7 @@ public class PlayerScript : MonoBehaviour {
                             FoodName = GS.SetString("MRE", "MRE");
                             ConsumeAnimation = "Chips";
                             DrinkOrWhat = 0;
-                            HungerToAddSub = (Food[1] - Food[0]);
+                            HungerToAddSub = Mathf.Max(Food[1] - Food[0], 50f);
                             FoodColor = new Color32(200, 225, 255, 255);
                             FlashColor = new Color32(128, 255, 0, 155);
                             break;
@@ -2056,6 +2056,7 @@ public class PlayerScript : MonoBehaviour {
                     // Get Melee info
                     string AttackType = "";
                     float AttackCooldown = 1f;
+                    float ParryCooldown = 1f;
                     float EnergyDrain = 0f;
                     float ParryDrain = -1f;
                     float UseDamage = 0f;
@@ -2174,6 +2175,7 @@ public class PlayerScript : MonoBehaviour {
                             AttackCooldown = 0.5f;
                             EnergyDrain = 10f;
                             ParryDrain = 0f;
+                            ParryCooldown = .5f;
                             break;
                         case 155:
                             UseDamage = 3f;
@@ -2201,8 +2203,8 @@ public class PlayerScript : MonoBehaviour {
                     }
 
                    if (GS.ReceiveButtonPress("AltAction", "Hold") > 0f && CantUseItem <= 0f && CheckStamina(ParryDrain, 0) && ParryDrain> -1f) {
-                        CantUseItem = 1f;
-                        CantSwitchItem = 1f;
+                        CantUseItem = ParryCooldown;
+                        CantSwitchItem = ParryCooldown;
                         StaminaDrain(ParryDrain);
                         ParryingDamage = UseDamage;
                         ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Parry", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition));
@@ -3221,8 +3223,8 @@ public class PlayerScript : MonoBehaviour {
                         }
                     }
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f) {
-                        CantUseItem = 1.5f;
-                        CantSwitchItem = 1.5f;
+                        CantUseItem = 2f;
+                        CantSwitchItem = 2f;
                         Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-1"); //Inventory[CurrentItemHeld].y -= 1f;
                         RS.Attack(new string[]{"Arrow", "Inventory" + CurrentItemHeld}, LookDir.position, LookDir.forward, this.gameObject, SlimEnd);
                         if(float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) > 0f) ItemsShown.GetComponent<Animator>().Play("Crossbow-Shoot", 0, 0f);
