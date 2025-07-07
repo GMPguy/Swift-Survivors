@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Burst;
 using Unity.Mathematics;
 using Random=UnityEngine.Random;
+using UnityEngine.Timeline;
 
 public class MobScript : MonoBehaviour {
 
@@ -50,7 +51,6 @@ public class MobScript : MonoBehaviour {
     public RoundScript RS;
     public GameObject SelectedMobModel;
     public GameObject EyeSight;
-    //public GameObject AttackPrefab;
     public GameObject EffectPrefab;
     public GameObject ItemPrefab;
     public GameObject SpecialPrefab;
@@ -71,6 +71,7 @@ public class MobScript : MonoBehaviour {
     // Misc
     bool Ach_Flare = false;
     public Color32 MobColor;
+    public SpriteRenderer MinimapMarker;
     public Vector3 PushbackForce;
     public float ReturnPushBack;
     Vector3 PrevPosition;
@@ -102,8 +103,12 @@ public class MobScript : MonoBehaviour {
     float PowerLevel = 0f;
     // Misc
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Awake() =>
+        RoundScript.CachedMobs.Add(this);
+
+    bool wasStarted;
+    void TheStart () {
 
         // Ground
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
@@ -766,12 +771,20 @@ public class MobScript : MonoBehaviour {
 
         Anim.Play(AnimationSet + "Idle");
         State = 0;
+
+        ChangeMobColor(MobColor);
+        wasStarted = true;
 		
 	}
 
-    void FixedUpdate() {
+    // Controls this from within the roundscript
+    float prevTime;
+    public void TheUpdate() {
 
-        if ((Angered > 0f) || State == 1 || (GS.GameModePrefab.x == 1 || Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < RS.DetectionRange)) {
+        if (!wasStarted)
+            TheStart();
+
+        /*if ((Angered > 0f) || State == 1 || (GS.GameModePrefab.x == 1 || Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < RS.DetectionRange)) {
             TooFar = false;
         } else {
             TooFar = true;
@@ -786,32 +799,35 @@ public class MobScript : MonoBehaviour {
                 UpdateDelay = 4f;
                 Do(UpdateDelay / 0.02f);
             }
-        }
+        }*/
+
+        Do(RS.TimeSinceRoundStart - prevTime);
 
         if (this.transform.position.y < -100f) {
             Hurt(999999999f, null, true, Vector3.zero, "Nuked");
         }
-        
+
+        prevTime = RS.TimeSinceRoundStart;        
     }
 
-    void Do (float DelayCompensation) {
+    void Do (float deltaTime) {
 
         if (CantDoAnything > 0f) {
-            CantDoAnything -= 0.02f * DelayCompensation;
+            CantDoAnything -= deltaTime;
         }
         if (Panic > 0f) {
-            Panic -= 0.02f * DelayCompensation;
+            Panic -= deltaTime;
         }
         if (Angered > 0f) {
-            Angered -= 0.02f * DelayCompensation;
+            Angered -= deltaTime;
         }
         if (Curious > 0f) {
-            Curious -= 0.02f * DelayCompensation;
+            Curious -= deltaTime;
         }
         if (Fire > 0f || (TypeOfMob == 11f && State == 0)) {
             if (TypeOfMob != 11f) {
-                Hurt(0.04f * DelayCompensation, null, false, Vector3.zero, "Fire");
-                Fire -= 0.04f * DelayCompensation;
+                Hurt(deltaTime * 2f, null, false, Vector3.zero, "Fire");
+                Fire -= deltaTime * 2f;
                 if (Vector3.Distance(this.transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) < 2f && GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().Fire < Fire) {
                     GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().Fire += 5f;
                 }
@@ -836,7 +852,7 @@ public class MobScript : MonoBehaviour {
             }
         }
         if (Blinded > 0f) {
-            Blinded -= 0.02f * DelayCompensation;
+            Blinded -= deltaTime;
             CantDoAnything = 0.25f;
         } else if (Plunged == true) {
             Plunged = false;
@@ -854,10 +870,10 @@ public class MobScript : MonoBehaviour {
             GunSpread[0] = Mathf.Clamp(GunSpread[0], 0f, 1f);
         }
         if (GunSpread[1] > 0f) {
-            GunSpread[1] -= 0.02f * DelayCompensation;
+            GunSpread[1] -= deltaTime;
         } else {
             if (GunSpread[0] > 0f) {
-                GunSpread[0] -= 0.02f * DelayCompensation;
+                GunSpread[0] -= deltaTime;
             }
         }
 
@@ -885,6 +901,7 @@ public class MobScript : MonoBehaviour {
             // Die
             if (MobHealth[0] <= 0f) {
                 State = 1;
+                ChangeMobColor(new (0, 0, 0, 0));
             }
 
             // Walking and Running
@@ -930,12 +947,12 @@ public class MobScript : MonoBehaviour {
                 if (!Physics.Raycast(CheckForObstacl, out CheckForObstaclHIT, 1f, GS.IgnoreMaskEnemy)) {
                     this.transform.position += (PushbackForce / 50f);
                 }
-                ReturnPushBack -= 0.02f * DelayCompensation;
+                ReturnPushBack -= deltaTime;
             }
 
             if (TooFar == false) {
                 if (CantDoAnything <= 0f) {
-                    this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, Quaternion.Euler(new Vector3(0f, MoveDir.transform.eulerAngles.y, MoveDir.transform.eulerAngles.z)), 3f * DelayCompensation);
+                    this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, Quaternion.Euler(new Vector3(0f, MoveDir.transform.eulerAngles.y, MoveDir.transform.eulerAngles.z)), 90f * deltaTime);
                     MoveDir.transform.LookAt(new Vector3(AiPosition.x, this.transform.position.y, AiPosition.z));
                 }
                 if (Vector3.Distance(this.transform.position, new Vector3(AiPosition.x, this.transform.position.y, AiPosition.z)) >= 1.1f && BlockedWay == false && CantDoAnything <= 0f) {
@@ -960,25 +977,6 @@ public class MobScript : MonoBehaviour {
                     this.GetComponent<Rigidbody>().velocity = new Vector3(0f, this.GetComponent<Rigidbody>().velocity.y, 0f);
                 }
             }
-
-            // Crouching
-            /*if (TooFar == false) {
-                if ((Anim.GetFloat("StayOrGo") == 0f && Panic > 0f) || Anim.GetCurrentAnimatorStateInfo(0).IsName(AnimationSet + "Reload")) {
-                    IsCrouching = true;
-                } else {
-                    IsCrouching = false;
-                }
-            } else {
-                IsCrouching = false;
-            }
-
-            if (IsCrouching == true && this.GetComponent<CapsuleCollider>().height != 1.5f) {
-                this.GetComponent<CapsuleCollider>().height = 1.5f;
-                this.GetComponent<CapsuleCollider>().center = new Vector3(0f, -0.25f, 0f);
-            } else if (this.GetComponent<CapsuleCollider>().height != 2f) {
-                this.GetComponent<CapsuleCollider>().height = 2f;
-                this.GetComponent<CapsuleCollider>().center = new Vector3(0f, 0f, 0f);
-            }*/
 
             // Movement
             if (TooFar == false && TypeOfMob != 7f) {
@@ -1016,31 +1014,31 @@ public class MobScript : MonoBehaviour {
                 FixedTimeCooldown = Time.fixedTime + 3f;
                 switch(ClassOfMob){
                     case "Mutant":
-                        AiThink("Mutant", DelayCompensation, true);
+                        AiThink("Mutant", deltaTime, true);
                         break;
                     case "Bandit":
-                        AiThink("Bandit", DelayCompensation, true);
+                        AiThink("Bandit", deltaTime, true);
                         break;
                     case "Survivor":
-                        AiThink("Survivor", DelayCompensation, true);
+                        AiThink("Survivor", deltaTime, true);
                         break;
                     case "Guard":
-                        AiThink("Guard", DelayCompensation, true);
+                        AiThink("Guard", deltaTime, true);
                         break;
                 }
             } else if (GameObject.Find("MainCanvas").GetComponent<CanvasScript>().DialogedMob != this.gameObject) {
                 switch(ClassOfMob){
                     case "Mutant":
-                        AiThink("Mutant", DelayCompensation, false);
+                        AiThink("Mutant", deltaTime, false);
                         break;
                     case "Bandit":
-                        AiThink("Bandit", DelayCompensation, false);
+                        AiThink("Bandit", deltaTime, false);
                         break;
                     case "Survivor":
-                        AiThink("Survivor", DelayCompensation, false);
+                        AiThink("Survivor", deltaTime, false);
                         break;
                     case "Guard":
-                        AiThink("Guard", DelayCompensation, false);
+                        AiThink("Guard", deltaTime, false);
                         break;
                 }
             }
@@ -1066,12 +1064,6 @@ public class MobScript : MonoBehaviour {
                 if ((ReasonOfDeath == "Nuked" || ReasonOfDeath == "Explosion" || ReasonOfDeath == "Electricity" || TypeOfMob == 6f || TypeOfMob == 9f) && (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol")) {
                     if (TypeOfMob == 6f) {
                         for (int Blow = Random.Range(2, 5); Blow > 0; Blow--) {
-                            //GameObject LastSplash = Instantiate(AttackPrefab) as GameObject;
-                            //LastSplash.transform.Rotate(Random.Range(-15f, 90f), Random.Range(0f, 360f), 0f);
-                            //LastSplash.transform.position = this.transform.position + (LastSplash.transform.forward * 1f);
-                            //LastSplash.GetComponent<AttackScript>().GunName = "MutantSpit";
-                            //LastSplash.GetComponent<AttackScript>().Attacker = this.gameObject;
-                            //LastSplash.GetComponent<AttackScript>().Slimend = this.gameObject;
                             RS.Attack(new string[]{"MutantSpit"}, this.transform.position, new Vector3(Random.Range(-1f, 1f), Random.Range(0f, 1f), Random.Range(-1f, 1f)), this.gameObject, this.gameObject);
                         }
                     }
@@ -1199,7 +1191,7 @@ public class MobScript : MonoBehaviour {
 
             } else if (CleanupAfterDead > 0f) {
 
-                CleanupAfterDead -= 0.02f * DelayCompensation;
+                CleanupAfterDead -= deltaTime;
                 if (Anim.GetCurrentAnimatorStateInfo(0).IsName("HumanoidDeadWater") && Anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f) {
                     Anim.Play("HumanoidDeadWater", 0, 0.25f);
                 }
@@ -1312,7 +1304,7 @@ public class MobScript : MonoBehaviour {
                         Angered = 10f;
                         AiTarget = Aggresor;
                         if (TypeOfMob == 3f && Aggresor.tag == "Player") {
-                            MobColor = new Color32(255, 0, 0, 255);
+                            ChangeMobColor(new Color32(255, 0, 0, 255));
                             this.GetComponent<Interactions>().Options = new string[] {""};
                         }
                     }
@@ -1392,7 +1384,7 @@ public class MobScript : MonoBehaviour {
 
     }
 
-    void AiThink(string Philosophy, float FixedTimeDelay, bool Check) {
+    void AiThink(string Philosophy, float deltaTime, bool Check) {
 
         bool CharacterSeen = false;
         bool CharacterOnSights = false;
@@ -1478,7 +1470,7 @@ public class MobScript : MonoBehaviour {
                 MobHealth[0] = 0f;
             }
             if (BurnCooldown > 0f) {
-                BurnCooldown -= 0.02f * FixedTimeDelay;
+                BurnCooldown -= deltaTime;
             } else {
                 BurnCooldown = 0.5f;
                 foreach (GameObject BurnEm in GameObject.FindGameObjectsWithTag("Mob")) {
@@ -1530,7 +1522,7 @@ public class MobScript : MonoBehaviour {
             } else if (GS.GameModePrefab.x == 0) {
                 //PreventJamming[0] = 1f;
                 if (SwitchPosition > 0f) {
-                    SwitchPosition -= 0.02f * FixedTimeDelay;
+                    SwitchPosition -= deltaTime;
                 } else {
                     SwitchPosition = Random.Range(0.5f, 1f);
                     AiPosition = AiTargetLastSeen + new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
@@ -1567,7 +1559,7 @@ public class MobScript : MonoBehaviour {
                     }
                 } else {
                     if (SwitchPosition > 0f) {
-                        SwitchPosition -= 0.02f * FixedTimeDelay;
+                        SwitchPosition -= deltaTime;
                     } else {
                         SwitchPosition = Random.Range(0.5f, 1f);
                         AiPosition = AiTargetLastSeen + new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
@@ -1676,7 +1668,7 @@ public class MobScript : MonoBehaviour {
 
             // Idle Chatter
             if (Chatter > 0f) {
-                Chatter -= 0.04f * FixedTimeDelay;
+                Chatter -= deltaTime;
             } else {
                 Chatter = Random.Range(5f, 15f);
                 PlayMobSound(MobAudio + "Idle" + (int)Random.Range(1f, 3.9f), 2);
@@ -1685,7 +1677,7 @@ public class MobScript : MonoBehaviour {
             // Wander off
             if ((Philosophy == "Mutant" || Philosophy == "Bandit" || Philosophy == "Survivor") && !(mobOrigins == "RaidSurvivors" || mobOrigins == "RaidBandits") && Curious <= 0f) {
                 if (SwitchPosition > 0f) {
-                    SwitchPosition -= 0.02f * FixedTimeDelay;
+                    SwitchPosition -= deltaTime;
                 } else {
                     if (Squad[0] != 0 && Squad[1] == 1) {
                         SwitchPosition = Random.Range(1f, 10f);
@@ -1702,7 +1694,7 @@ public class MobScript : MonoBehaviour {
                 }
             } else if ((Philosophy == "Guard" || mobOrigins == "RaidBandits" || mobOrigins == "RaidSurvivors") && Curious <= 0f) {
                 if (SwitchPosition > 0f) {
-                    SwitchPosition -= 0.02f * FixedTimeDelay;
+                    SwitchPosition -= deltaTime;
                 } else {
                     SwitchPosition = Random.Range(7f, 10f);
                     AiPosition = StartPosition + new Vector3(Random.Range(-2f, 2f), 0f, Random.Range(-2f, 2f));
@@ -1875,6 +1867,11 @@ public class MobScript : MonoBehaviour {
 
         }
 
+    }
+
+    void ChangeMobColor (Color32 newColor) {
+        MobColor = newColor;
+        MinimapMarker.color = newColor;
     }
 
 }

@@ -50,7 +50,7 @@ public class CanvasScript : MonoBehaviour {
     public GameObject ITBuffs;
     float[] BuffTextScroll = new float[]{0f, 0f};
     public GameObject MiniMap;
-    public GameObject MiniMapMarker;
+    public static List<MinimapMarker> MapMarkers;
     public GameObject ITMenuCraft;
     public GameObject CraftingMain;
     public Text CraftingDetailedText;
@@ -138,6 +138,8 @@ public class CanvasScript : MonoBehaviour {
             HintsCooldown.Add("HordeStart");
         }
         HintsCooldown.Add("Tab");
+
+        MapMarkers = new ();
 
     }
 
@@ -1572,13 +1574,13 @@ public class CanvasScript : MonoBehaviour {
             // Minimap
             MinimapRefresh("Minimap");
             if (RS.RoundState == "Normal") {
-                GS.SetText(MiniMap.transform.GetChild(1).GetComponent<Text>(), "Nuke in " + GS.DisplayTime(RS.RoundTime), "Wybuch za " + GS.DisplayTime(RS.RoundTime));
+                GS.SetText(MiniMap.transform.GetChild(2).GetComponent<Text>(), "Nuke in " + GS.DisplayTime(RS.RoundTime), "Wybuch za " + GS.DisplayTime(RS.RoundTime));
             } else if (RS.RoundState == "Nuked") {
-                GS.SetText(MiniMap.transform.GetChild(1).GetComponent<Text>(), "GET TO THE EXIT", "BIEGNIJ DO WYJŚCIA");
+                GS.SetText(MiniMap.transform.GetChild(2).GetComponent<Text>(), "GET TO THE EXIT", "BIEGNIJ DO WYJŚCIA");
             } else if (RS.RoundState == "TealState") {
-                GS.SetText(MiniMap.transform.GetChild(1).GetComponent<Text>(), "", "");
+                GS.SetText(MiniMap.transform.GetChild(2).GetComponent<Text>(), "", "");
             } else if (RS.RoundState == "BeforeWave") {
-                GS.SetText(MiniMap.transform.GetChild(1).GetComponent<Text>(), "Wave in " + GS.DisplayTime(RS.RoundTime), "Fala za " + GS.DisplayTime(RS.RoundTime));
+                GS.SetText(MiniMap.transform.GetChild(2).GetComponent<Text>(), "Wave in " + GS.DisplayTime(RS.RoundTime), "Fala za " + GS.DisplayTime(RS.RoundTime));
             } else if (RS.RoundState == "HordeWave") {
                 int HordeAmountB = RS.HordeAmount;
                 foreach (GameObject GetB in GameObject.FindGameObjectsWithTag("Mob")) {
@@ -1586,7 +1588,7 @@ public class CanvasScript : MonoBehaviour {
                         HordeAmountB += 1;
                     }
                 }
-                GS.SetText(MiniMap.transform.GetChild(1).GetComponent<Text>(), "Mutants left: " + HordeAmountB, "Ilość mutantów: " + HordeAmountB);
+                GS.SetText(MiniMap.transform.GetChild(2).GetComponent<Text>(), "Mutants left: " + HordeAmountB, "Ilość mutantów: " + HordeAmountB);
             }
 
             // Minimap Auras
@@ -1605,7 +1607,7 @@ public class CanvasScript : MonoBehaviour {
             }
 
             // Variables
-            GameObject StatsVariables = MiniMap.transform.GetChild(2).gameObject;
+            GameObject StatsVariables = MiniMap.transform.GetChild(3).gameObject;
             float AddPos = 1f;
             for (int CheckStats = 0; CheckStats < StatsVariables.transform.childCount; CheckStats++) {
                 GameObject GetSVObj = StatsVariables.transform.GetChild(CheckStats).gameObject;
@@ -1951,6 +1953,18 @@ public class CanvasScript : MonoBehaviour {
 
     void MinimapRefresh(string WhichMap) {
 
+        // Update minimap markers
+        for (int mm = MapMarkers.Count - 1; mm >= 0; mm--) {
+            if (!MapMarkers[mm])
+                MapMarkers.RemoveAt(mm);
+            else if (WhichMap == "Minimap" && ITBG.GetComponent<HudColorControl>().Alpha <= .1f)
+                MapMarkers[mm].UpdateMe(new (111f, 50f), 0, MainPlayer.MinimapCamera.forward);
+            else if (WhichMap == "Map" && ITBG.GetComponent<HudColorControl>().Alpha >= .65f)
+                MapMarkers[mm].UpdateMe(new (240f, 500f), 1, Vector3.left);
+            else
+                MapMarkers[mm].UpdateMe(new (240f, 500f), -1, Vector3.left);
+        }
+
         if (WhichMap == "Minimap") {
             MiniMap.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(new Vector2(96f, -96f), new Vector2(-128f, 96f), ITBG.GetComponent<HudColorControl>().Alpha / 0.75f);
             MiniMap.transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, ITBG.GetComponent<HudColorControl>().Alpha / 0.75f);
@@ -1959,29 +1973,18 @@ public class CanvasScript : MonoBehaviour {
             MiniMap.transform.GetChild(0).GetChild(0).transform.eulerAngles = new Vector3(0f, 0f, GameObject.Find("MainCamera").GetComponent<Camera>().fieldOfView / 2f);
             MiniMap.transform.GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = GameObject.Find("MainCamera").GetComponent<Camera>().fieldOfView / 360f;
 
+            // UI related stuff
             if (Time.time > mapRefresh) {
                 mapRefresh = Time.time + 0.1f;
-
-                foreach (Transform WipeObject in MiniMap.transform.GetChild(0)) {
-                    if (WipeObject.name != "PlayerCone") {
-                        Destroy(WipeObject.gameObject);
-                    }
-                }
 
                 if (RS.GetComponent<RoundScript>().TimeOfDay[0] != 0 || GS.GameModePrefab.x == 1) {
 
                     MiniMap.transform.GetChild(0).localScale = Vector3.one;
-                    MiniMap.transform.GetChild(3).GetComponent<Text>().text = "";
+                    MiniMap.transform.GetChild(1).localScale = Vector3.one;
+                    MiniMap.transform.GetChild(4).GetComponent<Text>().text = "";
 
                     foreach (GameObject MobStamp in GameObject.FindGameObjectsWithTag("Mob")) {
                         if (Vector3.Distance(MainPlayer.transform.position, MobStamp.transform.position) < 50f && MobStamp.GetComponent<MobScript>().MobHealth[0] > 0f && MobStamp.GetComponent<MobScript>().TypeOfMob != 7f) {
-                            GameObject StampMob = Instantiate(MiniMapMarker) as GameObject;
-                            StampMob.transform.SetParent(MiniMap.transform.GetChild(0));
-                            StampMob.GetComponent<RectTransform>().anchoredPosition = new Vector2(-(MainPlayer.transform.position.z - MobStamp.transform.position.z), MainPlayer.transform.position.x - MobStamp.transform.position.x);
-                            StampMob.GetComponent<Image>().sprite = MinimapMarkerIcons[0];
-                            StampMob.GetComponent<Image>().color = MobStamp.GetComponent<MobScript>().MobColor;
-                            StampMob.GetComponent<Image>().SetNativeSize();
-                            StampMob.transform.localScale = Vector3.one;
 
                             // Hint
                             if (!HintsTold.Contains("MobMutant") && MobStamp.GetComponent<MobScript>().ClassOfMob == "Mutant") {
@@ -1994,53 +1997,15 @@ public class CanvasScript : MonoBehaviour {
                                 HintsTold.Add("MobSurvivor");
                                 HintsCooldown.Add("MobSurvivor");
                             }
-                        }
-                    }
 
-                    foreach (GameObject LandStamp in GameObject.FindGameObjectsWithTag("Interactable")) {
-                        if (Vector3.Distance(MainPlayer.transform.position, LandStamp.transform.position) < 50f && LandStamp.name.Substring(2, 1) == "M") {
-                            GameObject StamLand = Instantiate(MiniMapMarker) as GameObject;
-                            StamLand.GetComponent<Image>().sprite = MinimapMarkerIcons[2];
-                            StamLand.GetComponent<Image>().SetNativeSize();
-                            StamLand.transform.SetParent(MiniMap.transform.GetChild(0));
-                            StamLand.GetComponent<RectTransform>().anchoredPosition = new Vector2(-(MainPlayer.transform.position.z - LandStamp.transform.position.z), MainPlayer.transform.position.x - LandStamp.transform.position.x);
-                            StamLand.transform.localScale = Vector3.one;
-                        }
-                    }
-
-                    foreach (GameObject ExitStamp in GameObject.FindGameObjectsWithTag("Interactable")) {
-                        if (Vector3.Distance(MainPlayer.transform.position, ExitStamp.transform.position) < 50f && ExitStamp.GetComponent<InteractableScript>().Variables.x == 2f && ExitStamp.GetComponent<InteractableScript>().Discovered == true) {
-                            GameObject StampExit = Instantiate(MiniMapMarker) as GameObject;
-                            StampExit.GetComponent<Image>().sprite = MinimapMarkerIcons[1];
-                            StampExit.GetComponent<Image>().SetNativeSize();
-                            StampExit.transform.SetParent(MiniMap.transform.GetChild(0));
-                            StampExit.GetComponent<RectTransform>().anchoredPosition = new Vector2(-(MainPlayer.transform.position.z - ExitStamp.transform.position.z), MainPlayer.transform.position.x - ExitStamp.transform.position.x);
-                            StampExit.transform.localScale = Vector3.one;
-
-                            // Hint
-                            if (!HintsTold.Contains("InteractableExit")) {
-                                HintsTold.Add("InteractableExit");
-                                HintsCooldown.Add("InteractableExit");
-                            } 
-                        }
-                    }
-
-                    foreach (GameObject FlareStamp in GameObject.FindGameObjectsWithTag("Item")) {
-                        if (Vector3.Distance(MainPlayer.transform.position, FlareStamp.transform.position) < 50f && GS.GetSemiClass(FlareStamp.GetComponent<ItemScript>().Variables, "id") == "13"){//FlareStamp.GetComponent<ItemScript>().Variables.x == 13f) {
-                            GameObject StampFlare = Instantiate(MiniMapMarker) as GameObject;
-                            StampFlare.GetComponent<Image>().sprite = MinimapMarkerIcons[4];
-                            StampFlare.GetComponent<Image>().color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(FlareStamp.GetComponent<ItemScript>().Variables, "cl")) / 10f, 1f, 1f);//StampFlare.GetComponent<Image>().color = Color.HSVToRGB(FlareStamp.GetComponent<ItemScript>().Variables.z / 10f, 1f, 1f);
-                            StampFlare.GetComponent<Image>().SetNativeSize();
-                            StampFlare.transform.SetParent(MiniMap.transform.GetChild(0));
-                            StampFlare.GetComponent<RectTransform>().anchoredPosition = new Vector2(-(MainPlayer.transform.position.z - FlareStamp.transform.position.z), MainPlayer.transform.position.x - FlareStamp.transform.position.x);
-                            StampFlare.transform.localScale = Vector3.one;
                         }
                     }
 
                 } else if (GS.GameModePrefab.x != 1 && RS.GetComponent<RoundScript>().TimeOfDay[0] == 0) {
 
                     MiniMap.transform.GetChild(0).localScale = Vector3.zero;
-                    GS.GetComponent<GameScript>().SetText(MiniMap.transform.GetChild(3).GetComponent<Text>(),
+                    MiniMap.transform.GetChild(1).localScale = Vector3.zero;
+                    GS.GetComponent<GameScript>().SetText(MiniMap.transform.GetChild(4).GetComponent<Text>(),
                         "It's too dark...",
                         "Jest za ciemno...");
 
@@ -2064,7 +2029,7 @@ public class CanvasScript : MonoBehaviour {
             ITMap.transform.GetChild(3).localEulerAngles = new Vector3(0f, 0f, -MainPlayer.transform.eulerAngles.y - 90f);
 
             // Marking stuff
-            if (MarksTouchPad.GetComponent<ButtonScript>().IsSelected == true) {
+            /*if (MarksTouchPad.GetComponent<ButtonScript>().IsSelected == true) {
                 if (MarksTouchPad.GetComponent<Image>().color.a < 0.25f) {
                     MarksTouchPad.GetComponent<Image>().color = new Color(1f, 1f, 1f, Mathf.Clamp(MarksTouchPad.GetComponent<Image>().color.a + 0.01f * (Time.deltaTime * 50f), 0f, 0.1f));
                 }
@@ -2195,7 +2160,7 @@ public class CanvasScript : MonoBehaviour {
                     }
                 }
 
-            }   
+            }*/
 
         } else {
 

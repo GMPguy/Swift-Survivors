@@ -74,6 +74,7 @@ public class PlayerScript : MonoBehaviour {
     public GameScript GS;
     public RoundScript RS;
     public Transform MainCamera;
+    public Transform MinimapCamera;
     public CanvasScript MainCanvas;
     public Transform LookDir;
     public Transform AngleCheck;
@@ -179,11 +180,14 @@ public class PlayerScript : MonoBehaviour {
         if (GS == null || RS == null || MainCamera == null) {
             if(GameObject.Find("_GameScript")) GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
             if(GameObject.Find("_RoundScript")) RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
+
             if(GameObject.Find("MainCamera")) MainCamera = GameObject.Find("MainCamera").transform;
             MainCamera.SetParent(LookDir);
             MainCamera.localPosition = Vector3.zero;
             MainCamera.rotation = LookDir.rotation;
             ItemsShown.transform.SetParent(MainCamera.transform);
+            MinimapCamera = MainCamera.GetChild(2);
+
             if(GameObject.Find("MainCanvas")) MainCanvas = GameObject.Find("MainCanvas").GetComponent<CanvasScript>();
         }
 
@@ -851,6 +855,9 @@ public class PlayerScript : MonoBehaviour {
             }
 
         }
+
+        // Minimap correction
+        MinimapCamera.LookAt(MinimapCamera.position + Vector3.Cross(MainCamera.right, Vector3.up));
 
     }
 

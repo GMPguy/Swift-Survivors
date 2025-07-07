@@ -20,13 +20,18 @@ public class InteractableScript : MonoBehaviour {
 
     // Misc
     public bool Discovered = false;
-    bool TooFar = false;
     int ammoID;
     Vector3[] ammoScale;
     // Misc
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Awake() {
+         RoundScript.CachedInteractables.Add(this);
+    }
+
+    // Use this after world spawn
+    bool wasStarted;
+    public void TheStart () {
 
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
         RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
@@ -195,29 +200,24 @@ public class InteractableScript : MonoBehaviour {
             for (int i = 0; i < 15; i++)
                 ammoScale[i] = SelectedModel.transform.GetChild(0).GetChild(i).localScale;
         }
+
+        wasStarted = true;
 		
 	}
 
-    void Update() {
+    // Use this inside roundscript update
+    public void TheUpdate() {
 
-        if (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < RS.DetectionRange) {
-            TooFar = false;
-            if (SelectedModel.activeInHierarchy == false) {
-                SelectedModel.SetActive(true);
-            }
-        } else {
-            TooFar = true;
-            if (SelectedModel.activeInHierarchy == true) {
-                SelectedModel.SetActive(false);
-            }
-        }
+        if (!wasStarted)
+            TheStart();
 
-        if (Variables.x == 1f && TooFar == false) {
+
+        if (Variables.x == 1f) {
 
             this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, Quaternion.Euler(Vector3.zero), 0.1f * (Time.deltaTime * 100f));
 
         } else if (Variables.x == 2f) {
-            if ((RS.GetComponent<RoundScript>().RoundTime < 30f || RS.GetComponent<RoundScript>().RoundState == "Nuked") && TooFar == false) {
+            if (RS.GetComponent<RoundScript>().RoundTime < 30f || RS.GetComponent<RoundScript>().RoundState == "Nuked") {
                 foreach (Material mat in SelectedModel.GetComponent<MeshRenderer>().materials) {
                     if (mat.name == "EscapeTunnel6 (Instance)") {
                         mat.shader = Shader.Find("Unlit/Color");
@@ -225,7 +225,7 @@ public class InteractableScript : MonoBehaviour {
                 }
                 SelectedModel.transform.GetChild(0).gameObject.SetActive(true);
                 SelectedModel.transform.GetChild(0).Rotate(new Vector3(1f, 0f, 0f));
-            } else if (TooFar == false) {
+            } else {
                 foreach (Material mat in SelectedModel.GetComponent<MeshRenderer>().materials) {
                     if (mat.name == "EscapeTunnel6 (Instance)") {
                         mat.shader = Shader.Find("Diffuse");
@@ -239,38 +239,34 @@ public class InteractableScript : MonoBehaviour {
                 GS.AddToScore(50);
             }
         } else if (Variables.x == 3f) {
-            if (TooFar == false) {
-                if (Variables.z == 0f && SelectedModel.transform.localEulerAngles.y < 90f) {
-                    // closed
-                    SelectedModel.transform.localRotation = Quaternion.RotateTowards(SelectedModel.transform.localRotation, Quaternion.Euler(new Vector3(-90f, 0f, 90f)), 3f * (Time.deltaTime * 100f));
-                } else if (Variables.z == 1f && SelectedModel.transform.localEulerAngles.y > 0f) {
-                    // opened
-                    SelectedModel.transform.localRotation = Quaternion.RotateTowards(SelectedModel.transform.localRotation, Quaternion.Euler(new Vector3(-90f, 0f, 0f)), 3f * (Time.deltaTime * 100f));
-                } else if (Variables.z == 2f && SelectedModel.transform.localEulerAngles.y < 90f) {
-                    // locked
-                    SelectedModel.transform.localRotation = Quaternion.RotateTowards(SelectedModel.transform.localRotation, Quaternion.Euler(new Vector3(-90f, 0f, 90f)), 3f * (Time.deltaTime * 100f));
-                } else if (SelectedModel.GetComponent<BoxCollider>().enabled == false) {
-                    SelectedModel.GetComponent<BoxCollider>().enabled = true;
-                }
+            if (Variables.z == 0f && SelectedModel.transform.localEulerAngles.y < 90f) {
+                // closed
+                SelectedModel.transform.localRotation = Quaternion.RotateTowards(SelectedModel.transform.localRotation, Quaternion.Euler(new Vector3(-90f, 0f, 90f)), 3f * (Time.deltaTime * 100f));
+            } else if (Variables.z == 1f && SelectedModel.transform.localEulerAngles.y > 0f) {
+                // opened
+                SelectedModel.transform.localRotation = Quaternion.RotateTowards(SelectedModel.transform.localRotation, Quaternion.Euler(new Vector3(-90f, 0f, 0f)), 3f * (Time.deltaTime * 100f));
+            } else if (Variables.z == 2f && SelectedModel.transform.localEulerAngles.y < 90f) {
+                // locked
+                SelectedModel.transform.localRotation = Quaternion.RotateTowards(SelectedModel.transform.localRotation, Quaternion.Euler(new Vector3(-90f, 0f, 90f)), 3f * (Time.deltaTime * 100f));
+            } else if (SelectedModel.GetComponent<BoxCollider>().enabled == false) {
+                SelectedModel.GetComponent<BoxCollider>().enabled = true;
             }
         } else if (Variables.x == 4f) {
-            if (TooFar == false) {
-                if (SelectedModel.layer == 11) {
-                    SelectedModel.transform.GetChild(0).GetComponent<Light>().intensity = Mathf.Clamp(Random.Range(0f, 25f), 0f, 1f);
-                } else {
-                    SelectedModel.transform.GetChild(0).GetComponent<Light>().enabled = false;
+            if (SelectedModel.layer == 11) {
+                SelectedModel.transform.GetChild(0).GetComponent<Light>().intensity = Mathf.Clamp(Random.Range(0f, 25f), 0f, 1f);
+            } else {
+                SelectedModel.transform.GetChild(0).GetComponent<Light>().enabled = false;
+            }
+            bool HasSomething = false;
+            foreach (int CheckOffer in TradeOptions) {
+                if (CheckOffer > -1) {
+                    HasSomething = true;
                 }
-                bool HasSomething = false;
-                foreach (int CheckOffer in TradeOptions) {
-                    if (CheckOffer > -1) {
-                        HasSomething = true;
-                    }
-                }
-                if (HasSomething == false && SelectedModel.layer != 0) {
-                    SelectedModel.layer = 0;
-                    if (GameObject.Find("MainCanvas").GetComponent<CanvasScript>().DialogedMob == this.gameObject && GameObject.Find("MainCanvas").GetComponent<CanvasScript>().DialogSetting == "VendingMachine") {
-                        GameObject.Find("MainCanvas").GetComponent<CanvasScript>().DialogSetting = "VendingMachineDone";
-                    }
+            }
+            if (HasSomething == false && SelectedModel.layer != 0) {
+                SelectedModel.layer = 0;
+                if (GameObject.Find("MainCanvas").GetComponent<CanvasScript>().DialogedMob == this.gameObject && GameObject.Find("MainCanvas").GetComponent<CanvasScript>().DialogSetting == "VendingMachine") {
+                    GameObject.Find("MainCanvas").GetComponent<CanvasScript>().DialogSetting = "VendingMachineDone";
                 }
             }
         } else if (Variables.x == 6f) {

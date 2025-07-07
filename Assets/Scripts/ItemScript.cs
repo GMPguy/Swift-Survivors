@@ -28,6 +28,7 @@ public class ItemScript : MonoBehaviour {
     public GameObject DroppedBy;
     public GameObject SpecialPrefab;
     public GameObject AttackPrefab;
+    public SpriteRenderer MinimapMarker;
     // References
 
     // Misc
@@ -54,6 +55,7 @@ public class ItemScript : MonoBehaviour {
         foreach (RaycastHit CheckWaterUPHIT in Physics.RaycastAll(CheckWaterUP, Mathf.Infinity)) {
             if (CheckWaterUPHIT.collider.gameObject.layer == 4 || CheckWaterUPHIT.collider.gameObject.layer == 16) {
                 InWater = true;
+                MinimapMarker.color = new (0f, .5f, 1f, Random.Range(0f, .25f));
             }
         }
 
@@ -61,6 +63,7 @@ public class ItemScript : MonoBehaviour {
             this.GetComponent<Rigidbody>().useGravity = true;
             this.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             this.GetComponent<Rigidbody>().isKinematic = false;
+            MinimapMarker.transform.parent.GetComponent<MinimapMarker>().UpdateRotation = true;
         } else if (State == 1) {
             this.GetComponent<Rigidbody>().useGravity = false;
             this.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
@@ -69,6 +72,7 @@ public class ItemScript : MonoBehaviour {
             this.GetComponent<Rigidbody>().useGravity = true;
             this.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             this.GetComponent<Rigidbody>().isKinematic = false;
+            MinimapMarker.transform.parent.GetComponent<MinimapMarker>().UpdateRotation = true;
             GameObject Swing = Instantiate(EffectPrefab) as GameObject;
             Swing.transform.position = this.transform.position;
             Swing.GetComponent<EffectScript>().EffectName = "Swing";
@@ -120,7 +124,7 @@ public class ItemScript : MonoBehaviour {
                     }
                 }
 
-            } else if (GetMesh.name != "Bubbles" && GetMesh.name != "HitDetector" && GetMesh.name != "Interactions") {
+            } else if (GetMesh.name != "Bubbles" && GetMesh.name != "HitDetector" && GetMesh.name != "Interactions" && GetMesh.name != "MinimapMarker") {
                 Destroy(GetMesh.gameObject);
             }
         }

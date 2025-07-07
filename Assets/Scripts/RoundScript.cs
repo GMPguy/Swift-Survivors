@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class RoundScript : MonoBehaviour {
 
     // Round Variables
+    public float TimeSinceRoundStart;
     public string RoundState = "Prepeare";
     public float RoundTime = 0f;
     public int[] HordeVariables = new int[] { 8, 2, 0, 0 };   // Total Amount - At Once - Power - Special Mutant Chance
@@ -89,9 +90,12 @@ public class RoundScript : MonoBehaviour {
     public float ResetHeight = -5f;
     float SwimDepth = 0f;
 
-    bool DonePrepare = false;
+    int DonePrepare = 0;
+
+    public static List<InteractableScript> CachedInteractables;
+    public static List<MobScript> CachedMobs;
+
     public bool SunHidden = false;
-    bool DynamicDone = false;
 
     float CountSecond = 1f;
     // public float Sunnyness = 1f;
@@ -118,6 +122,8 @@ public class RoundScript : MonoBehaviour {
             GS.PlayerBuffs = "";
         }
 
+        CachedInteractables = new List<InteractableScript>();
+        CachedMobs = new List<MobScript>();
         ActiveDestructs = new List<DestructionScript>();
         ActiveBuildings = new List<BuildingScript>();
         FragElements = new List<Vector3>();
@@ -195,6 +201,11 @@ public class RoundScript : MonoBehaviour {
                     CountSecond = 1f;
                     SetScore("SurvivedTime_", "/+1");
                 }
+
+                // Manage cached object
+                CachedUpdates();
+
+                TimeSinceRoundStart += Time.deltaTime;
             }
 
             // Timeofday[1] is hour, but if it changes, an AmbientSet must be called, for the visual changes to set in
@@ -216,9 +227,10 @@ public class RoundScript : MonoBehaviour {
                 if(GS.SkyboxType == 2) AmbientSet("Normal");
             }
 
-            if (RoundState == "Prepeare" && DonePrepare == false) {
+            if (RoundState == "Prepeare" && DonePrepare != -1) {
 
-                DonePrepare = true;
+                bool playerPermission = false;
+
                 DifficultySliderA = Mathf.Clamp(GS.Round / (30f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 5f)), 0f, 1f);
                 if (IsCausual)
                     DifficultySliderB = GS.Round > 1 ? GS.SeedPerlin(GS.RoundSeed) : .1f;
@@ -228,170 +240,137 @@ public class RoundScript : MonoBehaviour {
                 // Set Terrain Stuff
                 if (GS.GameModePrefab.x == 0) {
 
-                    foreach (Transform FindBiome in BiomeList.transform) {
-                        if (FindBiome.transform.GetSiblingIndex() == GS.Biome) {
-                            GotTerrain = FindBiome.gameObject;
-                        }
-                    }
-                    if (GotTerrain == null) {
-                        GotTerrain = BiomeList.transform.GetChild(1).gameObject;
-                    }
-
-                    if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
-                        RoundTime = 300f;
-                    } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "2") {
-                        RoundTime = Mathf.Clamp(300f - (DifficultySliderA * 180f), 120f, 300f);
-                    } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "3") {
-                        RoundTime = Mathf.Clamp(240f - (DifficultySliderA * 120f), 120f, 240f);
-                    } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "4") {
-                        RoundTime = Mathf.Clamp(180f - (DifficultySliderA * 60f), 120f, 240f);
-                    } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "5") {
-                        RoundTime = 120f;
-                    }
-
-                    TimeOfDay[0] = GS.Round;
-                    TimeOfDay[0] -= (GS.Round / 4) * 4;
-                    //print("The round is " + GS.Round + ", minus the repeat " + (GS.Round / 4) + ", round minus repeat is " + (GS.Round - (GS.Round / 4)) + ", and so the results should be " + TimeOfDay[0]);
-                    switch(TimeOfDay[0]){
-                        case 0: 
-                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(0f, 3f, GS.SeedPerlin(GS.RoundSeed)));
-                            TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 0f, (3f * 60f) - (RoundTime / 2f));
-                            break;
-                        case 1: 
-                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(7f, 12f, GS.SeedPerlin(GS.RoundSeed)));
-                            TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 7f * 60f, (12f * 60f) - (RoundTime / 2f));
-                            break;
-                        case 2: 
-                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(12f, 18f, GS.SeedPerlin(GS.RoundSeed))); 
-                            TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 12f * 60f, (18f * 60f) - (RoundTime / 2f));
-                            break;
-                        case 3: 
-                            TimeOfDay[1] = (int)(60f * Mathf.Lerp(18f, 21f, GS.SeedPerlin(GS.RoundSeed))); 
-                            TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 18f * 60f, (21f * 60f) - (RoundTime / 2f));
-                            break;
-                    }
-
-                    if (Weather == -1) {
-                        Weather = Mathf.Clamp((int)Mathf.Lerp(-0.5f, 6.5f, GS.SeedPerlin(GS.RoundSeed + "89665776")), 0, 5);
-                        if ((GS.Biome == 5 || GS.Round == 1) && (Weather >= 2)) {
-                            Weather = 1;
-                        }
-                    }
-
-                    if (Weather == 0) {
-                        Sunnyness = Mathf.Lerp(0.75f, 1f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
-                    } else if (Weather == 1) {
-                        Sunnyness = Mathf.Lerp(0.5f, 0.75f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
-                    } else if (Weather == 2) {
-                        Sunnyness = Mathf.Lerp(0.25f, 0.5f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
-                    } else if (Weather == 3) {
-                        Sunnyness = Mathf.Lerp(0f, 0.25f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
-                    } else if (Weather == 4) {
-                        Sunnyness = 0f;
-                    } else if (Weather == 5) {
-                        Sunnyness = 0f;
-                    }
-
-                    AmbientSet("Normal");
-                    MainTerrain.GetComponent<LandScript>().TheStart();
-
-                    // Set Monuments
-                    int MonumentsToSpawn = (int)Mathf.Lerp(0f, 2.9f, GS.SeedPerlin(GS.RoundSeed + "1233"));
-                    for (int SetMonuments = MonumentsToSpawn; SetMonuments > 0; SetMonuments--) {
-                        int PickMonument = (int)Mathf.Lerp(0f, 9.9f, GS.SeedPerlin2D(GS.RoundSeed, SetMonuments / 3f, SetMonuments / 3f));
-                        if ((PickMonument == 9 || PickMonument == 2) && GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] == "Battleground") {
-                            PickMonument = 0;
-                        }
-                        MainTerrain.GetComponent<LandScript>().SetLand(MainTerrain.GetComponent<LandScript>().Lands[PickMonument], PickMonument.ToString(), 0);
-                    }
-
-                    // Set Lands
-                    foreach (GameObject LandToSet in MainTerrain.GetComponent<LandScript>().Lands) {
-                        if (LandToSet.name.Substring(2, 1) != "M") {
-                            float PickTerrain = GS.SeedPerlin2D(GS.RoundSeed, LandToSet.transform.position.x + 1000, LandToSet.transform.position.z + 1000);
-                            //print(PickTerrain);
-                            string PickBiomeAvailableTerrains = GotTerrain.GetComponent<BiomeInfo>().AvailableTerrainTypes[(int)(3f * DifficultySliderB)];
-                            Vector2 RadioactivityRange = new Vector2(Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().Radioactivity[0], GotTerrain.GetComponent<BiomeInfo>().Radioactivity[2], DifficultySliderB), Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().Radioactivity[1], GotTerrain.GetComponent<BiomeInfo>().Radioactivity[3], DifficultySliderB));
-                            MainTerrain.GetComponent<LandScript>().SetLand(LandToSet, PickBiomeAvailableTerrains.Substring((int)Mathf.Clamp(PickTerrain * (PickBiomeAvailableTerrains.Length), 0f, PickBiomeAvailableTerrains.Length - 1f), 1), (int)Mathf.Lerp(RadioactivityRange.x, RadioactivityRange.y, PickTerrain));
-                        }
-                    }
-                    MainTerrain.GetComponent<LandScript>().SetBarrier(GotTerrain.GetComponent<BiomeInfo>().Barrier);
-
-                    // Spawn mobs
-                    List<MobPH> newMobPHs = new List<MobPH>();
-                    for(int spawnMPH = (int)Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().AmountOfMobs[0], GotTerrain.GetComponent<BiomeInfo>().AmountOfMobs[1], DifficultySliderB); spawnMPH > 0; spawnMPH--){
-                        GameObject SpawnMobPH = Instantiate(MobPHprefab) as GameObject;
-                        SpawnMobPH.GetComponent<MobPH>().spawnType = GotTerrain.GetComponent<BiomeInfo>().MobPHsuggestion;
-                        SpawnMobPH.GetComponent<MobPH>().DifficultyLevel = DifficultySliderB;
-                        newMobPHs.Add(SpawnMobPH.GetComponent<MobPH>());
-                    }
-                    MobPHeses = newMobPHs.ToArray();
-                    // Spawn mobs
-
-                    // Set Escape Roots
-                    string WhichWall = "NESW";
-                    for (int AmountOfTunnels = 5 - Mathf.Clamp((int)(DifficultySliderB * 3f), 1, 3); AmountOfTunnels > 0; AmountOfTunnels--) {
-                        int PickedWall = Random.Range(0, (int)(WhichWall.Length - 1f));
-                        string WhichWallA = WhichWall.Substring(PickedWall, 1);
-                        WhichWall = WhichWall.Remove(PickedWall, 1);
-
-                        GameObject NewTunnel = Instantiate(InteractablePrefab) as GameObject;
-                        NewTunnel.GetComponent<InteractableScript>().Variables = new Vector3(2f, 0f, 0f);
-                        if (WhichWallA == "N") {
-                            NewTunnel.transform.position = new Vector3(Random.Range(-100f, 100f), 0f, 249f);
-                            NewTunnel.transform.eulerAngles = new Vector3(0f, 90f, 0f);
-                        } else if (WhichWallA == "E") {
-                            NewTunnel.transform.position = new Vector3(249f, 0f, Random.Range(-100f, 100f));
-                            NewTunnel.transform.eulerAngles = new Vector3(0f, 180f, 0f);
-                        } else if (WhichWallA == "S") {
-                            NewTunnel.transform.position = new Vector3(Random.Range(-100f, 100f), 0f, -249f);
-                            NewTunnel.transform.eulerAngles = new Vector3(0f, -90f, 0f);
-                        } else if (WhichWallA == "W") {
-                            NewTunnel.transform.position = new Vector3(-249f, 0f, Random.Range(-100f, 100f));
-                            NewTunnel.transform.eulerAngles = new Vector3(0f, 0f, 0f);
-                        }
-                    }
-                    // Set Escape Roots
-
-                    // Clean from too much
-                    if (GameObject.FindGameObjectsWithTag("Item").Length > 150) {
-                        print(GameObject.FindGameObjectsWithTag("Item").Length - 150 + " Items removed");
-                        for (int TooClean = GameObject.FindGameObjectsWithTag("Item").Length - 150; TooClean > 0; TooClean--) {
-                            GameObject ItemToDestroy = GameObject.FindGameObjectsWithTag("Item")[(int)Random.Range(0f, GameObject.FindGameObjectsWithTag("Item").Length - 0.1f)];
-                            if (GS.GetSemiClass(ItemToDestroy.GetComponent<ItemScript>().Variables, "id") == "990") {
-                                Destroy(ItemToDestroy);
+                    switch (DonePrepare) {
+                        case 0: // Default world spawn
+                            foreach (Transform FindBiome in BiomeList.transform) {
+                                if (FindBiome.transform.GetSiblingIndex() == GS.Biome) {
+                                    GotTerrain = FindBiome.gameObject;
+                                }
                             }
-                        }
-                    }
-                    if (GameObject.FindGameObjectsWithTag("Interactable").Length > 25) {
-                        print(GameObject.FindGameObjectsWithTag("Interactable").Length - 25 + " Interactables removed");
-                        for (int TooClean = GameObject.FindGameObjectsWithTag("Interactable").Length - 25; TooClean > 0; TooClean--) {
-                            GameObject InteractableToDestroy = GameObject.FindGameObjectsWithTag("Interactable")[(int)Random.Range(0f, GameObject.FindGameObjectsWithTag("Interactable").Length - 0.1f)];
-                            if (InteractableToDestroy.GetComponent<InteractableScript>().Variables.x != 2f) {
-                                Destroy(InteractableToDestroy);
+                            if (GotTerrain == null) {
+                                GotTerrain = BiomeList.transform.GetChild(1).gameObject;
                             }
-                        }
+
+                            if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
+                                RoundTime = 300f;
+                            } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "2") {
+                                RoundTime = Mathf.Clamp(300f - (DifficultySliderA * 180f), 120f, 300f);
+                            } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "3") {
+                                RoundTime = Mathf.Clamp(240f - (DifficultySliderA * 120f), 120f, 240f);
+                            } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "4") {
+                                RoundTime = Mathf.Clamp(180f - (DifficultySliderA * 60f), 120f, 240f);
+                            } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "5") {
+                                RoundTime = 120f;
+                            }
+
+                            TimeOfDay[0] = GS.Round;
+                            TimeOfDay[0] -= (GS.Round / 4) * 4;
+
+                            switch(TimeOfDay[0]){
+                                case 0: 
+                                    TimeOfDay[1] = (int)(60f * Mathf.Lerp(0f, 3f, GS.SeedPerlin(GS.RoundSeed)));
+                                    TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 0f, (3f * 60f) - (RoundTime / 2f));
+                                    break;
+                                case 1: 
+                                    TimeOfDay[1] = (int)(60f * Mathf.Lerp(7f, 12f, GS.SeedPerlin(GS.RoundSeed)));
+                                    TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 7f * 60f, (12f * 60f) - (RoundTime / 2f));
+                                    break;
+                                case 2: 
+                                    TimeOfDay[1] = (int)(60f * Mathf.Lerp(12f, 18f, GS.SeedPerlin(GS.RoundSeed))); 
+                                    TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 12f * 60f, (18f * 60f) - (RoundTime / 2f));
+                                    break;
+                                case 3: 
+                                    TimeOfDay[1] = (int)(60f * Mathf.Lerp(18f, 21f, GS.SeedPerlin(GS.RoundSeed))); 
+                                    TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 18f * 60f, (21f * 60f) - (RoundTime / 2f));
+                                    break;
+                            }
+
+                            if (Weather == -1) {
+                                Weather = Mathf.Clamp((int)Mathf.Lerp(-0.5f, 6.5f, GS.SeedPerlin(GS.RoundSeed + "89665776")), 0, 5);
+                                if ((GS.Biome == 5 || GS.Round == 1) && (Weather >= 2)) {
+                                    Weather = 1;
+                                }
+                            }
+
+                            if (Weather == 0) {
+                                Sunnyness = Mathf.Lerp(0.75f, 1f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
+                            } else if (Weather == 1) {
+                                Sunnyness = Mathf.Lerp(0.5f, 0.75f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
+                            } else if (Weather == 2) {
+                                Sunnyness = Mathf.Lerp(0.25f, 0.5f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
+                            } else if (Weather == 3) {
+                                Sunnyness = Mathf.Lerp(0f, 0.25f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
+                            } else if (Weather == 4) {
+                                Sunnyness = 0f;
+                            } else if (Weather == 5) {
+                                Sunnyness = 0f;
+                            }
+
+                            AmbientSet("Normal");
+                            MainTerrain.GetComponent<LandScript>().TheStart(GotTerrain.GetComponent<BiomeInfo>(), DifficultySliderB);
+
+                            // Clean from too much
+                            if (GameObject.FindGameObjectsWithTag("Item").Length > 150) {
+                                print(GameObject.FindGameObjectsWithTag("Item").Length - 150 + " Items removed");
+                                for (int TooClean = GameObject.FindGameObjectsWithTag("Item").Length - 150; TooClean > 0; TooClean--) {
+                                    GameObject ItemToDestroy = GameObject.FindGameObjectsWithTag("Item")[(int)Random.Range(0f, GameObject.FindGameObjectsWithTag("Item").Length - 0.1f)];
+                                    if (GS.GetSemiClass(ItemToDestroy.GetComponent<ItemScript>().Variables, "id") == "990") {
+                                        Destroy(ItemToDestroy);
+                                    }
+                                }
+                            }
+                            if (GameObject.FindGameObjectsWithTag("Interactable").Length > 25) {
+                                print(GameObject.FindGameObjectsWithTag("Interactable").Length - 25 + " Interactables removed");
+                                for (int TooClean = GameObject.FindGameObjectsWithTag("Interactable").Length - 25; TooClean > 0; TooClean--) {
+                                    GameObject InteractableToDestroy = GameObject.FindGameObjectsWithTag("Interactable")[(int)Random.Range(0f, GameObject.FindGameObjectsWithTag("Interactable").Length - 0.1f)];
+                                    if (InteractableToDestroy.GetComponent<InteractableScript>().Variables.x != 2f) {
+                                        Destroy(InteractableToDestroy);
+                                    }
+                                }
+                            }
+                            // Clean from too much
+
+                            // Set Terrain Stuff
+
+                            // Set nuke options
+                            int PickNukePos = (int)Random.Range(1f, 4.9f);
+                            if (PickNukePos == 1) {
+                                NukePosition = new Vector3(400f, 0f, 400f);
+                            } else if (PickNukePos == 2) {
+                                NukePosition = new Vector3(-400f, 0f, 400f);
+                            } else if (PickNukePos == 3) {
+                                NukePosition = new Vector3(-400f, 0f, -400f);
+                            } else if (PickNukePos == 4) {
+                                NukePosition = new Vector3(400f, 0f, -400f);
+                            }
+                            NukeObj.transform.LookAt(new Vector3(0f, NukeObj.transform.position.y, 0f));
+                            NukeObj.transform.position = NukePosition;
+                            // Set nuke options
+
+                            DonePrepare = 1;
+                            break;
+                        case 1: // Default world spawned - wait for delayed updates
+                            if (MainTerrain.GetComponent<LandScript>().Activated)
+                                DonePrepare = 2;
+                            break;
+                        case 2: // After default world spawn
+                            // Spawn mobs
+                            List<MobPH> newMobPHs = new List<MobPH>();
+                            for(int spawnMPH = (int)Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().AmountOfMobs[0], GotTerrain.GetComponent<BiomeInfo>().AmountOfMobs[1], DifficultySliderB); spawnMPH > 0; spawnMPH--){
+                                GameObject SpawnMobPH = Instantiate(MobPHprefab) as GameObject;
+                                SpawnMobPH.GetComponent<MobPH>().spawnType = GotTerrain.GetComponent<BiomeInfo>().MobPHsuggestion;
+                                SpawnMobPH.GetComponent<MobPH>().DifficultyLevel = DifficultySliderB;
+                                newMobPHs.Add(SpawnMobPH.GetComponent<MobPH>());
+                            }
+                            MobPHeses = newMobPHs.ToArray();
+                            // Spawn mobs
+
+                            DonePrepare = -1;
+                            RoundState = "Normal";
+                            playerPermission = true;
+                            TimeSinceRoundStart = 0f;
+                            break;
                     }
-                    // Clean from too much
-
-                    // Set Terrain Stuff
-
-                    // Set nuke options
-                    int PickNukePos = (int)Random.Range(1f, 4.9f);
-                    if (PickNukePos == 1) {
-                        NukePosition = new Vector3(400f, 0f, 400f);
-                    } else if (PickNukePos == 2) {
-                        NukePosition = new Vector3(-400f, 0f, 400f);
-                    } else if (PickNukePos == 3) {
-                        NukePosition = new Vector3(-400f, 0f, -400f);
-                    } else if (PickNukePos == 4) {
-                        NukePosition = new Vector3(400f, 0f, -400f);
-                    }
-                    NukeObj.transform.LookAt(new Vector3(0f, NukeObj.transform.position.y, 0f));
-                    NukeObj.transform.position = NukePosition;
-                    // Set nuke options
-
-                    RoundState = "Normal";
 
                 } else if (GS.GameModePrefab.x == 1) {
 
@@ -402,73 +381,82 @@ public class RoundScript : MonoBehaviour {
                         }
                     }
 
-                    //Sunnyness = GotTerrain.GetComponent<MapInfo>().Sunnyness;
-                    //SkyColor = GotTerrain.GetComponent<MapInfo>().SkyColors[0];
-                    //DrawDistance = GotTerrain.GetComponent<MapInfo>().FogDistances[0];
-                    //AmbientColor = GotTerrain.GetComponent<MapInfo>().AmbientColors[0];
-                    //SunColor = GotTerrain.GetComponent<MapInfo>().LightColors[0];
-
                     AmbientSet("Horde");
 
                     RoundState = "BeforeWave";
                     RoundTime = 60f;
+                    playerPermission = true;
+                    DonePrepare = -1;
+                    TimeSinceRoundStart = 0f;
 
                 }
 
-
-                // Set Player Stuff
-                GameObject NewPlayer = Instantiate(PlayerPrefab) as GameObject;
-                NewPlayer.transform.position = new Vector3(1f, 3f, 1f);
-                MainPlayer = NewPlayer.GetComponent<PlayerScript>();
-                switch(GS.GetSemiClass(GS.RoundSetting, "D", "?")){
-                    case "1": MainPlayer.FoodLimits = new float[]{0.25f, 0.5f}; break;
-                    case "2": MainPlayer.FoodLimits = new float[]{0.33f, 0.66f}; break;
-                    case "3": MainPlayer.FoodLimits = new float[]{0.5f, 0.75f}; break;
-                    case "4": case "5": MainPlayer.FoodLimits = new float[]{0.5f, 0.99f}; break;
-                }
-                if (GS.GetComponent<GameScript>().WhatOnStart == 1) {
-                    // Load
-                    MainPlayer.RS = this;
-                    MainPlayer.GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
-                    MainPlayer.Health[0] = GS.HealthSave.x;
-                    MainPlayer.Health[1] = GS.HealthSave.y;
-                    MainPlayer.Food[0] = GS.HungerSave.x;
-                    MainPlayer.Food[1] = GS.HungerSave.y;
-                    MainPlayer.InventoryFunctions(GS.PlayerInventory);
-                    MainPlayer.EquipmentFunctions(GS.PlayerEquipment);
-                    MainPlayer.MaxInventorySlots = GS.MaxInventory;
-                    MainPlayer.Buffs(GS.PlayerBuffs);
-                    MainPlayer.Speed = GS.PlayerSpeed;
-
-                    // Adding hunger
-                    if(MainPlayer.Food[0] < MainPlayer.Food[1] * MainPlayer.FoodLimits[0]){
-                        MainPlayer.Food[0] = 0;
-                        MainPlayer.Food[1] *= 0.5f;
-                    } else if(MainPlayer.Food[0] < MainPlayer.Food[1] * MainPlayer.FoodLimits[1]){
-                        MainPlayer.Food[0] = 0;
-                        MainPlayer.Food[1] *= 1.25f;
-                    } else if(MainPlayer.Food[0] <= MainPlayer.Food[1]){
-                        MainPlayer.Food[0] = 0;
-                        MainPlayer.Food[1] *= 1.5f;
-                    } else if(MainPlayer.Food[0] > MainPlayer.Food[1]){
-                        MainPlayer.Food[0] -= MainPlayer.Food[1];
-                        MainPlayer.Food[1] *= 2f;
+                if (playerPermission) {
+                    // Set Player Stuff
+                    GameObject NewPlayer = Instantiate(PlayerPrefab) as GameObject;
+                    NewPlayer.transform.position = new Vector3(1f, 3f, 1f);
+                    MainPlayer = NewPlayer.GetComponent<PlayerScript>();
+                    switch(GS.GetSemiClass(GS.RoundSetting, "D", "?")){
+                        case "1": MainPlayer.FoodLimits = new float[]{0.25f, 0.5f}; break;
+                        case "2": MainPlayer.FoodLimits = new float[]{0.33f, 0.66f}; break;
+                        case "3": MainPlayer.FoodLimits = new float[]{0.5f, 0.75f}; break;
+                        case "4": case "5": MainPlayer.FoodLimits = new float[]{0.5f, 0.99f}; break;
                     }
 
-                    if(MainPlayer.Food[0] > MainPlayer.Food[1]) GS.PS.AchProg("Ach_Dinner", "0");
+                    if (GS.GetComponent<GameScript>().WhatOnStart == 1) {
+                        // Load
+                        MainPlayer.RS = this;
+                        MainPlayer.GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
+                        MainPlayer.Health[0] = GS.HealthSave.x;
+                        MainPlayer.Health[1] = GS.HealthSave.y;
+                        MainPlayer.Food[0] = GS.HungerSave.x;
+                        MainPlayer.Food[1] = GS.HungerSave.y;
+                        MainPlayer.InventoryFunctions(GS.PlayerInventory);
+                        MainPlayer.EquipmentFunctions(GS.PlayerEquipment);
+                        MainPlayer.MaxInventorySlots = GS.MaxInventory;
+                        MainPlayer.Buffs(GS.PlayerBuffs);
+                        MainPlayer.Speed = GS.PlayerSpeed;
 
-                    MainPlayer.FoodLimits = new float[]{MainPlayer.Food[1] * MainPlayer.FoodLimits[0], MainPlayer.Food[1] * MainPlayer.FoodLimits[1]};
+                        // Adding hunger
+                        if(MainPlayer.Food[0] < MainPlayer.Food[1] * MainPlayer.FoodLimits[0]){
+                            MainPlayer.Food[0] = 0;
+                            MainPlayer.Food[1] *= 0.5f;
+                        } else if(MainPlayer.Food[0] < MainPlayer.Food[1] * MainPlayer.FoodLimits[1]){
+                            MainPlayer.Food[0] = 0;
+                            MainPlayer.Food[1] *= 1.25f;
+                        } else if(MainPlayer.Food[0] <= MainPlayer.Food[1]){
+                            MainPlayer.Food[0] = 0;
+                            MainPlayer.Food[1] *= 1.5f;
+                        } else if(MainPlayer.Food[0] > MainPlayer.Food[1]){
+                            MainPlayer.Food[0] -= MainPlayer.Food[1];
+                            MainPlayer.Food[1] *= 2f;
+                        }
 
-                } else {
-                    MainPlayer.Food = new float[]{0f, 100f};
-                    MainPlayer.FoodLimits = new float[]{MainPlayer.Food[1] * MainPlayer.FoodLimits[0], MainPlayer.Food[1] * MainPlayer.FoodLimits[1]};
+                        if(MainPlayer.Food[0] > MainPlayer.Food[1]) GS.PS.AchProg("Ach_Dinner", "0");
 
-                    if (GS.GameModePrefab.x == 1) {
-                        MainPlayer.MaxInventorySlots = 6;
-                        GS.Ammo = 100;
+                        MainPlayer.FoodLimits = new float[]{MainPlayer.Food[1] * MainPlayer.FoodLimits[0], MainPlayer.Food[1] * MainPlayer.FoodLimits[1]};
+
+                    } else {
+                        MainPlayer.Food = new float[]{0f, 100f};
+                        MainPlayer.FoodLimits = new float[]{MainPlayer.Food[1] * MainPlayer.FoodLimits[0], MainPlayer.Food[1] * MainPlayer.FoodLimits[1]};
+
+                        if (GS.GameModePrefab.x == 1) {
+                            MainPlayer.MaxInventorySlots = 6;
+                            GS.Ammo = 100;
+                        }
                     }
+                    // Set Player Stuff
+
+                    // Enable cached objects
+                    for (int ci = CachedInteractables.Count - 1; ci >= 0; ci--)
+                        if (!CachedInteractables[ci])
+                            CachedInteractables.RemoveAt(ci);
+                        else
+                            CachedInteractables[ci].TheStart();
+                    // Enable cached objects
+
+                    NewMenuScript.LoadingAdditionalInfo = "";
                 }
-                // Set Player Stuff
 
             } else if (RoundState == "Normal") {
 
@@ -1569,6 +1557,27 @@ public class RoundScript : MonoBehaviour {
                     GotSkybox.SetActive(false);
                 }
             }
+        }
+
+    }
+
+    // Update cached entities
+    void CachedUpdates () {
+
+        // Interactables
+        for (int ui = CachedInteractables.Count - 1; ui >= 0; ui--) {
+            if (!CachedInteractables[ui])
+                CachedInteractables.RemoveAt(ui);
+            else
+                CachedInteractables[ui].TheUpdate();
+        }
+
+        // Mobs
+        for (int um = CachedMobs.Count - 1; um >= 0; um--) {
+            if (!CachedMobs[um])
+                CachedMobs.RemoveAt(um);
+            else
+                CachedMobs[um].TheUpdate();
         }
 
     }

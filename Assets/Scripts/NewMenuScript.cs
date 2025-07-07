@@ -26,6 +26,7 @@ public class NewMenuScript : MonoBehaviour {
     float LogoAlpha = 0f;
     // Whiles
     // Loading
+    public static string LoadingAdditionalInfo;
     public float LoadingTime = 3f;
     public string AfterLoading = "";
     public Transform LoadingWindow;
@@ -266,7 +267,7 @@ public class NewMenuScript : MonoBehaviour {
         WhileWarnings();
         if (PopupQueue.ToArray().Length > 0) WhilePopups(PopupQueue.ToArray()[0]);
         else WhilePopups("");
-        if(LoadingTime > 0f || AfterLoading != ""){
+        if(LoadingTime > 0f || LoadingAdditionalInfo != "" || AfterLoading != ""){
 
             hide = false;
             WhileLoading(true);
@@ -437,25 +438,35 @@ public class NewMenuScript : MonoBehaviour {
 
             LoadingWindow.position = SH[0].position;
 
-            if(LoadingTime > 0f){
+            Clockthingys[0].eulerAngles = new Vector3(0f, 0f, Mathf.Sin(Time.timeSinceLevelLoad)*3f);
+            Clockthingys[1].eulerAngles = new Vector3(0f, 0f, Mathf.Sin(Time.timeSinceLevelLoad));
+
+            if (LoadingAdditionalInfo != "") {
+                LoadingTextes[0].text = GS.SetString("LOADING", "WCZYTYWANIE");
+                LoadingTextes[1].text = LoadingAdditionalInfo;
+            } else if(LoadingTime > 0f){
                 LoadingTime -= 0.02f * (Time.unscaledDeltaTime*50f);
 
-                if(Spin > 0f){
+                /*if(Spin > 0f){
                     Spin -= 0.02f * Time.unscaledDeltaTime*50f;
                     Clockthingys[0].eulerAngles = new Vector3(0f, 0f, Mathf.Sin(Time.timeSinceLevelLoad)*3f);
                     Clockthingys[1].eulerAngles = new Vector3(0f, 0f, Mathf.Sin(Time.timeSinceLevelLoad));
                 }
-                if (Time.timeSinceLevelLoad%1f < 0.1f) Spin = Random.Range(-5f, 10f);
+                if (Time.timeSinceLevelLoad%1f < 0.1f) Spin = Random.Range(-5f, 10f);*/
 
                 LoadingTextes[0].text = GS.SetString("LOADING", "WCZYTYWANIE");
                 Time.timeScale = 1f;
-                switch(AfterLoading){
-                    case "f_GameOver": LoadingTextes[1].text = GS.SetString("End results menu", "Menu wyników końcowych"); break;
-                    case "f_EscapeMap": LoadingTextes[1].text = GS.SetString("Next roud", "Następnej rundy"); break;
-                    case "f_MainMenu": LoadingTextes[1].text = GS.SetString("Main menu", "Main menu"); break;
-                    case "f_StartGame": LoadingTextes[1].text = GS.SetString("Starting a new game", "Tworzenie nowej gry"); break;
-                    case "f_LoadGame": LoadingTextes[1].text = GS.SetString("Loading game", "Wczytywanie gry"); break;
-                    default: LoadingTextes[1].text = ""; break;
+
+                if (LoadingAdditionalInfo != "")
+                    LoadingTextes[1].text = LoadingAdditionalInfo;
+                else
+                    switch(AfterLoading){
+                        case "f_GameOver": LoadingTextes[1].text = GS.SetString("End results menu", "Menu wyników końcowych"); break;
+                        case "f_EscapeMap": LoadingTextes[1].text = GS.SetString("Next roud", "Następnej rundy"); break;
+                        case "f_MainMenu": LoadingTextes[1].text = GS.SetString("Main menu", "Main menu"); break;
+                        case "f_StartGame": LoadingTextes[1].text = GS.SetString("Starting a new game", "Tworzenie nowej gry"); break;
+                        case "f_LoadGame": LoadingTextes[1].text = GS.SetString("Loading game", "Wczytywanie gry"); break;
+                        default: LoadingTextes[1].text = ""; break;
                 }
 
             } else if (AfterLoading != ""){
