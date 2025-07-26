@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -46,11 +47,14 @@ public class RoundScript : MonoBehaviour {
     public GameObject EffectPrefab;
     // Effects
     public GameObject MainTerrain;
+    public NavMeshSurface NavigationSurface_Humanoid;
+    public NavMeshSurface NavigationSurface_Mutant;
     public PlayerScript MainPlayer;
     public GameScript GS;
     public CanvasScript CS;
     public GameObject BiomeList;
     public GameObject HordeMapList;
+    public GameObject[] HordeWaypoints;
     public GameObject GotTerrain;
     public GameObject SkyboxObj;
     public Texture[] SkyboxImages;
@@ -194,16 +198,18 @@ public class RoundScript : MonoBehaviour {
                 }
             }
 
-            // Count survived time
             if (RoundState == "Normal" || RoundState == "Nuked" || RoundState == "BeforeWave" || RoundState == "HordeWave"){
-                if (CountSecond > 0f) CountSecond -= Time.deltaTime;
+                // Count survived time
+                if (CountSecond > 0f) 
+                    CountSecond -= Time.deltaTime;
                 else {
                     CountSecond = 1f;
                     SetScore("SurvivedTime_", "/+1");
                 }
 
                 // Manage cached object
-                CachedUpdates();
+                if (Time.timeScale > 0f)
+                    CachedUpdates();
 
                 TimeSinceRoundStart += Time.deltaTime;
             }
@@ -374,20 +380,30 @@ public class RoundScript : MonoBehaviour {
 
                 } else if (GS.GameModePrefab.x == 1) {
 
-                    foreach (Transform SetMap in HordeMapList.transform) {
-                        if (int.Parse(SetMap.name.Substring(0, 2)) == int.Parse(GS.GetSemiClass(GS.RoundSetting, "H", "?"))) {
-                            SetMap.gameObject.SetActive(true);
-                            GotTerrain = SetMap.gameObject;
-                        }
+                    switch (DonePrepare) {
+                        case 0:
+                            foreach (Transform SetMap in HordeMapList.transform) {
+                                if (int.Parse(SetMap.name.Substring(0, 2)) == int.Parse(GS.GetSemiClass(GS.RoundSetting, "H", "?"))) {
+                                    SetMap.gameObject.SetActive(true);
+                                    GotTerrain = SetMap.gameObject;
+                                    HordeWaypoints = GotTerrain.GetComponent<MapInfo>().HordeWayPoints;
+                                    GotTerrain.GetComponent<MapInfo>().TheStart();
+                                }
+                            }
+
+                            AmbientSet("Horde");
+                            NewMenuScript.LoadingAdditionalInfo = GS.SetString("Baking navigation surfaces", "Tworzenie powierzchni do nawigowania SI");
+                            DonePrepare = 1;
+                            break;
+                        case 1:
+                            NavigationSurface_Mutant.BuildNavMesh();
+                            RoundState = "BeforeWave";
+                            RoundTime = 60f;
+                            playerPermission = true;
+                            DonePrepare = -1;
+                            TimeSinceRoundStart = 0f;
+                            break;
                     }
-
-                    AmbientSet("Horde");
-
-                    RoundState = "BeforeWave";
-                    RoundTime = 60f;
-                    playerPermission = true;
-                    DonePrepare = -1;
-                    TimeSinceRoundStart = 0f;
 
                 }
 
@@ -776,7 +792,7 @@ public class RoundScript : MonoBehaviour {
                     GameObject NewCustomer = Instantiate(MobPrefab) as GameObject;
                     GameObject CustomerSpawnPoint = GotTerrain.GetComponent<MapInfo>().HordeSpawnPoints[(int)Random.Range(0, GotTerrain.GetComponent<MapInfo>().HordeSpawnPoints.Length - 0.1f)];
                     NewCustomer.transform.position = CustomerSpawnPoint.transform.position;
-                    NewCustomer.GetComponent<MobScript>().AiPosition = NewCustomer.transform.position;
+                    NewCustomer.GetComponent<MobScript>().AiMovePosition = NewCustomer.transform.position;
                     NewCustomer.GetComponent<MobScript>().CurrentWaypoint = CustomerSpawnPoint;
                     HordeAmount -= 1;
                     if (Odds == 1 && HordeVariables[3] > 0f) {

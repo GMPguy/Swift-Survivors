@@ -12,7 +12,6 @@ public class LandScript : MonoBehaviour {
     public GameObject TreesPrefab;
     public GameObject InteractablePrefab;
     public GameObject LandpartHide;
-    public NavMeshSurface NavigationSurface;
     List<Transform> TreeChunks;
     public GameObject[] Lands;
     public GameObject Barriers;
@@ -152,7 +151,7 @@ public class LandScript : MonoBehaviour {
                         NewMenuScript.LoadingAdditionalInfo = GS.SetString("Baking navigation surfaces", "Tworzenie powierzchni do nawigowania SI");
                 } else if (NavmeshBake == false) {
                     // Step two - bake navmesh
-                    NavigationSurface.BuildNavMesh();
+                    RS.NavigationSurface_Humanoid.BuildNavMesh();
                     NavmeshBake = true;
                 } else {
                     Activated = true;

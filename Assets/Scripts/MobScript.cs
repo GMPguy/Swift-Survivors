@@ -5,6 +5,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Random=UnityEngine.Random;
 using UnityEngine.Timeline;
+using UnityEngine.AI;
 
 public class MobScript : MonoBehaviour {
 
@@ -36,9 +37,6 @@ public class MobScript : MonoBehaviour {
     public float Curious = 0f;
     public float Panic = 0f;
     public GameObject AiTarget;
-    public Vector3 AiPosition;
-    public Vector3 AiTargetLastSeen;
-    public GameObject CurrentWaypoint;
     int CWBAF = 0;
     float SwitchPosition = 0f;
     int[] Ammo;
@@ -66,7 +64,14 @@ public class MobScript : MonoBehaviour {
     public GameObject Humanoid;
     public GameObject[] HumanoidBodyParts;
     // Mob Models
+    public GameObject CurrentWaypoint;
     // References
+
+    // Nav variables
+    public Vector3 AiMovePosition;
+    public Vector3 AiLastSeenPosition;
+    public NavMeshAgent NavAgent;
+    // Nav variables
 
     // Misc
     bool Ach_Flare = false;
@@ -90,7 +95,6 @@ public class MobScript : MonoBehaviour {
     string MobAudio = "";
     GameObject leadAggresor;
     bool InWater = false;
-    public bool TooFar = false;
     int WeaponToDrop = -1;
     float Chatter = 0f;
     bool SetTheGodDamnPosition = true;
@@ -124,8 +128,9 @@ public class MobScript : MonoBehaviour {
             this.transform.position = GroundHIT.point + (Vector3.up * 0.51f);
         }
 
-        StartPosition = this.transform.position;
-        AiPosition = StartPosition;
+        if (GS.GameModePrefab.x == 1)
+            AiLastSeenPosition = RS.HordeWaypoints[(int)Random.Range(0f, RS.HordeWaypoints.Length - .1f)].transform.position;
+
         MobHealth = new float[] { 0f, 0f };
         ToAttack = new int[] { 0, 1, 1 };
         
@@ -677,6 +682,13 @@ public class MobScript : MonoBehaviour {
                 break;
         }
 
+        // Set up navmesh agent
+        NavAgent.agentTypeID = GS.GameModePrefab.x == 1 ? RS.NavigationSurface_Mutant.agentTypeID : RS.NavigationSurface_Humanoid.agentTypeID;
+        NavMesh.SamplePosition(transform.position, out NavMeshHit hit, Mathf.Infinity, NavMesh.AllAreas);
+        StartPosition = hit.position;
+        AiMovePosition = StartPosition;
+        NavAgent.Warp(StartPosition);
+
         Color32 MutantSkin = Color32.Lerp(new Color32(155, 155, 155, 255), new Color32((byte)Random.Range(100f, 200f), (byte)Random.Range(100f, 200f), (byte)Random.Range(100f, 200f), 255), PowerLevel);
         Color[] MutantClothing = new Color[] { }; // TORSO > SUIT > UPPER ARM > LOWER ARM > PANTS
         if (BasicMutantJob == "Normal") {
@@ -762,6 +774,8 @@ public class MobScript : MonoBehaviour {
                     CurrentWaypoint = SWP;
                 }
             }
+
+            MinimapMarker.transform.parent.GetComponent<MinimapMarker>().MapSize = 16f;
         }
 
         // Hide plunger
@@ -914,7 +928,7 @@ public class MobScript : MonoBehaviour {
             }
 
             // Check if blocked way
-            bool BlockedWay = false;
+            /*bool BlockedWay = false;
             for (float ChechkEach = 0f; ChechkEach < 5f; ChechkEach ++) {
                 Ray CheckIfBlocked = new Ray(this.transform.position + (this.transform.up * (ChechkEach / 5f)), this.transform.forward);
                 RaycastHit CheckIfBlockedHIT;
@@ -926,7 +940,7 @@ public class MobScript : MonoBehaviour {
                     }
                     break;
                 }
-            }
+            }*/
 
             if (Anim.GetCurrentAnimatorStateInfo(0).IsName(AnimationSet + "Idle") && Anim.GetFloat("StayOrGo") <= 0f && Anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.99f) {
                 Anim.speed = 0.25f;
@@ -950,36 +964,33 @@ public class MobScript : MonoBehaviour {
                 ReturnPushBack -= deltaTime;
             }
 
-            if (TooFar == false) {
-                if (CantDoAnything <= 0f) {
-                    this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, Quaternion.Euler(new Vector3(0f, MoveDir.transform.eulerAngles.y, MoveDir.transform.eulerAngles.z)), 90f * deltaTime);
-                    MoveDir.transform.LookAt(new Vector3(AiPosition.x, this.transform.position.y, AiPosition.z));
-                }
-                if (Vector3.Distance(this.transform.position, new Vector3(AiPosition.x, this.transform.position.y, AiPosition.z)) >= 1.1f && BlockedWay == false && CantDoAnything <= 0f) {
-                    if (InWater == true) {
-                        this.GetComponent<Rigidbody>().velocity = new Vector3(MoveDir.transform.forward.x * (MovementSpeed[PickMovementSpeed] / 2f), this.GetComponent<Rigidbody>().velocity.y, MoveDir.transform.forward.z * (MovementSpeed[PickMovementSpeed] / 2f));
-                        Anim.SetFloat("StayOrGo", 1f);
-                        Anim.speed = (MovementSpeed[PickMovementSpeed] / 4f);
-                    } else {
-                        this.GetComponent<Rigidbody>().velocity = new Vector3(MoveDir.transform.forward.x * (MovementSpeed[PickMovementSpeed] / 1f), this.GetComponent<Rigidbody>().velocity.y, MoveDir.transform.forward.z * (MovementSpeed[PickMovementSpeed] / 1f));
-                        Anim.SetFloat("StayOrGo", 1f);
-                        Anim.speed = (MovementSpeed[PickMovementSpeed] / 4f);
-                    }
+            if (CantDoAnything <= 0f) {
+                this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, Quaternion.Euler(new Vector3(0f, MoveDir.transform.eulerAngles.y, MoveDir.transform.eulerAngles.z)), 90f * deltaTime);
+                MoveDir.transform.LookAt(new Vector3(AiMovePosition.x, this.transform.position.y, AiMovePosition.z));
+            }
+
+            if (Vector3.Distance(transform.position, AiMovePosition) >= 1.1f && CantDoAnything <= 0f) {
+                if (InWater == true) {
+                    NavAgent.speed = MovementSpeed[PickMovementSpeed] / 2f;
+                    NavAgent.acceleration = NavAgent.speed * 2f;
+                    Anim.SetFloat("StayOrGo", 1f);
+                    Anim.speed = MovementSpeed[PickMovementSpeed] / 4f;
+                    NavAgent.SetDestination(AiMovePosition);
                 } else {
-                    Anim.SetFloat("StayOrGo", 0f);
-                    this.GetComponent<Rigidbody>().velocity = new Vector3(0f, this.GetComponent<Rigidbody>().velocity.y, 0f);
+                    NavAgent.speed = MovementSpeed[PickMovementSpeed];
+                    NavAgent.acceleration = NavAgent.speed * 2f;
+                    Anim.SetFloat("StayOrGo", 1f);
+                    Anim.speed = MovementSpeed[PickMovementSpeed] / 4f;
+                    NavAgent.SetDestination(AiMovePosition);
                 }
             } else {
-                this.transform.LookAt(new Vector3(AiPosition.x, this.transform.position.y, AiPosition.z));
-                if (Vector3.Distance(this.transform.position, new Vector3(AiPosition.x, this.transform.position.y, AiPosition.z)) >= 1.1f && BlockedWay == false && CantDoAnything <= 0f) {
-                    this.GetComponent<Rigidbody>().velocity = new Vector3(MoveDir.transform.forward.x * (MovementSpeed[PickMovementSpeed] / 1f), this.GetComponent<Rigidbody>().velocity.y, MoveDir.transform.forward.z * (MovementSpeed[PickMovementSpeed] / 1f));
-                } else {
-                    this.GetComponent<Rigidbody>().velocity = new Vector3(0f, this.GetComponent<Rigidbody>().velocity.y, 0f);
-                }
+                Anim.SetFloat("StayOrGo", 0f);
+                NavAgent.speed = 0f;
+                NavAgent.acceleration = 1000f;
             }
 
             // Movement
-            if (TooFar == false && TypeOfMob != 7f) {
+            if (TypeOfMob != 7f) {
 
                 if (Vector3.Distance(this.transform.position, PrevPosition) > 0.1f) {
                     FootstepCooldown -= Vector3.Distance(this.transform.position, PrevPosition);
@@ -1001,8 +1012,6 @@ public class MobScript : MonoBehaviour {
                             Step.transform.position = this.transform.position - Vector3.up * 0.5f;
                             Step.GetComponent<EffectScript>().EffectName = "Footstep" + CheckGroundHIT.collider.gameObject.GetComponent<FootstepMaterial>().WhatToPlay;
                         }
-                    } else {
-                        CantDoAnything = Mathf.Clamp(CantDoAnything, 0.5f, Mathf.Infinity);
                     }
                 }
 
@@ -1064,7 +1073,7 @@ public class MobScript : MonoBehaviour {
                 if ((ReasonOfDeath == "Nuked" || ReasonOfDeath == "Explosion" || ReasonOfDeath == "Electricity" || TypeOfMob == 6f || TypeOfMob == 9f) && (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol")) {
                     if (TypeOfMob == 6f) {
                         for (int Blow = Random.Range(2, 5); Blow > 0; Blow--) {
-                            RS.Attack(new string[]{"MutantSpit"}, this.transform.position, new Vector3(Random.Range(-1f, 1f), Random.Range(0f, 1f), Random.Range(-1f, 1f)), this.gameObject, this.gameObject);
+                            RS.Attack(new string[]{"MutantSpit"}, this.transform.position + Vector3.up, new Vector3(Random.Range(-1f, 1f), Random.Range(0f, 1f), Random.Range(-1f, 1f)), this.gameObject, this.gameObject);
                         }
                     }
 
@@ -1108,9 +1117,8 @@ public class MobScript : MonoBehaviour {
 
                 this.gameObject.layer = 13;
                 CleanupAfterDead = 5f;
-                this.GetComponent<CapsuleCollider>().center = new Vector3(0f, -0.8f, 0f);
-                this.GetComponent<CapsuleCollider>().radius = 0.2f;
-                this.GetComponent<CapsuleCollider>().height = 0.2f;
+                GetComponent<CapsuleCollider>().enabled = false;
+
                 if (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol") {
                     Anim.SetFloat("IdleStance", 0f);
                     Anim.SetFloat("StayOrGo", 0f);
@@ -1136,7 +1144,7 @@ public class MobScript : MonoBehaviour {
                     for (int DropLoot = SpawnChance; DropLoot > 0; DropLoot--) {
                         if (GS.GameModePrefab.x == 1) {
                             GameObject DropedLoot = Instantiate(HordeDropPrefab) as GameObject;
-                            DropedLoot.transform.position = this.transform.position;
+                            DropedLoot.transform.position = this.transform.position + Vector3.up;
                         } else {
                             GameObject DropedLoot = Instantiate(ItemPrefab) as GameObject;
                             DropedLoot.transform.position = this.transform.position + new Vector3(Random.Range(-1f, 1f), 1f, Random.Range(-1f, 1f));
@@ -1156,7 +1164,7 @@ public class MobScript : MonoBehaviour {
                     }
                     if (TypeOfMob == 9f) {
                         GameObject GoBoom = Instantiate(SpecialPrefab) as GameObject;
-                        GoBoom.transform.position = this.transform.position;
+                        GoBoom.transform.position = this.transform.position + Vector3.up;
                         GoBoom.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
                         GoBoom.GetComponent<SpecialScript>().ExplosionRange = 6f;
                     }
@@ -1207,8 +1215,7 @@ public class MobScript : MonoBehaviour {
                         GameObject DropRagdoll = Instantiate(RagdollPrefab) as GameObject;
                         DropRagdoll.transform.position = this.transform.position;
                         DropRagdoll.GetComponent<RagdollScript>().DroppedBy = this.gameObject;
-                        DropRagdoll.GetComponent<Rigidbody>().velocity = this.GetComponent<Rigidbody>().velocity/-10f;
-                        DropRagdoll.GetComponent<RagdollScript>().DeadPush = RagdollPush;
+                        DropRagdoll.GetComponent<RagdollScript>().DeadPush = PushbackForce;
                     }
                 }
 
@@ -1252,7 +1259,7 @@ public class MobScript : MonoBehaviour {
                 if (BlockChance == 0 && TypeOfDamage == "Melee") {
 
                     GameObject Blood = Instantiate(EffectPrefab) as GameObject;
-                    Blood.transform.position = this.transform.position;
+                    Blood.transform.position = this.transform.position + Vector3.up;
                     Blood.transform.Rotate(new Vector3(Random.Range(0f, 360f), Random.Range(0f, 360f), 0f));
                     Blood.GetComponent<EffectScript>().EffectName = "BullethitMetal";
 
@@ -1266,7 +1273,7 @@ public class MobScript : MonoBehaviour {
                     if (Visible == true) {
                         PlayMobSound(MobAudio + "Hurt", 1);
                         GameObject Blood = Instantiate(EffectPrefab) as GameObject;
-                        Blood.transform.position = this.transform.position;
+                        Blood.transform.position = this.transform.position + Vector3.up;
                         Blood.transform.Rotate(new Vector3(Random.Range(0f, 360f), Random.Range(0f, 360f), 0f));
                         Blood.GetComponent<EffectScript>().EffectName = "BloodSplat";
                         int ChanceOfPanic = (int)Random.Range(0f, Mathf.Lerp(0f, 4f, MobHealth[0] / (MobHealth[1] / 2f)));
@@ -1318,7 +1325,7 @@ public class MobScript : MonoBehaviour {
                             Alerted.GetComponent<MobScript>().Angered = 10f;
                             Alerted.GetComponent<MobScript>().Curious = 0f;
                             Alerted.GetComponent<MobScript>().AiTarget = Aggresor;
-                            Alerted.GetComponent<MobScript>().AiPosition = this.transform.position;
+                            Alerted.GetComponent<MobScript>().AiMovePosition = transform.position;
                             if (TypeOfMob == 3f && Aggresor.tag == "Player") {
                                 Alerted.GetComponent<MobScript>().MobColor = new Color32(255, 0, 0, 255);
                             }
@@ -1326,7 +1333,7 @@ public class MobScript : MonoBehaviour {
                             Alerted.GetComponent<MobScript>().Angered = 10f;
                             Alerted.GetComponent<MobScript>().Curious = 0f;
                             Alerted.GetComponent<MobScript>().AiTarget = Aggresor;
-                            Alerted.GetComponent<MobScript>().AiPosition = this.transform.position;
+                            Alerted.GetComponent<MobScript>().AiMovePosition = transform.position;
                             if (TypeOfMob == 3f && Aggresor.tag == "Player") {
                                 Alerted.GetComponent<MobScript>().MobColor = new Color32(255, 0, 0, 255);
                             }
@@ -1368,7 +1375,7 @@ public class MobScript : MonoBehaviour {
                     CantDoAnything = 1f / RealisationTime;
                 }
                 Curious = HowLong;
-                AiPosition = Where;
+                AiMovePosition = Where;
             } else if (How == "Blinded") {
                 Blinded = HowLong;
                 Anim.Play(AnimationSet + "Blinded", 0, 0f);
@@ -1377,7 +1384,7 @@ public class MobScript : MonoBehaviour {
                 Angered = 0f;
                 Curious = 0f;
                 Panic = HowLong;
-                AiPosition = Where;
+                AiMovePosition = Where;
             }
 
         }
@@ -1391,7 +1398,7 @@ public class MobScript : MonoBehaviour {
         if (ReturnToWayPoint > 0f) {
             ReturnToWayPoint -= 0.02f;
         } else if (CurrentWaypoint != null) {
-            AiPosition = CurrentWaypoint.transform.position;
+            AiMovePosition = CurrentWaypoint.transform.position;
         }
 
         if (AiTarget != null) {
@@ -1426,7 +1433,6 @@ public class MobScript : MonoBehaviour {
             if (Physics.Raycast(CheckForTarget, out CheckForTargetHIT, CheckDistance, GS.IgnoreMaskEnemy)) {
                 if (CheckForTargetHIT.collider.gameObject == AiTarget) {
                     CharacterSeen = true;
-                    AiTargetLastSeen = CheckForTargetHIT.collider.transform.position;
                     ReturnToWayPoint = 10f;
                     Angered = 10f;
                 }
@@ -1504,65 +1510,32 @@ public class MobScript : MonoBehaviour {
 
             // Set position depending if seen or not
             if (CharacterSeen == true || CharacterOnSights == true) {
-                if (Vector3.Distance(this.transform.position, AiPosition) < AttackRange - 0.5f) {
+                if (Vector3.Distance(this.transform.position, AiMovePosition) < AttackRange - 0.5f) {
                     PreventJamming[0] = 0f;
                 }
-                if (PreventJamming[0] > 0f) {
-                    PreventJamming[0] -= 0.01f;
-                } else {
-                    AiPosition = AiTarget.transform.position;
-                }
-                if (PreventJamming[1] > 0f) {
-                    PreventJamming[1] -= 0.01f;
-                } else {
-                    PreventJamming[1] = 0.25f;
-                    AiTargetLastSeen = AiTarget.transform.position;
-                }
+                AiMovePosition = AiTarget.transform.position;
+                AiLastSeenPosition = AiTarget.transform.position;
                 SwitchPosition = 0f;
             } else if (GS.GameModePrefab.x == 0) {
                 //PreventJamming[0] = 1f;
                 if (SwitchPosition > 0f) {
                     SwitchPosition -= deltaTime;
-                } else {
+                } else if (Vector3.Distance(transform.position, AiMovePosition) < 1.2f) {
                     SwitchPosition = Random.Range(0.5f, 1f);
-                    AiPosition = AiTargetLastSeen + new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
+                    AiMovePosition = AiMovePosition + new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f));
                 }
+                AiMovePosition = AiLastSeenPosition;
             } else if (GS.GameModePrefab.x == 1) {
-                //PreventJamming[0] = 1f;
-                if (ReturnToWayPoint <= 0f) {
-                    if (Vector3.Distance(this.transform.position, new Vector3(CurrentWaypoint.transform.position.x, this.transform.position.y, CurrentWaypoint.transform.position.z)) < 1.5f) {
-                        if (CurrentWaypoint != null) {
-                            if (CWBAF == 0) {
-                                if (CurrentWaypoint.transform.childCount > 0) {
-                                    CurrentWaypoint = CurrentWaypoint.transform.GetChild((int)Random.Range(0, CurrentWaypoint.transform.childCount - 0.1f)).gameObject;
-                                } else {
-                                    CWBAF = 1;
-                                }
-                            } else if (CWBAF == 1) {
-                                if (CurrentWaypoint.transform.parent != null && CurrentWaypoint.transform.parent.name.Substring(0, 1) != "T" && CurrentWaypoint.transform.parent.name.Substring(0, 1) != "0") {
-                                    CurrentWaypoint = CurrentWaypoint.transform.parent.gameObject;
-                                } else {
-                                    CWBAF = 0;
-                                }
-                            }
-                        } else {
-                            float NearestAWP = Mathf.Infinity;
-                            GameObject PNAWP = null;
-                            foreach (GameObject CheckAWP in RS.GotTerrain.GetComponent<MapInfo>().HordeWayPoints) {
-                               if (Vector3.Distance(this.transform.position, CheckAWP.transform.position) < NearestAWP) {
-                                    NearestAWP = Vector3.Distance(this.transform.position, CheckAWP.transform.position);
-                                    PNAWP = CheckAWP;
-                               }
-                            }
-                            CurrentWaypoint = PNAWP;
-                        }
-                    }
-                } else {
+                AiMovePosition = AiLastSeenPosition;
+
+                if (Vector3.Distance(transform.position, AiMovePosition) < 5f) {
                     if (SwitchPosition > 0f) {
                         SwitchPosition -= deltaTime;
                     } else {
-                        SwitchPosition = Random.Range(0.5f, 1f);
-                        AiPosition = AiTargetLastSeen + new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
+                        SwitchPosition = Random.Range(0.5f, 2f);
+                        AiLastSeenPosition = Random.value > .5f
+                            ? RS.HordeWaypoints[(int)Random.Range(0f, RS.HordeWaypoints.Length - .1f)].transform.position
+                            : RS.MainPlayer.transform.position;
                     }
                 }
             }
@@ -1612,7 +1585,7 @@ public class MobScript : MonoBehaviour {
                     } else if (TypeOfMob == 6 || TypeOfMob == 10 || TypeOfMob == 13){
                         Additionals.Add("GunSpread" + "5;");
                     }
-                    RS.Attack(Additionals.ToArray(), this.transform.position + Vector3.up * 0.5f + this.transform.forward * 0.5f, AiTarget.transform.position - (this.transform.position + Vector3.up * 0.5f + this.transform.forward * 0.5f) , this.gameObject, Setslimend);
+                    RS.Attack(Additionals.ToArray(), this.transform.position + Vector3.up * .75f + this.transform.forward * 0.5f, AiTarget.transform.position - (this.transform.position + Vector3.up * 0.75f + this.transform.forward * 0.5f) , this.gameObject, Setslimend);
                 }
                 
                 Anim.Play(AnimationSet + "Attack", 0, 0f);
@@ -1660,7 +1633,7 @@ public class MobScript : MonoBehaviour {
                 SwitchPosition -= 0.01f;
             } else {
                 SwitchPosition = Random.Range(0.1f, 2f);
-                AiPosition = this.transform.position + new Vector3(Random.Range(-25f, 25f), this.transform.position.y, Random.Range(-25f, 25f));
+                AiMovePosition = this.transform.position + new Vector3(Random.Range(-25f, 25f), this.transform.position.y, Random.Range(-25f, 25f));
             }
         }
 
@@ -1681,15 +1654,15 @@ public class MobScript : MonoBehaviour {
                 } else {
                     if (Squad[0] != 0 && Squad[1] == 1) {
                         SwitchPosition = Random.Range(1f, 10f);
-                        AiPosition = this.transform.position + new Vector3(Random.Range(-50f, 50f), 0f, Random.Range(-50f, 50f));
+                        AiMovePosition = this.transform.position + new Vector3(Random.Range(-50f, 50f), 0f, Random.Range(-50f, 50f));
                         foreach (GameObject Squadmember in GameObject.FindGameObjectsWithTag("Mob")) {
                             if (Squadmember.GetComponent<MobScript>().Squad[0] == Squad[0] && GameObject.Find("MainCanvas").GetComponent<CanvasScript>().DialogedMob != Squadmember) {
-                                Squadmember.GetComponent<MobScript>().AiPosition = AiPosition + new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
+                                Squadmember.GetComponent<MobScript>().AiMovePosition = AiMovePosition + new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
                             }
                         }
                     } else if (Squad[0] == 0) {
                         SwitchPosition = Random.Range(1f, 10f);
-                        AiPosition = this.transform.position + new Vector3(Random.Range(-25f, 25f), 0f, Random.Range(-25f, 25f));
+                        AiMovePosition = this.transform.position + new Vector3(Random.Range(-25f, 25f), 0f, Random.Range(-25f, 25f));
                     }
                 }
             } else if ((Philosophy == "Guard" || mobOrigins == "RaidBandits" || mobOrigins == "RaidSurvivors") && Curious <= 0f) {
@@ -1697,7 +1670,7 @@ public class MobScript : MonoBehaviour {
                     SwitchPosition -= deltaTime;
                 } else {
                     SwitchPosition = Random.Range(7f, 10f);
-                    AiPosition = StartPosition + new Vector3(Random.Range(-2f, 2f), 0f, Random.Range(-2f, 2f));
+                    AiMovePosition = StartPosition + new Vector3(Random.Range(-2f, 2f), 0f, Random.Range(-2f, 2f));
                 }
             }
 
@@ -1799,7 +1772,7 @@ public class MobScript : MonoBehaviour {
                                         Alerted.GetComponent<MobScript>().Angered = 10f;
                                         Alerted.GetComponent<MobScript>().Curious = 0f;
                                         Alerted.GetComponent<MobScript>().AiTarget = PotentialFoe;
-                                        Alerted.GetComponent<MobScript>().AiPosition = this.transform.position;
+                                        Alerted.GetComponent<MobScript>().AiMovePosition = transform.position;
                                     }
                                 }
                             }

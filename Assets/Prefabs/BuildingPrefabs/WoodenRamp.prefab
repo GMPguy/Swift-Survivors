@@ -24,6 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7318363569568547824}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -41.748108, y: -910.84143, z: -92.89518}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -31,7 +32,6 @@ Transform:
   m_Children:
   - {fileID: 5341227831675370411}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &395883161136374399
 MonoBehaviour:
@@ -56,7 +56,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 2
+    serializedVersion: 3
     m_TransformParent: {fileID: 225252061135807094}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 3070fe639719c444291be8cf64a42cae,
@@ -135,7 +135,21 @@ PrefabInstance:
       value: 24
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3070fe639719c444291be8cf64a42cae,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4159840352351568529}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3070fe639719c444291be8cf64a42cae,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5360950243592813758}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3070fe639719c444291be8cf64a42cae,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4095299939287863640}
   m_SourcePrefab: {fileID: 100100000, guid: 3070fe639719c444291be8cf64a42cae, type: 3}
 --- !u!1 &4707399353508094225 stripped
 GameObject:
@@ -151,9 +165,17 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4707399353508094225}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 2.0240746, y: 2.0301423, z: 0.1903769}
   m_Center: {x: 0.0045997524, y: 0.00063991704, z: -0.026742069}
 --- !u!114 &5360950243592813758
@@ -170,6 +192,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WhatToPlay: Wood
   IsTerrain: 0
+--- !u!208 &4095299939287863640
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4707399353508094225}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 1.0120001, y: 1.0150001, z: 0.095000006}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0.0050000004, y: 0.001, z: -0.027}
+  m_TimeToStationary: 0.5
 --- !u!4 &5341227831675370411 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3070fe639719c444291be8cf64a42cae,

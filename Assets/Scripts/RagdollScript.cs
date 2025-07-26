@@ -76,10 +76,7 @@ public class RagdollScript : MonoBehaviour {
                         GetPart.GetComponent<CapsuleCollider>().height /= 2f;
                     }
                     Rigidbody Rig = GetPart.AddComponent<Rigidbody>();
-                    if(Random.Range(0f, 1f) > 2f) Rig.velocity = this.GetComponent<Rigidbody>().velocity;
-                    else Rig.velocity = ( Rig.transform.position - new Vector3(DeadPush.x, DeadPush.y, DeadPush.z) ) * Mathf.Clamp(DeadPush.w, 0f, 25f);
-                    Rig.angularDrag = 0f;
-                    Rig.angularVelocity = new Vector3(Random.Range(-360f, 360f), Random.Range(-360f, 360f), Random.Range(-360f, 360f));
+                    
                     CharacterJoint Jointt = GetPart.AddComponent<CharacterJoint>();
                     Jointt.connectedBody = GetPart.transform.parent.GetComponent<Rigidbody>();
                     Jointt.swingAxis = new Vector3(1f, 0f, 0f);
@@ -105,6 +102,10 @@ public class RagdollScript : MonoBehaviour {
                     Jointt.highTwistLimit = HTL;
                     
                     Jointt.transform.SetParent(this.transform);
+
+                    Rig.velocity = new Vector3 (Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Mathf.Max(Random.Range(-25f, 25f), 0f);
+                    Rig.angularDrag = 0f;
+                    Rig.angularVelocity = new Vector3(Random.Range(-360f, 360f), Random.Range(-360f, 360f), Random.Range(-360f, 360f));
 
                 }
 

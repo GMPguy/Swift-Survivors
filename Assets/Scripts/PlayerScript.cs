@@ -1099,7 +1099,7 @@ public class PlayerScript : MonoBehaviour {
                 if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "TalkTo" && CantInteract <= 0f) {
                     MainCanvas.DialogedMob = InteractedGameobject;
                     MainCanvas.DialogSetting = "Default";
-                    InteractedGameobject.GetComponent<MobScript>().AiPosition = this.transform.position;
+                    InteractedGameobject.GetComponent<MobScript>().AiMovePosition = this.transform.position;
                 }
             }
         }

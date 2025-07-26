@@ -11,6 +11,7 @@ public class CanvasScript : MonoBehaviour {
     public RoundScript RS;
     public PlayerScript MainPlayer;
     public Transform MainCamera;
+    public Camera MapCamera;
     // Whiles
     public Transform HideWindow;
     public Transform UpWindow;
@@ -42,8 +43,10 @@ public class CanvasScript : MonoBehaviour {
     public GameObject ITMenuInfo;
     public GameObject ITBG;
     public GameObject ITMap;
-    public GameObject MarksTouchPad;
-    public List<GameObject> MarksList;
+    public RectTransform MarksTouchPad;
+    public Transform[] MarksList;
+    float[] MarkColors;
+    int currentMark;
     public GameObject ITItemHeldInfo;
     public GameObject ITRoundInfo;
     public GameObject ITDetails;
@@ -119,6 +122,8 @@ public class CanvasScript : MonoBehaviour {
     bool HideCanvas = false;
     public GameObject Billboard;
     public float CameraBlur = 0f;
+    Vector2 MapSize;
+    bool pickMapBG;
     // Misc
 
     // Use this for initialization
@@ -140,6 +145,14 @@ public class CanvasScript : MonoBehaviour {
         HintsCooldown.Add("Tab");
 
         MapMarkers = new ();
+
+        // Set up marks list
+        for (int ml = 1; ml < 10; ml++) {
+            Transform newMarker = GameObject.Instantiate(MarksList[0].gameObject).transform;
+            newMarker.SetParent(MarksList[0].transform.parent);
+            MarksList[ml] = newMarker;
+        }
+        MarkColors = new float[MarksList.Length];
 
     }
 
@@ -1960,7 +1973,7 @@ public class CanvasScript : MonoBehaviour {
             else if (WhichMap == "Minimap" && ITBG.GetComponent<HudColorControl>().Alpha <= .1f)
                 MapMarkers[mm].UpdateMe(new (111f, 50f), 0, MainPlayer.MinimapCamera.forward);
             else if (WhichMap == "Map" && ITBG.GetComponent<HudColorControl>().Alpha >= .65f)
-                MapMarkers[mm].UpdateMe(new (240f, 500f), 1, Vector3.left);
+                MapMarkers[mm].UpdateMe(new (240f, MapSize.x * 2f), 1, Vector3.left);
             else
                 MapMarkers[mm].UpdateMe(new (240f, 500f), -1, Vector3.left);
         }
@@ -2020,15 +2033,60 @@ public class CanvasScript : MonoBehaviour {
             MiniMap.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(new Vector2(96f, -96f), new Vector2(-128f, 96f), ITBG.GetComponent<HudColorControl>().Alpha / 0.75f);
             MiniMap.transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, ITBG.GetComponent<HudColorControl>().Alpha / 0.75f);
 
-            Vector2 MapSize = new Vector2(250f, 250f);
-            if (GS.GameModePrefab.x == 1) {
-                MapSize = RS.GetComponent<RoundScript>().GotTerrain.GetComponent<MapInfo>().MapSize;
+            if (!pickMapBG) {
+
+                if (GS.GameModePrefab.x == 1) {
+                    MapSize = RS.GetComponent<RoundScript>().GotTerrain.GetComponent<MapInfo>().MapSize;
+                    foreach (Transform GetRightMap in ITMap.transform.GetChild(1)) {
+                        if (GetRightMap.name.Substring(0,2) == RS.GetComponent<RoundScript>().GotTerrain.name.Substring(0, 2)) {
+                            GetRightMap.localScale = Vector3.one;
+                        } else {
+                            GetRightMap.localScale = Vector3.zero;
+                        }
+                    }
+                } else {
+                    MapSize = new (250f, 250f);
+                }
+
+                MapCamera.orthographicSize = MapSize.x;
+                pickMapBG = true;
             }
 
             ITMap.transform.GetChild(3).GetComponent<RectTransform>().localPosition = new Vector2((MainPlayer.transform.position.z / MapSize.x) * 120f, (MainPlayer.transform.position.x / MapSize.y) * -120f);
             ITMap.transform.GetChild(3).localEulerAngles = new Vector3(0f, 0f, -MainPlayer.transform.eulerAngles.y - 90f);
 
             // Marking stuff
+            if (MarksTouchPad.GetComponent<ButtonScript>().IsSelected == true && Input.GetButton("Information Tab")) {
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(MarksTouchPad, Input.mousePosition, null, out Vector2 clickPos);
+                clickPos = new Vector2 (clickPos.x * MapSize.x, clickPos.y * MapSize.y);
+                float dist = MapSize.x * 1.333f; // 16 / 120 = 1.333
+
+                if (Input.GetMouseButtonDown(0)) {
+                    SpriteRenderer nearestMarker = null;
+                    int nearestIndex = -1;
+                    for (int fm = 0; fm < MarksList.Length; fm++)
+                        if (Vector3.Distance(clickPos, MarksList[fm].transform.position) < dist) {
+                            nearestMarker = MarksList[fm].GetChild(0).GetComponent<SpriteRenderer>();
+                            MarkColors[fm] += .1f;
+                            nearestIndex = fm;
+                            break;
+                        }
+                    
+                    if (!nearestMarker) {
+                        currentMark = (currentMark + 1) % MarksList.Length;
+                        MarksList[currentMark].transform.position = new (clickPos.x, 0f, clickPos.y);
+                        MarksList[currentMark].GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
+                    } else {
+                        if (MarkColors[nearestIndex] >= 1f) {
+                            MarksList[nearestIndex].GetChild(0).GetComponent<SpriteRenderer>().color = Color.clear;
+                            MarkColors[nearestIndex] = 0f;
+                        } else {
+                            MarksList[nearestIndex].GetChild(0).GetComponent<SpriteRenderer>().color = Color.HSVToRGB(MarkColors[nearestIndex], 1f, 1f);
+                        }
+                    }
+                }
+            }
+
             /*if (MarksTouchPad.GetComponent<ButtonScript>().IsSelected == true) {
                 if (MarksTouchPad.GetComponent<Image>().color.a < 0.25f) {
                     MarksTouchPad.GetComponent<Image>().color = new Color(1f, 1f, 1f, Mathf.Clamp(MarksTouchPad.GetComponent<Image>().color.a + 0.01f * (Time.deltaTime * 50f), 0f, 0.1f));

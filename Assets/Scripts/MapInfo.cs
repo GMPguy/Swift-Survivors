@@ -29,7 +29,7 @@ public class MapInfo : MonoBehaviour {
     // Misc
     // Variables
 
-    void Start() {
+    public void TheStart() {
 
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
         RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
@@ -127,7 +127,7 @@ public class MapInfo : MonoBehaviour {
             }
         } else if (GS.GetSemiClass(GS.RoundSetting, "H", "?") == "5") {
             foreach (GameObject KillFallen in GameObject.FindGameObjectsWithTag("Mob")) {
-                if (KillFallen.transform.position.y < -2.7f) {
+                if (KillFallen.transform.position.y < -10f) {
                     KillFallen.GetComponent<MobScript>().Hurt(9999f, null, true, Vector3.zero, "");
                 }
             }
