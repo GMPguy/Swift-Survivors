@@ -1400,7 +1400,7 @@ public class GameScript : MonoBehaviour {
                 "id117;va0;sq1;"
             ),
             new(this, new string[]{"Carp", "Krap"},
-                new string[]{"A very big fish. Tastes like wet newspaper covered in mud, but at least it is very filling.", "Bardzo duża ryba. Smakuje jak mokra gazeta zanurzona w błocie, ale zato napełnia do syta."},
+                new string[]{"A very big fish. Tastes like wet newspaper covered in mud, but at least it is very filling.", "Bardzo duża ryba. Smakuje jak mokra gazeta zanurzona w mule, ale za to napełnia do syta."},
                 "id118;va0;sq1;"
             ),
             new(this, new string[]{"Coconut", "Kokos"},
@@ -1598,6 +1598,42 @@ public class GameScript : MonoBehaviour {
             new(this, new string[]{"Fish fillet", "Filet z ryby"},
                 new string[]{"A slice of fish, obtained by cutting and roasting fish.", "Kawałek ryby, pozyskany po przez cięcie i smażenie ryby."},
                 "id161;va0;sq1;"
+            ),
+            new(this, new string[]{"Frozen pizza", "Mrożona pizza"},
+                new string[]{"Once heated up, it'll provide you a few slices of pizza.", "Po obróbce termicznej, otrzymasz parę kawałków pizzy."},
+                "id162;va0;sq1;"
+            ),
+            new(this, new string[]{"Pizza slice", "Kawałek pizzy"},
+                new string[]{"A fancy italian dish for the masses.", "Pyszne włoskie danie dla mas."},
+                "id163;va0;sq1;"
+            ),
+            new(this, new string[]{"Cake", "Tort"},
+                new string[]{"A big cake sliced into a few pieces. Will take a while before you eat it all.", "Bardzo duże ciasto, pocięte na parę kawałków. Sporzycie całości trochę zajmie."},
+                "id164;va4;"
+            ),
+            new(this, new string[]{"Cheap wine", "Tanie wino"},
+                new string[]{"Château de Jabol, year 2005. Drinking will result in 30 seconds of drunkeness. Contains sulfites.", "Château de Jabol, rocznik 2005. Wypicie spowoduje 30 sekund upicia. Zawiera siarczyny."},
+                "id165;va0;sq1;"
+            ),
+            new(this, new string[]{"Raw meat", "Surowe mięso"},
+                new string[]{"A large piece of dead animal. You should probably cook it first.", "Spory kawałek martwego zwierzęcia. Lepiej będzie je poddać obróbce termicznej."},
+                "id166;va0;sq1;"
+            ),
+            new(this, new string[]{"Smokes", "Papierosy"},
+                new string[]{"They temporarily suppress your hunger, at the cost of your health. Just like in real life!", "Chwilowo wstrzymuje głód, kosztem twojego zdrowia. Dokładnie jak w prawdziwym życiu!"},
+                "id167;va0;sq1;"
+            ),
+            new(this, new string[]{"Watermelon", "Arbuz"},
+                new string[]{"A very big fruit. Should be smashed/sliced into smaller pieces first.", "Bardzo duży owoc. Przed spożyciem potnij/rozłup na mniejsze kawałki."},
+                "id168;va0;sq1;"
+            ),
+            new(this, new string[]{"Watermelon slice", "Kawałek arbuza"},
+                new string[]{"Delicious yet watery slice of melon. It has ability to rehydrate you, but you can also get stained with water.", "Pyszny kawałek arbuza. Spożycie go cię nawodni, ale również można się przy tym poplamić."},
+                "id169;va0;sq1;"
+            ),
+            new(this, new string[]{"Carrot", "Marchew"},
+                new string[]{"An orange taproot vegetable.", "Pomarańczowy palowy system korzenny."},
+                "id170;va0;sq1;"
             )
         };
 
