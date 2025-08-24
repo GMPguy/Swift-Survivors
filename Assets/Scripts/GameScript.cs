@@ -1609,7 +1609,8 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Cake", "Tort"},
                 new string[]{"A big cake sliced into a few pieces. Will take a while before you eat it all.", "Bardzo duże ciasto, pocięte na parę kawałków. Sporzycie całości trochę zajmie."},
-                "id164;va4;"
+                "id164;va4;",
+                new (5f, 0f, 0f)
             ),
             new(this, new string[]{"Cheap wine", "Tanie wino"},
                 new string[]{"Château de Jabol, year 2005. Drinking will result in 30 seconds of drunkeness. Contains sulfites.", "Château de Jabol, rocznik 2005. Wypicie spowoduje 30 sekund upicia. Zawiera siarczyny."},
@@ -1621,11 +1622,12 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Smokes", "Papierosy"},
                 new string[]{"They temporarily suppress your hunger, at the cost of your health. Just like in real life!", "Chwilowo wstrzymuje głód, kosztem twojego zdrowia. Dokładnie jak w prawdziwym życiu!"},
-                "id167;va0;sq1;"
+                "id167;va5;"
             ),
             new(this, new string[]{"Watermelon", "Arbuz"},
                 new string[]{"A very big fruit. Should be smashed/sliced into smaller pieces first.", "Bardzo duży owoc. Przed spożyciem potnij/rozłup na mniejsze kawałki."},
-                "id168;va0;sq1;"
+                "id168;va0;sq1;",
+                new (5f, 75f, 0f)
             ),
             new(this, new string[]{"Watermelon slice", "Kawałek arbuza"},
                 new string[]{"Delicious yet watery slice of melon. It has ability to rehydrate you, but you can also get stained with water.", "Pyszny kawałek arbuza. Spożycie go cię nawodni, ale również można się przy tym poplamić."},

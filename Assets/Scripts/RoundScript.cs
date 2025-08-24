@@ -317,7 +317,6 @@ public class RoundScript : MonoBehaviour {
 
                             // Clean from too much
                             if (GameObject.FindGameObjectsWithTag("Item").Length > 150) {
-                                print(GameObject.FindGameObjectsWithTag("Item").Length - 150 + " Items removed");
                                 for (int TooClean = GameObject.FindGameObjectsWithTag("Item").Length - 150; TooClean > 0; TooClean--) {
                                     GameObject ItemToDestroy = GameObject.FindGameObjectsWithTag("Item")[(int)Random.Range(0f, GameObject.FindGameObjectsWithTag("Item").Length - 0.1f)];
                                     if (GS.GetSemiClass(ItemToDestroy.GetComponent<ItemScript>().Variables, "id") == "990") {
@@ -326,7 +325,6 @@ public class RoundScript : MonoBehaviour {
                                 }
                             }
                             if (GameObject.FindGameObjectsWithTag("Interactable").Length > 25) {
-                                print(GameObject.FindGameObjectsWithTag("Interactable").Length - 25 + " Interactables removed");
                                 for (int TooClean = GameObject.FindGameObjectsWithTag("Interactable").Length - 25; TooClean > 0; TooClean--) {
                                     GameObject InteractableToDestroy = GameObject.FindGameObjectsWithTag("Interactable")[(int)Random.Range(0f, GameObject.FindGameObjectsWithTag("Interactable").Length - 0.1f)];
                                     if (InteractableToDestroy.GetComponent<InteractableScript>().Variables.x != 2f) {
@@ -995,7 +993,9 @@ public class RoundScript : MonoBehaviour {
             GS.SaveManipulation(GS.CurrentSave, 0);
         } else if (Event.Substring(0, 3) == "ESC"){
 
-            if(MainPlayer.Food[0] <= 0f && !IsCausual){
+            bool screwFood = IsCausual || MainPlayer.Nicotined;
+
+            if(MainPlayer.Food[0] <= 0f && !screwFood){
 
                 MainPlayer.ReleaseCamera = 0f;
                 int SelfEat = (int)Random.Range(1f, MainPlayer.FoodLimits[0]);
@@ -1006,7 +1006,7 @@ public class RoundScript : MonoBehaviour {
 
                 MainPlayer.State = 0;
 
-                if (!IsCausual) {
+                if (!screwFood) {
 
                     string[] Punishments = {"0", "01234"};
                     string[] Rewards = {"0", "01234"};
@@ -1140,7 +1140,7 @@ public class RoundScript : MonoBehaviour {
 
     void SetItemArrays() {
 
-        FoodItems = new int[] { 1, 3, 4, 5, 6, 7, 8, 9, 10, 17, 18, 19, 20, 21, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 119, 120, 121, 122, 123 };
+        FoodItems = new int[] { 1, 3, 4, 5, 6, 7, 8, 9, 10, 17, 18, 19, 20, 21, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 119, 120, 121, 122, 123, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170 };
         Utilities = new int[] { 2, 11, 12, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 124, 125, 126, 127, 128, 129};
         Weapons = new int[] { 14, 15, 16, 27, 28, 29, 31, 32, 34, 35, 36, 38, 40, 41, 42, 55, 56, 57, 58, 59, 60, 61, 62, 64, 65, 66, 67, 68, 69, 108, 109, 110, 111, 112, 113, 114, 115, 132, 133, 134, 135, 136, 137, 138, 139, 152, 153, 154, 155, 156, 157, 159, 160};
         AmmoItems = new int[] { 30, 33, 37, 39, 63};

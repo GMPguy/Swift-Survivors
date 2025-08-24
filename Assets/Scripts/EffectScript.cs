@@ -17,6 +17,7 @@ public class EffectScript : MonoBehaviour {
     public GameObject EatingEffect;
     public GameObject DrinkingEffect;
     public GameObject PatchUpEffect;
+    public GameObject SmokingEffect;
     public GameObject BullethitGrass;
     public GameObject BullethitBlock;
     public GameObject BullethitWood;
@@ -65,6 +66,10 @@ public class EffectScript : MonoBehaviour {
                 ParticleSystem.MainModule SetColorA = DrinkingEffect.GetComponent<ParticleSystem>().main;
                 SetColorA.startColor = new ParticleSystem.MinMaxGradient(EffectColor);
                 Lifetime = 1f;
+                break;
+            case "Smoking":
+                SmokingEffect.SetActive(true);
+                Lifetime = 10f;
                 break;
             case "PatchUp":
                 PatchUpEffect.SetActive(true);

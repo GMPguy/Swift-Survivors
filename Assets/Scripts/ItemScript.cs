@@ -270,6 +270,7 @@ public class ItemScript : MonoBehaviour {
                         HitDetector.transform.parent = this.transform;
                         MainCollider.enabled = true;
                         this.transform.position = CheckObstacleHIT.point - (HitDetector.transform.forward * 0.25f);
+
                         if (CheckObstacleHIT.collider.gameObject.layer == 4 || CheckObstacleHIT.collider.gameObject.layer == 16) {
                             InWater = true;
                         } else if (GS.GetSemiClass(Variables, "id") == "133") {
@@ -286,6 +287,7 @@ public class ItemScript : MonoBehaviour {
                             DropEffect.GetComponent<EffectScript>().EffectName = "FryingPan";
                             DropEffect.transform.position = this.transform.position;
                         }
+
                         if (CheckObstacleHIT.collider.GetComponent<MobScript>() != null) {
                             if (GS.GetSemiClass(Variables, "id") == "108") {
                                 // Plunger
@@ -312,6 +314,7 @@ public class ItemScript : MonoBehaviour {
                                 CheckObstacleHIT.collider.GetComponent<MobScript>().Hurt(ThrownVariables.z, DroppedBy, true, this.transform.position, "Item");
                             }
                         }
+
                         if (DroppedBy != null && GS.GetSemiClass(Variables, "id") == "992") {
                             DroppedBy.transform.position = this.transform.position + (Vector3.up * 1f);
                             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(new Color32(75, 200, 75, 255), new float[]{0.5f, 0.5f});
@@ -320,6 +323,7 @@ public class ItemScript : MonoBehaviour {
                             Ring.transform.position = this.transform.position;
                             Ring.GetComponent<EffectScript>().EffectName = "Cowbell";
                         }
+
                         if (CanHaveAttachments == true && GS.GetSemiClass(Variables, "at") != "" && GS.GetSemiClass(Variables, "at") != "0") {
                             GameObject DropEffect = Instantiate(EffectPrefab) as GameObject;
                             DropEffect.GetComponent<EffectScript>().EffectName = "Unpin";
@@ -376,6 +380,17 @@ public class ItemScript : MonoBehaviour {
                                         for (int fe = 0; fe < 10; fe++) {
                                             Vector3 dir = new (Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
                                             RS.Attack(new string[]{ "FireExtinguisher" }, transform.position, dir, DroppedBy, gameObject);
+                                        }
+                                        break;
+                                    case "168": // Watermelon
+                                        int slice = Random.Range(2, 9);
+
+                                        DropEffect.GetComponent<EffectScript>().EffectName = "Gibs";
+
+                                        for (int s = 0; s < slice; s++) {
+                                            GameObject item = Instantiate(GameObject.Find("_RoundScript").GetComponent<RoundScript>().ItemPrefab) as GameObject;
+                                            item.GetComponent<ItemScript>().Variables = GS.itemCache[169].startVariables;
+                                            item.transform.position = this.transform.position + Vector3.up * s / 4f;
                                         }
                                         break;
                                 }

@@ -468,23 +468,30 @@ public class CanvasScript : MonoBehaviour {
             } else {
                 SBGHunger.SetActive(true);
 
-                float HungerPC = (MainPlayer.Food[0] / MainPlayer.Food[1]);
-                SBGHunger.transform.GetChild(0).GetComponent<Image>().fillAmount = HungerPC;
-                SBGHunger.transform.GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1f - HungerPC;
-                if (HungerPC <= 0f){
-                    SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Get something to eat - ", "Zjedz coś - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
-                } else if (HungerPC < MainPlayer.FoodLimits[0] / MainPlayer.Food[1]) {
-                    SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 0.25f, 0f, 0.5f);
-                    SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Hungry - ", "Głodny - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
-                } else if (HungerPC < MainPlayer.FoodLimits[1] / MainPlayer.Food[1]) {
-                    SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 0.75f, 0f, 0.5f);
-                    SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Fine - ", "W porządku - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
-                } else if (HungerPC >= 1f) {
-                    SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(0f, 1f, 0f, 0.5f);
-                    SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Full - ", "Pełen - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                if (MainPlayer.Nicotined) {
+                    SBGHunger.transform.GetChild(0).GetComponent<Image>().fillAmount = 1f;
+                    SBGHunger.transform.GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 0f;
+                    SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(0.5f, .5f, .5f, 0.5f);
+                        SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Hunger suppressed", "Głód stłumiony");
                 } else {
-                    SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 1f, 0f, 0.5f);
-                    SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Well fed - ", "Najedzony - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                    float HungerPC = (MainPlayer.Food[0] / MainPlayer.Food[1]);
+                    SBGHunger.transform.GetChild(0).GetComponent<Image>().fillAmount = HungerPC;
+                    SBGHunger.transform.GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1f - HungerPC;
+                    if (HungerPC <= 0f){
+                        SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Get something to eat - ", "Zjedz coś - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                    } else if (HungerPC < MainPlayer.FoodLimits[0] / MainPlayer.Food[1]) {
+                        SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 0.25f, 0f, 0.5f);
+                        SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Hungry - ", "Głodny - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                    } else if (HungerPC < MainPlayer.FoodLimits[1] / MainPlayer.Food[1]) {
+                        SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 0.75f, 0f, 0.5f);
+                        SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Fine - ", "W porządku - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                    } else if (HungerPC >= 1f) {
+                        SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(0f, 1f, 0f, 0.5f);
+                        SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Full - ", "Pełen - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                    } else {
+                        SBGHunger.transform.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 1f, 0f, 0.5f);
+                        SBGHunger.transform.GetChild(1).GetComponent<Text>().text = GS.SetString("Well fed - ", "Najedzony - ") + Mathf.Floor(MainPlayer.Food[0]).ToString() + "/" + Mathf.Floor(MainPlayer.Food[1]).ToString();
+                    }
                 }
             }
             // Needs
@@ -596,6 +603,9 @@ public class CanvasScript : MonoBehaviour {
                     } else if (CSAlert[0] == 2f) {
                         CSColor = new Color(0.75f, 0.75f, 0.75f, 0.75f);
                         GS.SetText(CheckCrosshair.GetComponent<Text>(), "Gun's Empty", "Broń Nienaładowana");
+                    } else if (CSAlert[0] == 3f) {
+                        CSColor = new Color(0.75f, 0.75f, 1f, 0.75f);
+                        GS.SetText(CheckCrosshair.GetComponent<Text>(), "Gun's too wet", "Broń zbyt wilgotna");
                     }
                     CSColor = Color.Lerp(new Color(1f, 1f, 1f, 0.75f), CSColor, CSAlert[1]);
                     CheckCrosshair.GetComponent<Text>().color = new Color(CSColor.r, CSColor.g, CSColor.b, Mathf.Clamp(CSAlert[1], 0f, Crosshair.transform.GetChild(1).GetComponent<Image>().color.a));
@@ -1247,7 +1257,7 @@ public class CanvasScript : MonoBehaviour {
                     GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                     GS.SetString("Durability: ", "Wytrzymałość: ") + (int)float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + "%"};
                 break;
-            case 2: case 68: case 127: case 128: case 130:
+            case 2: case 68: case 100: case 127: case 128: case 130:
                 // Power stuff
                 Infos = new string[]{
                     GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
@@ -1262,6 +1272,18 @@ public class CanvasScript : MonoBehaviour {
                 Infos = new string[]{
                     GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                     GS.SetString("Uses: ", "Użycia: ") + (int)(float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) / 10f) };
+                break;
+            case 75: case 109:
+                // Fuel stuff
+                Infos = new string[]{
+                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
+                    GS.SetString("Fuel: ", "Paliwo: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"))};
+                break;
+            case 30: case 33: case 37: case 39: case 63: case 69: case 111: case 112: case 139: case 158:
+                // Stuff that has ammo
+                Infos = new string[]{
+                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
+                    GS.SetString("Ammo: ", "Amunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"))};
                 break;
             case 29: case 31: case 32: case 34: case 35: case 36: case 38: case 40: case 41: case 42: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 64: case 65: case 113: case 135: case 137: case 157: case 159: case 160:
                 // Guns
@@ -1304,15 +1326,22 @@ public class CanvasScript : MonoBehaviour {
                 if(GS.ExistSemiClass(ItemInfos, "at") && GS.GetSemiClass(ItemInfos, "at") != "0") 
                     Infos = new string[]{
                         GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                        GS.SetString("Ammo: ", "Ammunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + " / " + SpareAmmo,
+                        GS.SetString("Ammo: ", "Amunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + " / " + SpareAmmo,
                         GS.SetString("Attachment: ", "Dodatek: ") + GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "at"))].getName()};
                 else
                     Infos = new string[]{
                         GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                        GS.SetString("Ammo: ", "Ammunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + " / " + SpareAmmo};
+                        GS.SetString("Ammo: ", "Amunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + " / " + SpareAmmo};
 
                 break;
-            default: Infos = new string[]{GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),}; break;
+            default:
+                if(GS.ExistSemiClass(ItemInfos, "va") && GS.GetSemiClass(ItemInfos, "va") != "0")
+                    Infos = new string[]{
+                        GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
+                        GS.SetString("Uses: ", "Użycia: ") + GS.GetSemiClass(ItemInfos, "va")};
+                else
+                    Infos = new string[]{GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName()};
+                break;
         }
 
         for(int SetInfos = 0; SetInfos < 5; SetInfos++){
@@ -1711,7 +1740,7 @@ public class CanvasScript : MonoBehaviour {
             if(EscapedTextes[2].text == ""){
 
                 // Hunger stats
-                if (!RS.IsCausual){
+                if (!RS.IsCausual && !MainPlayer.Nicotined){
                     if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "0"){
                         EscapedTextes[2].text = GS.SetString("You were hungry, and therefore: ", "Byłeś głodny, przez co:") + "\n";
                         EscapedTextes[2].color = new Color(1f, 0.75f, 0.75f, 1f);
@@ -1751,14 +1780,14 @@ public class CanvasScript : MonoBehaviour {
                 } else {
                     EscapedTextes[2].color = new Color(0.75f, 1f, 0.5f, 1f);
 
-                    int response = Random.Range(0, 5);
+                    int response = Random.Range(0, 6);
 
                     string congrats = response switch {
                         0 => GS.SetString("Good job!", "Dobra robota!"),
                         1 => GS.SetString("Admirable performance!", "Dostateczne wykonanie!"),
                         2 => GS.SetString("Congratulations!", "Gratulacje!"),
                         3 => GS.SetString("Cool", "Fajnie"),
-                        4 => GS.SetString("But will you escape next time?\n", "Ale czy podołasz następnym razem?\n"),
+                        4 => GS.SetString("But will you escape next time?", "Ale czy podołasz następnym razem?"),
                         _ => GS.SetString("If you'd play the classic mode\nyou could get a reward for that!\n", "Gdybyście grali w klasycznym trybie\ndostalibyście nagrodę za to!\n")
                     };
 

@@ -58,6 +58,7 @@ public class PlayerScript : MonoBehaviour {
     public float Fire = 0f;
     public GameObject FireObj;
     public float Campfire = 0f;
+    public bool Nicotined;
     // Buffs
     // Look
     public int HairColor = 0;
@@ -172,6 +173,7 @@ public class PlayerScript : MonoBehaviour {
     float[] UseDelay = {0f,0f};
     // Cants
     GameObject NullTester = null;
+    static int SmokeWarning = -1;
     // Misc
 
     // Use this for initialization
@@ -1501,6 +1503,15 @@ public class PlayerScript : MonoBehaviour {
                         } else if (GetChild.name == "BaitPos" && IsFishing == false) {
                             FishingRodBait.GetComponent<Rigidbody>().velocity = Vector3.zero;
                             FishingRodBait.transform.position = Vector3.Lerp(FishingRodBait.transform.position, GetChild.position, 0.5f);
+                        } else if (GetChild.name == "SmokingWarning") {
+                            GetChild.GetChild(0).GetComponent<Text>().text = SmokeWarning switch {
+                                1 => GS.SetString("Seriously, don't smoke in real life", "Poważnie, nie palcie w prawdziwym życiu"),
+                                2 => GS.SetString("Smoking is gay", "Palenie jest dla ciot"),
+                                3 => GS.SetString("Smoking makes you fat and ugly", "Palenie robi z ciebie grubasa i brzydala"),
+                                4 => GS.SetString("Smoking kills, but it doesn't matter, since you're about to die anyway", "Palenie zabija, ale to jest ważne, bo i tak zaraz zginiesz"),
+                                5 => GS.SetString("This product contains nicotine... duh", "Ten produkt zawiera nikotynę... kto by się spodziewał"),
+                                _ => GS.SetString("Smoking kills", "Palenie zabija")
+                            };
                         } else if (GetChild.childCount > 0){
                             foreach(Transform SetChild in GetChild){
                                 if (SetChild.GetComponent<MeshRenderer>() != null) {
@@ -1529,6 +1540,8 @@ public class PlayerScript : MonoBehaviour {
                 CantUseItem = 0.5f;
                 previousItem[0] = int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"));
                 previousItem[1] = CurrentItemHeld;
+                if (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "167")
+                    SmokeWarning = (SmokeWarning + 1) % 6;
             } else if (/*TempItemShown[1] <= 0f &&*/ ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("PlayPullUp")) {
                 ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Pullup", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition), 0, 0f);
                 TempItemShown = new float[]{ int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), CultureInfo.InvariantCulture), 0f };
@@ -1592,11 +1605,12 @@ public class PlayerScript : MonoBehaviour {
             currBuild = "";
             int currID = int.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "id"));
             switch(currID) {
-                case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 19: case 20: case 21: case 22: case 23: case 24: case 25: case 26: case 70: case 71: case 72: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 80: case 81: case 82: case 83: case 84: case 106: case 116: case 117: case 118: case 119: case 120: case 121: case 122: case 123: case 161:
+                case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 19: case 20: case 21: case 22: case 23: case 24: case 25: case 26: case 70: case 71: case 72: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 80: case 81: case 82: case 83: case 84: case 106: case 116: case 117: case 118: case 119: case 120: case 121: case 122: case 123: case 161: case 163: case 164: case 165: case 166: case 167: case 169: case 170:
                     // Get Food info
                     int DrinkOrWhat = 0; // 0 Eat   1 Drink   2 Other
                     float HungerToAddSub = 0f;
                     float HealthToAddSub = 0f;
+                    string HealthDamage = "";
                     float HydrationToAdd = 0f;
                     float TirednessToAdd = 0f;
                     float InfectionToAdd = 0f;
@@ -1604,11 +1618,13 @@ public class PlayerScript : MonoBehaviour {
                     float DrunkToAdd = 0f;
                     float StaminaToAdd = 0f;
                     float ColdnessToAdd = 0f;
+                    bool NicotineToAdd = false;
                     Color32 FoodColor = new Color32(0, 0, 0, 0);
                     Color32 FlashColor = new Color32(0, 0, 0, 0);
                     string FoodName = "";
                     string ConsumeAnimation = "Eat";
                     bool CanUse = true;
+                    bool Multiuse = false;
                     switch(currID) {
                         case 1:
                             FoodName = GS.SetString("Apple", "Jabłko");
@@ -1951,6 +1967,70 @@ public class PlayerScript : MonoBehaviour {
                             FoodColor = new Color32(204, 100, 81, 0);
                             FlashColor = new Color32(0, 255, 0, 155);
                             break;
+                        case 163:
+                            FoodName = GS.SetString("Pizza slice", "Kawałek pizzy");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 120f;
+                            FoodColor = new Color32(255, 198, 109, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            break;
+                        case 164:
+                            FoodName = GS.SetString("Slice of cake", "Kawałek tortu");
+                            ConsumeAnimation = "EatCake";
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 100f;
+                            FoodColor = new Color32(232, 209, 142, 0);
+                            FlashColor = new Color32(0, 255, 0, 155);
+                            Multiuse = true;
+                            break;
+                        case 165:
+                            FoodName = GS.SetString("Cheap wine", "Tanie wino");
+                            ConsumeAnimation = "Drink";
+                            DrinkOrWhat = 1;
+                            DrunkToAdd = 30f;
+                            FoodColor = new Color32(96, 24, 34, 255);
+                            FlashColor = new Color32(128, 255, 255, 155);
+                            break;
+                        case 166:
+                            // TODO: add food poisoning
+                            FoodName = GS.SetString("Raw meat", "Surowe mięso");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 45f;
+                            HealthToAddSub = -15f;
+                            HealthDamage = "FoodPoisoning";
+                            FoodColor = new Color32(166, 116, 81, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 167:
+                            // TODO: add nicotine
+                            FoodName = GS.SetString("Cigarette", "Papierosa");
+                            ConsumeAnimation = "Smoke";
+                            DrinkOrWhat = 3;
+                            HealthToAddSub = Random.Range(0, 3) * -5f;
+                            HealthDamage = "Smoking";
+                            FoodColor = new Color32(255, 255, 0, 255);
+                            FlashColor = new Color32(100, 100, 100, 155);
+                            Multiuse = true;
+                            if (Nicotined)
+                                CanUse = false;
+                            else
+                                NicotineToAdd = true;
+                            break;
+                        case 169:
+                            FoodName = GS.SetString("Watermelon slice", "Kawałek arbuza");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 100f;
+                            HydrationToAdd = Mathf.Max(Random.Range(-2, 4), 0) * 10f;
+                            FoodColor = new Color32(166, 116, 81, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 170:
+                            FoodName = GS.SetString("Carrot", "Marchew");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 30f;
+                            FoodColor = new Color32(200, 114, 56, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
                     }
                     // Get Food info
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && CanUse == true) {
@@ -1962,8 +2042,8 @@ public class PlayerScript : MonoBehaviour {
                             HungerToAddSub = 0f;
                         }
 
-                        Food[0] += HungerToAddSub;
-                        Health[0] += HealthToAddSub;
+                        if (!Nicotined)
+                            Food[0] += HungerToAddSub;
                         Hydration += HydrationToAdd;
                         Tiredness += TirednessToAdd;
                         Infection += InfectionToAdd;
@@ -1971,6 +2051,17 @@ public class PlayerScript : MonoBehaviour {
                         Drunkenness += DrunkToAdd;
                         Energy[0] += StaminaToAdd;
                         Coldness += ColdnessToAdd;
+
+                        if (NicotineToAdd) {
+                            Nicotined = true;
+                            Food[0] = 0;
+                            Food[1] = 200;
+                        }
+
+                        if (HealthToAddSub >= 0)
+                            Health[0] += HealthToAddSub;
+                        else
+                            Hurt(HealthToAddSub * -1f, HealthDamage, false, Vector3.zero);
 
                         if (currID == 22) {
                             Bleeding = 0f;
@@ -1995,6 +2086,8 @@ public class PlayerScript : MonoBehaviour {
                             MessageAboutIt += GS.SetString(FoodName + " drank:", "Wypito " + FoodName + ":");
                         else if (DrinkOrWhat == 2)
                             MessageAboutIt += GS.SetString(FoodName + " used:", "Użyto " + FoodName + ":");
+                        else if (DrinkOrWhat == 3)
+                            MessageAboutIt += GS.SetString(FoodName + " smoked:", "Zjarano " + FoodName + ":");
 
                         if (HungerToAddSub != 0)
                             MessageAboutIt += GS.SetString(" (Hunger " + (int)HungerToAddSub + ")", " (Głód " + (int)HungerToAddSub + ")");
@@ -2014,6 +2107,9 @@ public class PlayerScript : MonoBehaviour {
                             MessageAboutIt += GS.SetString(" (Coldness " + (int)ColdnessToAdd + ")", " (Zimno " + (int)ColdnessToAdd + ")");
                         if (StaminaToAdd != 0) 
                             MessageAboutIt += GS.SetString(" (Stamina " + (int)StaminaToAdd + ")", " (Wytrzymałość " + (int)StaminaToAdd + ")");
+                        if (NicotineToAdd)
+                            MessageAboutIt += GS.SetString(" (Hunger suppressed)", " (Głód stłumiony)");
+
                         MainCanvas.Flash(FlashColor, new float[]{0.5f, 0.5f});
                         GS.Mess(MessageAboutIt, "Good");
 
@@ -2034,9 +2130,20 @@ public class PlayerScript : MonoBehaviour {
                             PatchUp.transform.rotation = LookDir.rotation;
                             PatchUp.GetComponent<EffectScript>().EffectColor = FoodColor;
                             PatchUp.GetComponent<EffectScript>().EffectName = "PatchUp";
+                        } else if (DrinkOrWhat == 3) {
+                            GameObject Smoke = Instantiate(EffectPrefab) as GameObject;
+                            Smoke.transform.position = LookDir.position - LookDir.forward * 0.25f;
+                            Smoke.transform.rotation = LookDir.rotation;
+                            Smoke.GetComponent<EffectScript>().EffectName = "Smoking";
                         }
-                            
-                        InvGet(CurrentItemHeld.ToString(), 1); //Inventory[CurrentItemHeld] = "id";
+                        
+                        if (!Multiuse)
+                            InvGet(CurrentItemHeld.ToString(), 1);
+                        else {
+                            Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-1");
+                            if (GS.GetSemiClass(Inventory[CurrentItemHeld], "va") == "0")
+                                InvGet(CurrentItemHeld.ToString(), 1);
+                        }
                     }
                     break;
                 case 12:
@@ -2182,7 +2289,7 @@ public class PlayerScript : MonoBehaviour {
                             AttackCooldown = 0.5f;
                             EnergyDrain = 10f;
                             ParryDrain = 0f;
-                            ParryCooldown = .5f;
+                            ParryCooldown = .525f;
                             break;
                         case 155:
                             UseDamage = 3f;
@@ -2258,6 +2365,7 @@ public class PlayerScript : MonoBehaviour {
                     float[] RecoilPhysics = new float[]{1f, 1f};
                     float DelayFire = 0f;
                     string[] DelayFireEffects = new string [0];
+                    float WetThreshold = 50f;
                     switch (currID) {
                         case 29:
                             GunType = "Colt";
@@ -2477,6 +2585,7 @@ public class PlayerScript : MonoBehaviour {
                             ReloadVariables = new float[] { 1f, 158f, 5f };
                             DelayFire = Random.Range(.1f, .5f);
                             DelayFireEffects = new string[] {"Trigger", "GunEmpty"};
+                            WetThreshold = .1f;
                             break;
                         case 159:
                             GunType = "BakerRifle";
@@ -2487,6 +2596,7 @@ public class PlayerScript : MonoBehaviour {
                             ReloadVariables = new float[] { 1f, 158f, 10f };
                             DelayFire = Random.Range(.1f, .5f);
                             DelayFireEffects = new string[] {"Trigger", "GunEmpty"};
+                            WetThreshold = .1f;
                             break;
                         case 160:
                             GunType = "NockGun";
@@ -2498,6 +2608,7 @@ public class PlayerScript : MonoBehaviour {
                             ReloadVariables = new float[] { 7f, 158f, 10f };
                             DelayFire = Random.Range(.1f, .5f);
                             DelayFireEffects = new string[] {"Trigger", "GunEmpty"};
+                            WetThreshold = .1f;
                             break;
                     }
                     if(FireAnimation[1] == "") FireAnimation[1] = FireAnimation[0];
@@ -2556,7 +2667,7 @@ public class PlayerScript : MonoBehaviour {
                     }
 
                     bool CanFire = true;
-                    if (((GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "103") && ZoomValues[1] > ZoomValues[0]) || (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "64" && ZoomValues[1] > ZoomValues[0])) {
+                    if (((GS.GetSemiClass(Inventory[CurrentItemHeld], "at") == "103") && ZoomValues[1] > ZoomValues[0]) || (GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "64" && ZoomValues[1] > ZoomValues[0]) || Wet >= WetThreshold) {
                         CanFire = false;
                     }
 
@@ -2639,7 +2750,7 @@ public class PlayerScript : MonoBehaviour {
                             }
                             GunSpreadRegain = GunCooldown[0] * 0.75f;
                         }
-                    } else if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0 && CanFire == true) {
+                    } else if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && ((float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0 && CanFire == true) || Wet >= WetThreshold)) {
                         CantUseItem = 1f;
                         PlaySoundBank("GunEmpty", 1);
                     }
@@ -2794,6 +2905,8 @@ public class PlayerScript : MonoBehaviour {
 
                     if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0f) {
                         MainCanvas.CSAlert = new float[] { 2f, 1f };
+                    } else if (Wet >= WetThreshold) {
+                        MainCanvas.CSAlert = new float[] { 3f, 1f };
                     }
 
                     break;
@@ -4023,15 +4136,12 @@ public class PlayerScript : MonoBehaviour {
             if(Fire > 0f && PrevWet != (int)Fire){
                 PrevWet = (int)Fire;
                 SetArmModel("", false);
-                print("Fire - " + PrevWet);
             } else if(Wet > 0f && PrevWet != (int)(Wet / 5f)){
                 PrevWet = (int)(Wet / 5f);
                 SetArmModel("", false);
-                print("Wet - " + PrevWet);
             } else if (Wet <= 0f && Fire <= 0f && PrevWet > 0f){
                 PrevWet = 0f;
                 SetArmModel("", false);
-                print("Should be clean now - " + PrevWet);
             }
 
             BuffsText = TextShortcuts;
@@ -4174,6 +4284,10 @@ public class PlayerScript : MonoBehaviour {
                     HardcoreInstaKill = true;
                     CantMove = Mathf.Clamp(5f, CantMove, Mathf.Infinity);
                     Bleeding += Random.Range(5f, 20f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
+                } else if (DamageType == "FoodPoisoning") {
+                    KilledBy = GS.SetString("You died due to food poisoning.", "Umarłeś w wyniku zatrucia pokarmowego.");
+                } else if (DamageType == "Smoking") {
+                    KilledBy = GS.SetString("You died due to nicotine poisoning.", "Umarłeś w wyniku zatrucia nikotyną.");
                 } else {
                     KilledBy = GS.SetString("You died.", "Umarłeś.");
                 }
@@ -4364,10 +4478,10 @@ public class PlayerScript : MonoBehaviour {
         } else {
             int ItemIDint = int.Parse(ItemID);
             switch (ItemIDint) {
-            case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 20: case 21: case 23: case 25: case 26: case 45: case 991: case 992: case 53: case 63: case 70: case 71: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 82: case 83: case 84: case 88: case 89: case 99: case 94: case 98: case 102: case 103: case 104: case 107: case 117: case 119: case 120: case 121: case 141: case 142: case 143: case 144: case 145: case 147: case 158: case 161:
+            case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 20: case 21: case 23: case 25: case 26: case 45: case 991: case 992: case 53: case 63: case 70: case 71: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 82: case 83: case 84: case 88: case 89: case 99: case 94: case 98: case 102: case 103: case 104: case 107: case 117: case 119: case 120: case 121: case 141: case 142: case 143: case 144: case 145: case 147: case 158: case 161: case 163: case 165: case 169:
                 PlayThis = "Hold-" + WhatAnim;
                 break;
-            case 12: case 19: case 22: case 30: case 33: case 37: case 39: case 43: case 52: case 54: case 72: case 80: case 81: case 85: case 90: case 97: case 100: case 101: case 105: case 114: case 116: case 123: case 124:
+            case 12: case 19: case 22: case 30: case 33: case 37: case 39: case 43: case 52: case 54: case 72: case 80: case 81: case 85: case 90: case 97: case 100: case 101: case 105: case 114: case 116: case 123: case 124: case 166: case 170:
                 PlayThis = "Grab-" + WhatAnim;
                 break;
             case 50: case 118: case 125: case 140:
@@ -4385,7 +4499,7 @@ public class PlayerScript : MonoBehaviour {
             case 11: case 93: case 106:
                 PlayThis = "Handle-" + WhatAnim;
                 break;
-            case 46: case 47: case 48: case 49: case 994: case 51: case 86: case 126: case 999:
+            case 46: case 47: case 48: case 49: case 994: case 51: case 86: case 126: case 999: case 168:
                 PlayThis = "Clothing-" + WhatAnim;
                 break;
             case 24: case 44: case 990:
@@ -4508,7 +4622,7 @@ public class PlayerScript : MonoBehaviour {
                     }
                 }
                 break;
-            case 995: case 146:
+            case 995: case 146: case 162: case 164:
                 PlayThis = "Spark-" + WhatAnim;
                 break;
             case 66: case 110: case 131: case 133:
@@ -4546,6 +4660,9 @@ public class PlayerScript : MonoBehaviour {
                 break;
             case 69:
                 PlayThis = "Bow-" + WhatAnim;
+                break;
+            case 167:
+                PlayThis = "Smokes-" + WhatAnim;
                 break;
             default:
                 if(WhatAnim == "Parry"){

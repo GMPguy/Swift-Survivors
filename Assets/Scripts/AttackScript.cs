@@ -912,7 +912,7 @@ public class AttackScript : MonoBehaviour {
         // Bullet Effect
 
         // Bullet drop
-        if(BulletCase){
+        if(BulletCase && BulletChamber){
             if(DropBullet > 0f){
                 DropBullet -= 0.02f;
             } else if (DropBullet > - 100f) {
