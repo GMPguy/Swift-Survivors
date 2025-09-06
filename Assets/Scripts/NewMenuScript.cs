@@ -462,7 +462,8 @@ public class NewMenuScript : MonoBehaviour {
                 else
                     switch(AfterLoading){
                         case "f_GameOver": LoadingTextes[1].text = GS.SetString("End results menu", "Menu wyników końcowych"); break;
-                        case "f_EscapeMap": LoadingTextes[1].text = GS.SetString("Next roud", "Następnej rundy"); break;
+                        case "f_EscapeMap": LoadingTextes[1].text = GS.SetString("Next round", "Następnej rundy"); break;
+                        case "f_ResetMap": LoadingTextes[1].text = GS.SetString("Technical difficulties, please stand by", "Problemy techniczne, prosimy zaczekać"); break;
                         case "f_MainMenu": LoadingTextes[1].text = GS.SetString("Main menu", "Main menu"); break;
                         case "f_StartGame": LoadingTextes[1].text = GS.SetString("Starting a new game", "Tworzenie nowej gry"); break;
                         case "f_LoadGame": LoadingTextes[1].text = GS.SetString("Loading game", "Wczytywanie gry"); break;

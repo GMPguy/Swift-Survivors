@@ -71,7 +71,11 @@ public class Spawner : MonoBehaviour {
             Chance = new float[] { 10f, 2f };
         } else if (Special == "Utilities") {
             //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]) };
-            NewStuffToSpawn = new string[]{ GS.itemCache[RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]].startVariables };
+            float WhatExactly = Random.Range(0, 10);
+            if (WhatExactly < 1f)
+                NewStuffToSpawn = new string[]{ GS.itemCache[RS.GetComponent<RoundScript>().CraftingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().CraftingItems.Length - 0.1f)]].startVariables };
+            else
+                NewStuffToSpawn = new string[]{ GS.itemCache[RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]].startVariables };
             Chance = new float[] { 100f, 25f };
         } else if (Special == "MilitaryStuff"){
             int WhatExactly = Random.Range(0, 6);

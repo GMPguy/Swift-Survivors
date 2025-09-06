@@ -607,6 +607,8 @@ MonoBehaviour:
   EffectPrefab: {fileID: 1917280440325604, guid: 2f76676a0f333824f8e5aaa957c7dd8e,
     type: 3}
   Discovered: 0
+  DiscoveryIcons:
+  - {fileID: 4221358989975514735}
 --- !u!1 &1293693401759870
 GameObject:
   m_ObjectHideFlags: 0
@@ -3725,7 +3727,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0daef8b5ddf0da74bb4dbbf046b0ad91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapSize: 8
+  MapSize: 0
   MinimapSize: 8
   UpdateRotation: 1
 --- !u!1001 &7096952666697451

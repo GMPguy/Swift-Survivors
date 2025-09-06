@@ -927,6 +927,22 @@ public class CanvasScript : MonoBehaviour {
                     if(Hovered) BuffText = GS.SetString(
                         "You're near a campfire. It can warm you, and you can craft items that need fire.",
                         "Jesteś obok ogniska. Może cię ogrzać, i można przy nim tworzyć przedmioty wymagające ognia.");
+                } else if (GetBuffA.name == "Dirty" && MainPlayer.Dirty > 0f) {
+                    GetBuffA.SetActive(true);
+                    GetBuffA.transform.GetChild(0).GetComponent<Text>().text = (int)MainPlayer.Dirty + "%";
+                    GetBuffA.GetComponent<RectTransform>().anchoredPosition = new Vector2(OffsetA, 0f);
+                    OffsetA += 32f;
+
+                    GetBuffB.SetActive(true);
+                    GetBuffB.transform.GetChild(1).GetComponent<Text>().text = GS.SetString(
+                        "Dirty (" + (int)MainPlayer.Dirty + "%)",
+                        "Brudny (" + (int)MainPlayer.Dirty + "%)");
+                    GetBuffB.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, OffsetB);
+                    OffsetB -= 32f;
+
+                    if(Hovered) BuffText = GS.SetString(
+                        "You smell. You are easier to detect, you take more damage, and people might not want to talk to you.",
+                        "Śmierdzisz. Łatwiej cię namierzyć, doznajesz więcej obrażeń, a niektórzy mogą z tobą nie chcieć rozmawiać.");
                 } else {
                     GetBuffA.SetActive(false);
                     GetBuffB.SetActive(false);
@@ -1257,7 +1273,7 @@ public class CanvasScript : MonoBehaviour {
                     GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                     GS.SetString("Durability: ", "Wytrzymałość: ") + (int)float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + "%"};
                 break;
-            case 2: case 68: case 100: case 127: case 128: case 130:
+            case 2: case 68: case 100: case 127: case 128: case 130: case 177: case 997:
                 // Power stuff
                 Infos = new string[]{
                     GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
@@ -1268,16 +1284,16 @@ public class CanvasScript : MonoBehaviour {
                     GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                     GS.SetString("Uses: ", "Użycia: ") + (int)(float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) / 30f) };
                 break;
-            case 98: case 124:
+            case 98: case 124: case 176: case 178:
                 Infos = new string[]{
                     GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                     GS.SetString("Uses: ", "Użycia: ") + (int)(float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) / 10f) };
                 break;
-            case 75: case 109:
+            case 75: case 109: case 179:
                 // Fuel stuff
                 Infos = new string[]{
                     GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                    GS.SetString("Fuel: ", "Paliwo: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"))};
+                    GS.SetString("Fuel: ", "Paliwo: ") + (int)float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + "%"};
                 break;
             case 30: case 33: case 37: case 39: case 63: case 69: case 111: case 112: case 139: case 158:
                 // Stuff that has ammo
@@ -1333,6 +1349,10 @@ public class CanvasScript : MonoBehaviour {
                         GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                         GS.SetString("Ammo: ", "Amunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + " / " + SpareAmmo};
 
+                break;
+            case 13: case 66: case 86: case 94: case 110: case 125: case 131:
+                // Has additional variables, but doesn't show them
+                Infos = new string[]{GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName()};
                 break;
             default:
                 if(GS.ExistSemiClass(ItemInfos, "va") && GS.GetSemiClass(ItemInfos, "va") != "0")
@@ -1765,6 +1785,8 @@ public class CanvasScript : MonoBehaviour {
                         EscapedTextes[2].text += GS.SetString("- You lost ", "- Straciłeś ") + GS.GetSemiClass(RS.TempStats, "PDamaged_") + GS.SetString(" points of health", " punktów życia") + "\n";
                     if(GS.ExistSemiClass(RS.TempStats, "PNoAmmo_"))
                         EscapedTextes[2].text += GS.SetString("- All variables of your items, have been set to zero", "- Wszystkie zmienne twoich przedmiotów, spadły do zera") + "\n";
+                    if(GS.ExistSemiClass(RS.TempStats, "PDirty_"))
+                        EscapedTextes[2].text +=  GS.SetString("- You got dirty by ", "- Pobrudziłeś się o ") + GS.GetSemiClass(RS.TempStats, "PDirty_") + "%\n";
                     if(GS.ExistSemiClass(RS.TempStats, "RItemGot_"))
                         EscapedTextes[2].text += GS.SetString("+ You were given ", "+ Otrzymałeś ") + GS.GetSemiClass(RS.TempStats, "RItemGot_") + GS.SetString(" random item/s", " losowych przedmiot/ów") + "\n";
                     if(GS.ExistSemiClass(RS.TempStats, "RHealed_"))
@@ -1775,6 +1797,8 @@ public class CanvasScript : MonoBehaviour {
                         EscapedTextes[2].text += GS.SetString("+ You were given a treasure, usually found in monuments", "+ Otrzymałeś skarb, znajdywalny w monumentach") + "\n";
                     if(GS.ExistSemiClass(RS.TempStats, "RDrunk_"))
                         EscapedTextes[2].text += GS.SetString("+ You drank a little, and you've gained ", "+ Wypiłeś trochę, i otrzymałeś ") + GS.GetSemiClass(RS.TempStats, "RDrunk_") + GS.SetString("% of drunkeness", "% pijaństwa") + "\n";
+                    if(GS.ExistSemiClass(RS.TempStats, "RMoney_"))
+                        EscapedTextes[2].text += GS.SetString("+ You got ", "+ Dostałeś ") + GS.GetSemiClass(RS.TempStats, "RMoney_") + GS.SetString(" money", " pieniędzy") + "\n";
                     if(MainPlayer.Food[0] > MainPlayer.Food[1])
                         EscapedTextes[2].text += GS.SetString("+ The excess ", "+ Nadmiar jedzenia w wysokości ") + (MainPlayer.Food[1] - MainPlayer.Food[0]) + GS.SetString(" food, will be carried over to next round", " pójdzie do następnej rundy");
                 } else {

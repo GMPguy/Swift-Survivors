@@ -5,11 +5,9 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Rendering.PostProcessing;
 using System.Globalization;
-using System.IO;
 using Unity.Mathematics;
 using Random=UnityEngine.Random;
 using UnityEngine.Audio;
-using System.Data;
 
 public class GameScript : MonoBehaviour {
 
@@ -1512,7 +1510,7 @@ public class GameScript : MonoBehaviour {
             new(this, new string[]{"Stone", "Kamień"},
                 new string[]{"A small stone. Used mainly for crafting, but can also be used as a throwable weapon.", "Mały kamień. Głównie używany w tworzeniu, ale można również nim rzucać w nieprzyjaciół."},
                 "id142;va100;sq1;",
-                new (20f, 0f, 0f)
+                new (20f, 0f, 5f)
             ),
             new(this, new string[]{"Paper", "Papier"},
                 new string[]{"A piece of paper. Used mainly for crafting.", "Kawałek kartki. Głównie używany w tworzeniu."},
@@ -1636,6 +1634,46 @@ public class GameScript : MonoBehaviour {
             new(this, new string[]{"Carrot", "Marchew"},
                 new string[]{"An orange taproot vegetable.", "Pomarańczowy palowy system korzenny."},
                 "id170;va0;sq1;"
+            ),
+            new(this, new string[]{"Plastic", "Plastik"},
+                new string[]{"A piece of plastic. Used mainly for crafting.", "Kawałek plastiku. Głównie używany w tworzeniu."},
+                "id171;va0;sq1;"
+            ),
+            new(this, new string[]{"Web", "Sieć"},
+                new string[]{"A spider's web. Used mainly for crafting.", "Sieć pajęcza. Głównie używany w tworzeniu."},
+                "id172;va0;sq1;"
+            ),
+            new(this, new string[]{"Empty bottle", "Pusta butelka"},
+                new string[]{"An empty plastic bottle. Can be recycled into plastic, which can be used in crafting.", "Pusta plastikowa butelka. Może być zrecyklingowana w zwykły plastik, którego później można użyć w tworzeniu."},
+                "id173;va0;sq1;"
+            ),
+            new(this, new string[]{"Empty can", "Pusta puszka"},
+                new string[]{"An emtpy metal can. Can be smelted into metal fragments, which can be used in crafting.", "Pusta metalowa puszka. Może być przetopiona w metalowe fragmenty, które później można użyć w tworzeniu."},
+                "id174;va0;sq1;"
+            ),
+            new(this, new string[]{"Sulfur", "Siarka"},
+                new string[]{"A yellow chemical. Used mainly for crafting explosives.", "Żółty materiał chemiczny. Głównie używany w tworzeniu materiałów wybuchowych."},
+                "id175;va0;sq1;"
+            ),
+            new(this, new string[]{"Water filter", "Filtr do wody"},
+                new string[]{"A bottle that can be used to purify water from any sources.", "Butelka mogąca filtrować wodę z różnych źródeł."},
+                "id176;va100;"
+            ),
+            new(this, new string[]{"Sea scooter", "Skuter podwodny"},
+                new string[]{"A handheld scooter, which emits light, and can be used to swim faster. Works only underwater.", "Butelka mogąca filtrować wodę z różnych źródeł."},
+                "id177;va100;"
+            ),
+            new(this, new string[]{"Soap", "Mydełko"},
+                new string[]{"You can use it, to get rid of dirtiness.", "Można nim zmyć z siebie brud."},
+                "id178;va0;sq1;"
+            ),
+            new(this, new string[]{"Torch", "Pochodnia"},
+                new string[]{"Lights small area for a short time.", "Oświetla mały obszar na krótki czas."},
+                "id179;va100;"
+            ),
+            new(this, new string[]{"Lunar shoes", "Kosmiczne buty"},
+                new string[]{"These shoes increase your jumping height, and slightly reduce fall damage velocity.", "Te buty zwiększają twoją wysokość skakania, i lekko obniżają prędkość otrzymywania obrażeń od upadków."},
+                "id180;va0;ct3;"
             )
         };
 

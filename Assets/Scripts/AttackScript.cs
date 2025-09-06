@@ -603,6 +603,14 @@ public class AttackScript : MonoBehaviour {
                 AttackType = "Gun";
                 FirearmType = "Blackpowder";
                 break;
+            case "Torch":
+                AttackMobDamage = Random.Range(2f, 5f);
+                AttackPushForce = new float[] { 1f, 0f };
+                AttackPropertyDamage = Random.Range(2f, 5f);
+                AttackDistance = 2f;
+                AttackMechanic = "HitScan";
+                AttackType = "Melee";
+                break;
             default:
                 Destroy(this.gameObject);
                 break;
@@ -632,7 +640,7 @@ public class AttackScript : MonoBehaviour {
         // Gunfires
         string[] GunfiresoundSettings = {""};
         switch(GunName){
-            case "Flashlight": case "Knife": case  "Bayonet": case  "Crowbar": case  "FireAxe": case  "Machete": case  "BaseballBat": case "SapphireSpear": case "Katana": case "Spear": case "FryingPan": case "Sledgehammer": case "Plunger": case "Shovel": case "StoneAxe": case "Fokos": case "Sword": case "Pickaxe":
+            case "Flashlight": case "Knife": case  "Bayonet": case  "Crowbar": case  "FireAxe": case  "Machete": case  "BaseballBat": case "SapphireSpear": case "Katana": case "Spear": case "FryingPan": case "Sledgehammer": case "Plunger": case "Shovel": case "StoneAxe": case "Fokos": case "Sword": case "Pickaxe": case "Torch":
                 string[] Swings = {"Swing1", "Swing2", "Swing3"};
                 GunfiresoundSettings = new string[]{ Swings[(int)Random.Range(0f, 2.9f)], "100", "Invisible" };
                 break;
@@ -900,7 +908,6 @@ public class AttackScript : MonoBehaviour {
                 BubblesHitScan.GetComponent<ParticleSystem>().Play();
                 ParticleSystem.MainModule SetCol = BubblesHitScan.GetComponent<ParticleSystem>().main;
                 SetCol.startColor = RenderSettings.fogColor;
-                Debug.Log("Bloop");
             }
 
         } else if (FlameThrower != null) {
@@ -1014,8 +1021,8 @@ public class AttackScript : MonoBehaviour {
                                 }
                             }
                         } else if (ItemID == "156") {
-                            Attacker.GetComponent<PlayerScript>().PushbackForce = Vector3.up * 12f;
-                            Attacker.GetComponent<PlayerScript>().ReturnPushback = 1f;
+                            Attacker.GetComponent<PlayerScript>().Pushback_Force = Vector3.up * 12f;
+                            Attacker.GetComponent<PlayerScript>().Pushback_Return = Vector2.one;
                         }
                     }
                 }
@@ -1038,11 +1045,13 @@ public class AttackScript : MonoBehaviour {
                 Ray CheckForGrounded = new Ray(ObjectHit.transform.position, Vector3.down);
                 RaycastHit CheckForGroundedHIT;
                 if (Physics.Raycast(CheckForGrounded, out CheckForGroundedHIT, 1.1f)) {
-                    ObjectHit.GetComponent<PlayerScript>().PushbackForce = new Vector3(this.transform.forward.x * AttackPushForce[0], AttackPushForce[1], this.transform.forward.z * AttackPushForce[0]);
-                    ObjectHit.GetComponent<PlayerScript>().ReturnPushback = 1f;
+                    ObjectHit.GetComponent<PlayerScript>().Pushback_Force = new Vector3(this.transform.forward.x * AttackPushForce[0], AttackPushForce[1], this.transform.forward.z * AttackPushForce[0]);
+                    ObjectHit.GetComponent<PlayerScript>().Pushback_Return = new (.5f, 1f);
                 }
                 if (GunName == "FlameThrower") {
                     ObjectHit.GetComponent<PlayerScript>().Fire = Mathf.Clamp(ObjectHit.GetComponent<PlayerScript>().Fire + 5f, 15f, 100f);
+                } else if (GunName == "Torch") {
+                    ObjectHit.GetComponent<PlayerScript>().Fire = Mathf.Clamp(ObjectHit.GetComponent<PlayerScript>().Fire + Mathf.Max(Random.Range(-1, 4) * 5, 0f), 15f, 100f);
                 } else if (GunName == "FireExtinguisher") {
                     ObjectHit.GetComponent<PlayerScript>().Fire = Mathf.Clamp(ObjectHit.GetComponent<PlayerScript>().Fire - 5f, 0f, 100f);
                 }
@@ -1068,6 +1077,8 @@ public class AttackScript : MonoBehaviour {
                     int Chance = Random.Range(0, 100);
                     if (GunName == "FlameThrower") {
                         ObjectHit.transform.root.GetComponent<MobScript>().Fire = Mathf.Clamp(ObjectHit.transform.root.GetComponent<MobScript>().Fire + 5f, 15f, 100f);
+                    } else if (GunName == "Torch") {
+                        ObjectHit.transform.root.GetComponent<MobScript>().Fire = Mathf.Clamp(ObjectHit.transform.root.GetComponent<MobScript>().Fire + Mathf.Max(Random.Range(-1, 4) * 5, 0f), 15f, 100f);
                     } else if (GunName == "FireExtinguisher") {
                         ObjectHit.transform.root.GetComponent<MobScript>().Fire = Mathf.Clamp(ObjectHit.transform.root.GetComponent<MobScript>().Fire - 5f, 0f, 100f);
                     } else if (GunName == "FryingPan" && Chance < 25) {

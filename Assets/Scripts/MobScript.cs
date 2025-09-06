@@ -1406,6 +1406,8 @@ public class MobScript : MonoBehaviour {
             float DetectA = DetectionRange[1];
             if (AiTarget.tag == "Player") {
                 float[] PlayerDistance = new float[] { 1f, 0.5f };
+
+                // Get player detection range multiplier
                 if (RS.MainPlayer.InBox == true && RS.MainPlayer.IsCrouching >= 1f && Angered < 9f) {
                     PlayerDistance = new float[] { 0f, 0f };
                 } else if (RS.MainPlayer.IsCrouching >= 1f) {
@@ -1413,6 +1415,11 @@ public class MobScript : MonoBehaviour {
                 } else {
                     PlayerDistance = new float[] { 1f, 0.5f };
                 }
+
+                for (int d = 0; d < 2; d++)
+                    PlayerDistance[d] += RS.MainPlayer.Dirty / 50f;
+
+                // Get mob default detection range
                 float Angle = Quaternion.Angle(Quaternion.Euler(new Vector3(0f, this.transform.eulerAngles.y, 0f)), Quaternion.Euler(new Vector3(0f, EyeSight.transform.eulerAngles.y, 0f)));
                 if (Angle < 90f) {
                     DetectA = DetectionRange[1] * PlayerDistance[0];
@@ -1562,10 +1569,6 @@ public class MobScript : MonoBehaviour {
                 for (int ToShoot = ToAttack[2]; ToShoot > 0; ToShoot --) {
                     List<string> Additionals = new List<string>();
                     GameObject Setslimend = null;
-                    //GameObject Attack = Instantiate(AttackPrefab) as GameObject;
-                    //Attack.transform.position = this.transform.position + Vector3.up * 0.5f + this.transform.forward * 0.5f;
-                    //Attack.transform.LookAt(AiTarget.transform.position);
-                    //Attack.GetComponent<AttackScript>().GunName = AttackType;
                     Additionals.Add(AttackType);
                     if (ToShoot != 1) {
                         //Attack.GetComponent<AttackScript>().GunFire = false;
@@ -1577,15 +1580,20 @@ public class MobScript : MonoBehaviour {
                     }
                     if (Gun == true) {
                         Additionals.Add("GunSpread" + RS.ReceiveGunSpred(WeaponToDrop, 0f, 1 - GunSpread[0]).x + ";");
-                        //Attack.GetComponent<AttackScript>().SpecialGunSpread = RS.ReceiveGunSpred(WeaponToDrop, 0f, 1 - GunSpread[0]).x;
-                        //Attack.transform.Rotate(new Vector3(
-                        //    (1f - GunSpread[0]) * -RS.ReceiveGunSpred(WeaponToDrop, 0f, 1 - GunSpread[0]).z,
-                        //    (1f - GunSpread[0]) * RS.ReceiveGunSpred(WeaponToDrop, 0f, 1 - GunSpread[0]).w * Random.Range(-1f, 1f),
-                        //    0f));
                     } else if (TypeOfMob == 6 || TypeOfMob == 10 || TypeOfMob == 13){
                         Additionals.Add("GunSpread" + "5;");
                     }
-                    RS.Attack(Additionals.ToArray(), this.transform.position + Vector3.up * .75f + this.transform.forward * 0.5f, AiTarget.transform.position - (this.transform.position + Vector3.up * 0.75f + this.transform.forward * 0.5f) , this.gameObject, Setslimend);
+
+                    Vector3 aimFrom = this.transform.position + Vector3.up * 1.25f;
+                    Vector3 aimTarget = AiTarget.tag == "Mob" ? Vector3.one * 1.25f : Vector3.zero;
+
+                    RS.Attack(
+                        Additionals.ToArray(),
+                        aimFrom,
+                        (AiTarget.transform.position + aimTarget) - aimFrom,
+                        this.gameObject,
+                        Setslimend
+                    );
                 }
                 
                 Anim.Play(AnimationSet + "Attack", 0, 0f);

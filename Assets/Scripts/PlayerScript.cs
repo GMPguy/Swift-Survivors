@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +16,7 @@ public class PlayerScript : MonoBehaviour {
     public float[] Energy = new float[] { 100f, 100f };
     public float[] Oxygen = new float[] { 20f, 20f };
     public float Speed = 5f; // meters per second
+    public Vector2 Jump = new (10f, -10f);
     public float SwimmingSpeed = 5f;
     public float IsCrouching = 0f;
     public string ArmType = "ConscriptJacket";
@@ -58,6 +58,7 @@ public class PlayerScript : MonoBehaviour {
     public float Fire = 0f;
     public GameObject FireObj;
     public float Campfire = 0f;
+    public float Dirty = 0f;
     public bool Nicotined;
     // Buffs
     // Look
@@ -129,8 +130,8 @@ public class PlayerScript : MonoBehaviour {
     bool PermissionToFireBow = false;
     bool MapRead = false;
     public Color32 LaserColor;
-    public Vector3 PushbackForce;
-    public float ReturnPushback;
+    public Vector3 Pushback_Force;
+    public Vector2 Pushback_Return;
     float DropWater = 1f;
     int BulletLoad = 0;
     float DropOrThrow = 0f;
@@ -291,6 +292,7 @@ public class PlayerScript : MonoBehaviour {
         // Reset map if not loaded
         if (this.transform.position.y < GameObject.Find("_RoundScript").GetComponent<RoundScript>().ResetHeight && IsSwimming == false && GS.GameModePrefab.x == 0) {
             GameObject.Find("_RoundScript").GetComponent<RoundScript>().SpecialEvent("Reset");
+            GameObject.Find("_RoundScript").GetComponent<RoundScript>().ResetHeight = -Mathf.Infinity;
         }
         // Reset map if not loaded
 
@@ -472,7 +474,7 @@ public class PlayerScript : MonoBehaviour {
                         } else {
                             Footstep.GetComponent<EffectScript>().EffectName = "BodyDrop";
                         }
-                        RecoilCam(new Vector3(Mathf.Lerp(1f, 30f, (this.GetComponent<Rigidbody>().velocity.y + 3f) / -7f) * GS.CameraBobbing, 0f, 0f), 1f, 0.1f);
+                        RecoilCam(new Vector3(Mathf.Lerp(1f, 30f, (this.GetComponent<Rigidbody>().velocity.y + 3f) / Jump.y) * GS.CameraBobbing, 0f, 0f), 1f, 0.1f);
                     }
                     IsGrounded = true;
                 }
@@ -483,7 +485,7 @@ public class PlayerScript : MonoBehaviour {
             }
 
             // Check for falling damage
-            if (this.GetComponent<Rigidbody>().velocity.y < -10f) {
+            if (this.GetComponent<Rigidbody>().velocity.y < Jump.y) {
                 Ray CheckForFD = new Ray(this.transform.position, Vector3.up * -1f);
                 RaycastHit CheckForFDHIT;
                 if (Physics.Raycast(CheckForFD, out CheckForFDHIT, 1.5f, GS.IngoreMaskWP)) {
@@ -915,6 +917,11 @@ public class PlayerScript : MonoBehaviour {
             }
         }
 
+        // Pushback
+        if (Pushback_Return.x > 0f)
+            Pushback_Return.x -= Time.fixedDeltaTime;
+        float pushLerp = Mathf.Clamp01((Pushback_Return.x * 2f) / Pushback_Return.y);
+
         if (CantMove <= 0f && IsSwimming == false) {
 
             // Enter Swimming state
@@ -973,7 +980,6 @@ public class PlayerScript : MonoBehaviour {
                 }
 
                 MoveDirNorm = Vector3.ClampMagnitude(MoveDirNorm, 1f);
-                PushbackForce = Vector3.Lerp(PushbackForce, Vector3.zero, 0.1f);
 
                 if (InWater == true) {
                     GotSpeed = SwimmingSpeed;
@@ -997,18 +1003,21 @@ public class PlayerScript : MonoBehaviour {
                     else MoveDirSpeed = (MoveDirNorm * GotSpeed) * (1f - (Drunkenness / 150f)) * WetSlowDown;
                 }
 
-                if(moved != 0)
-                    this.GetComponent<Rigidbody>().velocity = new Vector3(MoveDirSpeed.x, this.GetComponent<Rigidbody>().velocity.y, MoveDirSpeed.z);
+                if(moved != 0 || Pushback_Return.x > 0f)
+                    this.GetComponent<Rigidbody>().velocity = new Vector3(
+                        Mathf.Lerp(MoveDirSpeed.x, Pushback_Force.x, pushLerp),
+                        Mathf.Lerp(this.GetComponent<Rigidbody>().velocity.y, Pushback_Force.y, pushLerp),
+                        Mathf.Lerp(MoveDirSpeed.z, Pushback_Force.z, pushLerp)
+                    );
                 // Walking
 
                 // Jumping
                 if ((IsGrounded || this.GetComponent<Rigidbody>().velocity.magnitude <= 0f) && GS.ReceiveButtonPress("Jump", "Hold") > 0f && CheckStamina(25f, 1) && JumpCooldown <= 0f && SlowDown != 3) {
-                    ReturnPushback = 0f;
                     JumpCooldown = 1f;
                     StaminaDrain(25f);
                     this.transform.position += Vector3.up * 0.25f;
                     this.GetComponent<Rigidbody>().velocity = new Vector3(this.GetComponent<Rigidbody>().velocity.x, 0f, this.GetComponent<Rigidbody>().velocity.z);
-                    this.GetComponent<Rigidbody>().AddForce(this.transform.up * 10f, ForceMode.VelocityChange);
+                    this.GetComponent<Rigidbody>().AddForce(this.transform.up * Jump.x, ForceMode.VelocityChange);
                     GameObject JumpEffect = Instantiate(EffectPrefab) as GameObject;
                     JumpEffect.transform.position = this.transform.position;
                     JumpEffect.GetComponent<EffectScript>().EffectName = "Jumping";
@@ -1046,17 +1055,12 @@ public class PlayerScript : MonoBehaviour {
             }
             Vector3 SwimDir = Vector3.ClampMagnitude(MainCamera.forward * Input.GetAxis("Vertical") + MainCamera.right * Input.GetAxis("Horizontal") + this.transform.up * Drown, 1f);
             Vector3 SwimDirA = (SwimDir * (SwimmingSpeed / 2f)) * (1f - (Drunkenness / 150f));
-            this.GetComponent<Rigidbody>().velocity = Vector3.Lerp(this.GetComponent<Rigidbody>().velocity, SwimDirA, 0.1f);
+            this.GetComponent<Rigidbody>().velocity = Vector3.Lerp (
+                Vector3.Lerp(this.GetComponent<Rigidbody>().velocity, SwimDirA, 0.1f),
+                Pushback_Force,
+                pushLerp
+            );
 
-        }
-
-        if (ReturnPushback > 0f) {
-            ReturnPushback -= 0.02f;
-            if (IsGrounded == true && IsSwimming == false) {
-                this.GetComponent<Rigidbody>().velocity += PushbackForce * ReturnPushback;
-            } else {
-                this.GetComponent<Rigidbody>().velocity = PushbackForce * ReturnPushback;
-            }
         }
 
     }
@@ -1482,9 +1486,16 @@ public class PlayerScript : MonoBehaviour {
                                 GetChild.transform.GetChild(0).GetComponent<Light>().intensity = Mathf.Lerp(0f, 0.5f, float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) / 80f);
                             }
                         } else if (GetChild.GetComponent<MeshRenderer>() != null) {
-                            foreach (Material GetLaser in GetChild.GetComponent<MeshRenderer>().materials) {
-                                if (GetLaser.name == "LASER (Instance)") {
-                                    GetLaser.color = LaserColor;
+                            foreach (Material mat in GetChild.GetComponent<MeshRenderer>().materials) {
+                                if (mat.name == "LASER (Instance)") {
+                                    mat.color = LaserColor;
+                                } else if (mat.name == "SeaScooter3 (Instance)") {
+                                    float power = float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture);
+                                    mat.color = IsSwimming 
+                                        ? (power > 50f 
+                                            ? Color.Lerp(Color.yellow, Color.green, (power - 50f) / 50f)
+                                            : Color.Lerp(Color.red, Color.yellow, power / 50f))
+                                        : Color.black;
                                 }
                             }
                         } else if (GetChild.name == "S_Minigun") {
@@ -1512,6 +1523,9 @@ public class PlayerScript : MonoBehaviour {
                                 5 => GS.SetString("This product contains nicotine... duh", "Ten produkt zawiera nikotynę... kto by się spodziewał"),
                                 _ => GS.SetString("Smoking kills", "Palenie zabija")
                             };
+                        } else if (GetChild.name == "ScooterLight") {
+                            if (GetChild.gameObject.activeInHierarchy != IsSwimming)
+                                GetChild.gameObject.SetActive(IsSwimming);
                         } else if (GetChild.childCount > 0){
                             foreach(Transform SetChild in GetChild){
                                 if (SetChild.GetComponent<MeshRenderer>() != null) {
@@ -1625,6 +1639,8 @@ public class PlayerScript : MonoBehaviour {
                     string ConsumeAnimation = "Eat";
                     bool CanUse = true;
                     bool Multiuse = false;
+                    string LeftOver = "";
+                    float LeftOverChance = 0f;
                     switch(currID) {
                         case 1:
                             FoodName = GS.SetString("Apple", "Jabłko");
@@ -1641,12 +1657,14 @@ public class PlayerScript : MonoBehaviour {
                             FlashColor = new Color32(128, 255, 0, 155);
                             break;
                         case 4:
-                            FoodName = GS.SetString("Soup", "Zupe");
+                            FoodName = GS.SetString("Soup", "Zupę");
                             ConsumeAnimation = "Drink";
                             DrinkOrWhat = 0;
                             HungerToAddSub = 240f;
                             FoodColor = new Color32(255, 155, 0, 255);
                             FlashColor = new Color32(128, 255, 0, 155);
+                            LeftOver = "id174;va0;sq1;";
+                            LeftOverChance = .5f;
                             break;
                         case 5:
                             FoodName = GS.SetString("Mackerel", "Makrelę");
@@ -1654,6 +1672,8 @@ public class PlayerScript : MonoBehaviour {
                             HungerToAddSub = 60f;
                             FoodColor = new Color32(200, 225, 255, 255);
                             FlashColor = new Color32(128, 255, 0, 155);
+                            LeftOver = "id174;va0;sq1;";
+                            LeftOverChance = .1f;
                             break;
                         case 6:
                             FoodName = GS.SetString("Chocolate", "Czekoladę");
@@ -1699,6 +1719,8 @@ public class PlayerScript : MonoBehaviour {
                             HydrationToAdd = 60f;
                             FoodColor = new Color32(0, 155, 255, 255);
                             FlashColor = new Color32(128, 255, 255, 155);
+                            LeftOver = "id173;va0;sq1;";
+                            LeftOverChance = .25f;
                             break;
                         case 18:
                             FoodName = GS.SetString("Energy Drink", "Energetyka");
@@ -1708,6 +1730,8 @@ public class PlayerScript : MonoBehaviour {
                             TirednessToAdd = -25f;
                             FoodColor = new Color32(200, 255, 0, 255);
                             FlashColor = new Color32(128, 255, 255, 155);
+                            LeftOver = "id174;va0;sq1;";
+                            LeftOverChance = .5f;
                             break;
                         case 19:
                             FoodName = GS.SetString("Candy Bar", "Batonik");
@@ -1723,6 +1747,8 @@ public class PlayerScript : MonoBehaviour {
                             HungerToAddSub = 240f;
                             FoodColor = new Color32(255, 155, 0, 255);
                             FlashColor = new Color32(128, 255, 0, 155);
+                            LeftOver = "id174;va0;sq1;";
+                            LeftOverChance = .5f;
                             break;
                         case 21:
                             FoodName = GS.SetString("MRE", "MRE");
@@ -1750,6 +1776,8 @@ public class PlayerScript : MonoBehaviour {
                             RadioactivityToAdd = -25f;
                             FoodColor = new Color32(117, 158, 130, 255);
                             FlashColor = new Color32(0, 255, 0, 155);
+                            LeftOver = "id173;va0;sq1;";
+                            LeftOverChance = .1f;
                             if (Infection <= 0f && Radioactivity <= 0f)
                                 CanUse = false;
                             break;
@@ -1769,6 +1797,8 @@ public class PlayerScript : MonoBehaviour {
                             RadioactivityToAdd = -Radioactivity - 30f;
                             FoodColor = new Color32(181, 97, 124, 255);
                             FlashColor = new Color32(0, 255, 0, 155);
+                            LeftOver = "id173;va0;sq1;";
+                            LeftOverChance = .1f;
                             break;
                         case 26:
                             FoodName = GS.SetString("First Aid Kit", "Apteczka Pierwszej Pomocy");
@@ -1835,6 +1865,8 @@ public class PlayerScript : MonoBehaviour {
                             HungerToAddSub = 60f;
                             FoodColor = new Color32(234, 203, 174, 255);
                             FlashColor = new Color32(128, 255, 0, 155);
+                            LeftOver = "id174;va0;sq1;";
+                            LeftOverChance = .05f;
                             break;
                         case 78:
                             FoodName = GS.SetString("Crackers", "Krakersy");
@@ -1851,6 +1883,8 @@ public class PlayerScript : MonoBehaviour {
                             TirednessToAdd = -10f;
                             FoodColor = new Color32(0, 0, 0, 255);
                             FlashColor = new Color32(128, 255, 255, 155);
+                            LeftOver = "id174;va0;sq1;";
+                            LeftOverChance = .5f;
                             break;
                         case 80:
                             FoodName = GS.SetString("Beer", "Piwo");
@@ -1990,6 +2024,8 @@ public class PlayerScript : MonoBehaviour {
                             DrunkToAdd = 30f;
                             FoodColor = new Color32(96, 24, 34, 255);
                             FlashColor = new Color32(128, 255, 255, 155);
+                            LeftOver = "id173;va0;sq1;";
+                            LeftOverChance = .25f;
                             break;
                         case 166:
                             // TODO: add food poisoning
@@ -2113,6 +2149,18 @@ public class PlayerScript : MonoBehaviour {
                         MainCanvas.Flash(FlashColor, new float[]{0.5f, 0.5f});
                         GS.Mess(MessageAboutIt, "Good");
 
+                        // Left overs from food
+                        if (Random.Range(0f, 1f) < LeftOverChance) {
+                            InvGet(LeftOver, 0);
+                            MessageAboutIt = GS.SetString("Left over ", "Pozostał");
+                            MessageAboutIt += GS.GetSemiClass(LeftOver, "id") switch {
+                                "173" => GS.SetString("an empty bottle", "a pusta butelka"),
+                                "174" => GS.SetString("an empty can", "a pusta puszka"),
+                                _ => ""
+                            };
+                            GS.Mess(MessageAboutIt, "Good");
+                        }
+
                         ItemsShown.GetComponent<Animator>().Play(PlayItemAnim(ConsumeAnimation, GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition));
                         if (DrinkOrWhat == 0 || DrinkOrWhat == 1) {
                             GameObject Crumbs = Instantiate(EffectPrefab) as GameObject;
@@ -2165,7 +2213,7 @@ public class PlayerScript : MonoBehaviour {
                         GS.Mess(GS.SetString("Flare got extinguished!", "Flara się zgasiła!"), "Error");
                     }
                     break;
-                case 2: case 14: case 15: case 16: case 27: case 28: case 993: case 68: case 108: case 115: case 132: case 134: case 136: case 138: case 152: case 153: case 154: case 155: case 156:
+                case 2: case 14: case 15: case 16: case 27: case 28: case 993: case 68: case 108: case 115: case 132: case 134: case 136: case 138: case 152: case 153: case 154: case 155: case 156: case 179:
 
                     // Get Melee info
                     string AttackType = "";
@@ -2305,6 +2353,12 @@ public class PlayerScript : MonoBehaviour {
                             EnergyDrain = 10f;
                             ParryDrain = 10f;
                             break;
+                        case 179:
+                            UseDamage = 5f;
+                            AttackType = "Torch";
+                            AttackCooldown = 0.5f;
+                            EnergyDrain = 5f;
+                            break;
                     }
 
                     // Get Melee info
@@ -2338,6 +2392,16 @@ public class PlayerScript : MonoBehaviour {
                         if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0f) {
                             InvGet(CurrentItemHeld.ToString(), 1); //Inventory[CurrentItemHeld] = "id";
                             GS.Mess(GS.SetString("Chainsaw ran out of fuel!", "Pile łańcuchowej wyczerpało się paliwo!"), "Error");
+                        }
+                    } else if (currID == 179) {
+                        Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-0.032"); //Inventory[CurrentItemHeld].y -= 0.032f;
+                        if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0f) {
+                            InvGet(CurrentItemHeld.ToString(), 1); //Inventory[CurrentItemHeld] = "id";
+                            GS.Mess(GS.SetString("Torch went out!", "Pochodnia się wypaliła!"), "Error");
+                        }
+                        if (IsSwimming == true) {
+                            InvGet(CurrentItemHeld.ToString(), 1); //Inventory[CurrentItemHeld] = "id";
+                            GS.Mess(GS.SetString("Torch got extinguished!", "Pochodnia się zgasiła!"), "Error");
                         }
                     } else if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0f) {
                         InvGet(CurrentItemHeld.ToString(), 1); //Inventory[CurrentItemHeld] = "id";
@@ -2935,7 +2999,7 @@ public class PlayerScript : MonoBehaviour {
                         CantUseItem = CantSwitchItem = 1f;
                     }
                     break;
-                case 45: case 46: case 47: case 48: case 49: case 994: case 51: case 53: case 86: case 94: case 125: case 126:
+                case 45: case 46: case 47: case 48: case 49: case 994: case 51: case 53: case 86: case 94: case 125: case 126: case 180:
                     // Get Clothing Infos
                     string ClothingName = GS.itemCache[currID].getName();
                     Color32 WearColor = new Color32(255, 255, 255, 255);
@@ -3235,24 +3299,34 @@ public class PlayerScript : MonoBehaviour {
                         }
                     }
                     break;
-                case 98:
+                case 98: case 178:
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f) {
-                        ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Wipe", "98", AnimationAddition), 0, 0f);
+                        ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Wipe", currID.ToString(), AnimationAddition), 0, 0f);
                         CantUseItem = 1f;
                         CantSwitchItem = 1f;
-                        if (Bleeding > 0f) {
-                            Bleeding -= 5f;
+
+                        switch (currID) {
+                            case 98:
+                                if (Bleeding > 0f)
+                                    Bleeding -= 5f;
+                                if (Wet > 0f)
+                                    Wet -= 25f;
+                                if (Radioactivity > 0f)
+                                    Radioactivity -= 5f;
+                                break;
+                            case 178:
+                                if (Dirty > 0f)
+                                    Dirty -= 25f;
+                                break;
                         }
-                        if (Wet > 0f) {
-                            Wet -= 25f;
-                        }
-                        if (Radioactivity > 0f) {
-                            Radioactivity -= 5f;
-                        }
+                        
                         Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-10");//Inventory[CurrentItemHeld].y -= 10f;
                         if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0f) {
                             InvGet(CurrentItemHeld.ToString(), 1);
-                            GS.Mess(GS.SetString("The towel got too dirty!", "Ręcznik stał się zbyt brudny!"), "Error");
+                            GS.Mess(currID switch {
+                                178 => GS.SetString("The soap got used up!", "Mydełko się zużyło!"),
+                                _ => GS.SetString("The towel got too dirty!", "Ręcznik stał się zbyt brudny!")
+                            }, "Error");
                         }
                     }
                     break;
@@ -3451,8 +3525,8 @@ public class PlayerScript : MonoBehaviour {
                         //SpawnAttack.GetComponent<AttackScript>().Slimend = SlimEnd;
                         RS.Attack(new string[]{"FireExtinguisher", "Inventory" + CurrentItemHeld}, LookDir.position, LookDir.forward, this.gameObject, SlimEnd);
                         ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Pullup", "128", AnimationAddition), 0, 0.5f);
-                        PushbackForce = LookDir.forward * -4f;
-                        ReturnPushback = 1f;
+                        Pushback_Force = LookDir.forward * -4f;
+                        Pushback_Return = Vector2.one;
                         Fire = Mathf.Clamp(Fire - 5f, 0f, 100f);
                         if (this.transform.position.y > lastGroundY+10f) GS.PS.AchProg("Ach_RocketMan", "0");
                     }
@@ -3647,6 +3721,36 @@ public class PlayerScript : MonoBehaviour {
                         }
                     }
                     break;
+                case 177:
+                    if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0f) {
+                        InvGet(CurrentItemHeld.ToString(), 1);
+                    }
+                    if (IsSwimming && GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f) {
+                        CantUseItem = 0.1f;
+                        CantSwitchItem = 0.1f;
+                        Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-0.01");
+                        Pushback_Force = LookDir.forward * 5f;
+                        Pushback_Return = new (.1f, .2f);
+                    }
+                    break;
+                case 176:
+                    bool hasWater = false;
+                    if (Physics.Raycast(LookDir.position, LookDir.forward, out RaycastHit checkWaterHit, 4f))
+                        hasWater = checkWaterHit.collider.gameObject.layer is 4 or 16;
+                    
+                    if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f) {
+                        if (hasWater || IsSwimming) {
+                            CantUseItem = 2f;
+                            CantSwitchItem = 2f;
+                            ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Filter", "176", AnimationAddition), 0, 0f);
+                            InvGet("id17;sq1;", 0);
+                            GS.Mess(GS.SetString("Bottle of water acquired", "Nabyto butelkę wody"), "Good");
+                        } else {
+                            CantUseItem = .5f;
+                            GS.Mess(GS.SetString("Aim at a water body!", "Celuj w zbiornik wodny!"), "Error");
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
@@ -3686,6 +3790,7 @@ public class PlayerScript : MonoBehaviour {
             }
             float Healthtoset = 100f;
             float SpeedMultip = 7f;
+            Vector2 JumpMultip = new (10f, -10f);
             float SwimMultip = 7f;
             bool SetST = false;
             bool SetNV = false;
@@ -3764,12 +3869,15 @@ public class PlayerScript : MonoBehaviour {
                     }
                 } else if (GS.GetSemiClass(Equipment[ScanEq], "id") == "126") {
                     SwimMultip += 7f;
+                } else if (GS.GetSemiClass(Equipment[ScanEq], "id") == "180") {
+                    JumpMultip = new (JumpMultip.x + 6f,JumpMultip.y - 6f);
                 }
             }
 
             MaxInventorySlots = Mathf.Clamp(MIStoset, 1, 10);
             Speed = SpeedMultip;
             SwimmingSpeed = SwimMultip;
+            Jump = JumpMultip;
             if (Healthtoset != Health[1]) {
                 float healthratio = Healthtoset / Health[1];
                 Health[1] = Healthtoset;
@@ -3908,6 +4016,8 @@ public class PlayerScript : MonoBehaviour {
                     Hot = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
                 } else if (CheckedCode.Substring(0, 1) == "F") {
                     Fire = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
+                } else if (CheckedCode.Substring(0, 1) == "D") {
+                    Dirty = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
                 }
             }
 
@@ -4022,6 +4132,11 @@ public class PlayerScript : MonoBehaviour {
                 string NumbersToAdd = "00" + (int)BrokenBone;
                 NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
                 TextShortcuts += "b" + NumbersToAdd;
+            }
+            if (Dirty > 0f) {
+                string NumbersToAdd = "00" + (int)Dirty;
+                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
+                TextShortcuts += "D" + NumbersToAdd;
             }
 
             if (RS.Weather == 4) {
@@ -4294,6 +4409,8 @@ public class PlayerScript : MonoBehaviour {
 
                 if (IsCasual)
                     GotDamage /= CasualEase;
+                else
+                    GotDamage *= 1f + (Dirty / 50f);
 
                 if(DamageType == "Canibalism"){
                     Health[0] -= GotDamage;
@@ -4478,7 +4595,7 @@ public class PlayerScript : MonoBehaviour {
         } else {
             int ItemIDint = int.Parse(ItemID);
             switch (ItemIDint) {
-            case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 20: case 21: case 23: case 25: case 26: case 45: case 991: case 992: case 53: case 63: case 70: case 71: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 82: case 83: case 84: case 88: case 89: case 99: case 94: case 98: case 102: case 103: case 104: case 107: case 117: case 119: case 120: case 121: case 141: case 142: case 143: case 144: case 145: case 147: case 158: case 161: case 163: case 165: case 169:
+            case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 20: case 21: case 23: case 25: case 26: case 45: case 991: case 992: case 53: case 63: case 70: case 71: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 82: case 83: case 84: case 88: case 89: case 99: case 94: case 98: case 102: case 103: case 104: case 107: case 117: case 119: case 120: case 121: case 141: case 142: case 143: case 144: case 145: case 147: case 158: case 161: case 163: case 165: case 169: case 171: case 173: case 174: case 176: case 178:
                 PlayThis = "Hold-" + WhatAnim;
                 break;
             case 12: case 19: case 22: case 30: case 33: case 37: case 39: case 43: case 52: case 54: case 72: case 80: case 81: case 85: case 90: case 97: case 100: case 101: case 105: case 114: case 116: case 123: case 124: case 166: case 170:
@@ -4499,7 +4616,7 @@ public class PlayerScript : MonoBehaviour {
             case 11: case 93: case 106:
                 PlayThis = "Handle-" + WhatAnim;
                 break;
-            case 46: case 47: case 48: case 49: case 994: case 51: case 86: case 126: case 999: case 168:
+            case 46: case 47: case 48: case 49: case 994: case 51: case 86: case 126: case 999: case 168: case 180:
                 PlayThis = "Clothing-" + WhatAnim;
                 break;
             case 24: case 44: case 990:
@@ -4585,7 +4702,7 @@ public class PlayerScript : MonoBehaviour {
                     }
                 }
                 break;
-            case 15: case 27: case 108: case 136: case 152: case 153: case 154: case 156:
+            case 15: case 27: case 108: case 136: case 152: case 153: case 154: case 156: case 179:
                 PlayThis = "MOH-" + WhatAnim;
                 if(WhatAnim == "Swing"){
                     PlayThis = "MOH-" + WhatAnim + (int)Random.Range(1f, 4.9f);
@@ -4622,7 +4739,7 @@ public class PlayerScript : MonoBehaviour {
                     }
                 }
                 break;
-            case 995: case 146: case 162: case 164:
+            case 995: case 146: case 162: case 164: case 175:
                 PlayThis = "Spark-" + WhatAnim;
                 break;
             case 66: case 110: case 131: case 133:
@@ -4663,6 +4780,9 @@ public class PlayerScript : MonoBehaviour {
                 break;
             case 167:
                 PlayThis = "Smokes-" + WhatAnim;
+                break;
+            case 177:
+                PlayThis = "SeaScooter-" + WhatAnim;
                 break;
             default:
                 if(WhatAnim == "Parry"){

@@ -20,6 +20,8 @@ public class InteractableScript : MonoBehaviour {
 
     // Misc
     public bool Discovered = false;
+    bool prevDiscovery = false;
+    public MinimapMarker[] DiscoveryIcons;
     int ammoID;
     Vector3[] ammoScale;
     // Misc
@@ -210,6 +212,14 @@ public class InteractableScript : MonoBehaviour {
 
         if (!wasStarted)
             TheStart();
+        
+        // Show map icon upon getting discovery
+        if (prevDiscovery != Discovered) {
+            prevDiscovery = Discovered;
+
+            for (int i = 0; i < DiscoveryIcons.Length; i++)
+                DiscoveryIcons[i].MapSize = DiscoveryIcons[i].MinimapSize;
+        }
 
 
         if (Variables.x == 1f) {
