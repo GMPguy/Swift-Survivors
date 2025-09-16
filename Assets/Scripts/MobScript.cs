@@ -1118,6 +1118,7 @@ public class MobScript : MonoBehaviour {
                 this.gameObject.layer = 13;
                 CleanupAfterDead = 5f;
                 GetComponent<CapsuleCollider>().enabled = false;
+                NavAgent.enabled = false;
 
                 if (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol") {
                     Anim.SetFloat("IdleStance", 0f);
@@ -1525,11 +1526,13 @@ public class MobScript : MonoBehaviour {
                 SwitchPosition = 0f;
             } else if (GS.GameModePrefab.x == 0) {
                 //PreventJamming[0] = 1f;
-                if (SwitchPosition > 0f) {
-                    SwitchPosition -= deltaTime;
-                } else if (Vector3.Distance(transform.position, AiMovePosition) < 1.2f) {
-                    SwitchPosition = Random.Range(0.5f, 1f);
-                    AiMovePosition = AiMovePosition + new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f));
+                if (Vector3.Distance(transform.position, AiMovePosition) < 1.2f) {
+                    if (SwitchPosition > 0f) {
+                        SwitchPosition -= deltaTime;
+                    } else {
+                        SwitchPosition = Random.Range(0.5f, 1f);
+                        AiLastSeenPosition = AiMovePosition + new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f));
+                    }
                 }
                 AiMovePosition = AiLastSeenPosition;
             } else if (GS.GameModePrefab.x == 1) {

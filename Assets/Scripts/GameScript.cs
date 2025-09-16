@@ -26,7 +26,7 @@ public class GameScript : MonoBehaviour {
     public int Score = 0;
     public int Money = 0;
     public int Ammo = 0;
-    public string RoundSeed = "12121212";
+    public int RoundsSeed = 0;
     public Vector2 HealthSave;
     public Vector2 HungerSave;
     public float PlayerSpeed;
@@ -303,7 +303,7 @@ public class GameScript : MonoBehaviour {
                 }
             }
             Biome = AvailableBiomes.ToArray()[(int)Random.Range(0f, AvailableBiomes.ToArray().Length - 0.1f)];
-            RoundSeed = Random.Range(10000000, 99999999).ToString();
+            RoundsSeed = Random.Range(int.MinValue / 2, int.MaxValue / 2);
             HealthSave = new Vector2(FoundPlayer.GetComponent<PlayerScript>().Health[0], FoundPlayer.GetComponent<PlayerScript>().Health[1]);
             HungerSave = new Vector2(FoundPlayer.GetComponent<PlayerScript>().Food[0], FoundPlayer.GetComponent<PlayerScript>().Food[1]);
             PlayerSpeed = FoundPlayer.GetComponent<PlayerScript>().Speed;
@@ -442,7 +442,7 @@ public class GameScript : MonoBehaviour {
                 + "®mo" + Money.ToString()
                 + "®am" + Ammo.ToString()
 
-                + "®sr" + RoundSeed.ToString()
+                + "®sr" + RoundsSeed.ToString()
 
                 + "®l0" + HealthSave.x.ToString()
                 + "®l1" + HealthSave.y.ToString()
@@ -491,7 +491,7 @@ public class GameScript : MonoBehaviour {
                     Money = int.Parse(GetSemiClass(Receiver, "mo", "®"));
                     Ammo = int.Parse(GetSemiClass(Receiver, "am", "®"));
 
-                    RoundSeed = GetSemiClass(Receiver, "sr", "®");
+                    RoundsSeed = int.Parse(GetSemiClass(Receiver, "sr", "®"));
 
                     HealthSave.x = float.Parse(GetSemiClass(Receiver, "l0", "®"));
                     HealthSave.y = (int)float.Parse(GetSemiClass(Receiver, "l1", "®"));
@@ -1730,22 +1730,6 @@ public class GameScript : MonoBehaviour {
 
         itemCache = filIC.ToArray();
 
-    }
-
-    public float SeedPerlin(string Seed){
-        string[] sh = new string[]{ Seed[..(int)(Seed.Length / 2f)], Seed[(int)(Seed.Length / 2f)..] };
-        return Mathf.Clamp((FixedPerlinNoise(   
-            float.Parse(sh[0]) / Mathf.Pow(10, (int)Mathf.Clamp(sh[0].Length/2f, 1, Mathf.Infinity)),   
-            float.Parse(sh[1]) / Mathf.Pow(10, (int)Mathf.Clamp(sh[1].Length/2f, 1, Mathf.Infinity))
-        ) * 2f)-0.5f, 0f, 1f);
-    }
-
-    public float SeedPerlin2D(string Seed, float x, float y){
-        string[] sh = new string[]{ Seed[..(int)(Seed.Length / 2f)], Seed[(int)(Seed.Length / 2f)..] };
-        return Mathf.Clamp((FixedPerlinNoise(   
-            x * float.Parse(sh[0]) / Mathf.Pow(10, (int)Mathf.Clamp(sh[0].Length/2f, 1, Mathf.Infinity)),   
-            y * float.Parse(sh[1]) / Mathf.Pow(10, (int)Mathf.Clamp(sh[1].Length/2f, 1, Mathf.Infinity))
-        ) * 2f)-0.5f, 0f, 1f);
     }
 
     public float FixedPerlinNoise(float X, float Y) {

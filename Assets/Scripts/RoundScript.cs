@@ -4,6 +4,7 @@ using Unity.AI.Navigation;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Security.Cryptography;
 
 public class RoundScript : MonoBehaviour {
 
@@ -119,7 +120,7 @@ public class RoundScript : MonoBehaviour {
                 GS.Round = 1;
                 GS.Biome = 1;
             }
-            GS.RoundSeed = Random.Range(10000000, 99999999).ToString();
+            GS.RoundsSeed = Random.Range(int.MaxValue / 2, int.MaxValue / 2);
             GS.HealthSave = new Vector2(100f, 100f);
             GS.HungerSave = new Vector2(240f, 240f);
             GS.PlayerSpeed = 5f;
@@ -240,15 +241,19 @@ public class RoundScript : MonoBehaviour {
 
                 DifficultySliderA = Mathf.Clamp(GS.Round / (30f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 5f)), 0f, 1f);
                 if (IsCausual)
-                    DifficultySliderB = GS.Round > 1 ? GS.SeedPerlin(GS.RoundSeed) : .1f;
+                    DifficultySliderB = GS.Round > 1 ? Random.value /*GS.SeedPerlin(GS.RoundSeed)*/ : .1f;
                 else
                     DifficultySliderB = DifficultySliderA;
 
                 // Set Terrain Stuff
                 if (GS.GameModePrefab.x == 0) {
 
+                    Random.InitState(GS.RoundsSeed);
+                    Debug.Log("The initiated seed is " + GS.RoundsSeed);
+
                     switch (DonePrepare) {
                         case 0: // Default world spawn
+                            // GTODO - This is where generation of default worlds begin
                             foreach (Transform FindBiome in BiomeList.transform) {
                                 if (FindBiome.transform.GetSiblingIndex() == GS.Biome) {
                                     GotTerrain = FindBiome.gameObject;
@@ -275,38 +280,40 @@ public class RoundScript : MonoBehaviour {
 
                             switch(TimeOfDay[0]){
                                 case 0: 
-                                    TimeOfDay[1] = (int)(60f * Mathf.Lerp(0f, 3f, GS.SeedPerlin(GS.RoundSeed)));
+                                    TimeOfDay[1] = (int)(60f * Random.Range(0f, 3.9f));// Mathf.Lerp(0f, 3f, GS.SeedPerlin(GS.RoundSeed)));
                                     TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 0f, (3f * 60f) - (RoundTime / 2f));
                                     break;
                                 case 1: 
-                                    TimeOfDay[1] = (int)(60f * Mathf.Lerp(7f, 12f, GS.SeedPerlin(GS.RoundSeed)));
+                                    TimeOfDay[1] = (int)(60f * Random.Range(7f, 12f));//Mathf.Lerp(7f, 12f, GS.SeedPerlin(GS.RoundSeed)));
                                     TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 7f * 60f, (12f * 60f) - (RoundTime / 2f));
                                     break;
                                 case 2: 
-                                    TimeOfDay[1] = (int)(60f * Mathf.Lerp(12f, 18f, GS.SeedPerlin(GS.RoundSeed))); 
+                                    TimeOfDay[1] = (int)(60f * Random.Range(12f, 18f));//Mathf.Lerp(12f, 18f, GS.SeedPerlin(GS.RoundSeed))); 
                                     TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 12f * 60f, (18f * 60f) - (RoundTime / 2f));
                                     break;
                                 case 3: 
-                                    TimeOfDay[1] = (int)(60f * Mathf.Lerp(18f, 21f, GS.SeedPerlin(GS.RoundSeed))); 
+                                    TimeOfDay[1] = (int)(60f * Random.Range(18f, 21f));//Mathf.Lerp(18f, 21f, GS.SeedPerlin(GS.RoundSeed))); 
                                     TimeOfDay[1] = (int)Mathf.Clamp(TimeOfDay[1], 18f * 60f, (21f * 60f) - (RoundTime / 2f));
                                     break;
                             }
 
+                            // GTODO - Weather code is here
                             if (Weather == -1) {
-                                Weather = Mathf.Clamp((int)Mathf.Lerp(-0.5f, 6.5f, GS.SeedPerlin(GS.RoundSeed + "89665776")), 0, 5);
+                                Weather = Random.Range(0, 6);
+                                //Weather = Mathf.Clamp((int)Mathf.Lerp(-0.5f, 6.5f, GS.SeedPerlin(GS.RoundSeed + "89665776")), 0, 5);
                                 if ((GS.Biome == 5 || GS.Round == 1) && (Weather >= 2)) {
                                     Weather = 1;
                                 }
                             }
 
                             if (Weather == 0) {
-                                Sunnyness = Mathf.Lerp(0.75f, 1f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
+                                Sunnyness = Random.Range(.75f, 1f);// Mathf.Lerp(0.75f, 1f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
                             } else if (Weather == 1) {
-                                Sunnyness = Mathf.Lerp(0.5f, 0.75f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
+                                Sunnyness = Random.Range(.5f, .75f);// Mathf.Lerp(0.5f, 0.75f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
                             } else if (Weather == 2) {
-                                Sunnyness = Mathf.Lerp(0.25f, 0.5f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
+                                Sunnyness = Random.Range(.25f, .5f);// Mathf.Lerp(0.25f, 0.5f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
                             } else if (Weather == 3) {
-                                Sunnyness = Mathf.Lerp(0f, 0.25f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
+                                Sunnyness = Random.Range(0f, .25f);//Mathf.Lerp(0f, 0.25f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
                             } else if (Weather == 4) {
                                 Sunnyness = 0f;
                             } else if (Weather == 5) {
@@ -378,6 +385,8 @@ public class RoundScript : MonoBehaviour {
                     }
 
                 } else if (GS.GameModePrefab.x == 1) {
+
+                    Random.InitState(GS.RoundsSeed);
 
                     switch (DonePrepare) {
                         case 0:
@@ -672,6 +681,9 @@ public class RoundScript : MonoBehaviour {
                     }
                     if (SetShops == true) {
                         SetShops = false;
+
+                        Random.InitState(GS.RoundsSeed + GS.Round);
+
                         // Clean From Items
                         foreach (GameObject CleanItem in GameObject.FindGameObjectsWithTag("Item")) {
                             Destroy(CleanItem);
@@ -711,7 +723,7 @@ public class RoundScript : MonoBehaviour {
                         }
                         foreach (GameObject GetInt in GameObject.FindGameObjectsWithTag("Interactable")){
                             if (GetInt.GetComponent<InteractableScript>().Variables.x == 5f) {
-                                int pickItem = (int)Mathf.Clamp(GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.x + GS.Round, GetInt.transform.position.y + GS.Round) * GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount, 0f, GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount - 0.1f);
+                                int pickItem = Random.Range(0, GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount);//(int)Mathf.Clamp(GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.x + GS.Round, GetInt.transform.position.y + GS.Round) * GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount, 0f, GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount - 0.1f);
                                 if (GS.Round <= 1 && (pickItem == 3 || pickItem == 4 || pickItem == 6 || pickItem == 7 || pickItem == 8)) {
                                     pickItem = 0;
                                 }
@@ -721,7 +733,7 @@ public class RoundScript : MonoBehaviour {
                                     List<int> AvailableOffers = new List<int>();
                                     //int WhichCategory = (int)(Mathf.PerlinNoise(GS.GetComponent<GameScript>().LandSeed.y + GS.GetComponent<GameScript>().Round + (float)AddTradeOptions, GS.GetComponent<GameScript>().LandSeed.y + GS.GetComponent<GameScript>().Round + (float)AddTradeOptions) * 3.9f);
                                     //int WhichCategory = (int)Random.Range(0f, 3.9f);
-                                    int WhichCategory =  (int)(Mathf.Clamp(GS.SeedPerlin2D(GS.RoundSeed, (int)GetInt.transform.position.x + GS.Round + AddTradeOptions, (int)GetInt.transform.position.y + GS.Round + AddTradeOptions), 0f, 1f) * 5.9f);
+                                    int WhichCategory =  Random.Range(0, 6);//(int)(Mathf.Clamp(GS.SeedPerlin2D(GS.RoundSeed, (int)GetInt.transform.position.x + GS.Round + AddTradeOptions, (int)GetInt.transform.position.y + GS.Round + AddTradeOptions), 0f, 1f) * 5.9f);
                                     if (WhichCategory <= 2) {
                                         foreach (int GetWeapon in Weapons) {
                                             AvailableOffers.Add(GetWeapon);
@@ -738,8 +750,8 @@ public class RoundScript : MonoBehaviour {
                                         AvailableOffers.Add(80);
                                         AvailableOffers.Add(81);
                                     }
-                                    float PickBargain = GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.x + GS.Round + AddTradeOptions, GetInt.transform.position.y + GS.Round + AddTradeOptions);
-                                    float PickPrice = GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.y + GS.Round + AddTradeOptions, GetInt.transform.position.x + GS.Round + AddTradeOptions);
+                                    float PickBargain = Random.value;// GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.x + GS.Round + AddTradeOptions, GetInt.transform.position.y + GS.Round + AddTradeOptions);
+                                    float PickPrice = Random.value;//GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.y + GS.Round + AddTradeOptions, GetInt.transform.position.x + GS.Round + AddTradeOptions);
                                     GetInt.GetComponent<InteractableScript>().TradeOptions[AddTradeOptions] = AvailableOffers.ToArray()[(int)(PickBargain * AvailableOffers.ToArray().Length - 0.1f)];
                                     GetInt.GetComponent<InteractableScript>().TradePrices[AddTradeOptions] = (int)(Mathf.Lerp(5f, 100f, DifficultySliderA) + (PickPrice * Mathf.Lerp(20f, 750f, DifficultySliderA)));
                                     //GetInt.GetComponent<InteractableScript>().TradeOptions[AddTradeOptions] = AvailableOffers.ToArray()[(int)(Mathf.PerlinNoise(GS.GetComponent<GameScript>().LandSeed.x + GetInt.transform.position.x + GS.GetComponent<GameScript>().Round + AddTradeOptions, GS.GetComponent<GameScript>().LandSeed.y + GetInt.transform.position.y + GS.GetComponent<GameScript>().Round + AddTradeOptions) * AvailableOffers.ToArray().Length - 0.1f)];
@@ -984,7 +996,7 @@ public class RoundScript : MonoBehaviour {
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.LoadingTime = Random.Range(0.5f, 1f);
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.AfterLoading = "f_GameOver";
         } else if (Event == "SaveHordeProgress") {
-            GS.RoundSeed = Random.Range(10000000, 99999999).ToString();
+            GS.RoundsSeed = Random.Range(int.MinValue / 2, int.MaxValue / 2);
             GS.HealthSave = new Vector2(MainPlayer.Health[0], MainPlayer.Health[1]);
             GS.PlayerSpeed = MainPlayer.Speed;
             GS.PlayerInventory = MainPlayer.InventoryText;
@@ -1552,7 +1564,7 @@ public class RoundScript : MonoBehaviour {
                         GameObject GetCloud = GotSkybox.transform.GetChild(GC).gameObject;
                         switch(GetCloud.name){
                             case "Clouds1": case "Clouds2":
-                                GetCloud.transform.localEulerAngles = new Vector3(0f, 0f, GS.SeedPerlin(GS.RoundSeed) * 360f);
+                                GetCloud.transform.localEulerAngles = new Vector3(0f, 0f, Mathf.PerlinNoise1D(TimeSinceRoundStart / 60f) * 720f);
                                 Color CloudColorToSet = CloudColor;
                                 GetCloud.GetComponent<SpriteRenderer>().color = CloudColorToSet;
                                 break;

@@ -45021,6 +45021,7 @@ MonoBehaviour:
   - 30
   - 30
   Speed: 7
+  Jump: {x: 10, y: -10}
   SwimmingSpeed: 5
   IsCrouching: 0
   ArmType: ConscriptJacket
@@ -95744,6 +95745,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: f6fd42b19d269b242813e5e1976f40b1, type: 3}
       propertyPath: m_Name
       value: WaterBottle
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: f6fd42b19d269b242813e5e1976f40b1, type: 3}
+      propertyPath: m_Layer
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: f6fd42b19d269b242813e5e1976f40b1, type: 3}
       propertyPath: m_IsActive

@@ -62575,7 +62575,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
+  near clip plane: 0.025
   far clip plane: 1000
   field of view: 70
   orthographic: 0
@@ -230616,7 +230616,7 @@ MonoBehaviour:
   Score: 0
   Money: 0
   Ammo: 0
-  RoundSeed: 49798591
+  RoundsSeed: 0
   HealthSave: {x: 0, y: 0}
   HungerSave: {x: 0, y: 0}
   PlayerSpeed: 0
@@ -230627,7 +230627,7 @@ MonoBehaviour:
   CurrentSave: 1
   PlaythroughStats: 
   NeueScore: []
-  WhatOnStart: -1
+  WhatOnStart: 0
   GraphicsQuality: 3
   LightingQuality: 3
   ParticlesQuality: 3

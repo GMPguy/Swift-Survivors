@@ -44,6 +44,7 @@ public class LandScript : MonoBehaviour {
         TreeChunks = new List<Transform>();
 
         // Spawn lands
+        // GTODO - This code spawns land objects
         if (GS.GameModePrefab.x == 0) {
             Biome = RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>();
             List<GameObject> LandsToGet = new List<GameObject>();
@@ -68,9 +69,10 @@ public class LandScript : MonoBehaviour {
         // Spawn lands
 
         // Set Monuments
-        int MonumentsToSpawn = (int)Mathf.Lerp(0f, 2.9f, GS.SeedPerlin(GS.RoundSeed + "1233"));
+        // GTODO - This code picks monuments
+        int MonumentsToSpawn = Random.Range(0, 3);//(int)Mathf.Lerp(0f, 2.9f, GS.SeedPerlin(GS.RoundSeed + "1233"));
         for (int SetMonuments = MonumentsToSpawn; SetMonuments > 0; SetMonuments--) {
-            int PickMonument = (int)Mathf.Lerp(0f, 9.9f, GS.SeedPerlin2D(GS.RoundSeed, SetMonuments / 3f, SetMonuments / 3f));
+            int PickMonument = Random.Range(0, 10);//(int)Mathf.Lerp(0f, 9.9f, GS.SeedPerlin2D(GS.RoundSeed, SetMonuments / 3f, SetMonuments / 3f));
             if ((PickMonument == 9 || PickMonument == 2) && GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] == "Battleground") {
                 PickMonument = 0;
             }
@@ -78,14 +80,19 @@ public class LandScript : MonoBehaviour {
         }
 
         // Set Lands
+        // GTODO - This code picks lands
         foreach (GameObject LandToSet in Lands) {
             if (LandToSet.name.Substring(2, 1) != "M") {
-                float PickTerrain = GS.SeedPerlin2D(GS.RoundSeed, LandToSet.transform.position.x + 1000, LandToSet.transform.position.z + 1000);
+                float PickTerrain = Random.Range(0f, 1f);//GS.SeedPerlin2D(GS.RoundSeed, LandToSet.transform.position.x + 1000, LandToSet.transform.position.z + 1000);
                 string PickBiomeAvailableTerrains = GotTerrain.GetComponent<BiomeInfo>().AvailableTerrainTypes[(int)(3f * difficulty)];
                 Vector2 RadioactivityRange = new Vector2(Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().Radioactivity[0], GotTerrain.GetComponent<BiomeInfo>().Radioactivity[2], difficulty), Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().Radioactivity[1], GotTerrain.GetComponent<BiomeInfo>().Radioactivity[3], difficulty));
+                
+                // GTODO - this code sets up lands
                 SetLand(LandToSet, PickBiomeAvailableTerrains.Substring((int)Mathf.Clamp(PickTerrain * (PickBiomeAvailableTerrains.Length), 0f, PickBiomeAvailableTerrains.Length - 1f), 1), (int)Mathf.Lerp(RadioactivityRange.x, RadioactivityRange.y, PickTerrain));
             }
         }
+
+        // GTODO - This code picks barrier and escape roots
         SetBarrier(GotTerrain.GetComponent<BiomeInfo>().Barrier);
 
         // Set Escape Roots
@@ -230,30 +237,22 @@ public class LandScript : MonoBehaviour {
 
     public void SetLand(GameObject Land, string LandName, int Radioactivity){
 
-        Land.transform.eulerAngles = new Vector3(0f, (int)(GS.SeedPerlin2D(GS.RoundSeed, Land.transform.position.x + GS.Round, Land.transform.position.z + GS.Round) * 4.9f) * 90f, 0f);
+        Land.transform.eulerAngles = Random.Range(0, 5) * 90f * Vector3.up;//new Vector3(0f, (int)(GS.SeedPerlin2D(GS.RoundSeed, Land.transform.position.x + GS.Round, Land.transform.position.z + GS.Round) * 4.9f) * 90f, 0f);
 
         foreach (Transform FoundLand in Land.transform) {
             if (FoundLand.name.Substring(0, 1) == LandName) {
                 FoundLand.gameObject.SetActive(true);
 
                 foreach (Transform LandInLand in FoundLand.transform) {
-                    float randomFactor = GS.FixedPerlinNoise(LandInLand.position.x, LandInLand.position.z);
+                    float randomFactor = Random.value;//GS.FixedPerlinNoise(LandInLand.position.x, LandInLand.position.z);
                     if (LandInLand.name == "Tree"){
                         TreeChunks.Add(LandInLand);
+                    } else if (LandInLand.name == "Building") {
+                        LandInLand.GetComponent<BuildingSpawnerScript>().SpawnBuilding(RS.DifficultySliderB, FoundLand.transform, LandInLand.transform);
                     } else if (LandInLand.GetComponent<MeshRenderer>() != null) {
-                        Color WallColor = Color.HSVToRGB(randomFactor, 0.5f, 1f);
-                        Color InnerWallColor = Color.HSVToRGB(GS.SeedPerlin2D(GS.RoundSeed, LandInLand.position.x, LandInLand.position.z), 0.5f, 1f);
                         foreach (Material Mat in LandInLand.GetComponent<MeshRenderer>().materials) {
                             if (Mat.name == "Grass1 (Instance)" || Mat.name == "Grass2 (Instance)" || Mat.name == "Grass3 (Instance)") {
                                 Mat.color = Color32.Lerp(Biome.GrassColor[0], Biome.GrassColor[1], Random.Range(0f, 1f));
-                            } else if (Mat.name == "HouseOuter1 (Instance)") {
-                                Mat.color = WallColor;
-                            } else if (Mat.name == "HouseOuter2 (Instance)") {
-                                Mat.color = WallColor / 2f;
-                            } else if (Mat.name == "HouseInner (Instance)") {
-                                Mat.color = InnerWallColor;
-                            } else if (Mat.name == "HouseRoof (Instance)") {
-                                Mat.color = Color32.Lerp(new Color32(100, 75, 55, 255), new Color32(255, 225, 155, 255), randomFactor);
                             } else if (Mat.name == "WoodenFence1 (Instance)") {
                                 Mat.color = Color32.Lerp(new Color32(100, 75, 55, 255), new Color32(188, 155, 133, 255), randomFactor);
                             }
@@ -322,9 +321,9 @@ public class LandScript : MonoBehaviour {
     public void Growatree(Vector3 here, Transform within, string treetype = default){
 
         string specificTree = "";
-        float randA = GS.SeedPerlin2D("5876364858", here.x, here.y);
-        float randB = GS.SeedPerlin2D("1340296748", here.x, here.y);
-        float randC = GS.SeedPerlin2D("1068794655", here.x, here.y);
+        float randA = Random.value;// GS.SeedPerlin2D("5876364858", here.x, here.y);
+        float randB = Random.value;//GS.SeedPerlin2D("1340296748", here.x, here.y);
+        float randC = Random.value;//GS.SeedPerlin2D("1068794655", here.x, here.y);
         if (treetype == default) {
             List<string> oneofthese = new List<string>();
             switch(Biome.FloraType){
@@ -524,9 +523,9 @@ public class LandScript : MonoBehaviour {
                     if (Physics.Raycast(CheckForLand, out CheckForLandHIT, Mathf.Infinity)) {
                         if (CheckForLandHIT.collider.GetComponent<FootstepMaterial>() != null && CheckForLandHIT.collider.GetComponent<FootstepMaterial>().IsTerrain == true) {
                             Vector3 PlantedPos = CheckForLandHIT.point;
-                            float PerlinA = GS.SeedPerlin2D("753846", PlantedPos.x, PlantedPos.z);
-                            float PerlinB = GS.SeedPerlin2D("123090", PlantedPos.x, PlantedPos.z);
-                            GameObject ToInstantiante = RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>().Grasses[ (int)(PerlinA * (RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>().Grasses.Length - 0.5f)) ];
+                            float PerlinA = GS.FixedPerlinNoise(PlantedPos.x / 2f, PlantedPos.z / 2f);
+                            float PerlinB = GS.FixedPerlinNoise(PlantedPos.x, PlantedPos.z);
+                            GameObject ToInstantiante = RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>().Grasses[ (int)(PerlinA * (RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>().Grasses.Length - 0.1f)) ];
                             if (ToInstantiante != null) {
                                 GameObject PlantGrass = Instantiate(ToInstantiante) as GameObject;
                                 PlantGrass.transform.forward = CheckForLandHIT.normal;

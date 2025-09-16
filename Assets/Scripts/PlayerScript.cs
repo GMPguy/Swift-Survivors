@@ -3745,6 +3745,14 @@ public class PlayerScript : MonoBehaviour {
                             ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Filter", "176", AnimationAddition), 0, 0f);
                             InvGet("id17;sq1;", 0);
                             GS.Mess(GS.SetString("Bottle of water acquired", "Nabyto butelkę wody"), "Good");
+
+                            EffectScript waterSplash = GameObject.Instantiate(EffectPrefab).GetComponent<EffectScript>();
+                            waterSplash.EffectName = "BullethitWater";
+                            waterSplash.transform.position = checkWaterHit.point;
+
+                            Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-10");
+                            if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0f)
+                                InvGet(CurrentItemHeld.ToString(), 1);
                         } else {
                             CantUseItem = .5f;
                             GS.Mess(GS.SetString("Aim at a water body!", "Celuj w zbiornik wodny!"), "Error");
@@ -4154,7 +4162,8 @@ public class PlayerScript : MonoBehaviour {
                     if (Raining.GetComponent<ParticleSystem>().isPlaying == false) {
                         Raining.GetComponent<ParticleSystem>().Play();
                         ParticleSystem.MainModule SetCol = Raining.GetComponent<ParticleSystem>().main;
-                        SetCol.startColor = MainCamera.GetComponent<Camera>().backgroundColor * 0.75f;
+                        if (MainCamera)
+                            SetCol.startColor = MainCamera.GetComponent<Camera>().backgroundColor * 0.75f;
                     }
                 }
             }
