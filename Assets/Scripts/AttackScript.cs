@@ -1044,7 +1044,7 @@ public class AttackScript : MonoBehaviour {
                 ObjectHit.GetComponent<PlayerScript>().Hurt(AttackMobDamage, AttackType, true, this.transform.position);
                 Ray CheckForGrounded = new Ray(ObjectHit.transform.position, Vector3.down);
                 RaycastHit CheckForGroundedHIT;
-                if (Physics.Raycast(CheckForGrounded, out CheckForGroundedHIT, 1.1f)) {
+                if (!ObjectHit.GetComponent<PlayerScript>().IsCasual) {
                     ObjectHit.GetComponent<PlayerScript>().Pushback_Force = new Vector3(this.transform.forward.x * AttackPushForce[0], AttackPushForce[1], this.transform.forward.z * AttackPushForce[0]);
                     ObjectHit.GetComponent<PlayerScript>().Pushback_Return = new (.5f, 1f);
                 }

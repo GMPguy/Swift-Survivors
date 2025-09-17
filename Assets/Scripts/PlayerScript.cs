@@ -1370,8 +1370,13 @@ public class PlayerScript : MonoBehaviour {
                         }
                     }
                 }
-                if(InteractedGameobject.GetComponent<ItemScript>().DroppedBy == null) RS.SetScore("ItemsFound_", "/+1");
-                if(InteractedGameobject.GetComponent<ItemScript>().InWater) GS.PS.AchProg("Ach_UnderwaterTreasure", "/+-1");
+
+                if(InteractedGameobject.GetComponent<ItemScript>().DroppedBy == null) 
+                    RS.SetScore("ItemsFound_", "/+1");
+
+                if(InteractedGameobject.GetComponent<ItemScript>().InWater && InteractedGameobject.GetComponent<ItemScript>().State == 1) 
+                    GS.PS.AchProg("Ach_UnderwaterTreasure", "/+-1");
+
                 Destroy(InteractedGameobject.gameObject);
                 PlaySoundBank("PickupItem", 1, Random.Range(0.75f, 1f), 0f, "Only");
 
@@ -2835,12 +2840,14 @@ public class PlayerScript : MonoBehaviour {
 
                     // Get permission for reloading
                     if (GS.ReceiveButtonPress("Reload", "Hold") > 0f && CantUseItem <= 0f && CanReload == true) {
+                        bool goldenGun = GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "996";
+
                         if (GS.GameModePrefab.x == 1 || IsCasual) {
 
                             int ToLoad = (int)Mathf.Clamp((ReloadVariables[0] - float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture)), 0, GS.Ammo);
                             
-                            if (ToLoad > 0) {
-                                ReloadInfo = new string[]{ToLoad.ToString(), ReloadingAnimation[2]};
+                            if (ToLoad > 0 || goldenGun) {
+                                ReloadInfo = new string[]{goldenGun ? "0" : ToLoad.ToString(), ReloadingAnimation[2]};
                                 ItemsShown.GetComponent<Animator>().Play(ReloadingAnimation[0], 0, 0f);
                                 PlaySoundBank(ReloadingAnimation[1], 1, 1f, 0f, "Override");
                                 CantUseItem = ReloadVariables[2];
@@ -2865,7 +2872,7 @@ public class PlayerScript : MonoBehaviour {
                                     break;
                                 }
                             }
-                            if(ToLoad[1] > 0 || GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "996"){
+                            if(ToLoad[1] > 0 || goldenGun){
                                 ReloadInfo = new string[]{ToLoad[1].ToString(), ReloadingAnimation[2]};
                                 ItemsShown.GetComponent<Animator>().Play(ReloadingAnimation[0], 0, 0f);
                                 PlaySoundBank(ReloadingAnimation[1], 1, 1f, 0f, "Override");
@@ -2888,9 +2895,13 @@ public class PlayerScript : MonoBehaviour {
                             if(ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f){
                                 
                                 if(GS.GameModePrefab.x == 1 || IsCasual){
-                                    int ToLoad = Mathf.Clamp(int.Parse(ReloadInfo[0]), 0, GS.Ammo);
-                                    Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+" + int.Parse(ReloadInfo[0])); //Inventory[CurrentItemHeld].y += int.Parse(ReloadInfo[0]);
-                                    GS.Ammo -= ToLoad;
+                                    if (currID == 996) {
+                                        Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "30");
+                                    } else {
+                                        int ToLoad = Mathf.Clamp(int.Parse(ReloadInfo[0]), 0, GS.Ammo);
+                                        Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+" + int.Parse(ReloadInfo[0])); //Inventory[CurrentItemHeld].y += int.Parse(ReloadInfo[0]);
+                                        GS.Ammo -= ToLoad;
+                                    }
                                 } else {
                                     int ToLoad = 0;
                                     List<Vector2> ConsumedAmmo = new List<Vector2>();
@@ -3852,9 +3863,9 @@ public class PlayerScript : MonoBehaviour {
                         Equipment[ScanEq] = "id0;";
                     }
                 } else if (GS.GetSemiClass(Equipment[ScanEq], "id") == "94") {
-                    if (RS.GotTerrain != null) {
-                        if (RS.GotTerrain.GetComponent<BiomeInfo>() != null) {
-                            if (RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] == "Snowy Area") {
+                    if (GS.GameModePrefab.x == 0) {
+                        if (RS.Map_Biome != null) {
+                            if (RS.Map_Biome.BiomeName[0] == "Snowy Area") {
                                 Coldness = Mathf.Clamp(Coldness - 0.04f, -1f, 100f);
                             } else {
                                 Hot = Mathf.Clamp(Hot + 0.04f, 0f, 100f); 
@@ -4069,9 +4080,9 @@ public class PlayerScript : MonoBehaviour {
                 }
             }
 
-            if (RS.GotTerrain != null) {
-                if (RS.GotTerrain.GetComponent<BiomeInfo>() != null) {
-                    if (RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] == "Snowy Area" && Coldness > -1f) {
+            if (GS.GameModePrefab.x == 0) {
+                if (RS.Map_Biome != null) {
+                    if (RS.Map_Biome.BiomeName[0] == "Snowy Area" && Coldness > -1f) {
                         Coldness += 0.03f;
                     }
                 }
@@ -4186,9 +4197,9 @@ public class PlayerScript : MonoBehaviour {
                 CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectColor = MainCamera.GetComponent<Camera>().backgroundColor;
             }
 
-            if (RS.GotTerrain != null) {
-                if (RS.GotTerrain.GetComponent<BiomeInfo>() != null) {
-                    if (RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] == "Desert" && RS.TimeOfDay[0] != 0 && Hot > -1f && Hydration <= 0f && Wet <= 0f) {
+            if (GS.GameModePrefab.x == 0) {
+                if (RS.Map_Biome != null) {
+                    if (RS.Map_Biome.BiomeName[0] == "Desert" && RS.TimeOfDay[0] != 0 && Hot > -1f && Hydration <= 0f && Wet <= 0f) {
                         Hot += 0.03f;
                     }
                 }
@@ -4306,7 +4317,7 @@ public class PlayerScript : MonoBehaviour {
                     if (GS.GameModePrefab.x == 1 && !MainCanvas.HintsTold.Contains("Hurt")) {
                         MainCanvas.HintsCooldown.Add("Hurt");
                     }
-                    RecoilCam(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), Random.Range(-15f, 15f)), 0.5f, 0f);
+                    RecoilCam(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), Random.Range(-15f, 15f)), 0.2f, 0f);
                     MainCanvas.DamagedPosition = DamageDirection;
                     MainCanvas.DamageIndicator.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
                     MainCanvas.Flash(new Color32(255, 0, 0, 75), new float[]{0.25f, 0.25f});

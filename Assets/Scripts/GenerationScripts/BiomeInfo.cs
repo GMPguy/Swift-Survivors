@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BiomeInfo : MonoBehaviour {
 
+    // Obsolete - use BiomeConfig
+
     // Variables
     public string[] BiomeName;
     public string[] AvailableTerrainTypes;

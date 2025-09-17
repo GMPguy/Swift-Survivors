@@ -13,6 +13,7 @@ public class LandScript : MonoBehaviour {
     public GameObject InteractablePrefab;
     public GameObject LandpartHide;
     List<Transform> TreeChunks;
+    List<Spawner> CachedSpawners;
     public GameObject[] Lands;
     public GameObject Barriers;
     public GameScript GS;
@@ -22,7 +23,7 @@ public class LandScript : MonoBehaviour {
     public GameObject GrassAnchor;
     public GameObject[] Grasses;
     Color32[] GrassColor;
-    public BiomeInfo Biome;
+    public BiomeConfig Biome;
     Vector3 PreviousCampos = new Vector3(1000f, 0f, 1000f);
     Color PrevSkyColor;
     // References
@@ -35,18 +36,19 @@ public class LandScript : MonoBehaviour {
 
 	// Use this for initialization
 
-    public void TheStart(BiomeInfo GotTerrain, float difficulty) {
+    public void TheStart(BiomeConfig GotTerrain, float difficulty) {
 
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
         RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
         MainPlayer = GameObject.FindGameObjectWithTag("Player");
 
         TreeChunks = new List<Transform>();
+        RoundScript.CachedSpawner = new List<Spawner>();
 
         // Spawn lands
         // GTODO - This code spawns land objects
         if (GS.GameModePrefab.x == 0) {
-            Biome = RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>();
+            Biome = GotTerrain;
             List<GameObject> LandsToGet = new List<GameObject>();
             for (int SpawnX = 0; SpawnX <= 9; SpawnX++) {
                 for (int SpawnZ = 0; SpawnZ <= 9; SpawnZ++) {
@@ -58,9 +60,9 @@ public class LandScript : MonoBehaviour {
                 }
             }
             Lands = LandsToGet.ToArray();
-            if (Biome.transform.GetSiblingIndex() == 5) {
+            if (Biome.BiomeName[0] == "Snowy Area") {
                 GrassColor = new Color32[] { new Color32(55, 75, 65, 255), new Color32(135, 155, 145, 255) };
-            } else if (Biome.transform.GetSiblingIndex() == 8) {
+            } else if (Biome.BiomeName[0] == "Sea") {
                 GrassColor = new Color32[] { new Color32(0, 55, 0, 255), new Color32(0, 155, 0, 255) };
             } else {
                 GrassColor = Biome.GrassColor;
@@ -73,7 +75,7 @@ public class LandScript : MonoBehaviour {
         int MonumentsToSpawn = Random.Range(0, 3);//(int)Mathf.Lerp(0f, 2.9f, GS.SeedPerlin(GS.RoundSeed + "1233"));
         for (int SetMonuments = MonumentsToSpawn; SetMonuments > 0; SetMonuments--) {
             int PickMonument = Random.Range(0, 10);//(int)Mathf.Lerp(0f, 9.9f, GS.SeedPerlin2D(GS.RoundSeed, SetMonuments / 3f, SetMonuments / 3f));
-            if ((PickMonument == 9 || PickMonument == 2) && GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] == "Battleground") {
+            if ((PickMonument == 9 || PickMonument == 2) && GotTerrain.BiomeName[0] == "Battleground") {
                 PickMonument = 0;
             }
             SetLand(Lands[PickMonument], PickMonument.ToString(), 0);
@@ -84,8 +86,8 @@ public class LandScript : MonoBehaviour {
         foreach (GameObject LandToSet in Lands) {
             if (LandToSet.name.Substring(2, 1) != "M") {
                 float PickTerrain = Random.Range(0f, 1f);//GS.SeedPerlin2D(GS.RoundSeed, LandToSet.transform.position.x + 1000, LandToSet.transform.position.z + 1000);
-                string PickBiomeAvailableTerrains = GotTerrain.GetComponent<BiomeInfo>().AvailableTerrainTypes[(int)(3f * difficulty)];
-                Vector2 RadioactivityRange = new Vector2(Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().Radioactivity[0], GotTerrain.GetComponent<BiomeInfo>().Radioactivity[2], difficulty), Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().Radioactivity[1], GotTerrain.GetComponent<BiomeInfo>().Radioactivity[3], difficulty));
+                string PickBiomeAvailableTerrains = GotTerrain.AvailableTerrainTypes[(int)(3f * difficulty)];
+                Vector2 RadioactivityRange = new Vector2(Mathf.Lerp(GotTerrain.Radioactivity[0], GotTerrain.Radioactivity[2], difficulty), Mathf.Lerp(GotTerrain.Radioactivity[1], GotTerrain.Radioactivity[3], difficulty));
                 
                 // GTODO - this code sets up lands
                 SetLand(LandToSet, PickBiomeAvailableTerrains.Substring((int)Mathf.Clamp(PickTerrain * (PickBiomeAvailableTerrains.Length), 0f, PickBiomeAvailableTerrains.Length - 1f), 1), (int)Mathf.Lerp(RadioactivityRange.x, RadioactivityRange.y, PickTerrain));
@@ -93,7 +95,7 @@ public class LandScript : MonoBehaviour {
         }
 
         // GTODO - This code picks barrier and escape roots
-        SetBarrier(GotTerrain.GetComponent<BiomeInfo>().Barrier);
+        SetBarrier(GotTerrain.Barrier);
 
         // Set Escape Roots
         string WhichWall = "NESW";
@@ -162,6 +164,7 @@ public class LandScript : MonoBehaviour {
                     NavmeshBake = true;
                 } else {
                     Activated = true;
+                    Debug.Log("The world has been activated");
                 }
 
             } else {
@@ -257,11 +260,9 @@ public class LandScript : MonoBehaviour {
                                 Mat.color = Color32.Lerp(new Color32(100, 75, 55, 255), new Color32(188, 155, 133, 255), randomFactor);
                             }
                         }
-                    } else if (LandInLand.GetComponent<Spawner>() != null) {
-                        LandInLand.GetComponent<Spawner>().Spawn();
                     } else if (LandInLand.name == "Water" || LandInLand.name == "DeepWater") {
                         bool Freeze = false;
-                        if (RS.GetComponent<RoundScript>().GotTerrain != null) {
+                        if (Biome != null) {
                             if (Biome.BiomeName[0] == "Snowy Area") {
                                 Freeze = true;
                             }
@@ -458,7 +459,7 @@ public class LandScript : MonoBehaviour {
 
         float Quality = (float)GameObject.Find("_GameScript").GetComponent<GameScript>().GrassQuality / 4f;
         float Distance = Mathf.Lerp(0f, 25f, Quality);
-        if ((PrevSkyColor != GameObject.Find("Sun").GetComponent<Light>().color && Time.time - (int)Time.time >= 0.9f) || Vector3.Distance(new Vector3(GameObject.Find("MainCamera").transform.position.x, 0f, GameObject.Find("MainCamera").transform.position.z), PreviousCampos) > Distance / 2f && RS != null && RS.GetComponent<RoundScript>().GotTerrain != null && RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>() != null) {
+        if (((PrevSkyColor != GameObject.Find("Sun").GetComponent<Light>().color && Time.time - (int)Time.time >= 0.9f) || Vector3.Distance(new Vector3(GameObject.Find("MainCamera").transform.position.x, 0f, GameObject.Find("MainCamera").transform.position.z), PreviousCampos) > Distance / 2f) && GS.GameModePrefab.x == 0) {// && RS.GetComponent<RoundScript>().GotTerrain != null && RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>() != null) {
             PrevSkyColor = GameObject.Find("Sun").GetComponent<Light>().color;
             // Set grasses colors
             foreach (GameObject GetGrass in Grasses) {
@@ -468,40 +469,40 @@ public class LandScript : MonoBehaviour {
                     } else if (Quality > 0.5f && GetGrass.GetComponent<MeshRenderer>().shadowCastingMode != UnityEngine.Rendering.ShadowCastingMode.TwoSided) {
                         GetGrass.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
                     }
-                    foreach (Material GetMat in GetGrass.GetComponent<MeshRenderer>().materials) {
+                    foreach (Material GetMat in GetGrass.GetComponent<MeshRenderer>().sharedMaterials) {
                         float LerpValue = Mathf.Clamp(Vector3.Distance(new Vector3(-250f, 0f, -250f), PreviousCampos) / 500f, 0f, 1f);
                         switch (GetMat.name) {
-                            case "Grass1 (Instance)":
+                            case "Grass1":
                                 Color SunColor1 = PrevSkyColor;
                                 GetMat.color = Color32.Lerp(GrassColor[0], GrassColor[1], 0.25f);
                                 GetMat.SetColor("_ReflectColor", Color.Lerp(Color.black, SunColor1, 0.5f));
                                 break;
-                            case "Grass2 (Instance)":
+                            case "Grass2":
                                 Color SunColor2 = PrevSkyColor;
                                 GetMat.color = Color32.Lerp(GrassColor[0], GrassColor[1], 0.5f);
                                 GetMat.SetColor("_ReflectColor", Color.Lerp(Color.black, SunColor2, 0.5f));
                                 break;
-                            case "Grass3 (Instance)":
+                            case "Grass3":
                                 Color SunColor3 = PrevSkyColor;
                                 GetMat.color = Color32.Lerp(GrassColor[0], GrassColor[1], 0.75f);
                                 GetMat.SetColor("_ReflectColor", Color.Lerp(Color.black, SunColor3, 0.5f));
                                 break;
-                            case "Leaves1 (Instance)":
+                            case "Leaves1":
                                 GetMat.color = Color32.Lerp(new Color32(200, 55, 55, 255), new Color32(255, 225, 0, 255), LerpValue);
                                 break;
-                            case "Leaves2 (Instance)":
+                            case "Leaves2":
                                 GetMat.color = Color32.Lerp(new Color32(0, 200, 100, 255), new Color32(55, 100, 55, 255), LerpValue);
                                 break;
-                            case "Leaves3 (Instance)":
+                            case "Leaves3":
                                 GetMat.color = Color32.Lerp(new Color32(55, 255, 55, 255), new Color32(100, 75, 55, 255), LerpValue);
                                 break;
-                            case "Wall1 (Instance)":
+                            case "Wall1":
                                 GetMat.color = Color.HSVToRGB(LerpValue, 0.25f, 1f);
                                 break;
-                            case "Wall2 (Instance)":
+                            case "Wall2":
                                 GetMat.color = Color.HSVToRGB(LerpValue / 2f, 0.25f, 1f);
                                 break;
-                            case "Wall3 (Instance)":
+                            case "Wall3":
                                 GetMat.color = Color.HSVToRGB(LerpValue / 3f, 0.25f, 1f);
                                 break;
                             default:
@@ -516,6 +517,7 @@ public class LandScript : MonoBehaviour {
             foreach (Transform cleanGrass in GrassAnchor.transform) {
                 Destroy(cleanGrass.gameObject);
             }
+
             for (int GrassX = 0; GrassX < Distance; GrassX ++) {
                 for (int GrassZ = 0; GrassZ < Distance; GrassZ ++) {
                     Ray CheckForLand = new Ray( new Vector3(PreviousCampos.x - (Distance * 2.5f) + (GrassX * 5f) + 2.4f, 1000f, PreviousCampos.z - (Distance * 2.5f) + (GrassZ * 5f) + 2.4f), Vector3.down );
@@ -525,7 +527,7 @@ public class LandScript : MonoBehaviour {
                             Vector3 PlantedPos = CheckForLandHIT.point;
                             float PerlinA = GS.FixedPerlinNoise(PlantedPos.x / 2f, PlantedPos.z / 2f);
                             float PerlinB = GS.FixedPerlinNoise(PlantedPos.x, PlantedPos.z);
-                            GameObject ToInstantiante = RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>().Grasses[ (int)(PerlinA * (RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>().Grasses.Length - 0.1f)) ];
+                            GameObject ToInstantiante = Biome.Grasses[ (int)(PerlinA * (Biome.Grasses.Length - 0.1f)) ];
                             if (ToInstantiante != null) {
                                 GameObject PlantGrass = Instantiate(ToInstantiante) as GameObject;
                                 PlantGrass.transform.forward = CheckForLandHIT.normal;

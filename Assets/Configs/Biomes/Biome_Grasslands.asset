@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b424df4a4538054488081c8ad48b92eb, type: 3}
+  m_Name: Biome_Grasslands
+  m_EditorClassIdentifier: 
+  BiomeName:
+  - Plains
+  - Polana
+  AvailableTerrainTypes:
+  - CDDEEEFAAAAAAAAAA
+  - CDEEEFAAAAAAAAAAAA
+  - CEEEFAAAAAAAAAAAA
+  - CEEFAAAAAAAAAAAA
+  Grasses:
+  - {fileID: 6664517548747912425, guid: 4b29d943b66f4d64f87a7817234372be, type: 3}
+  - {fileID: 6664517548747912425, guid: 4b29d943b66f4d64f87a7817234372be, type: 3}
+  - {fileID: 1996152671267683359, guid: a0d8fe5dd8f64b349b8870cc1e539a00, type: 3}
+  - {fileID: 908707812289777162, guid: 43c0f8fcb7b35a04994d2645aefd4c1a, type: 3}
+  - {fileID: 582389152951014026, guid: 74bfdeffa01cbfb4792ca6c48b0bbe75, type: 3}
+  Sponges:
+  - Grass
+  GrassColor:
+  - serializedVersion: 2
+    rgba: 4282038167
+  - serializedVersion: 2
+    rgba: 4280264284
+  MobPHsuggestion: Default
+  AmountOfMobs: 0a00000005000000
+  AmountOfMutants:
+  - 0
+  - 10
+  AmountOfBandits:
+  - 1
+  - 5
+  Radioactivity: 0000000000000000fcffffff04000000
+  FloraType: Default
+  Barrier: A
+  Monument: 
+  Ambience: WindAmbience
+  Music: Pale Rider
+  Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}

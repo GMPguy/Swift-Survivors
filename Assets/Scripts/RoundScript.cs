@@ -4,7 +4,7 @@ using Unity.AI.Navigation;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Security.Cryptography;
+using UnityEditor;
 
 public class RoundScript : MonoBehaviour {
 
@@ -54,12 +54,17 @@ public class RoundScript : MonoBehaviour {
     public PlayerScript MainPlayer;
     public GameScript GS;
     public CanvasScript CS;
-    public GameObject BiomeList;
+    //public GameObject BiomeList;
+    public Transform BiomeObj;
+    public BiomeConfig[] ListOfBiomes;
     public GameObject HordeMapList;
     public GameObject[] HordeWaypoints;
-    public GameObject GotTerrain;
+    public BiomeConfig Map_Biome;
+    public MapInfo Map_Horde;
     public GameObject SkyboxObj;
     public Texture[] SkyboxImages;
+    public Sprite[] CloudImages;
+    bool SetUpClouds;
     public MobPH[] MobPHeses;
     int currentMobPHscan = 0;
     public List<DestructionScript> ActiveDestructs;
@@ -100,6 +105,7 @@ public class RoundScript : MonoBehaviour {
 
     public static List<InteractableScript> CachedInteractables;
     public static List<MobScript> CachedMobs;
+    public static List<Spawner> CachedSpawner;
 
     public bool SunHidden = false;
 
@@ -150,6 +156,35 @@ public class RoundScript : MonoBehaviour {
 
         SetItemArrays();
         GS.setItemData(IsCausual);
+
+        // Update BiomeInfo to BiomeConfig
+        /*for (int b = 0; b < BiomeObj.childCount; b++) {
+            BiomeInfo old = BiomeObj.GetChild(b).GetComponent<BiomeInfo>();
+            BiomeConfig New = ListOfBiomes[b];
+
+            New.BiomeName = old.BiomeName;
+            New.AvailableTerrainTypes = old.AvailableTerrainTypes;
+            New.Grasses = old.Grasses;
+            New.Sponges = old.Sponges;
+
+            New.MobPHsuggestion = old.MobPHsuggestion;
+            New.AmountOfMobs = old.AmountOfMobs;
+
+            New.AmountOfMutants = old.AmountOfMutants;
+            New.AmountOfBandits = old.AmountOfBandits;
+            New.Radioactivity = old.Radioactivity;
+
+            New.FloraType = old.FloraType;
+            New.Barrier = old.Barrier;
+            New.Monument = old.Monument;
+            New.Ambience = old.Ambience;
+            New.Music = old.Music;
+
+            New.GrassColor = old.GrassColor;
+
+            EditorUtility.SetDirty(New);
+            AssetDatabase.SaveAssets();
+        }*/
     }
 	
 	// Update is called once per frame
@@ -238,6 +273,7 @@ public class RoundScript : MonoBehaviour {
             if (RoundState == "Prepeare" && DonePrepare != -1) {
 
                 bool playerPermission = false;
+                Random.InitState(GS.RoundsSeed);
 
                 DifficultySliderA = Mathf.Clamp(GS.Round / (30f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 5f)), 0f, 1f);
                 if (IsCausual)
@@ -248,20 +284,11 @@ public class RoundScript : MonoBehaviour {
                 // Set Terrain Stuff
                 if (GS.GameModePrefab.x == 0) {
 
-                    Random.InitState(GS.RoundsSeed);
-                    Debug.Log("The initiated seed is " + GS.RoundsSeed);
-
                     switch (DonePrepare) {
                         case 0: // Default world spawn
                             // GTODO - This is where generation of default worlds begin
-                            foreach (Transform FindBiome in BiomeList.transform) {
-                                if (FindBiome.transform.GetSiblingIndex() == GS.Biome) {
-                                    GotTerrain = FindBiome.gameObject;
-                                }
-                            }
-                            if (GotTerrain == null) {
-                                GotTerrain = BiomeList.transform.GetChild(1).gameObject;
-                            }
+                            Map_Biome = ListOfBiomes[GS.Biome];
+                            Map_Horde = null;
 
                             if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
                                 RoundTime = 300f;
@@ -315,13 +342,15 @@ public class RoundScript : MonoBehaviour {
                             } else if (Weather == 3) {
                                 Sunnyness = Random.Range(0f, .25f);//Mathf.Lerp(0f, 0.25f, GS.SeedPerlin(GS.RoundSeed + "23455543"));
                             } else if (Weather == 4) {
-                                Sunnyness = 0f;
+                                Sunnyness = Random.Range(-.25f, .5f);
                             } else if (Weather == 5) {
-                                Sunnyness = 0f;
+                                Sunnyness = Random.Range(-.25f, .5f);
                             }
 
+                            Sunnyness = Mathf.Clamp01(Sunnyness);
+
                             AmbientSet("Normal");
-                            MainTerrain.GetComponent<LandScript>().TheStart(GotTerrain.GetComponent<BiomeInfo>(), DifficultySliderB);
+                            MainTerrain.GetComponent<LandScript>().TheStart(Map_Biome, DifficultySliderB);
 
                             // Clean from too much
                             if (GameObject.FindGameObjectsWithTag("Item").Length > 150) {
@@ -368,14 +397,17 @@ public class RoundScript : MonoBehaviour {
                         case 2: // After default world spawn
                             // Spawn mobs
                             List<MobPH> newMobPHs = new List<MobPH>();
-                            for(int spawnMPH = (int)Mathf.Lerp(GotTerrain.GetComponent<BiomeInfo>().AmountOfMobs[0], GotTerrain.GetComponent<BiomeInfo>().AmountOfMobs[1], DifficultySliderB); spawnMPH > 0; spawnMPH--){
+                            for(int spawnMPH = (int)Mathf.Lerp(Map_Biome.AmountOfMobs[0], Map_Biome.AmountOfMobs[1], DifficultySliderB); spawnMPH > 0; spawnMPH--){
                                 GameObject SpawnMobPH = Instantiate(MobPHprefab) as GameObject;
-                                SpawnMobPH.GetComponent<MobPH>().spawnType = GotTerrain.GetComponent<BiomeInfo>().MobPHsuggestion;
+                                SpawnMobPH.GetComponent<MobPH>().spawnType = Map_Biome.MobPHsuggestion;
                                 SpawnMobPH.GetComponent<MobPH>().DifficultyLevel = DifficultySliderB;
                                 newMobPHs.Add(SpawnMobPH.GetComponent<MobPH>());
                             }
                             MobPHeses = newMobPHs.ToArray();
                             // Spawn mobs
+
+                            for (int cs = 0; cs < CachedSpawner.Count; cs++)
+                                CachedSpawner[cs].Spawn();
 
                             DonePrepare = -1;
                             RoundState = "Normal";
@@ -386,16 +418,15 @@ public class RoundScript : MonoBehaviour {
 
                 } else if (GS.GameModePrefab.x == 1) {
 
-                    Random.InitState(GS.RoundsSeed);
-
                     switch (DonePrepare) {
                         case 0:
                             foreach (Transform SetMap in HordeMapList.transform) {
                                 if (int.Parse(SetMap.name.Substring(0, 2)) == int.Parse(GS.GetSemiClass(GS.RoundSetting, "H", "?"))) {
                                     SetMap.gameObject.SetActive(true);
-                                    GotTerrain = SetMap.gameObject;
-                                    HordeWaypoints = GotTerrain.GetComponent<MapInfo>().HordeWayPoints;
-                                    GotTerrain.GetComponent<MapInfo>().TheStart();
+                                    Map_Horde = SetMap.gameObject.GetComponent<MapInfo>();
+                                    Map_Biome = null;
+                                    HordeWaypoints = Map_Horde.HordeWayPoints;
+                                    Map_Horde.TheStart();
                                 }
                             }
 
@@ -517,7 +548,7 @@ public class RoundScript : MonoBehaviour {
 
                 // Ambient sounds
                 foreach (GameObject Ambient in Ambients) {
-                    if ((IsSwimming[0] == true && Ambient.name == "UnderwaterAmbience") || (Weather != 4 && Ambient.name == GotTerrain.GetComponent<BiomeInfo>().Ambience && IsSwimming[0] != true) || (Weather == 4 && Ambient.name == "RainingAmbience" && IsSwimming[0] != true)) {
+                    if ((IsSwimming[0] == true && Ambient.name == "UnderwaterAmbience") || (Weather != 4 && Ambient.name == Map_Biome.Ambience && IsSwimming[0] != true) || (Weather == 4 && Ambient.name == "RainingAmbience" && IsSwimming[0] != true)) {
                         if (IsSwimming[0] == true) {
                             Ambient.GetComponent<AudioSource>().volume = 1f;
                         } else {
@@ -593,7 +624,7 @@ public class RoundScript : MonoBehaviour {
                     }
                 } else {
                     foreach (GameObject Music in Musics) {
-                        if (((Music.name == GotTerrain.GetComponent<BiomeInfo>().Music && TimeOfDay != 0) || (Music.name == "Lightless Dawn" && TimeOfDay == 0)) && MainPlayer.State == 1) {
+                        if (((Music.name == Map_Biome.Music && TimeOfDay != 0) || (Music.name == "Lightless Dawn" && TimeOfDay == 0)) && MainPlayer.State == 1) {
                             if (Music.GetComponent<AudioSource>().isPlaying == false) {
                                 Music.GetComponent<AudioSource>().Play();
                             }
@@ -770,7 +801,7 @@ public class RoundScript : MonoBehaviour {
 
                 // Ambiences
                 foreach (GameObject Ambient in Ambients) {
-                    if (Ambient.name == GotTerrain.GetComponent<MapInfo>().Ambience) {
+                    if (Ambient.name == Map_Horde.Ambience) {
                         Ambient.GetComponent<AudioSource>().volume = 1f;
                     } else {
                         Ambient.GetComponent<AudioSource>().volume = 0f;
@@ -779,7 +810,7 @@ public class RoundScript : MonoBehaviour {
 
                 // Music
                 foreach (GameObject Music in Musics) {
-                    if (Music.name == GotTerrain.GetComponent<MapInfo>().Music && MainPlayer.State == 1) {
+                    if (Music.name == Map_Horde.Music && MainPlayer.State == 1) {
                         if (Music.GetComponent<AudioSource>().volume > 0f) {
                             Music.GetComponent<AudioSource>().volume -= Time.deltaTime/10f;
                         }
@@ -801,7 +832,7 @@ public class RoundScript : MonoBehaviour {
                     HordeSpawnCooldown -= Time.deltaTime;
                 } else if (HordeAmount > 0 && BAmountOfHorde < HordeVariables[1]) {
                     GameObject NewCustomer = Instantiate(MobPrefab) as GameObject;
-                    GameObject CustomerSpawnPoint = GotTerrain.GetComponent<MapInfo>().HordeSpawnPoints[(int)Random.Range(0, GotTerrain.GetComponent<MapInfo>().HordeSpawnPoints.Length - 0.1f)];
+                    GameObject CustomerSpawnPoint = Map_Horde.HordeSpawnPoints[(int)Random.Range(0, Map_Horde.HordeSpawnPoints.Length - 0.1f)];
                     NewCustomer.transform.position = CustomerSpawnPoint.transform.position;
                     NewCustomer.GetComponent<MobScript>().AiMovePosition = NewCustomer.transform.position;
                     NewCustomer.GetComponent<MobScript>().CurrentWaypoint = CustomerSpawnPoint;
@@ -845,7 +876,7 @@ public class RoundScript : MonoBehaviour {
 
                 // Music
                 foreach (GameObject Music in Musics) {
-                    if (Music.name == GotTerrain.GetComponent<MapInfo>().Music && MainPlayer.State == 1) {
+                    if (Music.name == Map_Horde.Music && MainPlayer.State == 1) {
                         if (Music.GetComponent<AudioSource>().isPlaying == false || Music.GetComponent<AudioSource>().volume <= 0f) {
                             Music.GetComponent<AudioSource>().Play();
                             Music.GetComponent<AudioSource>().time = 0f;
@@ -1361,13 +1392,12 @@ public class RoundScript : MonoBehaviour {
         Vector3 SunRotation = new Vector3(45f, 45f, 0f);
 
         float SunPower = Sunnyness;
-        SunPower = Mathf.Lerp(0f, 1f, (Sunnyness - 0.2f) / 0.3f);
+        SunPower = Sunnyness > .5f ? 1f : 0f;//Mathf.Lerp(0f, 1f, (Sunnyness - 0.2f) / 0.3f);
         if(TimeOfDay[1] > 390 && TimeOfDay[1] < 420f) SunPower *= ((TimeOfDay[1] - 390) / 30f);
         else if(TimeOfDay[1] > 1140 && TimeOfDay[1] < 1200) SunPower *= (1f - ((TimeOfDay[1] - 1140) / 60f));
         else if((TimeOfDay[1] >= 1200 && TimeOfDay[1] <= 1260) || (TimeOfDay[1] >= 360f && TimeOfDay[1] <= 390)) SunPower = 0f;
 
-        if(GotTerrain && (WhatSet == "Normal" || WhatSet == "NormalEnding" || WhatSet == "Swimming")){
-            BiomeInfo GitBI = GotTerrain.GetComponent<BiomeInfo>();
+        if(Map_Biome && (WhatSet == "Normal" || WhatSet == "NormalEnding" || WhatSet == "Swimming")){
             if(Default){
                 if(TimeOfDay[1] >= 360f && TimeOfDay[1] <= 480){
                     // Morning NIGHT-DUSK-DAY
@@ -1400,31 +1430,31 @@ public class RoundScript : MonoBehaviour {
                 DrawDistance = Mathf.Clamp(DrawDistance, 0f, 50f);
 
             FogColor = Color32.Lerp( 
-                Color32.Lerp(GitBI.FogColors[(int)ColorLerpValues[0] + 3], GitBI.FogColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
-                Color32.Lerp(GitBI.FogColors[(int)ColorLerpValues[0]], GitBI.FogColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
+                Color32.Lerp(Map_Biome.Atmosphere.FogColors[(int)ColorLerpValues[0] + 3], Map_Biome.Atmosphere.FogColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
+                Color32.Lerp(Map_Biome.Atmosphere.FogColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.FogColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
                 Sunnyness);
             SkyColor = Color32.Lerp( 
-                Color32.Lerp(GitBI.AtmosphereColors[(int)ColorLerpValues[0] + 3], GitBI.AtmosphereColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
-                Color32.Lerp(GitBI.AtmosphereColors[(int)ColorLerpValues[0]], GitBI.AtmosphereColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
+                Color32.Lerp(Map_Biome.Atmosphere.AtmosphereColors[(int)ColorLerpValues[0] + 3], Map_Biome.Atmosphere.AtmosphereColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
+                Color32.Lerp(Map_Biome.Atmosphere.AtmosphereColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.AtmosphereColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
                 Sunnyness);
             CloudColor = Color32.Lerp(
                 //Color32.Lerp(GitBI.CloudColors[(int)ColorLerpValues[0] + 3], GitBI.CloudColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]),
-                Color32.Lerp(GitBI.FogColors[(int)ColorLerpValues[0] + 3], GitBI.FogColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]),
-                Color32.Lerp(GitBI.CloudColors[(int)ColorLerpValues[0]], GitBI.CloudColors[(int)ColorLerpValues[1]], ColorLerpValues[2]),
+                Color32.Lerp(Map_Biome.Atmosphere.CloudColors[(int)ColorLerpValues[0] + 3], Map_Biome.Atmosphere.CloudColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]),
+                Color32.Lerp(Map_Biome.Atmosphere.CloudColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.CloudColors[(int)ColorLerpValues[1]], ColorLerpValues[2]),
                 Sunnyness * 2f);
-            SunColors[0] = Color32.Lerp(GitBI.SunColors[(int)ColorLerpValues[0]], GitBI.SunColors[(int)ColorLerpValues[1]], ColorLerpValues[2]);
+            SunColors[0] = Color32.Lerp(Map_Biome.Atmosphere.SunColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.SunColors[(int)ColorLerpValues[1]], ColorLerpValues[2]);
             SunColors[1] = Color32.Lerp( 
                 new Color32(0, 0, 0, 255), 
-                Color32.Lerp(GitBI.SunColors[(int)ColorLerpValues[0]], GitBI.SunColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
+                Color32.Lerp(Map_Biome.Atmosphere.SunColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.SunColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
                 Sunnyness*1.3f);
-            AmbientColor = Color.Lerp(GitBI.AmbientColors[(int)ColorLerpValues[0]], GitBI.AmbientColors[(int)ColorLerpValues[1]], ColorLerpValues[2]) / (1f + (Sunnyness / 2f));
+            AmbientColor = Color.Lerp(Map_Biome.Atmosphere.AmbientColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.AmbientColors[(int)ColorLerpValues[1]], ColorLerpValues[2]) / (1f + (Sunnyness / 2f));
             PostProcessingColor = Color32.Lerp( 
-                Color32.Lerp(GitBI.PostProcessingColors[(int)ColorLerpValues[0] + 3], GitBI.PostProcessingColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
-                Color32.Lerp(GitBI.PostProcessingColors[(int)ColorLerpValues[0]], GitBI.PostProcessingColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
+                Color32.Lerp(Map_Biome.Atmosphere.PostProcessingColors[(int)ColorLerpValues[0] + 3], Map_Biome.Atmosphere.PostProcessingColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
+                Color32.Lerp(Map_Biome.Atmosphere.PostProcessingColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.PostProcessingColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
                 Sunnyness * 2f);
             PPV = Vector4.Lerp(
-                Vector4.Lerp(GitBI.PostProcessingVariables[(int)ColorLerpValues[0] + 3], GitBI.PostProcessingVariables[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]),
-                Vector4.Lerp(GitBI.PostProcessingVariables[(int)ColorLerpValues[0]], GitBI.PostProcessingVariables[(int)ColorLerpValues[1]], ColorLerpValues[2]),
+                Vector4.Lerp(Map_Biome.Atmosphere.PostProcessingVariables[(int)ColorLerpValues[0] + 3], Map_Biome.Atmosphere.PostProcessingVariables[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]),
+                Vector4.Lerp(Map_Biome.Atmosphere.PostProcessingVariables[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.PostProcessingVariables[(int)ColorLerpValues[1]], ColorLerpValues[2]),
                 Sunnyness * 2f);
         }
 
@@ -1462,11 +1492,11 @@ public class RoundScript : MonoBehaviour {
         } else if (WhatSet == "Horde"){
             float LerpValue = RoundTime / 5f;
             if(GS.SkyboxType < 2) LerpValue = 0f;
-            GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = Color32.Lerp(GotTerrain.GetComponent<MapInfo>().SkyColors[1], GotTerrain.GetComponent<MapInfo>().SkyColors[0], RoundTime / 5f);
+            GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = Color32.Lerp(Map_Horde.SkyColors[1], Map_Horde.SkyColors[0], RoundTime / 5f);
             RenderSettings.fogColor = GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor;
-            RenderSettings.fogEndDistance = Mathf.Lerp(GotTerrain.GetComponent<MapInfo>().FogDistances[1], GotTerrain.GetComponent<MapInfo>().FogDistances[0], RoundTime / 5f);
-            RenderSettings.ambientLight = Color32.Lerp(GotTerrain.GetComponent<MapInfo>().AmbientColors[1], GotTerrain.GetComponent<MapInfo>().AmbientColors[0], RoundTime / 5f);
-            GameObject.Find("Sun").GetComponent<Light>().color = Color32.Lerp(GotTerrain.GetComponent<MapInfo>().LightColors[1], GotTerrain.GetComponent<MapInfo>().LightColors[0], RoundTime / 5f);
+            RenderSettings.fogEndDistance = Mathf.Lerp(Map_Horde.FogDistances[1], Map_Horde.FogDistances[0], RoundTime / 5f);
+            RenderSettings.ambientLight = Color32.Lerp(Map_Horde.AmbientColors[1], Map_Horde.AmbientColors[0], RoundTime / 5f);
+            GameObject.Find("Sun").GetComponent<Light>().color = Color32.Lerp(Map_Horde.LightColors[1], Map_Horde.LightColors[0], RoundTime / 5f);
             GameObject.Find("Sun").GetComponent<LightControlScript>().SetLight();
             DefPPC = Color.white;
             DefCST = new float[]{0f, 0f, 0f, 0f};
@@ -1564,9 +1594,14 @@ public class RoundScript : MonoBehaviour {
                         GameObject GetCloud = GotSkybox.transform.GetChild(GC).gameObject;
                         switch(GetCloud.name){
                             case "Clouds1": case "Clouds2":
-                                GetCloud.transform.localEulerAngles = new Vector3(0f, 0f, Mathf.PerlinNoise1D(TimeSinceRoundStart / 60f) * 720f);
+                                GetCloud.transform.localEulerAngles = new Vector3(0f, 0f, Mathf.PerlinNoise1D(TimeSinceRoundStart / (GetCloud.name == "Clouds2" ? 120f : 60f)) * 720f);
                                 Color CloudColorToSet = CloudColor;
                                 GetCloud.GetComponent<SpriteRenderer>().color = CloudColorToSet;
+
+                                if (!SetUpClouds) {
+                                    GetCloud.GetComponent<SpriteRenderer>().sprite = CloudImages[Random.Range(0, CloudImages.Length)];
+                                    SetUpClouds = true;
+                                }
                                 break;
                             case "Sun":
                                 if(TimeOfDay[1] > 360 && TimeOfDay[1] < 1260) {

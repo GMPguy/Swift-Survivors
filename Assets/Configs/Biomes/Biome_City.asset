@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b424df4a4538054488081c8ad48b92eb, type: 3}
+  m_Name: Biome_City
+  m_EditorClassIdentifier: 
+  BiomeName:
+  - City
+  - Miasto
+  AvailableTerrainTypes:
+  - JJJJKKKLLLMMAAAAAAAA
+  - JJJKKLLDMAAAAAAAA
+  - JJJKKKLDDAAAAAAAA
+  - JJJKKKKDDDAAAAAAAA
+  Grasses:
+  - {fileID: 1996152671267683359, guid: a0d8fe5dd8f64b349b8870cc1e539a00, type: 3}
+  - {fileID: 3763411007635217634, guid: 34da7dfa6e06941458758dfbc73547b7, type: 3}
+  - {fileID: 6084577632990898981, guid: 07c357e075a6c5b4b8528cfbd2f7ccec, type: 3}
+  - {fileID: 806795945377215696, guid: 5cc8cd0de371c9345a307c08cea1c5f3, type: 3}
+  - {fileID: 6914950661892449310, guid: cace1ec3681342e45b8ae96545b0e0af, type: 3}
+  - {fileID: 6914950661892449310, guid: cace1ec3681342e45b8ae96545b0e0af, type: 3}
+  Sponges:
+  - Rumble
+  - Pebbles
+  GrassColor:
+  - serializedVersion: 2
+    rgba: 4284980151
+  - serializedVersion: 2
+    rgba: 4280788511
+  MobPHsuggestion: Urban
+  AmountOfMobs: 1400000028000000
+  AmountOfMutants:
+  - 10
+  - 30
+  AmountOfBandits:
+  - 5
+  - 1
+  Radioactivity: fdffffff03000000f4ffffff0c000000
+  FloraType: Default
+  Barrier: A
+  Monument: 
+  Ambience: WindAmbience
+  Music: Enter the Maze
+  Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}

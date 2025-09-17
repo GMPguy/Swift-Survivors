@@ -390,9 +390,9 @@ public class CanvasScript : MonoBehaviour {
             if (SetRoundTextOnStart == true) {
                 if (GS.GameModePrefab.x == 0) {
                     GS.SetText(RoundStartInfo.transform.GetChild(0).GetComponent<Text>(), "Round " + GS.Round, "Runda " + GS.Round);
-                    GS.SetText(RoundStartInfo.transform.GetChild(1).GetComponent<Text>(), RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[0], RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[1]);
+                    GS.SetText(RoundStartInfo.transform.GetChild(1).GetComponent<Text>(), RS.Map_Biome.BiomeName[0], RS.Map_Biome.BiomeName[1]);
                 } else {
-                    GS.SetText(RoundStartInfo.transform.GetChild(0).GetComponent<Text>(), RS.GotTerrain.GetComponent<MapInfo>().MapName[0], RS.GotTerrain.GetComponent<MapInfo>().MapName[1]);
+                    GS.SetText(RoundStartInfo.transform.GetChild(0).GetComponent<Text>(), RS.Map_Horde.MapName[0], RS.Map_Horde.MapName[1]);
                     GS.SetText(RoundStartInfo.transform.GetChild(1).GetComponent<Text>(), "Current wave: " + GS.Round, "Obecna fala: " + GS.Round);
                 }
                 SetRoundTextOnStart = false;
@@ -1440,12 +1440,12 @@ public class CanvasScript : MonoBehaviour {
                         Day = GS.SetString("Night", "Noc");
                     }
                     GS.SetText(ITRoundInfo.transform.GetChild(0).GetComponent<Text>(),
-                        "Round " + GS.Round + "\n" + GS.DisplayTime(RS.TimeOfDay[1]) + " (" + Day + ") - " + RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[0] + " - " + Weather,
-                        "Runda " + GS.Round + "\n" + GS.DisplayTime(RS.TimeOfDay[1]) + " (" + Day + ") - " + RS.GotTerrain.GetComponent<BiomeInfo>().BiomeName[1] + " - " + Weather);
+                        "Round " + GS.Round + "\n" + GS.DisplayTime(RS.TimeOfDay[1]) + " (" + Day + ") - " + RS.Map_Biome.BiomeName[0] + " - " + Weather,
+                        "Runda " + GS.Round + "\n" + GS.DisplayTime(RS.TimeOfDay[1]) + " (" + Day + ") - " + RS.Map_Biome.BiomeName[1] + " - " + Weather);
                 } else if (GS.GameModePrefab.x == 1) {
                     GS.SetText(ITRoundInfo.transform.GetChild(0).GetComponent<Text>(),
-                        "Wave " + GS.Round + " - " + RS.GotTerrain.GetComponent<MapInfo>().MapName[0],
-                        "Fala " + GS.Round + " - " + RS.GotTerrain.GetComponent<MapInfo>().MapName[1]);
+                        "Wave " + GS.Round + " - " + RS.Map_Horde.MapName[0],
+                        "Fala " + GS.Round + " - " + RS.Map_Horde.MapName[1]);
                 }
 
                 // Infos
@@ -2089,9 +2089,9 @@ public class CanvasScript : MonoBehaviour {
             if (!pickMapBG) {
 
                 if (GS.GameModePrefab.x == 1) {
-                    MapSize = RS.GetComponent<RoundScript>().GotTerrain.GetComponent<MapInfo>().MapSize;
+                    MapSize = RS.Map_Horde.MapSize;
                     foreach (Transform GetRightMap in ITMap.transform.GetChild(1)) {
-                        if (GetRightMap.name.Substring(0,2) == RS.GetComponent<RoundScript>().GotTerrain.name.Substring(0, 2)) {
+                        if (GetRightMap.name.Substring(0,2) == RS.Map_Horde.name.Substring(0, 2)) {
                             GetRightMap.localScale = Vector3.one;
                         } else {
                             GetRightMap.localScale = Vector3.zero;

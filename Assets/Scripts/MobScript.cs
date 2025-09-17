@@ -769,7 +769,7 @@ public class MobScript : MonoBehaviour {
 
         // Get Starting Waypoint
         if (GS.GameModePrefab.x == 1) {
-            foreach (GameObject SWP in RS.GotTerrain.GetComponent<MapInfo>().HordeWayPoints) {
+            foreach (GameObject SWP in RS.Map_Horde.HordeWayPoints) {
                 if (SWP.name.Substring(0, 2) == CurrentWaypoint.name.Substring(0, 2)) {
                     CurrentWaypoint = SWP;
                 }
@@ -1587,8 +1587,8 @@ public class MobScript : MonoBehaviour {
                         Additionals.Add("GunSpread" + "5;");
                     }
 
-                    Vector3 aimFrom = this.transform.position + Vector3.up * 1.25f;
-                    Vector3 aimTarget = AiTarget.tag == "Mob" ? Vector3.one * 1.25f : Vector3.zero;
+                    Vector3 aimFrom = this.transform.position + (Vector3.up * 1.25f);
+                    Vector3 aimTarget = AiTarget.CompareTag("Mob") ? Vector3.one * 1.25f : Vector3.zero;
 
                     RS.Attack(
                         Additionals.ToArray(),

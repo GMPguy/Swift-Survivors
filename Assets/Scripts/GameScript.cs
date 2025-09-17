@@ -1665,7 +1665,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Soap", "Mydełko"},
                 new string[]{"You can use it, to get rid of dirtiness.", "Można nim zmyć z siebie brud."},
-                "id178;va0;sq1;"
+                "id178;va100;"
             ),
             new(this, new string[]{"Torch", "Pochodnia"},
                 new string[]{"Lights small area for a short time.", "Oświetla mały obszar na krótki czas."},

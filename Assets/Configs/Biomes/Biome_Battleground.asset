@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b424df4a4538054488081c8ad48b92eb, type: 3}
+  m_Name: Biome_Battleground
+  m_EditorClassIdentifier: 
+  BiomeName:
+  - Battleground
+  - Pole Bitwy
+  AvailableTerrainTypes:
+  - NNYYYXXXXVVVVAAAA
+  - NNYYXXXXVVVVAAAA
+  - NNYXXXVVVVVAAAA
+  - NNXVVVVVVVAAAA
+  Grasses:
+  - {fileID: 6664517548747912425, guid: 4b29d943b66f4d64f87a7817234372be, type: 3}
+  - {fileID: 6914950661892449310, guid: cace1ec3681342e45b8ae96545b0e0af, type: 3}
+  - {fileID: 2513046724558220200, guid: 06503d6e9d7e35149b1297288774079b, type: 3}
+  - {fileID: 5256667467341612758, guid: 86e9ada2c9e823e42984a9ce2ea1280f, type: 3}
+  Sponges:
+  - Pebbles
+  - Rumble
+  GrassColor:
+  - serializedVersion: 2
+    rgba: 4283203252
+  - serializedVersion: 2
+    rgba: 4284397504
+  MobPHsuggestion: War
+  AmountOfMobs: 140000000a000000
+  AmountOfMutants:
+  - 0
+  - 15
+  AmountOfBandits:
+  - 10
+  - 5
+  Radioactivity: fdffffff03000000f4ffffff0c000000
+  FloraType: Wasteland
+  Barrier: A
+  Monument: 
+  Ambience: WindAmbience
+  Music: Western Streets
+  Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}

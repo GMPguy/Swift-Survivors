@@ -102,9 +102,6 @@ public class LightControlScript : MonoBehaviour
                     this.GetComponent<Light>().enabled = true;
                     this.transform.GetChild(0).GetComponent<Light>().enabled = true;
                     if(RenderSettings.ambientSkyColor.ToString() == this.GetComponent<Light>().color.ToString()) RenderSettings.ambientSkyColor = BackAmbient;
-                    //if (this.transform.GetChild(0).GetComponent<Light>().color == RenderSettings.ambientLight) {
-                    //    GameObject.Find("_RoundScript").GetComponent<RoundScript>().AmbientSet("Normal");
-                    //}
                     break;
                 default:
                     // Wrong light type

@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b424df4a4538054488081c8ad48b92eb, type: 3}
+  m_Name: Biome_Village
+  m_EditorClassIdentifier: 
+  BiomeName:
+  - Village
+  - "Wie\u015B"
+  AvailableTerrainTypes:
+  - ZBBCDDDGGFEAAAAAAAAAA
+  - ZBCDDGFEAAAAAAA
+  - ZBCDFEAAAAA
+  - ZBDFEAAAAA
+  Grasses:
+  - {fileID: 5174770821003573134, guid: 222e2eb2a3630854fb945d243988afa8, type: 3}
+  - {fileID: 6376111515576526135, guid: 20a0992ae7a794949be7782a1c5e9dbb, type: 3}
+  - {fileID: 2678385299495042754, guid: 936ea8576cd04dd4cb1e312fba8eafc4, type: 3}
+  - {fileID: 6664517548747912425, guid: 4b29d943b66f4d64f87a7817234372be, type: 3}
+  - {fileID: 1996152671267683359, guid: a0d8fe5dd8f64b349b8870cc1e539a00, type: 3}
+  - {fileID: 1996152671267683359, guid: a0d8fe5dd8f64b349b8870cc1e539a00, type: 3}
+  - {fileID: 6914950661892449310, guid: cace1ec3681342e45b8ae96545b0e0af, type: 3}
+  - {fileID: 6914950661892449310, guid: cace1ec3681342e45b8ae96545b0e0af, type: 3}
+  - {fileID: 6914950661892449310, guid: cace1ec3681342e45b8ae96545b0e0af, type: 3}
+  - {fileID: 6914950661892449310, guid: cace1ec3681342e45b8ae96545b0e0af, type: 3}
+  - {fileID: 6084577632990898981, guid: 07c357e075a6c5b4b8528cfbd2f7ccec, type: 3}
+  - {fileID: 806795945377215696, guid: 5cc8cd0de371c9345a307c08cea1c5f3, type: 3}
+  Sponges:
+  - Grass
+  - Pebbles
+  - Rumble
+  GrassColor:
+  - serializedVersion: 2
+    rgba: 4283405741
+  - serializedVersion: 2
+    rgba: 4280264351
+  MobPHsuggestion: Default
+  AmountOfMobs: 0a00000014000000
+  AmountOfMutants:
+  - 10
+  - 30
+  AmountOfBandits:
+  - 5
+  - 1
+  Radioactivity: 0000000000000000f4ffffff0c000000
+  FloraType: Default
+  Barrier: A
+  Monument: 
+  Ambience: ForestAmbience
+  Music: Enter the Maze
+  Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}

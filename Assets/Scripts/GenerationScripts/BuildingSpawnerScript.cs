@@ -45,9 +45,7 @@ public class BuildingSpawnerScript : MonoBehaviour {
             Color RoofColor = Color.Lerp(RoofColors[pickID], RoofColors[pickID + 1], Random.value);
 
             foreach (Transform child in newBuilding.transform) {
-                if (child.TryGetComponent<Spawner>(out Spawner spawner))
-                    spawner.Spawn();
-                else if (child.TryGetComponent<MeshRenderer>(out MeshRenderer renderer))
+                if (child.TryGetComponent<MeshRenderer>(out MeshRenderer renderer))
                     foreach (Material Mat in renderer.materials) {
                         if (Mat.name == "HouseOuter1 (Instance)") {
                             Mat.color = WallColor;

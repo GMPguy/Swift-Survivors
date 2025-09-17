@@ -18,10 +18,11 @@ public class Spawner : MonoBehaviour {
     // References
 
     // Update is called once per frame
-    void Start() {
+    void Awake() {
 
         if (this.GetComponent<BoxCollider>() != null) {
             Destroy(this.GetComponent<BoxCollider>());
+            RoundScript.CachedSpawner.Add(this);
         }
 
     }

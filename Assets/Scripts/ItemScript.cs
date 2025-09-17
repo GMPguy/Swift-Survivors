@@ -50,6 +50,12 @@ public class ItemScript : MonoBehaviour {
 
         ThrownVariables = GS.itemCache[int.Parse(GS.GetSemiClass(Variables, "id"))].ThrowVariables;
 
+        // Flare marker
+        if (GS.GetSemiClass(Variables, "id") == "13") {
+            MinimapMarker.transform.parent.GetComponent<MinimapMarker>().MapSize = MinimapMarker.transform.parent.GetComponent<MinimapMarker>().MinimapSize;
+            MinimapMarker.color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f);
+        }
+
         // Check if in water
         Ray CheckWaterUP = new Ray(this.transform.position, Vector3.up);
         foreach (RaycastHit CheckWaterUPHIT in Physics.RaycastAll(CheckWaterUP, Mathf.Infinity)) {
