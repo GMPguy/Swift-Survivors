@@ -57,3 +57,58 @@ MonoBehaviour:
   Ambience: ForestAmbience
   Music: Enter the Maze
   Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}
+  WorldSize:
+    x: 500
+    y: 500
+  TileSize:
+    x: 50
+    y: 50
+  TileBanks:
+  - Tiles:
+    - TileObject: {fileID: 11400000, guid: b3b9833f0df04ab4db3c88f5cf4eba4c, type: 2}
+      Chances:
+        x: 1
+        y: 1
+    - TileObject: {fileID: 11400000, guid: 77e5378f1c7e3694a869610ae0db20a5, type: 2}
+      Chances:
+        x: 2
+        y: 1
+    - TileObject: {fileID: 11400000, guid: 60e5e08ca018981449c0478bdd5c5762, type: 2}
+      Chances:
+        x: 2
+        y: 0
+    - TileObject: {fileID: 11400000, guid: ca1063a964266e2438a85b460e718b51, type: 2}
+      Chances:
+        x: 4
+        y: 1
+    - TileObject: {fileID: 11400000, guid: afdc558eb62c8bf428cbf709252a3db4, type: 2}
+      Chances:
+        x: 1
+        y: 1
+    - TileObject: {fileID: 11400000, guid: 556fa1b9f434c0949b81a33fad62948e, type: 2}
+      Chances:
+        x: 2
+        y: 0
+    - TileObject: {fileID: 11400000, guid: f919c8e8014c3734f8af0955ff584b4c, type: 2}
+      Chances:
+        x: 1
+        y: 1
+    - TileObject: {fileID: 11400000, guid: 4fb02601e996ec247804a8bb74b60f31, type: 2}
+      Chances:
+        x: 10
+        y: 4
+    PerlinMargins:
+      x: 0
+      y: 1
+    PerlinShift: 0
+    PerlinSize: 1
+    AreaMin:
+      x: -1
+      y: -1
+    AreaMax:
+      x: 11
+      y: 11
+  FallbackTile: {fileID: 11400000, guid: 4fb02601e996ec247804a8bb74b60f31, type: 2}
+  MonumentTile:
+  - {fileID: 11400000, guid: 12417dca0075bf941a6cae9dff7fadd1, type: 2}
+  - {fileID: 11400000, guid: c0967bed3cfa5d24eba5a09691940871, type: 2}

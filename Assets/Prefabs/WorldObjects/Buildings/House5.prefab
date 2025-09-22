@@ -34,6 +34,7 @@ Transform:
   - {fileID: 8561140296723959334}
   - {fileID: 5421283347309441648}
   - {fileID: 5733815338163131133}
+  - {fileID: 8396549835648725894}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1057586326285460432
@@ -247,6 +248,82 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6538506120555884040}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.25, y: 0.1, z: 0.25}
+  m_Center: {x: 0, y: 0.05, z: 0}
+--- !u!1 &8343405562194688502
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8396549835648725894}
+  - component: {fileID: 764053605659721816}
+  - component: {fileID: 774243794848923827}
+  m_Layer: 0
+  m_Name: SecretSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8396549835648725894
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8343405562194688502}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: 0.21330124, w: 0.97698647}
+  m_LocalPosition: {x: -1.955, y: 9.027, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 868866217920393526}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 24.632}
+--- !u!114 &764053605659721816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8343405562194688502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c667889124b2c614e965ec8dcc5da865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Special: BasementSpecial
+  NewStuffToSpawn:
+  - 
+  StuffToSpawn:
+  - {x: 1, y: 0, z: 0}
+  Chance: []
+  GS: {fileID: 0}
+  ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
+    type: 3}
+  RS: {fileID: 0}
+--- !u!65 &774243794848923827
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8343405562194688502}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2

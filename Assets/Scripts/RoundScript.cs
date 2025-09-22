@@ -391,7 +391,7 @@ public class RoundScript : MonoBehaviour {
                             DonePrepare = 1;
                             break;
                         case 1: // Default world spawned - wait for delayed updates
-                            if (MainTerrain.GetComponent<LandScript>().Activated)
+                            if (MainTerrain.GetComponent<LandScript>().Generated)
                                 DonePrepare = 2;
                             break;
                         case 2: // After default world spawn

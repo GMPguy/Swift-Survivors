@@ -50,7 +50,7 @@ public class BuildingSpawnerScript : MonoBehaviour {
                         if (Mat.name == "HouseOuter1 (Instance)") {
                             Mat.color = WallColor;
                         } else if (Mat.name == "HouseOuter2 (Instance)") {
-                            Mat.color = WallColor / 2f;
+                            Mat.color = WallColor * .75f;
                         } else if (Mat.name == "HouseInner (Instance)") {
                             Mat.color = InnerWallColor;
                         } else if (Mat.name == "HouseBath (Instance)") {

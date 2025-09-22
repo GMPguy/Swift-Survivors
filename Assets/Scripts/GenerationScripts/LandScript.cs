@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using Unity.AI.Navigation;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using Random=UnityEngine.Random;
 
 public class LandScript : MonoBehaviour {
 
     // References
-    public GameObject LandPrefab;
+    //public GameObject LandPrefab;
+    public Tilemap TerrainTilemap;
     public GameObject TreesPrefab;
     public GameObject InteractablePrefab;
     public GameObject LandpartHide;
     List<Transform> TreeChunks;
     List<Spawner> CachedSpawners;
-    public GameObject[] Lands;
+    public List<GameObject> Lands;
     public GameObject Barriers;
     public GameScript GS;
     public RoundScript RS;
@@ -29,13 +31,13 @@ public class LandScript : MonoBehaviour {
     // References
 
     // Activate stuff
-    public bool Activated = false;
+    public bool Generated = false;
+    public bool Started = false;
     public int ObjectsToSpawn = 0;
     int orgObjectsToSpawn = 0;
     public bool NavmeshBake = false;
 
 	// Use this for initialization
-
     public void TheStart(BiomeConfig GotTerrain, float difficulty) {
 
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
@@ -49,17 +51,34 @@ public class LandScript : MonoBehaviour {
         // GTODO - This code spawns land objects
         if (GS.GameModePrefab.x == 0) {
             Biome = GotTerrain;
-            List<GameObject> LandsToGet = new List<GameObject>();
-            for (int SpawnX = 0; SpawnX <= 9; SpawnX++) {
-                for (int SpawnZ = 0; SpawnZ <= 9; SpawnZ++) {
-                    Transform SpawnLand = Instantiate(LandPrefab).transform;
-                    SpawnLand.SetParent(transform);
-                    SpawnLand.localPosition = new Vector3(SpawnX * 50f, 0f, SpawnZ * 50f) - new Vector3(225f, 0f, 225f);
+            Lands = new List<GameObject>();
 
-                    LandsToGet.Add(SpawnLand.gameObject);
+            // Spawn tiles
+            int2 tiles = new ((int)(Biome.WorldSize.x / Biome.TileSize.x), (int)(Biome.WorldSize.y / Biome.TileSize.y));
+            int2 monument = new (Random.Range(0, tiles.x), Random.Range(0, tiles.y));
+            for (int Z = 0; Z < tiles.y; Z++)
+                for (int X = 0; X < tiles.x; X++) {
+                    float2 pos = new (Z * Biome.WorldSize.x, X * Biome.WorldSize.y);
+                    TileBase theTile = Biome.FallbackTile;
+
+                    if (X == monument.x && Z == monument.y && Biome.MonumentTile != null && Biome.MonumentTile.Length > 0f)
+                        theTile = Biome.MonumentTile[Random.Range(0, Biome.MonumentTile.Length)];
+                    else
+                        for (int t = 0; t < Biome.TileBanks.Length; t++)
+                            if (Biome.TileBanks[t].GetTile(GS, RS, RS.DifficultySliderA, pos, new (X, Z), out TileBase newTile)) {
+                                theTile = newTile;
+                                break;
+                            }
+
+                    TerrainTilemap.SetTile(new (X, Z, 0), theTile);
                 }
-            }
-            Lands = LandsToGet.ToArray();
+            
+            // Cache tiles to lands
+            for (int gc = 0; gc < TerrainTilemap.transform.childCount; gc++)
+                Lands.Add(TerrainTilemap.transform.GetChild(gc).gameObject);
+
+            TerrainTilemap.transform.position -= new Vector3(Biome.WorldSize.x /2f, 0f, Biome.WorldSize.y / 2f);
+
             if (Biome.BiomeName[0] == "Snowy Area") {
                 GrassColor = new Color32[] { new Color32(55, 75, 65, 255), new Color32(135, 155, 145, 255) };
             } else if (Biome.BiomeName[0] == "Sea") {
@@ -70,29 +89,10 @@ public class LandScript : MonoBehaviour {
         }
         // Spawn lands
 
-        // Set Monuments
-        // GTODO - This code picks monuments
-        int MonumentsToSpawn = Random.Range(0, 3);//(int)Mathf.Lerp(0f, 2.9f, GS.SeedPerlin(GS.RoundSeed + "1233"));
-        for (int SetMonuments = MonumentsToSpawn; SetMonuments > 0; SetMonuments--) {
-            int PickMonument = Random.Range(0, 10);//(int)Mathf.Lerp(0f, 9.9f, GS.SeedPerlin2D(GS.RoundSeed, SetMonuments / 3f, SetMonuments / 3f));
-            if ((PickMonument == 9 || PickMonument == 2) && GotTerrain.BiomeName[0] == "Battleground") {
-                PickMonument = 0;
-            }
-            SetLand(Lands[PickMonument], PickMonument.ToString(), 0);
-        }
-
         // Set Lands
-        // GTODO - This code picks lands
-        foreach (GameObject LandToSet in Lands) {
-            if (LandToSet.name.Substring(2, 1) != "M") {
-                float PickTerrain = Random.Range(0f, 1f);//GS.SeedPerlin2D(GS.RoundSeed, LandToSet.transform.position.x + 1000, LandToSet.transform.position.z + 1000);
-                string PickBiomeAvailableTerrains = GotTerrain.AvailableTerrainTypes[(int)(3f * difficulty)];
-                Vector2 RadioactivityRange = new Vector2(Mathf.Lerp(GotTerrain.Radioactivity[0], GotTerrain.Radioactivity[2], difficulty), Mathf.Lerp(GotTerrain.Radioactivity[1], GotTerrain.Radioactivity[3], difficulty));
-                
-                // GTODO - this code sets up lands
-                SetLand(LandToSet, PickBiomeAvailableTerrains.Substring((int)Mathf.Clamp(PickTerrain * (PickBiomeAvailableTerrains.Length), 0f, PickBiomeAvailableTerrains.Length - 1f), 1), (int)Mathf.Lerp(RadioactivityRange.x, RadioactivityRange.y, PickTerrain));
-            }
-        }
+        // GTODO - This code sets up lands
+        foreach (GameObject LandToSet in Lands)
+            SetLand(LandToSet);
 
         // GTODO - This code picks barrier and escape roots
         SetBarrier(GotTerrain.Barrier);
@@ -125,6 +125,8 @@ public class LandScript : MonoBehaviour {
         ObjectsToSpawn = TreeChunks.Count;
         orgObjectsToSpawn = ObjectsToSpawn;
 
+        Started = true;
+
     }
 
     void FixedUpdate() {
@@ -134,7 +136,7 @@ public class LandScript : MonoBehaviour {
             RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
         } else if (GS.GameModePrefab.x == 0) {
 
-            if (Activated == false) {
+            if (Generated == false && Started == true) {
 
                 // Delayed world object spawn
 
@@ -163,7 +165,7 @@ public class LandScript : MonoBehaviour {
                     RS.NavigationSurface_Humanoid.BuildNavMesh();
                     NavmeshBake = true;
                 } else {
-                    Activated = true;
+                    Generated = true;
                     Debug.Log("The world has been activated");
                 }
 
@@ -181,7 +183,8 @@ public class LandScript : MonoBehaviour {
                     if ((MainPlayer.transform.position.x > (FoundLand.transform.position.x - 25f) && MainPlayer.transform.position.x < (FoundLand.transform.position.x + 25f)) && (MainPlayer.transform.position.z > (FoundLand.transform.position.z - 25f) && MainPlayer.transform.position.z < (FoundLand.transform.position.z + 25f))) {
                         LandUrStandingOn = FoundLand;
                     }
-                    if (FoundLand.name.Substring(0, 1) == "0" && FoundLand.name.Substring(2, 1) == "M" && Vector3.Distance(MainPlayer.transform.position, FoundLand.transform.position) < RS.GetComponent<RoundScript>().DetectionRange) {
+                    // TODO - find monument
+                    /*if (FoundLand.name.Substring(0, 1) == "0" && FoundLand.name.Substring(2, 1) == "M" && Vector3.Distance(MainPlayer.transform.position, FoundLand.transform.position) < RS.GetComponent<RoundScript>().DetectionRange) {
                         FoundLand.name = "1" + FoundLand.name.Substring(1);
                         GS.Mess(GS.SetString("Monument found!", "Znaleziono monument!"), "Draw");
                         GS.AddToScore(50);
@@ -189,14 +192,15 @@ public class LandScript : MonoBehaviour {
                         if (!GameObject.Find("MainCanvas").GetComponent<CanvasScript>().HintsTold.Contains("Monument")) {
                             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().HintsCooldown.Add("Monument");
                         }
-                    }
+                    }*/
                 }
                 if (LandUrStandingOn != null) {
                     if (LandUrStandingOn.name.Substring(0, 1) == "0") {
                         LandUrStandingOn.name = "1" + LandUrStandingOn.name.Substring(1);
                         RS.GetComponent<RoundScript>().SetScore("MapDiscovered_", "/+1");
                     }
-                    MainPlayer.GetComponent<PlayerScript>().MicroSiverts[1] = float.Parse(LandUrStandingOn.name.Substring(1, 1));
+                    // TODO - radioactivity
+                    //MainPlayer.GetComponent<PlayerScript>().MicroSiverts[1] = float.Parse(LandUrStandingOn.name.Substring(1, 1));
 
                     LandUrStandingOn.transform.GetChild(0).GetComponent<MinimapMarker>().MapSize = 0f;
                 }
@@ -238,61 +242,46 @@ public class LandScript : MonoBehaviour {
         
     }
 
-    public void SetLand(GameObject Land, string LandName, int Radioactivity){
+    public void SetLand(GameObject Land){
 
-        Land.transform.eulerAngles = Random.Range(0, 5) * 90f * Vector3.up;//new Vector3(0f, (int)(GS.SeedPerlin2D(GS.RoundSeed, Land.transform.position.x + GS.Round, Land.transform.position.z + GS.Round) * 4.9f) * 90f, 0f);
+        //Land.transform.eulerAngles = Random.Range(0, 5) * 90f * Vector3.up;//new Vector3(0f, (int)(GS.SeedPerlin2D(GS.RoundSeed, Land.transform.position.x + GS.Round, Land.transform.position.z + GS.Round) * 4.9f) * 90f, 0f);
 
-        foreach (Transform FoundLand in Land.transform) {
-            if (FoundLand.name.Substring(0, 1) == LandName) {
-                FoundLand.gameObject.SetActive(true);
-
-                foreach (Transform LandInLand in FoundLand.transform) {
-                    float randomFactor = Random.value;//GS.FixedPerlinNoise(LandInLand.position.x, LandInLand.position.z);
-                    if (LandInLand.name == "Tree"){
-                        TreeChunks.Add(LandInLand);
-                    } else if (LandInLand.name == "Building") {
-                        LandInLand.GetComponent<BuildingSpawnerScript>().SpawnBuilding(RS.DifficultySliderB, FoundLand.transform, LandInLand.transform);
-                    } else if (LandInLand.GetComponent<MeshRenderer>() != null) {
-                        foreach (Material Mat in LandInLand.GetComponent<MeshRenderer>().materials) {
-                            if (Mat.name == "Grass1 (Instance)" || Mat.name == "Grass2 (Instance)" || Mat.name == "Grass3 (Instance)") {
-                                Mat.color = Color32.Lerp(Biome.GrassColor[0], Biome.GrassColor[1], Random.Range(0f, 1f));
-                            } else if (Mat.name == "WoodenFence1 (Instance)") {
-                                Mat.color = Color32.Lerp(new Color32(100, 75, 55, 255), new Color32(188, 155, 133, 255), randomFactor);
-                            }
-                        }
-                    } else if (LandInLand.name == "Water" || LandInLand.name == "DeepWater") {
-                        bool Freeze = false;
-                        if (Biome != null) {
-                            if (Biome.BiomeName[0] == "Snowy Area") {
-                                Freeze = true;
-                            }
-                        }
-                        if (Freeze == true) {
-                            LandInLand.gameObject.layer = 0;
-                            LandInLand.gameObject.name = "Ice";
-                            LandInLand.localScale = new Vector3(1f, 0.1f, 1f);
-                            LandInLand.GetComponent<FootstepMaterial>().WhatToPlay = "Block";
-                            LandInLand.transform.GetChild(0).GetComponent<MeshRenderer>().material.color = GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor;
-                        } else {
-                            Waters.Add(LandInLand.gameObject);
-                            LandInLand.transform.GetChild(0).GetComponent<MeshRenderer>().material.color = new Color(GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor.r, GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor.g, GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor.b, 0.75f);
-                        }
+        foreach (Transform LandInLand in Land.transform) {
+            float randomFactor = Random.value;//GS.FixedPerlinNoise(LandInLand.position.x, LandInLand.position.z);
+            if (LandInLand.name == "Tree"){
+                TreeChunks.Add(LandInLand);
+            } else if (LandInLand.name == "Building") {
+                LandInLand.GetComponent<BuildingSpawnerScript>().SpawnBuilding(RS.DifficultySliderB, Land.transform, LandInLand.transform);
+            } else if (LandInLand.GetComponent<MeshRenderer>() != null) {
+                foreach (Material Mat in LandInLand.GetComponent<MeshRenderer>().materials) {
+                    if (Mat.name == "Grass1 (Instance)" || Mat.name == "Grass2 (Instance)" || Mat.name == "Grass3 (Instance)") {
+                        Mat.color = Color32.Lerp(Biome.GrassColor[0], Biome.GrassColor[1], Random.Range(0f, 1f));
+                    } else if (Mat.name == "WoodenFence1 (Instance)") {
+                        Mat.color = Color32.Lerp(new Color32(100, 75, 55, 255), new Color32(188, 155, 133, 255), randomFactor);
                     }
                 }
-
-
-            } else {
-                Destroy(FoundLand.gameObject);
+            } else if (LandInLand.name == "Water" || LandInLand.name == "DeepWater") {
+                bool Freeze = false;
+                if (Biome != null) {
+                    if (Biome.BiomeName[0] == "Snowy Area") {
+                        Freeze = true;
+                    }
+                }
+                if (Freeze == true) {
+                    LandInLand.gameObject.layer = 0;
+                    LandInLand.gameObject.name = "Ice";
+                    LandInLand.localScale = new Vector3(1f, 0.1f, 1f);
+                    LandInLand.GetComponent<FootstepMaterial>().WhatToPlay = "Block";
+                    LandInLand.transform.GetChild(0).GetComponent<MeshRenderer>().material.color = GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor;
+                } else {
+                    Waters.Add(LandInLand.gameObject);
+                    LandInLand.transform.GetChild(0).GetComponent<MeshRenderer>().material.color = new Color(GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor.r, GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor.g, GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor.b, 0.75f);
+                }
             }
+
         }
 
-        Land.name = "0" + ((int)Mathf.Clamp(Radioactivity, 0f, 9f)).ToString();
-        if (LandName == "1" || LandName == "2" || LandName == "3" || LandName == "4" || LandName == "5" || LandName == "6" || LandName == "7" || LandName == "8" || LandName == "9" || LandName == "0") {
-            Land.name += "M";
-            RS.GetComponent<RoundScript>().ResetHeight = -75f;
-        } else {
-            Land.name += "0";
-        }
+        Land.name = "0";
 
         Transform HideQuad = Instantiate(LandpartHide).transform;
         HideQuad.SetParent(Land.transform);

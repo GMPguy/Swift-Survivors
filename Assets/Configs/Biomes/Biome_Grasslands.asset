@@ -48,3 +48,46 @@ MonoBehaviour:
   Ambience: WindAmbience
   Music: Pale Rider
   Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}
+  WorldSize:
+    x: 500
+    y: 500
+  TileSize:
+    x: 50
+    y: 50
+  TileBanks:
+  - Tiles:
+    - TileObject: {fileID: 11400000, guid: 4fb02601e996ec247804a8bb74b60f31, type: 2}
+      Chances:
+        x: 10
+        y: 12
+    - TileObject: {fileID: 11400000, guid: f919c8e8014c3734f8af0955ff584b4c, type: 2}
+      Chances:
+        x: 3
+        y: 2
+    - TileObject: {fileID: 11400000, guid: afdc558eb62c8bf428cbf709252a3db4, type: 2}
+      Chances:
+        x: 1
+        y: 1
+    - TileObject: {fileID: 11400000, guid: 60e5e08ca018981449c0478bdd5c5762, type: 2}
+      Chances:
+        x: 1
+        y: 1
+    - TileObject: {fileID: 11400000, guid: ca1063a964266e2438a85b460e718b51, type: 2}
+      Chances:
+        x: 2
+        y: -2
+    PerlinMargins:
+      x: 0
+      y: 1
+    PerlinShift: 0
+    PerlinSize: 1
+    AreaMin:
+      x: -1
+      y: -1
+    AreaMax:
+      x: 11
+      y: 11
+  FallbackTile: {fileID: 11400000, guid: 4fb02601e996ec247804a8bb74b60f31, type: 2}
+  MonumentTile:
+  - {fileID: 11400000, guid: 183ec675f8bdc144b98cf699881cdafa, type: 2}
+  - {fileID: 11400000, guid: 62bea774b56cb77409a81abce2c6b6a0, type: 2}

@@ -50,3 +50,50 @@ MonoBehaviour:
   Ambience: WindAmbience
   Music: Enter the Maze
   Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}
+  WorldSize:
+    x: 500
+    y: 500
+  TileSize:
+    x: 50
+    y: 50
+  TileBanks:
+  - Tiles:
+    - TileObject: {fileID: 11400000, guid: 97f88bdc20c01704dbd601e4c92c71a6, type: 2}
+      Chances:
+        x: 4
+        y: 2
+    - TileObject: {fileID: 11400000, guid: d372a6a4ab2a8d8499e9dcf57033a3d3, type: 2}
+      Chances:
+        x: 2
+        y: 4
+    - TileObject: {fileID: 11400000, guid: db5531e7cd60e0143b2482b581150ff0, type: 2}
+      Chances:
+        x: 3
+        y: 0
+    - TileObject: {fileID: 11400000, guid: 0a172a58a912e694b8f57ea0908a0fb0, type: 2}
+      Chances:
+        x: 3
+        y: -1
+    - TileObject: {fileID: 11400000, guid: ca1063a964266e2438a85b460e718b51, type: 2}
+      Chances:
+        x: -2
+        y: 4
+    - TileObject: {fileID: 11400000, guid: 4fb02601e996ec247804a8bb74b60f31, type: 2}
+      Chances:
+        x: 4
+        y: 8
+    PerlinMargins:
+      x: 0
+      y: 1
+    PerlinShift: 0
+    PerlinSize: 1
+    AreaMin:
+      x: -1
+      y: -1
+    AreaMax:
+      x: 11
+      y: 11
+  FallbackTile: {fileID: 11400000, guid: 4fb02601e996ec247804a8bb74b60f31, type: 2}
+  MonumentTile:
+  - {fileID: 11400000, guid: c0967bed3cfa5d24eba5a09691940871, type: 2}
+  - {fileID: 11400000, guid: 57dae12854e5f454fb04390d2718d6e0, type: 2}

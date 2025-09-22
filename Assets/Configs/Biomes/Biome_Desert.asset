@@ -49,3 +49,46 @@ MonoBehaviour:
   Ambience: WindAmbience
   Music: Western Streets
   Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}
+  WorldSize:
+    x: 500
+    y: 500
+  TileSize:
+    x: 50
+    y: 50
+  TileBanks:
+  - Tiles:
+    - TileObject: {fileID: 11400000, guid: 4fb02601e996ec247804a8bb74b60f31, type: 2}
+      Chances:
+        x: 15
+        y: 17
+    - TileObject: {fileID: 11400000, guid: 97f88bdc20c01704dbd601e4c92c71a6, type: 2}
+      Chances:
+        x: 2
+        y: 1
+    - TileObject: {fileID: 11400000, guid: 095a4963ae8b857409da333378bd6139, type: 2}
+      Chances:
+        x: 3
+        y: 0
+    - TileObject: {fileID: 11400000, guid: 51d6e2953f59c834b9f754cb930bd23e, type: 2}
+      Chances:
+        x: 4
+        y: 4
+    - TileObject: {fileID: 11400000, guid: f919c8e8014c3734f8af0955ff584b4c, type: 2}
+      Chances:
+        x: 4
+        y: 4
+    PerlinMargins:
+      x: 0
+      y: 1
+    PerlinShift: 0
+    PerlinSize: 1
+    AreaMin:
+      x: -1
+      y: -1
+    AreaMax:
+      x: 11
+      y: 11
+  FallbackTile: {fileID: 11400000, guid: 4fb02601e996ec247804a8bb74b60f31, type: 2}
+  MonumentTile:
+  - {fileID: 11400000, guid: 8e6c798e5a38d0f47ae2649b1db24a6a, type: 2}
+  - {fileID: 11400000, guid: d1866cbbbebc46f4688992ae918ca4be, type: 2}

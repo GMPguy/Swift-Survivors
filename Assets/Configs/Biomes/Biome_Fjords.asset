@@ -52,3 +52,54 @@ MonoBehaviour:
   Ambience: WindAmbience
   Music: Windswept
   Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}
+  WorldSize:
+    x: 500
+    y: 500
+  TileSize:
+    x: 50
+    y: 50
+  TileBanks:
+  - Tiles:
+    - TileObject: {fileID: 11400000, guid: 4fb02601e996ec247804a8bb74b60f31, type: 2}
+      Chances:
+        x: 2
+        y: 0
+    - TileObject: {fileID: 11400000, guid: a016676bafd41f34fb45654d7310477b, type: 2}
+      Chances:
+        x: 2
+        y: 2
+    - TileObject: {fileID: 11400000, guid: 96579d2b092d7ec4d80d939b6b561789, type: 2}
+      Chances:
+        x: 3
+        y: 1
+    - TileObject: {fileID: 11400000, guid: f0e907c1426291f47b0442af1ae72280, type: 2}
+      Chances:
+        x: 4
+        y: 5
+    - TileObject: {fileID: 11400000, guid: ca1063a964266e2438a85b460e718b51, type: 2}
+      Chances:
+        x: 4
+        y: -4
+    - TileObject: {fileID: 11400000, guid: 095a4963ae8b857409da333378bd6139, type: 2}
+      Chances:
+        x: 10
+        y: 0
+    - TileObject: {fileID: 11400000, guid: c8691571694edaf42a6d6b6557d9aa0b, type: 2}
+      Chances:
+        x: 0
+        y: 10
+    PerlinMargins:
+      x: 0
+      y: 1
+    PerlinShift: 0
+    PerlinSize: 1
+    AreaMin:
+      x: -1
+      y: -1
+    AreaMax:
+      x: 11
+      y: 11
+  FallbackTile: {fileID: 11400000, guid: 4fb02601e996ec247804a8bb74b60f31, type: 2}
+  MonumentTile:
+  - {fileID: 11400000, guid: 8e6c798e5a38d0f47ae2649b1db24a6a, type: 2}
+  - {fileID: 11400000, guid: 9f97a3da54196784f927dd614884669d, type: 2}
