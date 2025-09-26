@@ -2400,6 +2400,7 @@ public class PlayerScript : MonoBehaviour {
                         }
                     } else if (currID == 179) {
                         Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-0.032"); //Inventory[CurrentItemHeld].y -= 0.032f;
+                        Coldness -= 0.02f;
                         if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0f) {
                             InvGet(CurrentItemHeld.ToString(), 1); //Inventory[CurrentItemHeld] = "id";
                             GS.Mess(GS.SetString("Torch went out!", "Pochodnia się wypaliła!"), "Error");
@@ -3740,7 +3741,7 @@ public class PlayerScript : MonoBehaviour {
                         CantUseItem = 0.1f;
                         CantSwitchItem = 0.1f;
                         Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-0.01");
-                        Pushback_Force = LookDir.forward * 5f;
+                        Pushback_Force = LookDir.forward * 10f;
                         Pushback_Return = new (.1f, .2f);
                     }
                     break;
@@ -4109,6 +4110,11 @@ public class PlayerScript : MonoBehaviour {
                 TextShortcuts += "A" + NumbersToAdd;
             }
 
+            if (MicroSiverts[2] > 0f)
+                MicroSiverts[2] -= Time.fixedDeltaTime;
+            else
+                MicroSiverts[1] = 0f;
+
             MicroSiverts[0] = Mathf.MoveTowards(MicroSiverts[0], MicroSiverts[1], 0.025f);
             if (IsHS == false && Radioactivity > -1f) {
                 Radioactivity += MicroSiverts[0] / 50f;
@@ -4265,7 +4271,8 @@ public class PlayerScript : MonoBehaviour {
 
             if (Campfire > 0f) {
                 Campfire -= 0.02f;
-                Coldness = Mathf.Clamp(Coldness - .02f, 0f, 100f);
+                Coldness = Mathf.Clamp(Coldness - .04f, 0f, 100f);
+                Wet = Mathf.Clamp(Wet - .02f, 0f, 100f);
             }
 
             if(Fire > 0f && PrevWet != (int)Fire){

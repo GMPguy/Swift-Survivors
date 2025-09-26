@@ -87,9 +87,9 @@ MonoBehaviour:
         y: 0
     PerlinMargins:
       x: 0
-      y: 0
+      y: 1
     PerlinShift: 0
-    PerlinSize: 0
+    PerlinSize: 1
     AreaMin:
       x: -1
       y: -1

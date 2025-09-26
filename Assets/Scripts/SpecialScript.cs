@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using Unity.Mathematics;
 using UnityEngine;
+using Random=UnityEngine.Random;
 
 public class SpecialScript : MonoBehaviour {
 
@@ -17,109 +19,126 @@ public class SpecialScript : MonoBehaviour {
     public GameObject FlashbangEffect;
     public GameObject MolotowEffect;
     public GameObject Lightning;
+    public SpriteRenderer RadioactivityZone;
     Transform SB;
     public float ExplosionRange = 1f;
     public float[] Struck;
     Color32 OriginalSkyColor;
     GameScript GS;
+    RoundScript RS;
+    PlayerScript PS;
     // Explosion scripts
 
     // Use this for initialization
     void Start() {
 
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
+        RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
 
-        if (TypeOfSpecial == "Explosion") {
-            this.transform.position += Vector3.up / 10f;
-            bool AboveWater = true;
-            Ray CheckForWater = new Ray(this.transform.position, Vector3.up);
-            foreach (RaycastHit CheckForWaterHIT in Physics.RaycastAll(CheckForWater, Mathf.Infinity)) {
-                if (CheckForWaterHIT.collider.gameObject.layer == 16) {
-                    AboveWater = false;
+        if (GameObject.FindWithTag("Player"))
+            PS = GameObject.FindWithTag("Player").GetComponent<PlayerScript>();
+
+        switch (TypeOfSpecial) {
+            case "Explosion":
+                this.transform.position += Vector3.up / 10f;
+                bool AboveWater = true;
+                Ray CheckForWater = new Ray(this.transform.position, Vector3.up);
+                foreach (RaycastHit CheckForWaterHIT in Physics.RaycastAll(CheckForWater, Mathf.Infinity)) {
+                    if (CheckForWaterHIT.collider.gameObject.layer == 16) {
+                        AboveWater = false;
+                    }
                 }
-            }
-            if (AboveWater == true) {
-                ExplosionEffect.SetActive(true);
-                ExplosionEffect.transform.localScale = Vector3.one * ExplosionRange;
-                lifetime = 3f;
-                BoomDetect(this.transform.position);
+                if (AboveWater == true) {
+                    ExplosionEffect.SetActive(true);
+                    ExplosionEffect.transform.localScale = Vector3.one * ExplosionRange;
+                    lifetime = 3f;
+                    BoomDetect(this.transform.position);
+                    this.GetComponent<Light>().enabled = true;
+                    this.GetComponent<Light>().intensity = 10f;
+                    this.GetComponent<Light>().range = ExplosionRange * 3f;
+                    this.GetComponent<Light>().color = new Color32(255, 125, 0, 255);
+                } else {
+                    ExplosionRange *= 2f;
+                    WaterExplosionEffect.SetActive(true);
+                    ParticleSystem.MainModule SetCol = WaterExplosionEffect.GetComponent<ParticleSystem>().main;
+                    SetCol.startColor = RenderSettings.fogColor;
+                    ParticleSystem.MainModule SetColB = WaterExplosionEffect.transform.GetChild(0).GetComponent<ParticleSystem>().main;
+                    SetColB.startColor = RenderSettings.fogColor;
+                    WaterExplosionEffect.transform.localScale = Vector3.one * ExplosionRange * 2f;
+                    lifetime = 3f;
+                    BoomDetect(this.transform.position);
+                }
+                break;
+            case "Flashbang":
+                this.transform.position += Vector3.up / 10f;
+                bool AboveWater_Flashbang = true;
+                Ray CheckForWater_Flashbang = new Ray(this.transform.position, Vector3.up);
+                foreach (RaycastHit CheckForWaterHIT in Physics.RaycastAll(CheckForWater_Flashbang, Mathf.Infinity)) {
+                    if (CheckForWaterHIT.collider.gameObject.layer == 16) {
+                        AboveWater_Flashbang = false;
+                    }
+                }
+                if (AboveWater_Flashbang == true) {
+                    FlashbangEffect.SetActive(true);
+                    lifetime = 3f;
+                    Flashbeng(this.transform.position);
+                    this.GetComponent<Light>().enabled = true;
+                    this.GetComponent<Light>().intensity = 50f;
+                    this.GetComponent<Light>().range = ExplosionRange;
+                    this.GetComponent<Light>().color = new Color32(255, 255, 255, 255);
+                } else {
+                    ExplosionRange /= 4f;
+                    WaterExplosionEffect.SetActive(true);
+                    ParticleSystem.MainModule SetCol = WaterExplosionEffect.GetComponent<ParticleSystem>().main;
+                    SetCol.startColor = RenderSettings.fogColor;
+                    ParticleSystem.MainModule SetColB = WaterExplosionEffect.transform.GetChild(0).GetComponent<ParticleSystem>().main;
+                    SetColB.startColor = RenderSettings.fogColor;
+                    lifetime = 3f;
+                    BoomDetect(this.transform.position);
+                }
+                break;
+            case "Molotow":
+                this.transform.position += Vector3.up / 10f;
+                bool AboveWater_Molotow = true;
+                Ray CheckForWater_Molotow = new Ray(this.transform.position, Vector3.up);
+                foreach (RaycastHit CheckForWaterHIT in Physics.RaycastAll(CheckForWater_Molotow, Mathf.Infinity)) {
+                    if (CheckForWaterHIT.collider.gameObject.layer == 16) {
+                        AboveWater_Molotow = false;
+                    }
+                }
+                if (AboveWater_Molotow == true) {
+                    MolotowEffect.SetActive(true);
+                    MolotowEffect.transform.localScale = Vector3.one * ExplosionRange;
+                    lifetime = 3f;
+                    Molotow(this.transform.position);
+                    this.GetComponent<Light>().enabled = true;
+                    this.GetComponent<Light>().intensity = 1f;
+                    this.GetComponent<Light>().range = ExplosionRange;
+                    this.GetComponent<Light>().color = new Color32(255, 125, 0, 255);
+                } else {
+                    Destroy(this.gameObject);
+                }
+                break;
+            case "Lightning":
+                Lightning.SetActive(true);
+                ExplosionRange = 12f;
+                lifetime = 10f;
+                Struck = new float[]{ 0f, Random.Range(1f, 4f)};
+                OriginalSkyColor = GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor;
                 this.GetComponent<Light>().enabled = true;
                 this.GetComponent<Light>().intensity = 10f;
-                this.GetComponent<Light>().range = ExplosionRange * 3f;
-                this.GetComponent<Light>().color = new Color32(255, 125, 0, 255);
-            } else {
-                ExplosionRange *= 2f;
-                WaterExplosionEffect.SetActive(true);
-                ParticleSystem.MainModule SetCol = WaterExplosionEffect.GetComponent<ParticleSystem>().main;
-                SetCol.startColor = RenderSettings.fogColor;
-                ParticleSystem.MainModule SetColB = WaterExplosionEffect.transform.GetChild(0).GetComponent<ParticleSystem>().main;
-                SetColB.startColor = RenderSettings.fogColor;
-                WaterExplosionEffect.transform.localScale = Vector3.one * ExplosionRange * 2f;
-                lifetime = 3f;
-                BoomDetect(this.transform.position);
-            }
-        } else if (TypeOfSpecial == "Flashbang") {
-            this.transform.position += Vector3.up / 10f;
-            bool AboveWater = true;
-            Ray CheckForWater = new Ray(this.transform.position, Vector3.up);
-            foreach (RaycastHit CheckForWaterHIT in Physics.RaycastAll(CheckForWater, Mathf.Infinity)) {
-                if (CheckForWaterHIT.collider.gameObject.layer == 16) {
-                    AboveWater = false;
-                }
-            }
-            if (AboveWater == true) {
-                FlashbangEffect.SetActive(true);
-                lifetime = 3f;
-                Flashbeng(this.transform.position);
-                this.GetComponent<Light>().enabled = true;
-                this.GetComponent<Light>().intensity = 50f;
-                this.GetComponent<Light>().range = ExplosionRange;
-                this.GetComponent<Light>().color = new Color32(255, 255, 255, 255);
-            } else {
-                ExplosionRange /= 4f;
-                WaterExplosionEffect.SetActive(true);
-                ParticleSystem.MainModule SetCol = WaterExplosionEffect.GetComponent<ParticleSystem>().main;
-                SetCol.startColor = RenderSettings.fogColor;
-                ParticleSystem.MainModule SetColB = WaterExplosionEffect.transform.GetChild(0).GetComponent<ParticleSystem>().main;
-                SetColB.startColor = RenderSettings.fogColor;
-                lifetime = 3f;
-                BoomDetect(this.transform.position);
-            }
-        } else if (TypeOfSpecial == "Molotow") {
-            this.transform.position += Vector3.up / 10f;
-            bool AboveWater = true;
-            Ray CheckForWater = new Ray(this.transform.position, Vector3.up);
-            foreach (RaycastHit CheckForWaterHIT in Physics.RaycastAll(CheckForWater, Mathf.Infinity)) {
-                if (CheckForWaterHIT.collider.gameObject.layer == 16) {
-                    AboveWater = false;
-                }
-            }
-            if (AboveWater == true) {
-                MolotowEffect.SetActive(true);
-                MolotowEffect.transform.localScale = Vector3.one * ExplosionRange;
-                lifetime = 3f;
-                Molotow(this.transform.position);
-                this.GetComponent<Light>().enabled = true;
-                this.GetComponent<Light>().intensity = 1f;
-                this.GetComponent<Light>().range = ExplosionRange;
-                this.GetComponent<Light>().color = new Color32(255, 125, 0, 255);
-            } else {
-                Destroy(this.gameObject);
-            }
-        } else if (TypeOfSpecial == "Lightning") {
-            Lightning.SetActive(true);
-            ExplosionRange = 12f;
-            lifetime = 10f;
-            Struck = new float[]{ 0f, Random.Range(1f, 4f)};
-            OriginalSkyColor = GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor;
-            this.GetComponent<Light>().enabled = true;
-            this.GetComponent<Light>().intensity = 10f;
-            this.GetComponent<Light>().range = 500f;
-            this.GetComponent<Light>().color = new Color32(0, 125, 255, 255);
+                this.GetComponent<Light>().range = 500f;
+                this.GetComponent<Light>().color = new Color32(0, 125, 255, 255);
 
-            SB = GameObject.Find("Skybox").transform;
-            if(SB)
-                Lightning.transform.GetChild(2).transform.localScale *= 0.001f;
+                SB = GameObject.Find("Skybox").transform;
+                if(SB)
+                    Lightning.transform.GetChild(2).transform.localScale *= 0.001f;
+                break;
+            case "Radioactivity":
+                RadioactivityZone.gameObject.SetActive(true);
+                lifetime = float.MaxValue;
+                RadioactivityZone.color = new (0f, .5f, 0f, ExplosionRange > 0f ? Mathf.Lerp(0.25f, 1f, ExplosionRange / 10f) : 0f);
+                break;
         }
 		
 	}
@@ -133,97 +152,117 @@ public class SpecialScript : MonoBehaviour {
             Destroy(this.gameObject);
         }
 
-        if (TypeOfSpecial == "Explosion") {
-            if (lifetime < 2.95f) {
-                this.GetComponent<Light>().intensity = 0f;
-            } else {
-                float ShakePerCent = Mathf.Clamp(1f - (Vector3.Distance(this.transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) / (ExplosionRange * 4f)), 0f, 1f);
-                if (Vector3.Distance(this.transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) < ExplosionRange * 4f) {
-                    GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().ShakeCam(ShakePerCent, 1f);
-                    GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[1] = 5f;
-                    GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[0] = 5f * Mathf.Clamp(-1f + (ShakePerCent * 2f), 0f, 1f);
-                }
-                if (ExplosionEffect.activeInHierarchy == true) {
-                    for (int Debris = Random.Range(1, 4); Debris > 0; Debris--) {
-                        if (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < ExplosionRange * 2f) {
-                            GameObject CreateCanvasSplash = Instantiate(GameObject.Find("MainCanvas").GetComponent<CanvasScript>().EnvSplash);
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectName = "Dirt";
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().Size = Random.Range(320f, 640f);
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().Epicentrum = 1f - (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) / (ExplosionRange * 2f));
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectColor = Color32.Lerp(new Color32(10, 10, 10, 255), new Color32(25, 25, 25, 255), Random.Range(0f, 1f));
-                        }
-                    }
-                } else if (WaterExplosionEffect.activeInHierarchy == true) {
-                    for (int Debris = Random.Range(5, 10); Debris > 0; Debris--) {
-                        if (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < ExplosionRange * 2f) {
-                            GameObject CreateCanvasSplash = Instantiate(GameObject.Find("MainCanvas").GetComponent<CanvasScript>().EnvSplash);
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectName = "WaterDrop";
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectColor = RenderSettings.fogColor;
-                        }
-                    }
-                }
-            }
+        if (!PS && GameObject.FindGameObjectWithTag("Player"))
+            PS = GameObject.FindObjectOfType<PlayerScript>();
 
-        } else if (TypeOfSpecial == "Flashbang") {
-            if (lifetime < 2.9f) {
-                this.GetComponent<Light>().intensity = 0f;
-            } else {
-                if (ExplosionEffect.activeInHierarchy == true) {
-                    for (int Debris = Random.Range(1, 4); Debris > 0; Debris--) {
-                        if (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < ExplosionRange * 2f) {
-                            GameObject CreateCanvasSplash = Instantiate(GameObject.Find("MainCanvas").GetComponent<CanvasScript>().EnvSplash);
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectName = "Dirt";
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().Size = Random.Range(320f, 640f);
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().Epicentrum = 1f - (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) / (ExplosionRange * 2f));
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectColor = Color32.Lerp(new Color32(10, 10, 10, 255), new Color32(25, 25, 25, 255), Random.Range(0f, 1f));
-                        }
+        switch (TypeOfSpecial) {
+            case "Explosion":
+                if (lifetime < 2.95f) {
+                    this.GetComponent<Light>().intensity = 0f;
+                } else {
+                    float ShakePerCent = Mathf.Clamp(1f - (Vector3.Distance(this.transform.position, PS.transform.position) / (ExplosionRange * 4f)), 0f, 1f);
+                    if (Vector3.Distance(this.transform.position, PS.transform.position) < ExplosionRange * 4f) {
+                        PS.ShakeCam(ShakePerCent, 1f);
+                        GS.Earpiercing[1] = 5f;
+                        GS.Earpiercing[0] = 5f * Mathf.Clamp(-1f + (ShakePerCent * 2f), 0f, 1f);
                     }
-                } else if (WaterExplosionEffect.activeInHierarchy == true) {
-                    for (int Debris = Random.Range(5, 10); Debris > 0; Debris--) {
-                        if (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < ExplosionRange * 2f) {
-                            GameObject CreateCanvasSplash = Instantiate(GameObject.Find("MainCanvas").GetComponent<CanvasScript>().EnvSplash);
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectName = "WaterDrop";
-                            CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectColor = RenderSettings.fogColor;
+                    if (ExplosionEffect.activeInHierarchy == true) {
+                        for (int Debris = Random.Range(1, 4); Debris > 0; Debris--) {
+                            if (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < ExplosionRange * 2f) {
+                                GameObject CreateCanvasSplash = Instantiate(GameObject.Find("MainCanvas").GetComponent<CanvasScript>().EnvSplash);
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectName = "Dirt";
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().Size = Random.Range(320f, 640f);
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().Epicentrum = 1f - (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) / (ExplosionRange * 2f));
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectColor = Color32.Lerp(new Color32(10, 10, 10, 255), new Color32(25, 25, 25, 255), Random.Range(0f, 1f));
+                            }
+                        }
+                    } else if (WaterExplosionEffect.activeInHierarchy == true) {
+                        for (int Debris = Random.Range(5, 10); Debris > 0; Debris--) {
+                            if (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < ExplosionRange * 2f) {
+                                GameObject CreateCanvasSplash = Instantiate(GameObject.Find("MainCanvas").GetComponent<CanvasScript>().EnvSplash);
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectName = "WaterDrop";
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectColor = RenderSettings.fogColor;
+                            }
                         }
                     }
                 }
-            }
-        } else if (TypeOfSpecial == "Molotow") {
-            if (lifetime > 2f) {
-                this.GetComponent<Light>().intensity = (lifetime - 2f) * 3f;
-            } else {
-                this.GetComponent<Light>().intensity = 0f;
-            }
-        } else if (TypeOfSpecial == "Lightning") {
-            if (Struck[0] <= 0f && Struck[1] > 0f) {
-                Struck[0] = Random.Range(0f, 0.05f);
-                Struck[1] -= 1f;
-                this.transform.LookAt(this.transform.position - (Vector3.up * 100f) + new Vector3(Random.Range(-12f, 12f), 0f, Random.Range(-12f, 12f)));
-                //this.transform.localScale = new Vector3(Random.Range(1f, 3f), 1f, 1f);
-                //this.transform.Rotate(new Vector3(0f, 0f, Random.Range(0f, 360f)));
-                Lightning.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, Random.Range(0.5f, 1f));
-                Ray CheckStruck = new Ray(this.transform.position, this.transform.forward);
-                RaycastHit CheckStruckHIT;
-                if (Physics.Raycast(CheckStruck, out CheckStruckHIT, 200f, GameObject.Find("_GameScript").GetComponent<GameScript>().IgnoreMaks1)) {
-                    BoomDetect(CheckStruckHIT.point);
-                    this.transform.localScale = new Vector3(Random.Range(0.1f, 4f), CheckStruckHIT.distance / 100f, 1f);
-                    Lightning.transform.GetChild(0).transform.position = CheckStruckHIT.point;
-                    if (Vector3.Distance(CheckStruckHIT.point, GameObject.FindGameObjectWithTag("Player").transform.position) < 25f) {
-                        float ShakePerCent = 1f - (Vector3.Distance(this.transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) / (ExplosionRange * 4f));
-                        GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().ShakeCam(ShakePerCent, ShakePerCent);
+                break;
+            case "Flashbang":
+                if (lifetime < 2.9f) {
+                    this.GetComponent<Light>().intensity = 0f;
+                } else {
+                    if (ExplosionEffect.activeInHierarchy == true) {
+                        for (int Debris = Random.Range(1, 4); Debris > 0; Debris--) {
+                            if (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < ExplosionRange * 2f) {
+                                GameObject CreateCanvasSplash = Instantiate(GameObject.Find("MainCanvas").GetComponent<CanvasScript>().EnvSplash);
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectName = "Dirt";
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().Size = Random.Range(320f, 640f);
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().Epicentrum = 1f - (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) / (ExplosionRange * 2f));
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectColor = Color32.Lerp(new Color32(10, 10, 10, 255), new Color32(25, 25, 25, 255), Random.Range(0f, 1f));
+                            }
+                        }
+                    } else if (WaterExplosionEffect.activeInHierarchy == true) {
+                        for (int Debris = Random.Range(5, 10); Debris > 0; Debris--) {
+                            if (Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < ExplosionRange * 2f) {
+                                GameObject CreateCanvasSplash = Instantiate(GameObject.Find("MainCanvas").GetComponent<CanvasScript>().EnvSplash);
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectName = "WaterDrop";
+                                CreateCanvasSplash.GetComponent<EnvEffectScript>().EffectColor = RenderSettings.fogColor;
+                            }
+                        }
                     }
                 }
-                Lightning.transform.GetChild(1).GetComponent<AudioSource>().pitch = Random.Range(0.25f, 1f);
-                this.GetComponent<Light>().intensity = Random.Range(1f, 10f);
-                GameObject.Find("_RoundScript").GetComponent<RoundScript>().AmbientSet("ThunderFlash");
-                GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = Color.Lerp(OriginalSkyColor, Color.white, this.GetComponent<Light>().intensity / 10f);
-            } else if (Struck[0] > 0f){
-                Struck[0] -= 0.02f;
-            } else if (Struck[1] <= 0f) {
-                Lightning.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
-                GameObject.Find("_RoundScript").GetComponent<RoundScript>().AmbientSet("Normal");
-                this.GetComponent<Light>().enabled = false;
-            } 
+                break;
+            case "Molotow":
+                if (lifetime > 2f) {
+                    this.GetComponent<Light>().intensity = (lifetime - 2f) * 3f;
+                } else {
+                    this.GetComponent<Light>().intensity = 0f;
+                }
+                break;
+            case "Lightning":
+                if (Struck[0] <= 0f && Struck[1] > 0f) {
+                    Struck[0] = Random.Range(0f, 0.05f);
+                    Struck[1] -= 1f;
+                    this.transform.LookAt(this.transform.position - (Vector3.up * 100f) + new Vector3(Random.Range(-12f, 12f), 0f, Random.Range(-12f, 12f)));
+                    //this.transform.localScale = new Vector3(Random.Range(1f, 3f), 1f, 1f);
+                    //this.transform.Rotate(new Vector3(0f, 0f, Random.Range(0f, 360f)));
+                    Lightning.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, Random.Range(0.5f, 1f));
+                    Ray CheckStruck = new Ray(this.transform.position, this.transform.forward);
+                    RaycastHit CheckStruckHIT;
+                    if (Physics.Raycast(CheckStruck, out CheckStruckHIT, 200f, GS.IgnoreMaks1)) {
+                        BoomDetect(CheckStruckHIT.point);
+                        this.transform.localScale = new Vector3(Random.Range(0.1f, 4f), CheckStruckHIT.distance / 100f, 1f);
+                        Lightning.transform.GetChild(0).transform.position = CheckStruckHIT.point;
+                        if (Vector3.Distance(CheckStruckHIT.point, PS.transform.position) < 25f) {
+                            float ShakePerCent = 1f - (Vector3.Distance(this.transform.position, PS.transform.position) / (ExplosionRange * 4f));
+                            PS.ShakeCam(ShakePerCent, ShakePerCent);
+                        }
+                    }
+                    Lightning.transform.GetChild(1).GetComponent<AudioSource>().pitch = Random.Range(0.25f, 1f);
+                    this.GetComponent<Light>().intensity = Random.Range(1f, 10f);
+                    RS.AmbientSet("ThunderFlash");
+                    GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = Color.Lerp(OriginalSkyColor, Color.white, this.GetComponent<Light>().intensity / 10f);
+                } else if (Struck[0] > 0f){
+                    Struck[0] -= 0.02f;
+                } else if (Struck[1] <= 0f) {
+                    Lightning.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+                    RS.AmbientSet("Normal");
+                    this.GetComponent<Light>().enabled = false;
+                } 
+                break;
+            case "Radioactivity":
+                if (PS) {
+                    float2 pos = new (PS.transform.position.x, PS.transform.position.z);
+                    
+                    bool checkX = pos.x > transform.position.x - transform.localScale.x / 2f && pos.x < transform.position.x + transform.localScale.x / 2f;
+                    bool checkY = pos.y > transform.position.z - transform.localScale.z / 2f && pos.y < transform.position.z + transform.localScale.z / 2f;
+                    
+                    if (checkX && checkY) {
+                        PS.MicroSiverts[1] = ExplosionRange;
+                        PS.MicroSiverts[2] = 1f;
+                    }
+                }
+                break;
         }
 		
 	}
@@ -237,20 +276,20 @@ public class SpecialScript : MonoBehaviour {
 
     void BoomDetect(Vector3 Where) {
 
-        if (Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, Where) < ExplosionRange) {
+        if (Vector3.Distance(PS.transform.position, Where) < ExplosionRange) {
             bool GotHit = false;
-            this.transform.LookAt(GameObject.FindGameObjectWithTag("Player").transform.position);
+            this.transform.LookAt(PS.transform.position);
             Ray CheckForHit = new Ray(this.transform.position, this.transform.forward);
             RaycastHit CheckForHitA;
-            if(Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, Where) < 1.25f){
+            if(Vector3.Distance(PS.transform.position, Where) < 1.25f){
                 GotHit = true;
-            } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GameObject.Find("_GameScript").GetComponent<GameScript>().IgnoreMaks1)) {
-                if (CheckForHitA.collider.transform.root.gameObject == GameObject.FindGameObjectWithTag("Player")) {
+            } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GS.IgnoreMaks1)) {
+                if (CheckForHitA.collider.transform.root.gameObject == PS.gameObject) {
                     GotHit = true;
                 }
             }
             if (GotHit == true) {
-                GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().Hurt(Mathf.Clamp(((1f - (Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, Where) / ExplosionRange)) * 200f), 0f, 100f), "Explosion", true, Where);
+                PS.Hurt(Mathf.Clamp(((1f - (Vector3.Distance(PS.transform.position, Where) / ExplosionRange)) * 200f), 0f, 100f), "Explosion", true, Where);
             }
         }
 
@@ -262,7 +301,7 @@ public class SpecialScript : MonoBehaviour {
                 RaycastHit CheckForHitA;
                 if (Vector3.Distance(FoundMob.transform.position, Where) < 1.25f) {
                     GotHit = true;
-                } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GameObject.Find("_GameScript").GetComponent<GameScript>().IgnoreMaks1)) {
+                } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GS.IgnoreMaks1)) {
                     if (CheckForHitA.collider.gameObject == FoundMob) {
                         GotHit = true;
                     }
@@ -310,30 +349,30 @@ public class SpecialScript : MonoBehaviour {
 
     void Flashbeng(Vector3 Where) {
 
-        if (Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, Where) < ExplosionRange) {
-            float DistPerCent = 1f - (Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, Where) / ExplosionRange);
+        if (Vector3.Distance(PS.transform.position, Where) < ExplosionRange) {
+            float DistPerCent = 1f - (Vector3.Distance(PS.transform.position, Where) / ExplosionRange);
             bool GotHit = false;
-            this.transform.LookAt(GameObject.FindGameObjectWithTag("Player").transform.position);
+            this.transform.LookAt(PS.transform.position);
             Ray CheckForHit = new Ray(this.transform.position, this.transform.forward);
             RaycastHit CheckForHitA;
-            if(Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, Where) < 1.25f){
+            if(Vector3.Distance(PS.transform.position, Where) < 1.25f){
                 GotHit = true;
-            } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GameObject.Find("_GameScript").GetComponent<GameScript>().IgnoreMaks1)) {
-                if (CheckForHitA.collider.transform.root.gameObject == GameObject.FindGameObjectWithTag("Player")) {
+            } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GS.IgnoreMaks1)) {
+                if (CheckForHitA.collider.transform.root.gameObject == PS.gameObject) {
                     GotHit = true;
                 }
             }
             if (DistPerCent < 0.5f && GotHit == true) {
-                GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[1] = 2.5f;
-                GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[0] = ((DistPerCent - 0.5f) / 0.5f) * 5f;
+                GS.Earpiercing[1] = 2.5f;
+                GS.Earpiercing[0] = ((DistPerCent - 0.5f) / 0.5f) * 5f;
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(new Color32(255, 255, 255, 255), new float[]{((DistPerCent - 0.25f) / 0.75f) * 5f, 2.5f});
             } else if (GotHit == true) {
-                GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[0] = 5f;
-                GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[1] = 2.5f;
+                GS.Earpiercing[0] = 5f;
+                GS.Earpiercing[1] = 2.5f;
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(new Color32(255, 255, 255, 255), new float[]{5f, 2.5f});
             } else {
-                GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[1] = 1f;
-                GameObject.Find("_GameScript").GetComponent<GameScript>().Earpiercing[0] = ((DistPerCent - 0.25f) / 0.75f) * 1f;
+                GS.Earpiercing[1] = 1f;
+                GS.Earpiercing[0] = ((DistPerCent - 0.25f) / 0.75f) * 1f;
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(new Color32(255, 255, 255, 55), new float[]{1f, 1f});
             }
         }
@@ -347,7 +386,7 @@ public class SpecialScript : MonoBehaviour {
                 RaycastHit CheckForHitA;
                 if (Vector3.Distance(FoundMob.transform.position, Where) < 1.25f) {
                     GotHit = true;
-                } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GameObject.Find("_GameScript").GetComponent<GameScript>().IgnoreMaks1)) {
+                } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GS.IgnoreMaks1)) {
                     if (CheckForHitA.collider.gameObject == FoundMob) {
                         GotHit = true;
                     }
@@ -368,21 +407,21 @@ public class SpecialScript : MonoBehaviour {
 
     void Molotow(Vector3 Where) {
 
-        if (Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, Where) < ExplosionRange) {
-            float DistPerCent = 1f - (Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, Where) / ExplosionRange);
+        if (Vector3.Distance(PS.transform.position, Where) < ExplosionRange) {
+            float DistPerCent = 1f - (Vector3.Distance(PS.transform.position, Where) / ExplosionRange);
             bool GotHit = false;
-            this.transform.LookAt(GameObject.FindGameObjectWithTag("Player").transform.position);
+            this.transform.LookAt(PS.transform.position);
             Ray CheckForHit = new Ray(this.transform.position, this.transform.forward);
             RaycastHit CheckForHitA;
-            if(Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, Where) < 1.25f){
+            if(Vector3.Distance(PS.transform.position, Where) < 1.25f){
                 GotHit = true;
-            } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GameObject.Find("_GameScript").GetComponent<GameScript>().IgnoreMaks1)) {
-                if (CheckForHitA.collider.transform.root.gameObject == GameObject.FindGameObjectWithTag("Player")) {
+            } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GS.IgnoreMaks1)) {
+                if (CheckForHitA.collider.transform.root.gameObject == PS.gameObject) {
                     GotHit = true;
                 }
             }
             if (GotHit == true) {
-                GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().Fire = Mathf.Clamp(Mathf.Lerp(0f, 100f, DistPerCent), GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().Fire, 100f);
+                PS.Fire = Mathf.Clamp(Mathf.Lerp(0f, 100f, DistPerCent), PS.Fire, 100f);
             }
         }
 
@@ -395,7 +434,7 @@ public class SpecialScript : MonoBehaviour {
                 RaycastHit CheckForHitA;
                 if (Vector3.Distance(FoundMob.transform.position, Where) < 1.25f) {
                     GotHit = true;
-                } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GameObject.Find("_GameScript").GetComponent<GameScript>().IgnoreMaks1)) {
+                } else if (Physics.Raycast(CheckForHit, out CheckForHitA, ExplosionRange, GS.IgnoreMaks1)) {
                     if (CheckForHitA.collider.gameObject == FoundMob) {
                         GotHit = true;
                     }

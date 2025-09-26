@@ -1588,7 +1588,7 @@ public class MobScript : MonoBehaviour {
                     }
 
                     Vector3 aimFrom = this.transform.position + (Vector3.up * 1.25f);
-                    Vector3 aimTarget = AiTarget.CompareTag("Mob") ? Vector3.one * 1.25f : Vector3.zero;
+                    Vector3 aimTarget = AiTarget.CompareTag("Mob") ? Vector3.up * 1.25f : Vector3.zero;
 
                     RS.Attack(
                         Additionals.ToArray(),

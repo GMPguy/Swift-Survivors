@@ -1021,7 +1021,7 @@ public class AttackScript : MonoBehaviour {
                                 }
                             }
                         } else if (ItemID == "156") {
-                            Attacker.GetComponent<PlayerScript>().Pushback_Force = Vector3.up * 12f;
+                            Attacker.GetComponent<PlayerScript>().Pushback_Force = Vector3.up * 3f;
                             Attacker.GetComponent<PlayerScript>().Pushback_Return = Vector2.one;
                         }
                     }

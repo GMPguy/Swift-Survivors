@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.AI.Navigation;
 using Unity.Mathematics;
 using UnityEngine;
@@ -14,6 +15,7 @@ public class LandScript : MonoBehaviour {
     public GameObject TreesPrefab;
     public GameObject InteractablePrefab;
     public GameObject LandpartHide;
+    public GameObject RadioactivityZone;
     List<Transform> TreeChunks;
     List<Spawner> CachedSpawners;
     public List<GameObject> Lands;
@@ -85,6 +87,85 @@ public class LandScript : MonoBehaviour {
                 GrassColor = new Color32[] { new Color32(0, 55, 0, 255), new Color32(0, 155, 0, 255) };
             } else {
                 GrassColor = Biome.GrassColor;
+            }
+
+            // Spawn radioactivity zone
+            List<Vector4> zones = new();
+            for (int rz = 0; rz < 20; rz++) {
+                // Pick new zone
+                for (int at = 0; at < 10; at++) {
+                    float2 zoneSize = new (Random.Range(.05f, .25f) * Biome.WorldSize.x, Random.Range(.05f, .25f) * Biome.WorldSize.y);
+
+                    Vector4 newZone = new (
+                        Random.Range(5f, Biome.WorldSize.x / 2f - zoneSize.x),
+                        Random.Range(5f, Biome.WorldSize.y / 2f - zoneSize.y),
+                        0f, 0f
+                    );
+
+                    for (int nz = 0; nz <= 1; nz++)
+                        newZone[2 + nz] = newZone[nz] + zoneSize[nz];
+
+                    // Quarter flip
+                    float2 flipX = new (newZone[0] * -1, newZone[2] * -1);
+                    float2 flipY = new (newZone[1] * -1, newZone[3] * -1);
+                    switch (rz / 5) {
+                        case 1:
+                            newZone[0] = flipX[1];
+                            newZone[2] = flipX[0];
+                            break;
+                        case 2:
+                            newZone[1] = flipY[1];
+                            newZone[3] = flipY[0];
+                            break;
+                        case 3:
+                            newZone[0] = flipX[1];
+                            newZone[2] = flipX[0];
+                            newZone[1] = flipY[1];
+                            newZone[3] = flipY[0];
+                            break;
+                    }
+
+                    // Check overlaping
+                    for (int o = 0; o < zones.Count; o++) {
+                        Vector4 b = newZone;
+                        Vector4 a = zones[o];
+
+                        if (!(a.x > b.z || a.z < b.x || a.y > b.w || a.w < b.y))
+                            goto Overlapped;
+                    }
+                    
+                    // All correct
+                    float power = Mathf.Lerp(
+                        Random.Range(Biome.Radioactivity[0], Biome.Radioactivity[1]),
+                        Random.Range(Biome.Radioactivity[2], Biome.Radioactivity[3]),
+                        RS.DifficultySliderB
+                    );
+
+                    if (power > 0f) {
+                        zones.Add(newZone);
+
+                        SpecialScript zoneObj = GameObject.Instantiate(RadioactivityZone).GetComponent<SpecialScript>();
+
+                        zoneObj.transform.position = Vector3.Lerp(
+                            new Vector3(newZone.x, 0f, newZone.y),
+                            new Vector3(newZone.z, 0f, newZone.w),
+                            .5f
+                        );
+
+                        zoneObj.transform.localScale = new Vector3(
+                            newZone.z - newZone.x,
+                            1f,
+                            newZone.w - newZone.y
+                        );
+
+                        zoneObj.ExplosionRange = power;
+                    }
+
+                    break;
+
+                    Overlapped:;
+                    continue;
+                }
             }
         }
         // Spawn lands

@@ -44,7 +44,7 @@ public class BuildingScript : MonoBehaviour {
             Destroy(mainLight.gameObject);
             Destroy(this);
         } else {
-            if (Vector3.Distance(this.transform.position, PStransform.position) < 3f)
+            if (Vector3.Distance(this.transform.position, PStransform.position) < 5f)
                 PS.Campfire = 1f;
         }
     }

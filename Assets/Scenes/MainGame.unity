@@ -236341,7 +236341,7 @@ MonoBehaviour:
     rgba: 0
   TealState: 0
   IsSwimming: 0000
-  ResetHeight: -5
+  ResetHeight: -100
   SunHidden: 0
 --- !u!1001 &1453724026
 PrefabInstance:
@@ -257456,6 +257456,8 @@ MonoBehaviour:
     type: 3}
   LandpartHide: {fileID: 1121817985026189546, guid: 15890a71898893f43b79cc95a25dcde2,
     type: 3}
+  RadioactivityZone: {fileID: 6132514029391038196, guid: 702073abeb5b9be4c8e4190ad4c41f0b,
+    type: 3}
   Lands: []
   Barriers: {fileID: 528077744}
   GS: {fileID: 0}
@@ -257491,7 +257493,8 @@ MonoBehaviour:
   - {fileID: 8445955814857040032, guid: 9731b3f0d251aae47aa6a35232a510e1, type: 3}
   - {fileID: 3931552545054284907, guid: dcce04ac1e7d9364180c8b9da11f285f, type: 3}
   Biome: {fileID: 0}
-  Activated: 0
+  Generated: 0
+  Started: 0
   ObjectsToSpawn: 0
   NavmeshBake: 0
 --- !u!1 &1647555721
