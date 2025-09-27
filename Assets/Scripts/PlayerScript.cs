@@ -4010,36 +4010,59 @@ public class PlayerScript : MonoBehaviour {
     
         if (BuffsToSet != "") {
 
-            for (int CheckCode = 0; CheckCode <= BuffsToSet.Length - 4; CheckCode += 4) {
-                string CheckedCode = BuffsToSet.Substring(CheckCode, 4);
-                if (CheckedCode.Substring(0, 1) == "B") {
-                    Bleeding = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "H") {
-                    Hydration = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "I") {
-                    Infection = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "T") {
-                    Tiredness = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "R") {
-                    Radioactivity = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "C") {
-                    Coldness = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "A") {
-                    Adrenaline = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "D") {
-                    Drunkenness = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "b") {
-                    BrokenBone = int.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "W") {
-                    Wet = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "h") {
-                    Hot = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "F") {
-                    Fire = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                } else if (CheckedCode.Substring(0, 1) == "D") {
-                    Dirty = float.Parse(CheckedCode.Substring(1), CultureInfo.InvariantCulture);
-                }
-            }
+            Debug.Log("Loaded - " + BuffsToSet);
+
+                string bleeding = GS.GetSemiClass(BuffsToSet, "Bl_");
+                if (bleeding != "")
+                    Bleeding = float.Parse(bleeding);
+
+                string hydration = GS.GetSemiClass(BuffsToSet, "Hy_");
+                if (hydration != "")
+                    Hydration = float.Parse(hydration);
+
+                string infection = GS.GetSemiClass(BuffsToSet, "In_");
+                if (infection != "")
+                    Infection = float.Parse(infection);
+
+                string tiredness = GS.GetSemiClass(BuffsToSet, "Ti_");
+                if (tiredness != "")
+                    Tiredness = float.Parse(tiredness);
+                
+                string radioactivity = GS.GetSemiClass(BuffsToSet, "Ra_");
+                if (radioactivity != "")
+                    Radioactivity = float.Parse(radioactivity);
+
+                string coldness = GS.GetSemiClass(BuffsToSet, "Co_");
+                if (coldness != "")
+                    Coldness = float.Parse(coldness);
+
+                string adrenaline = GS.GetSemiClass(BuffsToSet, "Ad_");
+                if (adrenaline != "")
+                    Adrenaline = float.Parse(adrenaline);
+
+                string drunkenness = GS.GetSemiClass(BuffsToSet, "Du_");
+                if (drunkenness != "")
+                    Drunkenness = float.Parse(drunkenness);
+
+                string brokenbones = GS.GetSemiClass(BuffsToSet, "Bb_");
+                if (brokenbones != "")
+                    BrokenBone = int.Parse(brokenbones);
+
+                string wet = GS.GetSemiClass(BuffsToSet, "We_");
+                if (wet != "")
+                    Wet = float.Parse(wet);
+
+                string hot = GS.GetSemiClass(BuffsToSet, "Ho_");
+                if (hot != "")
+                    Hot = float.Parse(hot);
+
+                string fire = GS.GetSemiClass(BuffsToSet, "Fi_");
+                if (fire != "")
+                    Fire = float.Parse(fire);
+
+                string dirty = GS.GetSemiClass(BuffsToSet, "Di_");
+                if (dirty != "")
+                    Dirty = float.Parse(dirty);
 
         } else {
 
@@ -4051,23 +4074,17 @@ public class PlayerScript : MonoBehaviour {
                 } else {
                     Bleeding -= 0.02f;
                     Hurt(0.02f, "Bleeding", false, Vector3.zero);
-                    string NumbersToAdd = "00" + (int)Bleeding;
-                    NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                    TextShortcuts += "B" + NumbersToAdd;
+                    TextShortcuts += "Bl_" + Bleeding + ";";
                 }
             }
             if (Hydration > 0f) {
                 Hydration -= 0.02f;
                 EnergyRegen -= 0.02f;
-                string NumbersToAdd = "00" + (int)Hydration;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "H" + NumbersToAdd;
+                TextShortcuts += "Hy_" + Hydration + ";";
             }
             if (Infection > 0f) {
                 Health[0] = Mathf.Clamp(Health[0], 0f, Health[1] - (Health[1] * (Infection / 100f)));
-                string NumbersToAdd = "00" + (int)Infection;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "I" + NumbersToAdd;
+                TextShortcuts += "In_" + Infection + ";";
             }
             Tiredness = Mathf.Clamp(Tiredness, 0f, 75f);
             if (Tiredness > 0f) {
@@ -4075,9 +4092,7 @@ public class PlayerScript : MonoBehaviour {
                     Tiredness = 0;
                 } else {
                     Energy[0] = Mathf.Clamp(Energy[0], 0f, Energy[1] - (Energy[1] * (Tiredness / 100f)));
-                    string NumbersToAdd = "00" + (int)Tiredness;
-                    NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                    TextShortcuts += "T" + NumbersToAdd;
+                    TextShortcuts += "Ti_" + Tiredness + ";";
                 }
             }
 
@@ -4095,9 +4110,7 @@ public class PlayerScript : MonoBehaviour {
                 }
                 Coldness = Mathf.Clamp(Coldness, 0f, 100f);
                 Coldness -= 0.02f;
-                string NumbersToAdd = "00" + (int)Coldness;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "C" + NumbersToAdd;
+                TextShortcuts += "Co_" + Coldness + ";";
             } else if (Coldness < -1f) {
                 Coldness += 0.02f;
             }
@@ -4105,9 +4118,7 @@ public class PlayerScript : MonoBehaviour {
                 Energy[0] = Energy[1];
                 Adrenaline = Mathf.Clamp(Adrenaline, 0f, 100f);
                 Adrenaline -= 0.02f;
-                string NumbersToAdd = "00" + (int)Adrenaline;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "A" + NumbersToAdd;
+                TextShortcuts += "Ad_" + Adrenaline + ";";
             }
 
             if (MicroSiverts[2] > 0f)
@@ -4135,9 +4146,7 @@ public class PlayerScript : MonoBehaviour {
                 Radioactivity = Mathf.Clamp(Radioactivity, 0f, 100f);
                 Radioactivity -= 0.02f;
                 Hurt(0.001f * Radioactivity, "Radioactivity", false, Vector3.zero);
-                string NumbersToAdd = "00" + (int)Radioactivity;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "R" + NumbersToAdd;
+                TextShortcuts += "Ra_" + Radioactivity + ";";
             } else if (Radioactivity < -1f) {
                 Radioactivity += 0.02f;
                 MicroSiverts[0] = 0f;
@@ -4148,20 +4157,14 @@ public class PlayerScript : MonoBehaviour {
                 if (Coldness > 0f) {
                     Coldness -= 0.06f;
                 }
-                string NumbersToAdd = "00" + (int)Drunkenness;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "D" + NumbersToAdd;
+                TextShortcuts += "Du_" + Drunkenness + ";";
             }
             if (BrokenBone == 1) {
                 if (IsCasual) BrokenBone = 0;
-                string NumbersToAdd = "00" + (int)BrokenBone;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "b" + NumbersToAdd;
+                TextShortcuts += "Bb_" + (int)BrokenBone + ";";
             }
             if (Dirty > 0f) {
-                string NumbersToAdd = "00" + (int)Dirty;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "D" + NumbersToAdd;
+                TextShortcuts += "Di_" + Dirty + ";";
             }
 
             if (RS.Weather == 4) {
@@ -4191,9 +4194,7 @@ public class PlayerScript : MonoBehaviour {
                 if (Coldness > 25f) {
                     Hurt(0.01f, "Cold", false, Vector3.zero);
                 }
-                string NumbersToAdd = "00" + (int)Wet;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "W" + NumbersToAdd;
+                TextShortcuts += "We_" + Wet + ";";
             }
 
             if (DropWater <= 0f) {
@@ -4223,9 +4224,7 @@ public class PlayerScript : MonoBehaviour {
                 if (Hydration > 0f) {
                     Hot -= 0.02f;
                 }
-                string NumbersToAdd = "00" + (int)Hot;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "h" + NumbersToAdd;
+                TextShortcuts += "Ho_" + Hot + ";";
             } else if (Hot < -1f) {
                 Hot += 0.02f;
             }
@@ -4247,9 +4246,7 @@ public class PlayerScript : MonoBehaviour {
                     Fire -= Hydration;
                     Hydration = 0f;
                 }
-                string NumbersToAdd = "00" + (int)Fire;
-                NumbersToAdd = NumbersToAdd.Substring(NumbersToAdd.Length - 3, 3);
-                TextShortcuts += "F" + NumbersToAdd;
+                TextShortcuts += "Fi_" + Fire.ToString() + ";";
             } else {
                 FireObj.GetComponent<ParticleSystem>().Stop();
                 FireObj.GetComponent<AudioSource>().Stop();

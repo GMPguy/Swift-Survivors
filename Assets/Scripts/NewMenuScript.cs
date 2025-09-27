@@ -1936,7 +1936,7 @@ public class NewMenuScript : MonoBehaviour {
                 List<string> Misc = new List<string>();
                 for(int ps = 0; ps < ReadProfileStats.Length; ps++){
                     string n = GS.GetStatName(ReadProfileStats[ps], 1);
-                    if(n == "TotalScore" || n == "TotalRounds" || n == "TotalCasualScore" || n == "TotalCasualRounds" || n == "HighestScore" || n == "TotalWaves" || n == "MostWaves"|| n == "MostRounds" || n == "LongestSurvivedTime" || n == "SurvivedTime") 
+                    if(n == "TotalScore" || n == "TotalRounds" || n == "TotalCasualScore" || n == "TotalCasualRounds" || n == "HighestScore" || n == "TotalWaves" || n == "MostWaves"|| n == "MostRounds" || n == "MostCasualRounds" || n == "LongestSurvivedTime" || n == "SurvivedTime") 
                         Main.Add(GS.GetStatName(ReadProfileStats[ps]));
                     else if (n == "MapDiscovered" && GS.ExistSemiClass(PS.Statistics, "TotalRounds_")) 
                         Misc.Add(GS.SetString("Average map discovery: ", "Przeciętne zbadanie mapy: ") + (int.Parse(GS.GetStatName(ReadProfileStats[ps], 2)) / Mathf.Clamp(int.Parse(GS.GetSemiClass(PS.Statistics, "TotalRounds_")), 0, 9999) ).ToString() + "%" );
