@@ -1,0 +1,156 @@
+Mitagf – model, icon, text, animation, ingame item, functional
+x – implemented
+
+Items
+    1. Weapons
+        1. Melee 5/10
+            1. x Celt
+            2. x Metal Axe
+            3. x Fokos
+            4. x Sword
+            5. x Pickaxe
+            6. Boxing gloves
+            7. Taser
+            8. Baton
+            9. Boomwhacker
+            10. Spoon
+        2. Firearms 3/15
+            1. x Flintlock
+            2. x Baker rifle
+            3. x Nock gun
+            4. Hook gun
+            5. Bison
+            6. BAR
+            7. USAS-12
+            8. Lee enfield
+            9. AWP
+            10. Lewis gun
+            11. Barrett M82 (bi sniper scope)
+            12. AS val (bi silencer)
+            13. AUG (bi grip)
+            14. MG 42 (bi bipod)
+            15. M16 (bi grenade launcher or ubs)
+        3. Attachments 0/5
+            1. Laser scope
+            2. Extended magazine
+            3. UBS-12
+            4. Laser pointers
+            5. Tactical flashlight
+        4. Other 0/5
+            1. Gas grenade
+            2. Bean can grenade
+            3. Mortar
+            4. Blowpipe
+            5. Pepper spray
+    2. Food items 10/10
+        1. x Fish fillet
+        2. x Frozen pizza
+        3. x Pizza slice
+        4. x Cake
+        5. x Cheap wine
+        6. x Raw meat
+        7. x Smokes
+        8. x Melon
+        9. x Melon slice
+        10. x Carrot
+    3. Utility items 5/12
+        1. Bike
+        2. Kayak
+        3. Parachutes
+        4. x Soap
+        5. x Water filter
+        6. Headlamp
+        7. Radio
+        8. Blueprint
+        9. x Water scooter
+        10. x Moon shoes
+        11. Ghillie suit
+        12. x Torch
+    4. Buildings 4/10
+        1. x Metal wall
+        2. x Barbed wire
+        3. x Wooden wall
+        4. x Campfire
+        5. Ladder
+        6. Farming pot
+        7. Landmine
+        8. Lean-to
+        9. Beartrap
+        10. Sandbags
+    5. Crafting materials 13/13
+        1. x Wood
+        2. x Thread
+        3. x Stone
+        4. x Paper
+        5. x Cloth
+        6. x Metal
+        7. x Clay
+        8. x Coal
+        9. x Plastic
+        10. x Web
+        11. x Empty bottle
+        12. x Empty can
+        13. x Sulfur
+    6. Flora 0/10
+        1. Pile of rocks
+        2. Nettle
+        3. Toadstool
+        4. Boletus
+        5. Wheat
+        6. Schrub
+        7. Sage
+        8. Wild carrot
+        9. Wild potato
+        10. Berries
+Chests 0/15
+    1. In houses and mansions
+        1. Closet
+        2. Wall unit
+        3. Chest
+        4. Fridge
+        5. Kitchen
+        6. Bathroom
+        7. Bathroom cupboard
+        8. Desk
+        9. Home briefcase
+        10. Safe
+    2. Outside
+        1. Briefcases
+        2. Car
+        3. Crate
+        4. Picnic
+        5. Trash can
+    3. Public areas
+        1. Lockers
+        2. Shooping alleys
+        3. Shooping fridges
+        4. Gun crate
+        5. Laundry machine
+
+Buildings 8/35
+    1. Houses 6/6
+    2. Ruined houses 2/4
+    3. Mansions 0/3
+    4. Huts 0/3
+    5. Desert/Snowy constructions 0/5
+    6. Desert huts 0/3
+    7. Apartments 0/5
+    8. Public areas 0/5
+        1. Supermarket
+        2. Police department
+        3. Firestation
+        4. Church
+        5. Hospital
+    9. Additional areas 0/5
+        1. Shooting range
+        2. Warehouse
+        3. Radiostation
+        4. Bunkers
+        5. Parking
+    10. Fences 6/6
+        1. x Spiked fence
+        2. x Brick wall
+        3. x Brick fence
+        4. x Hedgerow
+        5. x Metal fence
+        6. x Wooden fence

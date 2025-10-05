@@ -1,0 +1,31 @@
+x pathfinding in horde
+x map in horde
+x improve waypoint finding
+
+x disable updates for mobs and interactable updates - when the game is paused
+- Marks on map
+- show map when told to
+
+x Dynamic obstacles
+x Jumps?
+- Disable paths for certain land parts
+
+x Disable sounds at begining
+x Mutant fire not in env sounds
+
+- Update game files in new game menu
+- Add "Run" seed
+x Icons for flares
+- Do something with phantom mutants
+x Fix attacking position for mobs
+- Treasure error
+x Golden ak dont work in casual
+x Underwater treasure - state 1
+
+x Navmesh sometimes isn't baked
+x Dirty punishment makes you drunk
+	x Improve buff saving
+
+- Black sun
+- Fog on minimal
+- Kill function

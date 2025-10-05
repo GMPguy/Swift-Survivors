@@ -136,7 +136,8 @@ public class ItemScript : MonoBehaviour {
         }
 
         Name = GS.itemCache[int.Parse(GS.GetSemiClass(Variables, "id"))].getName();
-        if(GS.ExistSemiClass(Variables, "sq") && GS.GetSemiClass(Variables, "sq") != "1") Name += " x" + GS.GetSemiClass(Variables, "sq");
+        if(GS.ExistSemiClass(Variables, "sq") && GS.GetSemiClass(Variables, "sq") != "1") 
+            Name += " x" + GS.GetSemiClass(Variables, "sq");
         if(GS.ExistSemiClass(Variables, "rep")) CanBeFixed = true;
         if(GS.ExistSemiClass(Variables, "at")) CanHaveAttachments = true;
 

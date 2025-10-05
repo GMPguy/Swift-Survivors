@@ -101,7 +101,6 @@ public class CraftingOption : MonoBehaviour {
 
                 if(CraftButton.GetComponent<ButtonScript>().IsSelected == true){
                     MainCanvas.CDTdisplaye[1] = this.transform.GetSiblingIndex();
-                    MainCanvas.CDTdisplaye[0] = Mathf.Clamp( MainCanvas.CDTdisplaye[0] + Time.unscaledDeltaTime*12f, 0f, 1.25f);
 
                     string ToDisplay = ""; 
 
@@ -137,6 +136,7 @@ public class CraftingOption : MonoBehaviour {
                         MainCanvas.PlayCraftingSound = 0.25f;
                         MainPlayer.ItemsShown.GetComponent<Animator>().Play(MainPlayer.PlayItemAnim("Pullup", GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id"), ""), 0, 0f);
                         MainPlayer.ShakeCam((CraftingTime[1] / CraftingTime[0]) / 3f, 0.1f);
+                        MainPlayer.CantUseItem = Mathf.Clamp(MainPlayer.CantUseItem, 1f, Mathf.Infinity);
                         CraftingTime[1] = Mathf.Clamp(CraftingTime[1] + (0.02f * (Time.deltaTime * 50f)), 0f, CraftingTime[0]);
                         if (CraftingTime[1] >= CraftingTime[0]) {
                             GS.Mess(GS.SetString(GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName() + " crafted!", "Stworzono " + GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName() + "!"), "Craft");

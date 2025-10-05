@@ -16,11 +16,6 @@ public class CanvasScript : MonoBehaviour {
     public Transform HideWindow;
     public Transform UpWindow;
     public Transform ShowWindow;
-    // Loading
-    public GameObject LoadingWindow;
-    public Text LoadingText;
-    public Text LoadingTip;
-    // Loading
     // While Alive
     public GameObject WhileAliveWindow;
     public GameObject SBGHealth;
@@ -210,35 +205,30 @@ public class CanvasScript : MonoBehaviour {
 
             // Set Windows
             if (PauseMenu.LoadingTime > 0f) {
-                WhileLoading(false);
                 WhilePaused(false);
                 WhileAlive(false);
                 WhileDead(false);
                 WhileEnvironmental(false);
                 WhileEscaped("");
             } else if (IsPaused == true) {
-                WhileLoading(false);
                 WhilePaused(true);
                 WhileAlive(false);
                 WhileDead(false);
                 WhileEnvironmental(true);
                 WhileEscaped("");
             } else if (MainPlayer.State == 1) {
-                WhileLoading(false);
                 WhilePaused(false);
                 WhileAlive(true);
                 WhileDead(false);
                 WhileEnvironmental(true);
                 WhileEscaped("");
             } else if (MainPlayer.State == 2) {
-                WhileLoading(false);
                 WhilePaused(false);
                 WhileAlive(false);
                 WhileDead(true);
                 WhileEnvironmental(true);
                 WhileEscaped("");
             } else if (RS.RoundState.Substring(0, 3) == "ESC"){
-                WhileLoading(false);
                 WhilePaused(false);
                 WhileAlive(false);
                 WhileDead(false);
@@ -280,7 +270,6 @@ public class CanvasScript : MonoBehaviour {
 
         if (Shown == false) {
 
-            //WhilePausedWindow.transform.position = HideWindow.position;
             PauseMenu.isVisible = false;
 
         } else {
@@ -288,49 +277,10 @@ public class CanvasScript : MonoBehaviour {
             PauseMenu.isVisible = true;
             CameraBlur = Mathf.Clamp(CameraBlur + (0.4f * Time.unscaledDeltaTime * 50f), 0f, 10f);
             MainPlayer.FOVoffset = new float[] {Mathf.Lerp(MainPlayer.FOVoffset[0], -30f, 0.2f * (Time.unscaledDeltaTime * 50f)), 0.2f};
-            /*WhilePausedWindow.transform.position = ShowWindow.position;
-
-            GS.SetText(PauseLogo.GetComponent<Text>(), "PAUSED", "PAUZA");
-            GS.SetText(ReturnButton.GetComponent<Text>(), "Unpause", "Odpauzuj");
-            GS.SetText(SuicideButton.GetComponent<Text>(), "Give up", "Poddaj się");
-            GS.SetText(ExitButton.GetComponent<Text>(), "Back to menu", "Wróć do menu");
-            if (ReturnButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButton(0)) {
-                IsPaused = false;
-            } else if (SuicideButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButton(0)) {
-                IsPaused = false;
-                MainPlayer.Hurt(MainPlayer.Health[1], "Suicide", false, Vector3.zero);
-                GameObject Boom = Instantiate(MainPlayer.SpecialPrefab) as GameObject;
-                Boom.transform.position = MainPlayer.transform.position;
-                Boom.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
-                Boom.GetComponent<SpecialScript>().ExplosionRange = 6f;
-            } else if (ExitButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButton(0)) {
-                GS.ChangeLevel("BackToMenu");
-            }*/
 
             MainPlayer.CantInteract = Mathf.Clamp(MainPlayer.CantInteract, 0.25f, Mathf.Infinity);
             MainPlayer.CantMove = Mathf.Clamp(MainPlayer.CantMove, 0.25f, Mathf.Infinity);
             MainPlayer.CantUseItem = Mathf.Clamp(MainPlayer.CantUseItem, 0.25f, Mathf.Infinity);
-
-            // Fullscreen
-            /*if (GS.GetComponent<GameScript>().Platform == 2) {
-                if (Screen.fullScreen == false) {
-                    FullscreenButton.transform.GetChild(0).gameObject.SetActive(true);
-                    FullscreenButton.transform.GetChild(1).gameObject.SetActive(false);
-                } else {
-                    FullscreenButton.transform.GetChild(0).gameObject.SetActive(false);
-                    FullscreenButton.transform.GetChild(1).gameObject.SetActive(true);
-                }
-                if (FullscreenButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0)) {
-                    if (Screen.fullScreen == false) {
-                        Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
-                    } else {
-                        Screen.fullScreenMode = FullScreenMode.Windowed;
-                    }
-                }
-            } else {
-                FullscreenButton.SetActive(false);
-            }*/
-            // Fullscreen
 
         }
 
@@ -349,18 +299,16 @@ public class CanvasScript : MonoBehaviour {
             // Hide canvas
             if(HideCanvas){
                 WhileAliveWindow.transform.position = HideWindow.position;
-                //Crosshair.transform.position = ShowWindow.position;
             } else {
                 WhileAliveWindow.transform.position = ShowWindow.position;
-                //Crosshair.transform.position = ShowWindow.position;
             }
 
             if (DialogedMob == null && GS.ReceiveButtonPress("InformationTab", "Hold") <= 0f && GS.ReceiveButtonPress("CraftingTab", "Hold") <= 0f) {
                 LockCursor = 0.1f;
                 HideCursor = 0.1f;
             } else {
-                MainPlayer.CantLook = 0.1f;
-                MainPlayer.CantUseItem = 0.1f;
+                MainPlayer.CantLook = 0.5f;
+                MainPlayer.CantUseItem = 0.5f;
             }
 
             // Contrast temperature Saturation vingette
@@ -378,11 +326,7 @@ public class CanvasScript : MonoBehaviour {
                     MainPlayer.ShakeCam((100f - (Vector3.Distance(MainPlayer.transform.position, new Vector3(RS.GetComponent<RoundScript>().NukePosition.x, MainPlayer.transform.position.y, RS.NukePosition.z)) - RS.NukeDistance)) / 100f, 0.1f);
                     Flash(new Color32(255, 255, 255, (byte)(((100f - (Vector3.Distance(MainPlayer.transform.position, new Vector3(RS.GetComponent<RoundScript>().NukePosition.x, MainPlayer.transform.position.y, RS.NukePosition.z)) - RS.NukeDistance)) / 100f) * 255f)), new float[]{1f, 1f});
                 }
-            } /*else if (RS.RoundState == "TealState"){
-                GS.ContSaturTempInvi = new float[] { 0f, -50f, -50f, 0.25f };
-            } else {
-                GS.ContSaturTempInvi = new float[] { 0f, (1f - Mathf.Clamp(MainPlayer.Health[0] / (MainPlayer.Health[1] / 2f), 0f, 1f)) * -100f, (1f - RS.Sunnyness) * -25f, 0.25f + ((1f - (MainPlayer.Energy[0] / MainPlayer.Energy[1])) * 0.1f) };
-            }*/
+            }
 
             // Contrast temperature Saturation vingette
 
@@ -970,8 +914,8 @@ public class CanvasScript : MonoBehaviour {
 
                 MainPlayer.CantMove = 0.1f;
                 MainPlayer.CantLook = 0.1f;
-                MainPlayer.CantInteract = 0.5f;
-                MainPlayer.CantUseItem = 0.5f;
+                MainPlayer.CantInteract = 0.1f;
+                MainPlayer.CantUseItem = Mathf.Clamp(MainPlayer.CantUseItem, 0.1f, Mathf.Infinity);
 
                 if (DialogedMob.GetComponent<MobScript>() != null) {
                     GS.GetComponent<GameScript>().SetText(DialogName, DialogedMob.GetComponent<MobScript>().MobName, DialogedMob.GetComponent<MobScript>().MobName);
@@ -1595,7 +1539,7 @@ public class CanvasScript : MonoBehaviour {
                 }
 
                 // Crafting detailed text
-                CDTdisplaye[0] = Mathf.Clamp(CDTdisplaye[0] - Time.unscaledDeltaTime * 9f, 0f, 1f);
+                CDTdisplaye[0] = Mathf.Clamp(CDTdisplaye[0] + Time.unscaledDeltaTime * 3f, 0f, 1.25f);
                 if(CDTdisplaye[1] != CDTdisplaye[2]){
                     CDTdisplaye[2] = CDTdisplaye[1];
                     CDTdisplaye[0] = 0f;
@@ -1609,6 +1553,7 @@ public class CanvasScript : MonoBehaviour {
 
                 CDTdisplaye[2] = -1f;
                 CDTdisplaye[0] = 0f;
+                CDTstring = "";
                 ITMenuInfo.GetComponent<RectTransform>().position = Vector2.MoveTowards(ITMenuInfo.GetComponent<RectTransform>().position, HideWindow.GetComponent<RectTransform>().position, (Screen.height / 10f) * (Time.deltaTime * 50f));
                 ITMenuCraft.GetComponent<RectTransform>().position = Vector2.MoveTowards(ITMenuCraft.GetComponent<RectTransform>().position, HideWindow.GetComponent<RectTransform>().position, (Screen.height / 10f) * (Time.deltaTime * 50f));
                 MinimapRefresh("Neither");
@@ -1843,63 +1788,6 @@ public class CanvasScript : MonoBehaviour {
 
         } else {
             EscapedWindow.transform.position = HideWindow.transform.position;
-        }
-
-    }
-
-    void WhileLoading(bool Shown) {
-
-        if (Shown == false) {
-
-            LoadingWindow.transform.position = HideWindow.position;
-            int PickHint = Random.Range(1, 10);
-            if (PickHint == 1) {
-                GS.GetComponent<GameScript>().SetText(LoadingTip,
-                    "When nuke drops, you still have a short moment to escape, before the firewall hits you!",
-                    "Gdy bomba uderza, masz jeszcze krótki czas w którym to możesz uciec, zanim dopadnie cię ściana ognia!");
-            } else if (PickHint == 2) {
-                GS.GetComponent<GameScript>().SetText(LoadingTip,
-                    "With each round, supplies will get scarce, maps will get more desolate, and there will be more dangerous mobs!",
-                    "Z każdą rundą, zasoby będą maleć, mapy będą bardziej puste, a moby będą bardziej niebezpieczne!");
-            } else if (PickHint == 3) {
-                GS.GetComponent<GameScript>().SetText(LoadingTip,
-                    "Don't rush the exits, search your surroundings when you have the time!",
-                    "Nie pędź odrazu do wyjścia, przeszukaj swoje tereny gdy masz na to czas!");
-            } else if (PickHint == 4) {
-                GS.GetComponent<GameScript>().SetText(LoadingTip,
-                    "Guns are rare, use melee weapons when fighting weak enemies!",
-                    "Bronie są rzadkie, używaj broni białych gdy przeciwnicy są słabi!");
-            } else if (PickHint == 5) {
-                GS.GetComponent<GameScript>().SetText(LoadingTip,
-                    "Watch out for the radioactivity (use your map to check radioactive terrains)",
-                    "Uważaj na radioaktywność (na mapie masz zaznaczone radioaktywne tereny)");
-            } else if (PickHint == 6) {
-                GS.GetComponent<GameScript>().SetText(LoadingTip,
-                    "Mutants and bandits will get more advanced the futher you go!",
-                    "Mutańci i bandyci będą stawali się bardziej niebezpieczni im dalej pójdziesz!");
-            } else if (PickHint == 7) {
-                GS.GetComponent<GameScript>().SetText(LoadingTip,
-                    "On some maps, there may be monuments. Specific, heavily guarded constructions, with alien-like treasures!",
-                    "Na niektórych mapach znajdują się monumenty. Specyficzne, dobrze chronione konstrukcje, z przedziwacznymi skarbami!");
-            } else if (PickHint == 8) {
-                GS.GetComponent<GameScript>().SetText(LoadingTip,
-                    "On your way, you may find other survivors. You can trade, ask them questions, or kill them!",
-                    "Na swojej drodze, możesz spotkać innych przetrwańców. Możesz z nimi handlować, zadawać im pytania, lub ich po prostu zabić!");
-            } else if (PickHint == 9) {
-                GS.GetComponent<GameScript>().SetText(LoadingTip,
-                    "You should find your escape route first!",
-                    "Na początku lepiej znaleść sobie trasę do ucieczki!");
-            } else if (PickHint == 10) {
-                GS.GetComponent<GameScript>().SetText(LoadingTip,
-                    "Biomes differ in supplies and mobs, keep that in mind before leaving the map!",
-                    "Biomy różnią się zasobami oraz mobami, pamiętaj o tym, gdy będzisz opuszczał mapę!");
-            }
-
-        } else {
-
-            LoadingWindow.transform.position = ShowWindow.position;
-            GS.GetComponent<GameScript>().SetText(LoadingText, "LOADING", "WCZYTYWANIE");
-
         }
 
     }

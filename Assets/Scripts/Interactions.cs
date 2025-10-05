@@ -43,8 +43,8 @@ public class Interactions : MonoBehaviour {
         string ReturnThis = "";
         if (Options[ThisOption] == "PickUp") {
             ReturnThis = GS.GetComponent<GameScript>().SetString(
-                "Pick Up " + GS.itemCache[int.Parse(GS.GetSemiClass(this.GetComponent<ItemScript>().Variables, "id"))].getName(), 
-                "Podnieś " + GS.itemCache[int.Parse(GS.GetSemiClass(this.GetComponent<ItemScript>().Variables, "id"))].getName());
+                "Pick Up ", 
+                "Podnieś ") + this.GetComponent<ItemScript>().Name;
         } else if (Options[ThisOption] == "BreakBarel") {
             ReturnThis = GS.GetComponent<GameScript>().SetString(
                 "Break " + this.transform.parent.GetComponent<InteractableScript>().Name + " (" + (int)this.transform.parent.GetComponent<InteractableScript>().Variables.y + ")", 
