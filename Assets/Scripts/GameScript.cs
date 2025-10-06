@@ -1712,7 +1712,7 @@ public class GameScript : MonoBehaviour {
             ),
             new(this, new string[]{"Golden AK47", "Złoty AK47"},
                 new string[]{"Treasure found in bunkers. It's basically an AK47 rifle, but it doesn't need any magazines to reload.", "Skarb znajdywalny w bunkrach. Jest to zwykły karabin AK47, tylko że nie potrzebuje żadnych magazynków do przeładowywania."},
-                "id996;va0;"
+                "id996;va0;at0;"
             ),
             new(this, new string[]{"Tesla rifle", "Karabin Tesli"},
                 new string[]{"Treasure found in radar stations. It can fire short lightning bolts. Recharges itself slowly overtime.", "Skarb znajdywalny w stacjach radarowych. Może strzelać prądem. Swoją energie regeneruje z czasem powoli."},

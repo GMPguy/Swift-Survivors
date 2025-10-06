@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 648541a4d31f7ce45a2730bf46f7312d, type: 3}
-  m_Name: DefaultAtmosphere
+  m_Name: Atmosphere_Swamp
   m_EditorClassIdentifier: 
   DaytimeColors: []
   SunColors:
@@ -19,7 +19,7 @@ MonoBehaviour:
   - serializedVersion: 2
     rgba: 4281826815
   - serializedVersion: 2
-    rgba: 4294915895
+    rgba: 4281018368
   AmbientColors:
   - serializedVersion: 2
     rgba: 4284757815
@@ -29,43 +29,43 @@ MonoBehaviour:
     rgba: 4278190080
   FogColors:
   - serializedVersion: 2
-    rgba: 4294959560
+    rgba: 4293256383
   - serializedVersion: 2
-    rgba: 4279860705
+    rgba: 4279855585
   - serializedVersion: 2
-    rgba: 4283119415
+    rgba: 4281205504
   - serializedVersion: 2
-    rgba: 4286407780
+    rgba: 4282930240
   - serializedVersion: 2
-    rgba: 4284757815
+    rgba: 4279711026
   - serializedVersion: 2
-    rgba: 4283105280
+    rgba: 4278190080
   AtmosphereColors:
   - serializedVersion: 2
-    rgba: 4294953115
+    rgba: 4294967007
   - serializedVersion: 2
-    rgba: 4288380260
+    rgba: 4285290820
   - serializedVersion: 2
-    rgba: 4281794560
+    rgba: 4281804544
   - serializedVersion: 2
-    rgba: 4286407780
+    rgba: 4286414180
   - serializedVersion: 2
-    rgba: 4284757815
+    rgba: 4283720759
   - serializedVersion: 2
-    rgba: 4283105280
+    rgba: 4280366336
   CloudColors:
   - serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4286414180
   - serializedVersion: 2
     rgba: 4279828535
   - serializedVersion: 2
     rgba: 4278190080
   - serializedVersion: 2
-    rgba: 4286407780
+    rgba: 4286414180
   - serializedVersion: 2
-    rgba: 4284757815
+    rgba: 4281153306
   - serializedVersion: 2
-    rgba: 4283105280
+    rgba: 4278190080
   PostProcessingColors:
   - serializedVersion: 2
     rgba: 4294967295
@@ -86,3 +86,4 @@ MonoBehaviour:
   - {x: 0, y: -50, z: 0, w: 0}
   - {x: 0, y: -50, z: 0, w: 0}
   - {x: 0, y: -50, z: 0, w: 0}
+  FogDistance: {x: 25, y: 100, z: 25, w: 50}

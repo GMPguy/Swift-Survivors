@@ -7,7 +7,6 @@ public class Spawner : MonoBehaviour {
     // Variables
     public string Special = "";
     public string[] NewStuffToSpawn;
-    public Vector3[] StuffToSpawn;
     public float[] Chance;
     // Variables
 

@@ -24,7 +24,7 @@ RenderSettings:
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 3
+  m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: f335592242133cb45b6d8cb15466480f, type: 2}
   m_HaloStrength: 0.5
@@ -228248,7 +228248,7 @@ MonoBehaviour:
     x: 0
     y: 0
   Round: 1
-  Biome: 3
+  Biome: 6
   Score: 0
   Money: 0
   Ammo: 0

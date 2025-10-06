@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 648541a4d31f7ce45a2730bf46f7312d, type: 3}
+  m_Name: Atmosphere_Urban
+  m_EditorClassIdentifier: 
+  DaytimeColors: []
+  SunColors:
+  - serializedVersion: 2
+    rgba: 4291362815
+  - serializedVersion: 2
+    rgba: 4281826815
+  - serializedVersion: 2
+    rgba: 4294915895
+  AmbientColors:
+  - serializedVersion: 2
+    rgba: 4284757815
+  - serializedVersion: 2
+    rgba: 4281794615
+  - serializedVersion: 2
+    rgba: 4278190080
+  FogColors:
+  - serializedVersion: 2
+    rgba: 4294959560
+  - serializedVersion: 2
+    rgba: 4279860705
+  - serializedVersion: 2
+    rgba: 4283119415
+  - serializedVersion: 2
+    rgba: 4286407780
+  - serializedVersion: 2
+    rgba: 4284757815
+  - serializedVersion: 2
+    rgba: 4283105280
+  AtmosphereColors:
+  - serializedVersion: 2
+    rgba: 4294953115
+  - serializedVersion: 2
+    rgba: 4288380260
+  - serializedVersion: 2
+    rgba: 4281794560
+  - serializedVersion: 2
+    rgba: 4286407780
+  - serializedVersion: 2
+    rgba: 4284757815
+  - serializedVersion: 2
+    rgba: 4283105280
+  CloudColors:
+  - serializedVersion: 2
+    rgba: 4294967295
+  - serializedVersion: 2
+    rgba: 4279828535
+  - serializedVersion: 2
+    rgba: 4278190080
+  - serializedVersion: 2
+    rgba: 4286407780
+  - serializedVersion: 2
+    rgba: 4284757815
+  - serializedVersion: 2
+    rgba: 4283105280
+  PostProcessingColors:
+  - serializedVersion: 2
+    rgba: 4294967295
+  - serializedVersion: 2
+    rgba: 4294934015
+  - serializedVersion: 2
+    rgba: 4294933885
+  - serializedVersion: 2
+    rgba: 4294967295
+  - serializedVersion: 2
+    rgba: 4294967295
+  - serializedVersion: 2
+    rgba: 4294967295
+  PostProcessingVariables:
+  - {x: 0, y: 0, z: 0, w: 0}
+  - {x: 0, y: 0, z: 0, w: 0}
+  - {x: 0, y: 0, z: 0, w: 0}
+  - {x: 0, y: -50, z: 0, w: 0}
+  - {x: 0, y: -50, z: 0, w: 0}
+  - {x: 0, y: -50, z: 0, w: 0}
+  FogDistance: {x: 25, y: 100, z: 25, w: 50}

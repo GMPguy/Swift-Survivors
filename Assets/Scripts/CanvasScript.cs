@@ -307,8 +307,8 @@ public class CanvasScript : MonoBehaviour {
                 LockCursor = 0.1f;
                 HideCursor = 0.1f;
             } else {
-                MainPlayer.CantLook = 0.5f;
-                MainPlayer.CantUseItem = 0.5f;
+                MainPlayer.CantLook = 0.1f;
+                MainPlayer.CantUseItem = 0.1f;
             }
 
             // Contrast temperature Saturation vingette
@@ -915,7 +915,7 @@ public class CanvasScript : MonoBehaviour {
                 MainPlayer.CantMove = 0.1f;
                 MainPlayer.CantLook = 0.1f;
                 MainPlayer.CantInteract = 0.1f;
-                MainPlayer.CantUseItem = Mathf.Clamp(MainPlayer.CantUseItem, 0.1f, Mathf.Infinity);
+                MainPlayer.CantUseItem = Mathf.Clamp(MainPlayer.CantUseItem, 1f, Mathf.Infinity);
 
                 if (DialogedMob.GetComponent<MobScript>() != null) {
                     GS.GetComponent<GameScript>().SetText(DialogName, DialogedMob.GetComponent<MobScript>().MobName, DialogedMob.GetComponent<MobScript>().MobName);
@@ -1245,7 +1245,7 @@ public class CanvasScript : MonoBehaviour {
                     GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
                     GS.SetString("Ammo: ", "Amunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"))};
                 break;
-            case 29: case 31: case 32: case 34: case 35: case 36: case 38: case 40: case 41: case 42: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 64: case 65: case 113: case 135: case 137: case 157: case 159: case 160:
+            case 29: case 31: case 32: case 34: case 35: case 36: case 38: case 40: case 41: case 42: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 64: case 65: case 113: case 135: case 137: case 157: case 159: case 160: case 996:
                 // Guns
                 string SpareAmmo = "0";
                 if(int.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture) == 996) {

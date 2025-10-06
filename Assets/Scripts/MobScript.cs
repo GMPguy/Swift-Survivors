@@ -912,12 +912,6 @@ public class MobScript : MonoBehaviour {
 
         if (State == 0) {
 
-            // Die
-            if (MobHealth[0] <= 0f) {
-                State = 1;
-                ChangeMobColor(new (0, 0, 0, 0));
-            }
-
             // Walking and Running
             if (Panic > 0f) {
                 Anim.SetFloat("IdleStance", 1f);
@@ -1069,136 +1063,7 @@ public class MobScript : MonoBehaviour {
 
         } else {
 
-            if (CleanupAfterDead == 100f) {
-                if ((ReasonOfDeath == "Nuked" || ReasonOfDeath == "Explosion" || ReasonOfDeath == "Electricity" || TypeOfMob == 6f || TypeOfMob == 9f) && (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol")) {
-                    if (TypeOfMob == 6f) {
-                        for (int Blow = Random.Range(2, 5); Blow > 0; Blow--) {
-                            RS.Attack(new string[]{"MutantSpit"}, this.transform.position + Vector3.up, new Vector3(Random.Range(-1f, 1f), Random.Range(0f, 1f), Random.Range(-1f, 1f)), this.gameObject, this.gameObject);
-                        }
-                    }
-
-                    GameObject Gibs = Instantiate(EffectPrefab) as GameObject;
-                    Gibs.transform.position = this.transform.position;
-                    Gibs.GetComponent<EffectScript>().EffectName = "Gibs";
-                    foreach (GameObject SavePart in HumanoidBodyParts) {
-                        SavePart.transform.SetParent(null);
-                    }
-                    Gibs.GetComponent<EffectScript>().Gibs = HumanoidBodyParts;
-                    Destroy(this.gameObject);
-
-                } else if (InWater == true && (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol")) {
-
-                    PlayMobSound(MobAudio + "Dead", 1);
-                    Anim.Play("HumanoidDeadWater", 0, 0f);
-                    Anim.speed = 0.25f;
-                    DroppedRagdoll = 0f;
-
-                } else if (Fire > 0f && (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol")) {
-
-                    PlayMobSound(MobAudio + "Dead", 1);
-                    Anim.Play("HumanoidDeadFire", 0, 0f);
-                    Anim.speed = 0.5f;
-                    DroppedRagdoll = 0.75f;
-
-                } else {
-
-                    PlayMobSound(MobAudio + "Dead", 1);
-                    if ((AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol")) {
-                        Anim.Play("HumanoidDead" + (int)Random.Range(1f, 3.9f), 0, 0f);
-                        Anim.speed = Random.Range(0.5f, 1f);
-                    }
-                    DroppedRagdoll = Random.Range(0f, 0.1f);
-
-                }
-
-                if (Fire > 0f) {
-                    Fire = 10f;
-                }
-
-                this.gameObject.layer = 13;
-                CleanupAfterDead = 5f;
-                GetComponent<CapsuleCollider>().enabled = false;
-                NavAgent.enabled = false;
-
-                if (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol") {
-                    Anim.SetFloat("IdleStance", 0f);
-                    Anim.SetFloat("StayOrGo", 0f);
-                }
-
-                if (TypeOfMob == 2 || TypeOfMob == 3) {
-                    for (int DropLoot = Random.Range(0, 3); DropLoot > 0; DropLoot--) {
-                        GameObject DropedLoot = Instantiate(ItemPrefab) as GameObject;
-                        DropedLoot.transform.position = this.transform.position + new Vector3(Random.Range(-1f, 1f), 1f, Random.Range(-1f, 1f));
-                        DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.TotalItems[(int)Random.Range(0f, (RS.TotalItems.Length - 0.1f))]].startVariables;
-                    }
-                } else if (ClassOfMob == "Mutant") {
-                    int SpawnChance = (int)Random.Range(-10f, 1.9f);
-                    if (GS.GameModePrefab.x == 1) {
-                        SpawnChance = (int)Random.Range(Mathf.Lerp(-1f, -3f, float.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) / 5f), 1.9f);
-                    } else {
-                        if (BasicMutantJob == "Police" || BasicMutantJob == "Builder" || BasicMutantJob == "Doctor" || BasicMutantJob == "Cook") {
-                            SpawnChance = (int)Random.Range(0.5f, 2.5f);
-                        } else {
-                            SpawnChance = (int)Random.Range(-10f, 1.9f);
-                        }
-                    }
-                    for (int DropLoot = SpawnChance; DropLoot > 0; DropLoot--) {
-                        if (GS.GameModePrefab.x == 1) {
-                            GameObject DropedLoot = Instantiate(HordeDropPrefab) as GameObject;
-                            DropedLoot.transform.position = this.transform.position + Vector3.up;
-                        } else {
-                            GameObject DropedLoot = Instantiate(ItemPrefab) as GameObject;
-                            DropedLoot.transform.position = this.transform.position + new Vector3(Random.Range(-1f, 1f), 1f, Random.Range(-1f, 1f));
-                            if (BasicMutantJob == "Police") {
-                                DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.Weapons[(int)Random.Range(0f, RS.Weapons.Length - 0.1f)]].startVariables;
-                            } else if (BasicMutantJob == "Builder") {
-                                DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.Utilities[(int)Random.Range(0f, RS.Utilities.Length - 0.1f)]].startVariables;
-                            } else if (BasicMutantJob == "Doctor") {
-                                DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.HealingItems[(int)Random.Range(0f, RS.HealingItems.Length - 0.1f)]].startVariables;
-                            } else if (BasicMutantJob == "Cook") {
-                                DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.FoodItems[(int)Random.Range(0f, RS.FoodItems.Length - 0.1f)]].startVariables;
-                            } else {
-                                DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]].startVariables;
-                            }
-                        }
-                        
-                    }
-                    if (TypeOfMob == 9f) {
-                        GameObject GoBoom = Instantiate(SpecialPrefab) as GameObject;
-                        GoBoom.transform.position = this.transform.position + Vector3.up;
-                        GoBoom.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
-                        GoBoom.GetComponent<SpecialScript>().ExplosionRange = 6f;
-                    }
-                }
-
-                if (WeaponToDrop > -1 && GS.GameModePrefab.x != 1) {
-                    GameObject DropedLoot = Instantiate(ItemPrefab) as GameObject;
-                    DropedLoot.transform.position = this.transform.position + this.transform.forward * 0.5f;
-                    DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[WeaponToDrop].startVariables;
-                    foreach (Transform HideGun in HumanoidBodyParts[3].transform.GetChild(0)) {
-                        HideGun.gameObject.SetActive(false);
-                    }
-                }
-
-                bool GiveCredit = false;
-                if (leadAggresor != null) {
-                    if (leadAggresor.tag == "Player") {
-                        GiveCredit = true;
-                    }
-                } else if (GS.GameModePrefab.x == 1) {
-                    GiveCredit = true;
-                }
-
-                if (GiveCredit == true) {
-                    GS.Mess(GS.SetString(MobName + " killed", MobName + " zabity"));
-                    if (TypeOfMob == 2f || TypeOfMob == 8f || (ClassOfMob == "Mutant" && TypeOfMob != 1f)) {
-                        GS.AddToScore(250);
-                    } else if (TypeOfMob == 1f) {
-                        GS.AddToScore(50);
-                    }
-                }
-
-            } else if (CleanupAfterDead > 0f) {
+            if (CleanupAfterDead > 0f) {
 
                 CleanupAfterDead -= deltaTime;
                 if (Anim.GetCurrentAnimatorStateInfo(0).IsName("HumanoidDeadWater") && Anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f) {
@@ -1343,24 +1208,165 @@ public class MobScript : MonoBehaviour {
                 }
                 
 
-                // Reward
-                if (MobHealth[0] <= 0f && leadAggresor != null) {
-                    if(Ach_Flare) GS.PS.AchProg("Ach_EmergencyFlare", "0");
-                    if(leadAggresor.tag == "Player"){
-                        RS.SetScore("Kill" + ClassOfMob + "_", "/+1");
-                        RS.SetScore("Killed_", "/+1");
-                        if(ClassOfMob == "Mutant" && GS.GameModePrefab.x == 0)
-                            GS.PS.AchProg("Ach_Liquidator", "/+-1");
-                        if(ClassOfMob != "Mutant")
-                            GS.PS.AchProg("Ach_Murderer", "/+-1");
-                        if(Ach_Headshot == 3) 
-                            GS.PS.AchProg("Ach_Headshot", "0");
+                // Die
+                if (MobHealth[0] <= 0f) {
+                    Die();
+
+                    // Reward
+                    if (leadAggresor != null) {
+                        if(Ach_Flare) GS.PS.AchProg("Ach_EmergencyFlare", "0");
+                        if(leadAggresor.tag == "Player"){
+                            RS.SetScore("Kill" + ClassOfMob + "_", "/+1");
+                            RS.SetScore("Killed_", "/+1");
+                            if(ClassOfMob == "Mutant" && GS.GameModePrefab.x == 0)
+                                GS.PS.AchProg("Ach_Liquidator", "/+-1");
+                            if(ClassOfMob != "Mutant")
+                                GS.PS.AchProg("Ach_Murderer", "/+-1");
+                            if(Ach_Headshot == 3) 
+                                GS.PS.AchProg("Ach_Headshot", "0");
+                        }
                     }
                 }
             }
             
 
         }
+
+    }
+
+    void Die() {
+
+        State = 1;
+        ChangeMobColor(new (0, 0, 0, 0));
+
+        if ((ReasonOfDeath == "Nuked" || ReasonOfDeath == "Explosion" || ReasonOfDeath == "Electricity" || TypeOfMob == 6f || TypeOfMob == 9f) && (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol")) {
+            if (TypeOfMob == 6f) {
+                for (int Blow = Random.Range(2, 5); Blow > 0; Blow--) {
+                    RS.Attack(new string[]{"MutantSpit"}, this.transform.position + Vector3.up, new Vector3(Random.Range(-1f, 1f), Random.Range(0f, 1f), Random.Range(-1f, 1f)), this.gameObject, this.gameObject);
+                }
+            }
+
+            GameObject Gibs = Instantiate(EffectPrefab) as GameObject;
+            Gibs.transform.position = this.transform.position;
+            Gibs.GetComponent<EffectScript>().EffectName = "Gibs";
+            foreach (GameObject SavePart in HumanoidBodyParts) {
+                SavePart.transform.SetParent(null);
+            }
+            Gibs.GetComponent<EffectScript>().Gibs = HumanoidBodyParts;
+            Destroy(this.gameObject);
+
+        } else if (InWater == true && (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol")) {
+
+            PlayMobSound(MobAudio + "Dead", 1);
+            Anim.Play("HumanoidDeadWater", 0, 0f);
+            Anim.speed = 0.25f;
+            DroppedRagdoll = 0f;
+
+        } else if (Fire > 0f && (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol")) {
+
+            PlayMobSound(MobAudio + "Dead", 1);
+            Anim.Play("HumanoidDeadFire", 0, 0f);
+            Anim.speed = 0.5f;
+            DroppedRagdoll = 0.75f;
+
+        } else {
+
+            PlayMobSound(MobAudio + "Dead", 1);
+            if ((AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol")) {
+                Anim.Play("HumanoidDead" + (int)Random.Range(1f, 3.9f), 0, 0f);
+                Anim.speed = Random.Range(0.5f, 1f);
+            }
+            DroppedRagdoll = Random.Range(0f, 0.1f);
+
+        }
+
+        if (Fire > 0f) {
+            Fire = 10f;
+        }
+
+        this.gameObject.layer = 13;
+        CleanupAfterDead = 5f;
+        GetComponent<CapsuleCollider>().enabled = false;
+        NavAgent.enabled = false;
+
+        if (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol") {
+            Anim.SetFloat("IdleStance", 0f);
+            Anim.SetFloat("StayOrGo", 0f);
+        }
+
+        if (TypeOfMob == 2 || TypeOfMob == 3) {
+            for (int DropLoot = Random.Range(0, 3); DropLoot > 0; DropLoot--) {
+                GameObject DropedLoot = Instantiate(ItemPrefab) as GameObject;
+                DropedLoot.transform.position = this.transform.position + new Vector3(Random.Range(-1f, 1f), 1f, Random.Range(-1f, 1f));
+                DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.TotalItems[(int)Random.Range(0f, (RS.TotalItems.Length - 0.1f))]].startVariables;
+            }
+        } else if (ClassOfMob == "Mutant") {
+            int SpawnChance = (int)Random.Range(-10f, 1.9f);
+            if (GS.GameModePrefab.x == 1) {
+                SpawnChance = (int)Random.Range(Mathf.Lerp(-1f, -3f, float.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) / 5f), 1.9f);
+            } else {
+                if (BasicMutantJob == "Police" || BasicMutantJob == "Builder" || BasicMutantJob == "Doctor" || BasicMutantJob == "Cook") {
+                    SpawnChance = (int)Random.Range(0.5f, 2.5f);
+                } else {
+                    SpawnChance = (int)Random.Range(-10f, 1.9f);
+                }
+            }
+            for (int DropLoot = SpawnChance; DropLoot > 0; DropLoot--) {
+                if (GS.GameModePrefab.x == 1) {
+                    GameObject DropedLoot = Instantiate(HordeDropPrefab) as GameObject;
+                    DropedLoot.transform.position = this.transform.position + Vector3.up;
+                } else {
+                    GameObject DropedLoot = Instantiate(ItemPrefab) as GameObject;
+                    DropedLoot.transform.position = this.transform.position + new Vector3(Random.Range(-1f, 1f), 1f, Random.Range(-1f, 1f));
+                    if (BasicMutantJob == "Police") {
+                        DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.Weapons[(int)Random.Range(0f, RS.Weapons.Length - 0.1f)]].startVariables;
+                    } else if (BasicMutantJob == "Builder") {
+                        DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.Utilities[(int)Random.Range(0f, RS.Utilities.Length - 0.1f)]].startVariables;
+                    } else if (BasicMutantJob == "Doctor") {
+                        DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.HealingItems[(int)Random.Range(0f, RS.HealingItems.Length - 0.1f)]].startVariables;
+                    } else if (BasicMutantJob == "Cook") {
+                        DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.FoodItems[(int)Random.Range(0f, RS.FoodItems.Length - 0.1f)]].startVariables;
+                    } else {
+                        DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]].startVariables;
+                    }
+                }
+                        
+            }
+            if (TypeOfMob == 9f) {
+                GameObject GoBoom = Instantiate(SpecialPrefab) as GameObject;
+                GoBoom.transform.position = this.transform.position + Vector3.up;
+                GoBoom.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
+                GoBoom.GetComponent<SpecialScript>().ExplosionRange = 6f;
+            }
+        }
+
+        if (WeaponToDrop > -1 && GS.GameModePrefab.x != 1) {
+            GameObject DropedLoot = Instantiate(ItemPrefab) as GameObject;
+            DropedLoot.transform.position = this.transform.position + this.transform.forward * 0.5f;
+            DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[WeaponToDrop].startVariables;
+            foreach (Transform HideGun in HumanoidBodyParts[3].transform.GetChild(0)) {
+                HideGun.gameObject.SetActive(false);
+            }
+        }
+
+        bool GiveCredit = false;
+        if (leadAggresor != null) {
+            if (leadAggresor.tag == "Player") {
+                GiveCredit = true;
+            }
+        } else if (GS.GameModePrefab.x == 1) {
+            GiveCredit = true;
+        }
+
+        if (GiveCredit == true) {
+            GS.Mess(GS.SetString(MobName + " killed", MobName + " zabity"));
+            if (TypeOfMob == 2f || TypeOfMob == 8f || (ClassOfMob == "Mutant" && TypeOfMob != 1f)) {
+                GS.AddToScore(250);
+            } else if (TypeOfMob == 1f) {
+                GS.AddToScore(50);
+            }
+        }
+
 
     }
 

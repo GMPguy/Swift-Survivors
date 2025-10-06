@@ -47,7 +47,7 @@ MonoBehaviour:
   Monument: 
   Ambience: WindAmbience
   Music: Chase Pulse
-  Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}
+  Atmosphere: {fileID: 11400000, guid: 62db9f88d81e7a34eabe38892eb75148, type: 2}
   WorldSize:
     x: 500
     y: 500

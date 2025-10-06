@@ -1403,12 +1403,16 @@ public class RoundScript : MonoBehaviour {
                     // Morning NIGHT-DUSK-DAY
                     if(TimeOfDay[1] < 360f) ColorLerpValues = new float[]{2f, 1f, ((float)TimeOfDay[1] - 360f) / 60f};
                     else ColorLerpValues = new float[]{1f, 0f, ((float)TimeOfDay[1] - 360f) / 60f};
-                    DrawDistance = 25f + (Sunnyness * 75f);
+                    DrawDistance = Mathf.Lerp(
+                        Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.z, Map_Biome.Atmosphere.FogDistance.w, Sunnyness),
+                        Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.x, Map_Biome.Atmosphere.FogDistance.y, Sunnyness),
+                        ((float)TimeOfDay[1] - 360f) / 60f
+                    );
                     SunRotation = Vector3.Lerp(new Vector3(0, -90, 0f), new Vector3(30f, -45f, 0f), (TimeOfDay[1] - 360f) / 120f);
                 } else if (TimeOfDay[1] > 480 && TimeOfDay[1] < 1080){
                     // Day
                     ColorLerpValues = new float[]{0f, 0f, 0f};
-                    DrawDistance = 25f + (Sunnyness * 75f);
+                    DrawDistance = Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.x, Map_Biome.Atmosphere.FogDistance.y, Sunnyness);
                     if(TimeOfDay[1] < 750) SunRotation = Vector3.Lerp(new Vector3(30f, -45, 0f), new Vector3(60f, 0, 0f), (TimeOfDay[1] - 480) / 270f);
                     else SunRotation = Vector3.Lerp(new Vector3(60f, 0, 0f), new Vector3(30f, 90f, 0f), (TimeOfDay[1] - 750) / 270f);
                 } else if (TimeOfDay[1] >= 1080f && TimeOfDay[1] <= 1320f){
@@ -1416,11 +1420,15 @@ public class RoundScript : MonoBehaviour {
                     if(TimeOfDay[1] < 1200f) ColorLerpValues = new float[]{0f, 1f, ((float)TimeOfDay[1] - 1080f) / 120f};
                     else ColorLerpValues = new float[]{1f, 2f, ((float)TimeOfDay[1] - 1200f) / 120f};
                     SunRotation = Vector3.Lerp(new Vector3(30f, 90f, 0f), new Vector3(0f, 135f, 0f), (TimeOfDay[1] - 1080) / 240f);
-                    DrawDistance = 25f + (Sunnyness * 75f);
+                    DrawDistance = Mathf.Lerp(
+                        Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.x, Map_Biome.Atmosphere.FogDistance.y, Sunnyness),
+                        Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.z, Map_Biome.Atmosphere.FogDistance.w, Sunnyness),
+                        ((float)TimeOfDay[1] - 1080f) / 120f
+                    );
                 } else {
                     // Night
                     ColorLerpValues = new float[]{2f, 2f, 0f};
-                    DrawDistance = 20f + (Sunnyness * 50f);
+                    DrawDistance = Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.z, Map_Biome.Atmosphere.FogDistance.w, Sunnyness);
                     if(TimeOfDay[1] > 1260) SunRotation = Vector3.Lerp(new Vector3(0f, -90f, 0f), new Vector3(60f, 0f, 0f), (TimeOfDay[1] - 1260) / 180f);
                     else SunRotation = Vector3.Lerp(new Vector3(60f, 0f, 0f), new Vector3(0f, 135f, 0f), TimeOfDay[1] / 480f);
                 }
@@ -1463,7 +1471,12 @@ public class RoundScript : MonoBehaviour {
             RenderSettings.fogColor = FogColor;
             RenderSettings.fogEndDistance = DrawDistance;
             GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = DrawDistance;
-            RenderSettings.ambientLight = AmbientColor;
+
+            float ambientBias = Mathf.Lerp(.1f, .5f, Sunnyness);
+            RenderSettings.ambientSkyColor = Color.Lerp(AmbientColor, SkyColor, ambientBias);
+            RenderSettings.ambientEquatorColor = AmbientColor;
+            RenderSettings.ambientGroundColor = Color.Lerp(AmbientColor, FogColor, ambientBias);
+
             GameObject.Find("Sun").transform.eulerAngles = SunRotation;
             GameObject.Find("Sun").GetComponent<Light>().color = SunColors[1];
             GameObject.Find("Sun").GetComponent<Light>().intensity = 1f;
@@ -1480,7 +1493,12 @@ public class RoundScript : MonoBehaviour {
             RenderSettings.fogColor = Color32.Lerp(new Color32(0, 0, 0, 0), FogColor, (LerpValue + 0.25f) / 1.25f);
             RenderSettings.fogEndDistance = DrawDistance;
             GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = DrawDistance;
-            RenderSettings.ambientLight = AmbientColor;
+
+            float ambientBias = Mathf.Lerp(.1f, .5f, Sunnyness);
+            RenderSettings.ambientSkyColor = Color.Lerp(AmbientColor, SkyColor, ambientBias);
+            RenderSettings.ambientEquatorColor = AmbientColor;
+            RenderSettings.ambientGroundColor = Color.Lerp(AmbientColor, FogColor, ambientBias);
+
             GameObject.Find("Sun").transform.eulerAngles = SunRotation;
             GameObject.Find("Sun").GetComponent<Light>().color = Color32.Lerp(new Color32(0, 0, 0, 0), SunColors[1], LerpValue);
             GameObject.Find("Sun").GetComponent<Light>().intensity = Mathf.Lerp(0f, 1f, LerpValue);

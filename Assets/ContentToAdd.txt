@@ -1,5 +1,5 @@
-Mitagf – model, icon, text, animation, ingame item, functional
-x – implemented
+Mitagf ï¿½ model, icon, text, animation, ingame item, functional
+x ï¿½ implemented
 
 Items
     1. Weapons
@@ -104,15 +104,15 @@ Items
         10. Berries
 Chests 0/15
     1. In houses and mansions
-        1. Closet
-        2. Wall unit
-        3. Chest
-        4. Fridge
-        5. Kitchen
-        6. Bathroom
-        7. Bathroom cupboard
+        1. m Closet
+        2. m Wall unit
+        3. m Chest
+        4. m Fridge
+        5. m Kitchen
+        6. m Bathroom
+        7. m Bathroom 2
         8. Desk
-        9. Home briefcase
+        9. Hardware desk
         10. Safe
     2. Outside
         1. Briefcases

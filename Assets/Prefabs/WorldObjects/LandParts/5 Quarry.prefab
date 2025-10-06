@@ -68,7 +68,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
-  StuffToSpawn: []
   Chance: []
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
@@ -348,7 +347,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
-  StuffToSpawn: []
   Chance: []
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
@@ -470,9 +468,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: 
   NewStuffToSpawn:
-  - id994;
-  StuffToSpawn:
-  - {x: 994, y: 0, z: 0}
+  - id994;va0;ct2;
   Chance:
   - 100
   - 100
@@ -856,7 +852,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
-  StuffToSpawn: []
   Chance: []
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
@@ -930,7 +925,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
-  StuffToSpawn: []
   Chance: []
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
