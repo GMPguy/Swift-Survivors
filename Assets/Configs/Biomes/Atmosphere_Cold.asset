@@ -39,7 +39,7 @@ MonoBehaviour:
   - serializedVersion: 2
     rgba: 4284365109
   - serializedVersion: 2
-    rgba: 4278190080
+    rgba: 4281667328
   AtmosphereColors:
   - serializedVersion: 2
     rgba: 4294953115
@@ -52,7 +52,7 @@ MonoBehaviour:
   - serializedVersion: 2
     rgba: 4286265113
   - serializedVersion: 2
-    rgba: 4284359936
+    rgba: 4281667328
   CloudColors:
   - serializedVersion: 2
     rgba: 4294967295

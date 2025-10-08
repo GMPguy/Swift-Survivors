@@ -111,7 +111,7 @@ Chests 0/15
         5. m Kitchen
         6. m Bathroom
         7. m Bathroom 2
-        8. Desk
+        8. m Desk
         9. Hardware desk
         10. Safe
     2. Outside

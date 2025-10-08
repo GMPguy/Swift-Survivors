@@ -217,6 +217,8 @@ public class GameScript : MonoBehaviour {
                 if(Screen.resolutions[rs].refreshRate == 60 && Screen.resolutions[rs].width >= 640f && Screen.resolutions[rs].height >= 480f) 
                     Resolutions.Add(new Vector2(Screen.resolutions[rs].width, Screen.resolutions[rs].height));
 
+            if (SceneManager.GetActiveScene().name == "NewMenu")
+                NewMenuScript.LoadingAdditionalInfo = "";
         }
 		
 	}

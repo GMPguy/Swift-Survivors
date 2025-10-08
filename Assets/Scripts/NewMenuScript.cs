@@ -236,6 +236,8 @@ public class NewMenuScript : MonoBehaviour {
         SetAch.GetComponent<RectTransform>().localScale = Vector3.one;
         SetAch.name = "Achievements";
 
+        GMintegers[3] = Random.Range(0, int.MaxValue);
+
         Destroy(improvNMPMbutton.gameObject);
         Destroy(SetAch.transform.GetChild(0).gameObject);
 
@@ -455,7 +457,7 @@ public class NewMenuScript : MonoBehaviour {
                 if (Time.timeSinceLevelLoad%1f < 0.1f) Spin = Random.Range(-5f, 10f);*/
 
                 LoadingTextes[0].text = GS.SetString("LOADING", "WCZYTYWANIE");
-                Time.timeScale = 1f;
+                Time.timeScale = 0f;
 
                 if (LoadingAdditionalInfo != "")
                     LoadingTextes[1].text = LoadingAdditionalInfo;
@@ -511,6 +513,8 @@ public class NewMenuScript : MonoBehaviour {
                         break;
                     default: AfterLoading = ""; break;
                 }
+
+                Time.timeScale = 1f;
 
             }
 
@@ -1492,10 +1496,10 @@ public class NewMenuScript : MonoBehaviour {
 
                     // Option buttons
                     PGdesc.text = "...";
-                    string[] OptionIDS = {"FN", "PD", "", "GM", "DL"};
+                    string[] OptionIDS = {"FN", "PD", "", "GM", "DL", "", "FS"};
                     switch(GMintegers[0]){
                         case 1:
-                            OptionIDS = new string[]{"FN", "PD", "", "GM", "DL", "HM"};
+                            OptionIDS = new string[]{"FN", "PD", "", "GM", "DL", "HM", "", "FS"};
                             break;
                     }
 
@@ -1573,6 +1577,18 @@ public class NewMenuScript : MonoBehaviour {
                                     if (GMoptions[sb].GetComponent<ButtonScript>().IsSelected) {
                                         PGdesc.text = GS.SetString("Horde map\nHorde mode is played not on a randomly generated map, but rather, on a prebuilt one.", "Mapa hordy\nTryb hordy nie jest rozgrywany na losowo generowanej mapie, lecz na już swtorzonej.");
                                         if(Input.GetMouseButtonDown(0)) GMintegers[3] = (GMintegers[3] + 1)%6;
+                                    }
+                                    break;
+                                case "FS":
+                                    // INTEGER 4
+                                    GMtext.text = GS.SetString("Seed: ", "Ziarenko: ") + GMintegers[4];
+
+                                    if (GMoptions[sb].GetComponent<ButtonScript>().IsSelected) {
+                                        PGdesc.text = GS.SetString(
+                                            "Seed\nA lot of stuff will be procedurally generated, based mainly of this number.",
+                                            "Ziarenko\nSporo rzeczy będzie proceduralnie generowanych, na bazie tego numeru."
+                                        );
+                                        if(Input.GetMouseButtonDown(0)) InputTopic = "Fileseed";
                                     }
                                     break;
                                 default:
@@ -2652,6 +2668,23 @@ public class NewMenuScript : MonoBehaviour {
                         InputTopic = "";
                         InputSubject = FNcheck(InputSubject, 0);
                         GMstringers[0] = InputSubject;
+                        InputSubject = "";
+                    } else if(Input.GetKeyDown(KeyCode.Escape)){
+                        InputTopic = InputSubject = "";
+                    }
+                    break;
+                case "Fileseed":
+                    InputInfo.text = GS.SetString("CHANGE SEED\nUse only numbers.\npress ENTER to accept, or ESCAPE to cancel", "ZMIANA NAZWY PLIKU\nMożesz korzystać tylko z cyfr.\nnaciśnij ENTER żeby to zaakceptować, lub ESCAPE żeby to anulować");
+                    InputSubject = InputInput.text;
+
+                    if(Input.GetKeyDown(KeyCode.Return)){
+                        InputTopic = "";
+
+                        if (int.TryParse(InputSubject, out int seed))
+                            GMintegers[3] = seed;
+                        else
+                            Pop(GS.SetString("Invalid input - numbers only", "Nieprawidłowy wpis - używaj tylko cyfer"), "Error");
+
                         InputSubject = "";
                     } else if(Input.GetKeyDown(KeyCode.Escape)){
                         InputTopic = InputSubject = "";
