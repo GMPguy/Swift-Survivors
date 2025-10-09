@@ -236,7 +236,7 @@ public class NewMenuScript : MonoBehaviour {
         SetAch.GetComponent<RectTransform>().localScale = Vector3.one;
         SetAch.name = "Achievements";
 
-        GMintegers[3] = Random.Range(0, int.MaxValue);
+        GMintegers[4] = Random.Range(0, int.MaxValue);
 
         Destroy(improvNMPMbutton.gameObject);
         Destroy(SetAch.transform.GetChild(0).gameObject);
@@ -1622,6 +1622,7 @@ public class NewMenuScript : MonoBehaviour {
                         if(GMintegers[0] == 1) RoundSetters += "?H" + GMintegers[3].ToString(); // Horde map
                         
                         GS.SaveFileName = GMstringers[0];
+                        GS.FileSeed = GMintegers[4];
                         GS.RoundSetting = RoundSetters;
 
                         LoadingTime = Random.Range(1f, 3f);
@@ -2681,7 +2682,7 @@ public class NewMenuScript : MonoBehaviour {
                         InputTopic = "";
 
                         if (int.TryParse(InputSubject, out int seed))
-                            GMintegers[3] = seed;
+                            GMintegers[4] = seed;
                         else
                             Pop(GS.SetString("Invalid input - numbers only", "Nieprawidłowy wpis - używaj tylko cyfer"), "Error");
 

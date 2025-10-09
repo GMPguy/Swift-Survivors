@@ -1,7 +1,7 @@
 x pathfinding in horde
 x map in horde
 x improve waypoint finding
-- Reduce setdestination
+x Reduce setdestination
 - Figure out navmesh memory cleanup
 
 x disable updates for mobs and interactable updates - when the game is paused
@@ -19,7 +19,7 @@ x Mutant fire not in env sounds
 - Update game files in new game menu
 - Filename special symbols prevention
 - Fix sorting in records
-- Add "Run" seed
+x Add "Run" seed
 x Icons for flares
 - Do something with phantom mutants
 x Fix attacking position for mobs

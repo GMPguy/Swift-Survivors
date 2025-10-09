@@ -126,7 +126,10 @@ public class RoundScript : MonoBehaviour {
                 GS.Round = 1;
                 GS.Biome = 1;
             }
-            GS.RoundsSeed = Random.Range(int.MaxValue / 2, int.MaxValue / 2);
+
+            Random.InitState(GS.FileSeed);
+            GS.RoundsSeed = GS.FileSeed;
+
             GS.HealthSave = new Vector2(100f, 100f);
             GS.HungerSave = new Vector2(240f, 240f);
             GS.PlayerSpeed = 5f;

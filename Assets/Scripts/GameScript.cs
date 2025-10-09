@@ -18,7 +18,7 @@ public class GameScript : MonoBehaviour {
 
     // Game Variables
     public string SaveFileName = "";
-
+    public int FileSeed = 0;
     public string RoundSetting = "G0?D0?P1";
     public int2 GameModePrefab = new (0, 0);
     public int Round = 0;
@@ -304,8 +304,19 @@ public class GameScript : MonoBehaviour {
                     AvailableBiomes.Add(ReceiveBiome);
                 }
             }
-            Biome = AvailableBiomes.ToArray()[(int)Random.Range(0f, AvailableBiomes.ToArray().Length - 0.1f)];
+            
+            
+            // Get new round seed
+            if (WayOfChange == "EscapeMap") {
+                Random.InitState(FileSeed);
+                for (int r = 0; r < Round; r++)
+                    for (int q = 4; q > 0; q--)
+                        _ = Random.value;
+            }
+            
             RoundsSeed = Random.Range(int.MinValue / 2, int.MaxValue / 2);
+            Biome = AvailableBiomes.ToArray()[(int)Random.Range(0f, AvailableBiomes.ToArray().Length - 0.1f)];
+            
             HealthSave = new Vector2(FoundPlayer.GetComponent<PlayerScript>().Health[0], FoundPlayer.GetComponent<PlayerScript>().Health[1]);
             HungerSave = new Vector2(FoundPlayer.GetComponent<PlayerScript>().Food[0], FoundPlayer.GetComponent<PlayerScript>().Food[1]);
             PlayerSpeed = FoundPlayer.GetComponent<PlayerScript>().Speed;

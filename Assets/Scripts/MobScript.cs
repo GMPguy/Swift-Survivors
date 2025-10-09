@@ -969,13 +969,17 @@ public class MobScript : MonoBehaviour {
                     NavAgent.acceleration = NavAgent.speed * 2f;
                     Anim.SetFloat("StayOrGo", 1f);
                     Anim.speed = MovementSpeed[PickMovementSpeed] / 4f;
-                    NavAgent.SetDestination(AiMovePosition);
+
+                    if (Vector3.Distance(NavAgent.destination, AiMovePosition) > .01f)
+                        NavAgent.SetDestination(AiMovePosition);
                 } else {
                     NavAgent.speed = MovementSpeed[PickMovementSpeed];
                     NavAgent.acceleration = NavAgent.speed * 2f;
                     Anim.SetFloat("StayOrGo", 1f);
                     Anim.speed = MovementSpeed[PickMovementSpeed] / 4f;
-                    NavAgent.SetDestination(AiMovePosition);
+
+                    if (Vector3.Distance(NavAgent.destination, AiMovePosition) > .01f)
+                        NavAgent.SetDestination(AiMovePosition);
                 }
             } else {
                 Anim.SetFloat("StayOrGo", 0f);
