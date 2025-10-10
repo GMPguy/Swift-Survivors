@@ -455,6 +455,7 @@ public class GameScript : MonoBehaviour {
                 + "®mo" + Money.ToString()
                 + "®am" + Ammo.ToString()
 
+                + "®fs" + FileSeed.ToString()
                 + "®sr" + RoundsSeed.ToString()
 
                 + "®l0" + HealthSave.x.ToString()
@@ -504,6 +505,7 @@ public class GameScript : MonoBehaviour {
                     Money = int.Parse(GetSemiClass(Receiver, "mo", "®"));
                     Ammo = int.Parse(GetSemiClass(Receiver, "am", "®"));
 
+                    FileSeed = int.Parse(GetSemiClass(Receiver, "fs", "®"));
                     RoundsSeed = int.Parse(GetSemiClass(Receiver, "sr", "®"));
 
                     HealthSave.x = float.Parse(GetSemiClass(Receiver, "l0", "®"));

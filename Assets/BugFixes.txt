@@ -5,7 +5,7 @@ x Reduce setdestination
 - Figure out navmesh memory cleanup
 
 x disable updates for mobs and interactable updates - when the game is paused
-- Move updates for mobs and interactables to a different loop
+x Move updates for mobs and interactables to a different loop
 - Marks on map
 - show map when told to
 
@@ -16,8 +16,8 @@ x Jumps?
 x Disable sounds at begining
 x Mutant fire not in env sounds
 
-- Update game files in new game menu
-- Filename special symbols prevention
+x Update game files in new game menu
+x Filename special symbols prevention
 - Fix sorting in records
 x Add "Run" seed
 x Icons for flares

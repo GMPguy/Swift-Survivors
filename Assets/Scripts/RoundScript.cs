@@ -214,13 +214,20 @@ public class RoundScript : MonoBehaviour {
             }
 
             // Manage destructors
-            if(ActiveDestructs.ToArray().Length >= 1f){
-                for(int ad = 0; ad < ActiveDestructs.ToArray().Length; ad++) if(ActiveDestructs[ad]) ActiveDestructs[ad].Do();
-            }
+            if (RoundState != "Prepeare" && Time.timeScale > 0f) {
+                    
+                if(ActiveDestructs.ToArray().Length >= 1f)
+                    for(int ad = 0; ad < ActiveDestructs.ToArray().Length; ad++) 
+                        if(ActiveDestructs[ad]) 
+                            ActiveDestructs[ad].Do();
 
-            // Manage buildings
-            if(ActiveBuildings.ToArray().Length >= 1f){
-                for(int ad = 0; ad < ActiveBuildings.ToArray().Length; ad++) if(ActiveBuildings[ad]) ActiveBuildings[ad].Do();
+                // Manage buildings
+                if(ActiveBuildings.ToArray().Length >= 1f)
+                    for(int ad = 0; ad < ActiveBuildings.ToArray().Length; ad++) 
+                        if(ActiveBuildings[ad]) 
+                            ActiveBuildings[ad].Do();
+
+                CachedUpdates();
             }
 
             // Fragment elements
@@ -246,10 +253,6 @@ public class RoundScript : MonoBehaviour {
                     CountSecond = 1f;
                     SetScore("SurvivedTime_", "/+1");
                 }
-
-                // Manage cached object
-                if (Time.timeScale > 0f)
-                    CachedUpdates();
 
                 TimeSinceRoundStart += Time.deltaTime;
             }

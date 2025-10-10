@@ -728,6 +728,7 @@ public class NewMenuScript : MonoBehaviour {
                                         ButtonText.text = GS.SetString("Erase it", "Usuń go");
                                         if(ButtonButton.IsSelected && Input.GetMouseButtonDown(0)){
                                             GS.SaveManipulation(int.Parse(Warning[1]), 2);
+                                            CurrentWindow = "Main";
                                             ClearIt = true;
                                         }
                                         break;
@@ -2524,6 +2525,19 @@ public class NewMenuScript : MonoBehaviour {
     string FNcheck(string tc = "", int WhichArray = 0){
 
         if(tc != ""){
+            // Check for wrong symbols
+            string charTest = ";©®";
+            string fixedTc = "";
+
+            for (int ch = 0; ch < tc.Length; ch++) {
+                char chara = tc[ch];
+                if (chara != charTest[0] && chara != charTest[1] && chara != charTest[2])
+                    fixedTc += chara;
+            }
+
+            tc = fixedTc;
+
+            // Check for duplicate names
             string[] CheckNames = {}; 
             
             List<string> ParseNames = new List<string>();
@@ -2556,10 +2570,11 @@ public class NewMenuScript : MonoBehaviour {
                 }
             }
             return "";
-        } else {
-            if(WhichArray == 0) return "Player no." + Random.Range(1000, 9999).ToString();
-            else return "Generic profile no." + Random.Range(1000, 9999).ToString();
         }
+
+        // When checks above fail, use a generic name
+        if(WhichArray == 0) return "Player no." + Random.Range(1000, 9999).ToString();
+        else return "Generic profile no." + Random.Range(1000, 9999).ToString();
 
     }
 
