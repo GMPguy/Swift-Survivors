@@ -102,7 +102,7 @@ Items
         8. Wild carrot
         9. Wild potato
         10. Berries
-Chests 0/15
+Chests 10/20
     1. In houses and mansions
         1. m Closet
         2. m Wall unit
@@ -112,20 +112,20 @@ Chests 0/15
         6. m Bathroom
         7. m Bathroom 2
         8. m Desk
-        9. Hardware desk
-        10. Safe
+        9. m Hardware desk
+        10. m Safe
     2. Outside
-        1. Briefcases
-        2. Car
-        3. Crate
-        4. Picnic
-        5. Trash can
+        1. m Briefcases
+        2. m Car
+        3. m Crate
+        4. m Picnic
+        5. m Trash can
     3. Public areas
-        1. Lockers
+        1. m Lockers
         2. Shooping alleys
         3. Shooping fridges
-        4. Gun crate
-        5. Laundry machine
+        4. m Gun crate
+        5. m Laundry machine
 
 Buildings 8/35
     1. Houses 6/6
