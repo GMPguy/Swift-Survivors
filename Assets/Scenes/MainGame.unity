@@ -44799,7 +44799,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.06666667
+  m_VoxelSize: 0.1
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
@@ -61993,7 +61993,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 17039159
+    m_Bits: 84148023
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -228243,12 +228243,13 @@ MonoBehaviour:
   Version: 1.2.1
   Platform: 0
   SaveFileName: 
+  FileSeed: 0
   RoundSetting: G0?D2?P1
   GameModePrefab:
     x: 0
     y: 0
   Round: 1
-  Biome: 6
+  Biome: 1
   Score: 0
   Money: 0
   Ammo: 0
@@ -284096,7 +284097,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.06666667
+  m_VoxelSize: 0.1
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0

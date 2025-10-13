@@ -104,6 +104,7 @@ public class RoundScript : MonoBehaviour {
     int DonePrepare = 0;
 
     public static List<InteractableScript> CachedInteractables;
+    public static List<ChestScript> CachedChest;
     public static List<MobScript> CachedMobs;
     public static List<Spawner> CachedSpawner;
 
@@ -138,6 +139,7 @@ public class RoundScript : MonoBehaviour {
         }
 
         CachedInteractables = new List<InteractableScript>();
+        CachedChest = new List<ChestScript>();
         CachedMobs = new List<MobScript>();
         ActiveDestructs = new List<DestructionScript>();
         ActiveBuildings = new List<BuildingScript>();
@@ -514,6 +516,12 @@ public class RoundScript : MonoBehaviour {
                             CachedInteractables.RemoveAt(ci);
                         else
                             CachedInteractables[ci].TheStart();
+                    
+                    for (int ci = CachedChest.Count - 1; ci >= 0; ci--)
+                        if (!CachedChest[ci])
+                            CachedChest.RemoveAt(ci);
+                        else
+                            CachedChest[ci].TheStart();
                     // Enable cached objects
 
                     NewMenuScript.LoadingAdditionalInfo = "";
@@ -1671,6 +1679,14 @@ public class RoundScript : MonoBehaviour {
                 CachedInteractables.RemoveAt(ui);
             else
                 CachedInteractables[ui].TheUpdate();
+        }
+
+        // Chest
+        for (int ui = CachedChest.Count - 1; ui >= 0; ui--) {
+            if (!CachedChest[ui])
+                CachedChest.RemoveAt(ui);
+            else
+                CachedChest[ui].TheUpdate();
         }
 
         // Mobs

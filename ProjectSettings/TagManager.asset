@@ -13,6 +13,7 @@ TagManager:
   - Interactions
   - Effect
   - MobPH
+  - Chest
   layers:
   - Default
   - TransparentFX
@@ -40,7 +41,7 @@ TagManager:
   - PlayerPreview
   - DestructionChild
   - MinimapObject
-  - 
+  - ChestPart
   - 
   - 
   - 

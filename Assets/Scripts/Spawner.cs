@@ -8,6 +8,7 @@ public class Spawner : MonoBehaviour {
     public string Special = "";
     public string[] NewStuffToSpawn;
     public float[] Chance;
+    public bool Freeze;
     // Variables
 
     // References
@@ -19,10 +20,11 @@ public class Spawner : MonoBehaviour {
     // Update is called once per frame
     void Awake() {
 
-        if (this.GetComponent<BoxCollider>() != null) {
+        if (this.GetComponent<BoxCollider>() != null)
             Destroy(this.GetComponent<BoxCollider>());
+
+        if (!Freeze)
             RoundScript.CachedSpawner.Add(this);
-        }
 
     }
 
@@ -139,6 +141,18 @@ public class Spawner : MonoBehaviour {
                 SpawnItem.transform.position = this.transform.position;
                 //print(NewStuffToSpawn.Length);
                 SpawnItem.GetComponent<MobScript>().TypeOfMob = int.Parse(GS.GetSemiClass(NewStuffToSpawn[Random.Range(0, NewStuffToSpawn.Length)], "id"));
+            } else if (ObjectToSpawn.tag == "Chest") {
+                string chosen = NewStuffToSpawn[Random.Range(0, NewStuffToSpawn.Length)];
+                for (int c = 0; c <= ObjectToSpawn.transform.childCount; c++)
+                    if (c == ObjectToSpawn.transform.childCount)
+                        Debug.LogError($"No chest of name {chosen} found");
+                    else {
+                        ChestScript SpawnChest = Instantiate(ObjectToSpawn.transform.GetChild(c).gameObject).GetComponent<ChestScript>();
+                        SpawnChest.transform.position = this.transform.position;
+                        SpawnChest.transform.rotation = this.transform.rotation;
+                        break;
+                    }
+                
             }
         }
 		

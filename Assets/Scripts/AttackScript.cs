@@ -1029,11 +1029,20 @@ public class AttackScript : MonoBehaviour {
             }
 
             Lifetime[0] = 0f;
+
             if(ObjectHit.GetComponent<DestructionScript>()){
                 ObjectHit.GetComponent<DestructionScript>().Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit);
             } else if(ObjectHit.layer == 24){
                 ObjectHit.transform.parent.GetComponent<DestructionScript>().Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit);
-            } 
+            }
+
+            // TODO: add chest layer
+            if(ObjectHit.GetComponent<ChestScript>()){
+                ObjectHit.GetComponent<ChestScript>().Damage(AttackPropertyDamage, new string[]{AttackType, FirearmType}, ObjectHit.transform, PointHit);
+            } else if(ObjectHit.layer == 26){
+                ObjectHit.transform.parent.GetComponent<ChestScript>().Damage(AttackPropertyDamage, new string[]{AttackType, FirearmType}, ObjectHit.transform, PointHit);
+            }
+
             if (ObjectHit.GetComponent<FootstepMaterial>() != null) {
                 GameObject BulletHit = Instantiate(EffectPrefab) as GameObject;
                 BulletHit.GetComponent<EffectScript>().EffectName = "Bullethit" + ObjectHit.GetComponent<FootstepMaterial>().WhatToPlay;
