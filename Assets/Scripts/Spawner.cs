@@ -155,7 +155,7 @@ public class Spawner : MonoBehaviour {
                 for (int c = 0; c <= ObjectToSpawn.transform.childCount; c++)
                     if (c == ObjectToSpawn.transform.childCount)
                         Debug.LogError($"No chest of name {chosen} found");
-                    else {
+                    else if (ObjectToSpawn.transform.GetChild(c).name == chosen) {
                         ChestScript SpawnChest = Instantiate(ObjectToSpawn.transform.GetChild(c).gameObject).GetComponent<ChestScript>();
                         SpawnChest.transform.position = this.transform.position;
                         SpawnChest.transform.rotation = this.transform.rotation;

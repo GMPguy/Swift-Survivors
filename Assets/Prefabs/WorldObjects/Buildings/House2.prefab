@@ -121,6 +121,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Chest
   NewStuffToSpawn:
+  - WallUnit
   - Closet
   Chance:
   - 100
