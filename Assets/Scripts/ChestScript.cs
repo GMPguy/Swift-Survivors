@@ -1,4 +1,5 @@
 using Unity.Mathematics;
+using UnityEditor;
 using UnityEngine;
 using Random=UnityEngine.Random;
 
@@ -9,6 +10,7 @@ public class ChestScript : MonoBehaviour {
     public float3 Opening;
     public float2 Health;
     public int State; // 0 active, 1 locked, 2 opened, 3 destroyed
+    public int Seed;
     // Main variables
 
     // Statistics
@@ -21,13 +23,18 @@ public class ChestScript : MonoBehaviour {
     // Statistics
 
     public Spawner[] Spawners;
+    public GameObject Lock;
+    public GameObject MinimapMarker;
     
     public GameScript GS;
     public RoundScript RS;
     public GameObject EffectPrefab;
 
-    float activated;
-    float3 doorOpening;
+    public float activated;
+    public float3 doorOpening;
+    public AnimationCurve[] openingCurve;
+    int prevDoor = -1;
+    int pickCurve = 0;
 
     // Use this for initialization
     void Awake() {
@@ -41,12 +48,11 @@ public class ChestScript : MonoBehaviour {
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
         RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
 
-        doorOpening.y = Doors.Length;
-        doorOpening.x = doorOpening.y - .001f;
-
         float diff = RS.DifficultySliderB;
         Health.y = Mathf.Lerp(Healths.x, Healths.y, diff);
         Health.x = Health.y;
+
+        Seed = Random.Range(int.MinValue, int.MaxValue);
 
         Opening.z = Mathf.Lerp(
             Random.Range(OpeningTimes.x, OpeningTimes.y),
@@ -56,6 +62,8 @@ public class ChestScript : MonoBehaviour {
 
         if (Random.value < Mathf.Lerp(LockChances.x, LockChances.y, diff))
             Opening.y = Random.Range(.1f, .9f) * doorOpening.z;
+        else
+            Opening.y = Opening.z * 2f;
 
         wasStarted = true;
 
@@ -67,19 +75,39 @@ public class ChestScript : MonoBehaviour {
 
         switch (State) {
             case 2:
+                // Opening of door
                 doorOpening.x -= doorOpening.z * Time.deltaTime;
 
-                Door currDoor = Doors[Mathf.FloorToInt(doorOpening.x)];
-                currDoor.transform.localRotation = Quaternion.Lerp(
-                    Quaternion.Euler(currDoor.ClosedPosition),
-                    Quaternion.Euler(currDoor.OpenPosition),
-                    doorOpening.x % 1f
-                );
+                if (doorOpening.x > 0) {
+                    if (prevDoor != Mathf.FloorToInt(doorOpening.x)) {
+                        prevDoor = Mathf.FloorToInt(doorOpening.x);
+                        pickCurve = Random.Range(0, openingCurve.Length);
+                        
+                        AudioSource doorSound = Doors[prevDoor].transform.GetComponent<AudioSource>();
+                        doorSound.clip = Doors[prevDoor].OpeningSound[Random.Range(0, Doors[prevDoor].OpeningSound.Length)];
+                        doorSound.Play();
+                    }
+
+                    Door currDoor = Doors[prevDoor];
+                    currDoor.transform.localRotation = Quaternion.LerpUnclamped(
+                        Quaternion.Euler(currDoor.OpenPosition),
+                        Quaternion.Euler(currDoor.ClosedPosition),
+                        openingCurve[pickCurve].Evaluate(doorOpening.x % 1f)
+                    );
+                }
                 break;
         }
 
-        if (activated <= 0f && RoundScript.CachedChest.Contains(this))
+        if (activated <= 0f && RoundScript.CachedChest.Contains(this)) {
              RoundScript.CachedChest.Remove(this);
+
+             if (State == 3) {
+                for (int fp = 0; fp < AllParts.Length; fp++)
+                    if (AllParts[fp].transform.TryGetComponent<Rigidbody>(out var rig))
+                        Destroy(rig);
+                Destroy(this);
+             }
+        }
         
     }
 
@@ -90,25 +118,33 @@ public class ChestScript : MonoBehaviour {
              RoundScript.CachedChest.Add(this);
     }
 
-    public void Open (bool byPlayer) {
+    public void Open (PlayerScript ps) {
         
         if (State != 0)
             return;
 
         Opening.x += Time.deltaTime;
+        ps.MainCanvas.CSWait = new float[]{ Opening.x / Opening.z, 0.2f};
 
         if (Opening.x >= Opening.y) {
             // Locked
             State = 1;
-            if (byPlayer)
+            Destroy(Lock);
+            Destroy(MinimapMarker);
+            if (ps != null)
                 GS.Mess(GS.SetString("Actually it's locked", "A jednak zamknięte"), "Error");
         } else if (Opening.x >= Opening.z) {
             // Opened
-            State = 2;
+            Destroy(Lock);
+            Destroy(MinimapMarker);
+            ps.CantInteract = .5f;
 
+            Random.InitState(Seed);
             if (State != 2)
                 for (int s = 0; s < Spawners.Length; s++)
                     Spawners[s].Spawn();
+
+            State = 2;
             
             Activate(doorOpening.y);
         }
@@ -132,7 +168,7 @@ public class ChestScript : MonoBehaviour {
 
         }
 
-        if (State != 3)
+        if (State == 3)
             return;
 
         // Check if the attack is able to penetrate
@@ -141,14 +177,20 @@ public class ChestScript : MonoBehaviour {
         
         // Damage and destroy
         if ((Health.x -= Damage) <= 0) {
-            if (State != 2)
+            if (State != 2) {
+                Random.InitState(Seed);
                 for (int s = 0; s < Spawners.Length; s++)
-                    Spawners[s].Spawn();
+                    Spawners[s].Spawn(new[]{"BrokenChest"});
+            }
 
             State = 3;
+            Destroy(Lock);
+            Destroy(MinimapMarker);
 
             for (int dp = 0; dp < AllParts.Length; dp++)
                 DamagePart(AllParts[dp], true);
+            
+            Activate(10f);
         }
     }
 
@@ -164,20 +206,30 @@ public class ChestScript : MonoBehaviour {
             part.GlassMaterial = "";
         }
 
-        if (ripOff && part.transform.GetComponent<Rigidbody>() == null) {
-            Rigidbody newRig = part.transform.gameObject.AddComponent<Rigidbody>();
+        if (ripOff) {
+            part.transform.gameObject.layer = 0;
 
-            newRig.AddForce(new (
-                Random.Range(-1f, 1f),
-                Random.Range(0f, 1f),
-                Random.Range(-1f, 1f)
-            ));
+            if (part.BreakSound != null && part.BreakSound.Length > 0) {
+                AudioSource breakSound = part.transform.GetComponent<AudioSource>();
+                breakSound.clip = part.BreakSound[Random.Range(0, part.BreakSound.Length)];
+                breakSound.Play();
+            }
 
-            newRig.AddTorque(new (
-                Random.Range(-1f, 1f),
-                Random.Range(-1f, 1f),
-                Random.Range(-1f, 1f)
-            ));
+            if (part.transform.GetComponent<Rigidbody>() == null) {
+                Rigidbody newRig = part.transform.gameObject.AddComponent<Rigidbody>();
+
+                newRig.AddForce(new (
+                    Random.Range(-10f, 10f),
+                    Random.Range(0f, 5f),
+                    Random.Range(-10f, 10f)
+                ), ForceMode.VelocityChange);
+
+                newRig.AddTorque(new (
+                    Random.Range(-100f, 100f),
+                    Random.Range(-100f, 100f),
+                    Random.Range(-100f, 100f)
+                ), ForceMode.VelocityChange);
+            }
         }
     }
 
@@ -196,6 +248,7 @@ public class ChestScript : MonoBehaviour {
         public Transform transform;
         public Vector3 ClosedPosition;
         public Vector3 OpenPosition;
+        public AudioClip[] OpeningSound;
     }
 
     [System.Serializable]
@@ -204,6 +257,7 @@ public class ChestScript : MonoBehaviour {
         public string GlassMaterial;
         public string HitEffect;
         public bool RipOffOnHit;
+        public AudioClip[] BreakSound;
     }
 
 }

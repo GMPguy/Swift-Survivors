@@ -28,7 +28,7 @@ public class Spawner : MonoBehaviour {
 
     }
 
-    public void Spawn() {
+    public void Spawn(string[] args = default) {
 
         RS = GameObject.Find("_RoundScript");
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
@@ -124,7 +124,16 @@ public class Spawner : MonoBehaviour {
                 //print(Special);
                 //print(NewStuffToSpawn.Length);
                 SpawnItem.GetComponent<ItemScript>().Variables = NewStuffToSpawn[(int)Random.Range(0f, NewStuffToSpawn.Length - 0.1f)];
-                SpawnItem.GetComponent<ItemScript>().State = 1;
+                
+                if (args != null && args.Length > 0 && args[0] == "BrokenChest") {
+                    SpawnItem.GetComponent<ItemScript>().State = 0;
+                    SpawnItem.GetComponent<Rigidbody>().AddForce(new (
+                        Random.Range(-10f, 10f),
+                        Random.Range(0f, 10f),
+                        Random.Range(-10f, 10f)
+                    ), ForceMode.VelocityChange);
+                } else
+                    SpawnItem.GetComponent<ItemScript>().State = 1;
             } else if (ObjectToSpawn.tag == "Interactable") {
                 GameObject SpawnItem = Instantiate(ObjectToSpawn) as GameObject;
                 SpawnItem.transform.position = this.transform.position;

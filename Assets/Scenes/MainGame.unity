@@ -24938,7 +24938,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 17563447
+    m_Bits: 84672311
   m_RenderingLayerMask: 1
   m_Lightmapping: 1
   m_LightShadowCasterMode: 0
@@ -228313,7 +228313,7 @@ MonoBehaviour:
     m_Bits: 16875315
   IngoreMaskAttack:
     serializedVersion: 2
-    m_Bits: 16977715
+    m_Bits: 84086579
   SaveSettingsTime: 1
   ToldHints: 
   MainPP: {fileID: 11400000, guid: b368ca9fec5312f4e83da29384008e1f, type: 2}

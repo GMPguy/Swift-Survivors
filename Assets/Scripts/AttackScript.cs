@@ -1036,7 +1036,6 @@ public class AttackScript : MonoBehaviour {
                 ObjectHit.transform.parent.GetComponent<DestructionScript>().Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit);
             }
 
-            // TODO: add chest layer
             if(ObjectHit.GetComponent<ChestScript>()){
                 ObjectHit.GetComponent<ChestScript>().Damage(AttackPropertyDamage, new string[]{AttackType, FirearmType}, ObjectHit.transform, PointHit);
             } else if(ObjectHit.layer == 26){

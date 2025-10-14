@@ -1101,6 +1101,14 @@ public class PlayerScript : MonoBehaviour {
                     CantInteract = 0.25f;
                     InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Interaction("GatherAmmo", 0f);
                 }
+            } else if (InteractedGameobject.transform.parent != null && InteractedGameobject.transform.parent.tag == "Chest" && GS.ReceiveButtonPress("Interaction", "Hold") > 0f) {
+                if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "OpenChest" && InteractedGameobject.transform.parent.GetComponent<ChestScript>().State == 0 && CantInteract <= 0f) {
+                    InteractedGameobject.transform.parent.GetComponent<ChestScript>().Open(this);
+                    CantMove = Mathf.Max(CantMove, .2f);
+                    CantUseItem = Mathf.Max(CantUseItem, .2f);
+                    CantSwitchItem = Mathf.Max(CantSwitchItem, .2f);
+                    ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Pullup", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), ""), 0, 0f);
+                }
             } else if (InteractedGameobject.tag == "Mob" && GS.ReceiveButtonPress("Interaction", "Hold") > 0f) {
                 if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "TalkTo" && CantInteract <= 0f) {
                     MainCanvas.DialogedMob = InteractedGameobject;
