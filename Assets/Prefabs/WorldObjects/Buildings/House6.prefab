@@ -47,9 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: KitchenStuff
   NewStuffToSpawn: []
-  StuffToSpawn:
-  - {x: 1, y: 0, z: 0}
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
@@ -122,9 +121,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: IndustrialStuff
   NewStuffToSpawn: []
-  StuffToSpawn:
-  - {x: 1, y: 0, z: 0}
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
@@ -232,8 +230,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Doors
   NewStuffToSpawn: []
-  StuffToSpawn: []
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1290440283570394, guid: 2289d9dd8a0faa744b238b8a61146ddf,
     type: 3}
@@ -286,9 +284,8 @@ MonoBehaviour:
   Special: HouseStuff
   NewStuffToSpawn:
   - 
-  StuffToSpawn:
-  - {x: 1, y: 0, z: 0}
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
@@ -340,7 +337,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 3f0165b4cfe4e5146817f56b454a7de1,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3f0165b4cfe4e5146817f56b454a7de1,
         type: 3}
@@ -350,17 +347,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 3f0165b4cfe4e5146817f56b454a7de1,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3f0165b4cfe4e5146817f56b454a7de1,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3f0165b4cfe4e5146817f56b454a7de1,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3f0165b4cfe4e5146817f56b454a7de1,
         type: 3}
@@ -370,7 +367,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 3f0165b4cfe4e5146817f56b454a7de1,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 3f0165b4cfe4e5146817f56b454a7de1,
         type: 3}

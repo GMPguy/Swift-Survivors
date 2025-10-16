@@ -1,79 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2308912858394433492
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2110912961775417872}
-  - component: {fileID: 7014807384225276398}
-  - component: {fileID: 2757372408083459578}
-  m_Layer: 0
-  m_Name: KitchenSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2110912961775417872
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2308912858394433492}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.485, y: 1.914, z: 0.973}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1854562286376462038}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7014807384225276398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2308912858394433492}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c667889124b2c614e965ec8dcc5da865, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Special: KitchenStuff
-  NewStuffToSpawn: []
-  Chance: []
-  Freeze: 0
-  GS: {fileID: 0}
-  ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
-    type: 3}
-  RS: {fileID: 0}
---- !u!65 &2757372408083459578
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2308912858394433492}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.25, y: 0.1, z: 0.25}
-  m_Center: {x: 0, y: 0.05, z: 0}
 --- !u!1 &4154282575919771138
 GameObject:
   m_ObjectHideFlags: 0
@@ -84,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 9203116687066190567}
   - component: {fileID: 5902998589496649520}
-  - component: {fileID: 3124779741853189880}
   m_Layer: 0
   m_Name: IndustrialSpawner
   m_TagString: Untagged
@@ -100,13 +25,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4154282575919771138}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.243, y: 0.126, z: -2.363}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 3.409, y: 0.126, z: 2.393}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1854562286376462038}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &5902998589496649520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,6 +48,8 @@ MonoBehaviour:
   NewStuffToSpawn:
   - WallUnit
   - Closet
+  - Chest
+  - Fridge
   Chance:
   - 100
   - 100
@@ -131,102 +58,6 @@ MonoBehaviour:
   ObjectToSpawn: {fileID: 1823309744821960283, guid: c7d0af915eaf9484f8ae62d6fd497e35,
     type: 3}
   RS: {fileID: 0}
---- !u!65 &3124779741853189880
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4154282575919771138}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.25, y: 0.1, z: 0.25}
-  m_Center: {x: 0, y: 0.05, z: 0}
---- !u!1 &6458379346718858054
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7058957907500398116}
-  - component: {fileID: 9200811512417833546}
-  - component: {fileID: 4683721863143583189}
-  m_Layer: 0
-  m_Name: HouseSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7058957907500398116
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6458379346718858054}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.82, z: -3.29}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1854562286376462038}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9200811512417833546
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6458379346718858054}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c667889124b2c614e965ec8dcc5da865, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Special: HouseStuff
-  NewStuffToSpawn:
-  - 
-  Chance: []
-  Freeze: 0
-  GS: {fileID: 0}
-  ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
-    type: 3}
-  RS: {fileID: 0}
---- !u!65 &4683721863143583189
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6458379346718858054}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.25, y: 0.1, z: 0.25}
-  m_Center: {x: 0, y: 0.05, z: 0}
 --- !u!1 &8820217348635006130
 GameObject:
   m_ObjectHideFlags: 0
@@ -252,13 +83,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8820217348635006130}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0.63, y: 0.117, z: -4.006}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.632, y: 0.117, z: 3.97}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1854562286376462038}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5984673375794978669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -362,15 +193,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 103949aaabb02d649878d5b8eff18192,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7058957907500398116}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 103949aaabb02d649878d5b8eff18192,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 9203116687066190567}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 103949aaabb02d649878d5b8eff18192,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2110912961775417872}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: -7067292239182340893, guid: 103949aaabb02d649878d5b8eff18192,
         type: 3}

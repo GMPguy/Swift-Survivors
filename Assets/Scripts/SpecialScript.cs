@@ -320,6 +320,12 @@ public class SpecialScript : MonoBehaviour {
             }
         }
 
+        foreach (GameObject FoundChest in GameObject.FindGameObjectsWithTag("Chest")) {
+            if (Vector3.Distance(FoundChest.transform.position, Where) < ExplosionRange) {
+                FoundChest.GetComponent<ChestScript>().Damage(1000f, new []{"Boom"}, null, Where);
+            }
+        }
+
         foreach (GameObject FoundItem in GameObject.FindGameObjectsWithTag("Item")) {
             if (Vector3.Distance(FoundItem.transform.position, Where) > 0.01f && Vector3.Distance(FoundItem.transform.position, Where) < ExplosionRange) {
                 string specID = GS.GetSemiClass(FoundItem.GetComponent<ItemScript>().Variables, "id");

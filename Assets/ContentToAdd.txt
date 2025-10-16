@@ -104,10 +104,10 @@ Items
         10. Berries
 Chests 10/20
     1. In houses and mansions
-        1. m Closet
-        2. m Wall unit
-        3. m Chest
-        4. m Fridge
+        1. x Closet
+        2. x Wall unit
+        3. x Chest
+        4. x Fridge
         5. m Kitchen
         6. m Bathroom
         7. m Bathroom 2
@@ -131,7 +131,7 @@ Buildings 8/35
     1. Houses 6/6
     2. Ruined houses 2/4
     3. Mansions 0/3
-    4. Huts 0/3
+    4. Huts 4/4
     5. Desert/Snowy constructions 0/5
     6. Desert huts 0/3
     7. Apartments 0/5

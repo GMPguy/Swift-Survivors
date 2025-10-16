@@ -39,6 +39,7 @@ public class EffectScript : MonoBehaviour {
     int PickSplat = 0;
     public GameObject GibCorpse;
     public GameObject[] Gibs;
+    public GameObject GlassBreak;
 
     public GameScript GS;
     // References
@@ -253,6 +254,30 @@ public class EffectScript : MonoBehaviour {
                     GameObject BloodSplat = Instantiate(GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().EffectPrefab);
                     BloodSplat.transform.position = this.transform.position + new Vector3(Random.Range(-2f, 2f), Random.Range(-1f, 1f), Random.Range(-2f, 2f));
                     BloodSplat.GetComponent<EffectScript>().EffectName = "BloodSplat";
+                }
+                break;
+            case "GlassBreak":
+                GlassBreak.SetActive(true);
+                Lifetime = 5f;
+
+                JustSoundsClip = "GlassBreak" + Random.Range(1, 6);
+
+                ParticleSystem.MainModule SetColorB = GlassBreak.GetComponent<ParticleSystem>().main;
+                SetColorB.startColor = new ParticleSystem.MinMaxGradient(EffectColor);
+
+                foreach (Transform shard in GlassBreak.transform) {
+                    shard.GetComponent<MeshRenderer>().material.color = EffectColor;
+                    shard.GetComponent<Rigidbody>().AddForce(new (
+                        Random.Range(-10f, 10f),
+                        Random.Range(-10f, 10f),
+                        Random.Range(-10f, 10f)
+                    ), ForceMode.VelocityChange);
+
+                    shard.GetComponent<Rigidbody>().AddTorque(new (
+                        Random.Range(-10f, 10f),
+                        Random.Range(-10f, 10f),
+                        Random.Range(-10f, 10f)
+                    ), ForceMode.VelocityChange);
                 }
                 break;
         }

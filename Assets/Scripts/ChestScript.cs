@@ -36,6 +36,9 @@ public class ChestScript : MonoBehaviour {
     int prevDoor = -1;
     int pickCurve = 0;
 
+    Vector3 squeezeScale;
+    float squeezeTime;
+
     // Use this for initialization
     void Awake() {
          RoundScript.CachedChest.Add(this);
@@ -98,6 +101,10 @@ public class ChestScript : MonoBehaviour {
                 break;
         }
 
+        // Squeeze damage
+        if ((squeezeTime -= Time.deltaTime) >= 0f)
+            this.transform.localScale = Vector3.Lerp(Vector3.one, squeezeScale, squeezeTime);
+
         if (activated <= 0f && RoundScript.CachedChest.Contains(this)) {
              RoundScript.CachedChest.Remove(this);
 
@@ -105,7 +112,6 @@ public class ChestScript : MonoBehaviour {
                 for (int fp = 0; fp < AllParts.Length; fp++)
                     if (AllParts[fp].transform.TryGetComponent<Rigidbody>(out var rig))
                         Destroy(rig);
-                Destroy(this);
              }
         }
         
@@ -176,6 +182,10 @@ public class ChestScript : MonoBehaviour {
             return;
         
         // Damage and destroy
+        Activate(1f);
+        squeezeTime = 1f;
+        squeezeScale = new (1.1f, .9f, 1.1f);
+
         if ((Health.x -= Damage) <= 0) {
             if (State != 2) {
                 Random.InitState(Seed);
@@ -199,7 +209,10 @@ public class ChestScript : MonoBehaviour {
             if (part.transform.TryGetComponent<MeshRenderer>(out MeshRenderer mesh))
                 foreach (Material mat in mesh.materials)
                     if (mat.name == part.GlassMaterial) {
-                        // TODO: add glass breaking effect
+                        EffectScript newEffect = Instantiate(EffectPrefab).GetComponent<EffectScript>();
+                        newEffect.transform.position = part.transform.position;
+                        newEffect.EffectName = "GlassBreak";
+                        newEffect.EffectColor = mat.color;
                         mat.color = Color.clear;
                     }
 
