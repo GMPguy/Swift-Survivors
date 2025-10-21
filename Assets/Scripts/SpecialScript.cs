@@ -322,7 +322,8 @@ public class SpecialScript : MonoBehaviour {
 
         foreach (GameObject FoundChest in GameObject.FindGameObjectsWithTag("Chest")) {
             if (Vector3.Distance(FoundChest.transform.position, Where) < ExplosionRange) {
-                FoundChest.GetComponent<ChestScript>().Damage(1000f, new []{"Boom"}, null, Where);
+                if (FoundChest.TryGetComponent<ChestScript>(out ChestScript chest))
+                    chest.Damage(1000f, new []{"Boom"}, null, Where);
             }
         }
 

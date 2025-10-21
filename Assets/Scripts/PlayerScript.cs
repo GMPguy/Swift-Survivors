@@ -3727,7 +3727,7 @@ public class PlayerScript : MonoBehaviour {
                             plant = false;
                             break;
                         default:
-                            currBuild = GS.itemCache[currID].getName();
+                            currBuild = GS.itemCache[currID].getNameEng();
                             plant = true;
                             maxBuildAngle = 10f;
                             break;

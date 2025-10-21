@@ -235847,6 +235847,7 @@ MonoBehaviour:
   AmmoItems: 
   AttachmentItems: 
   CraftingItems: 
+  BuildingItems: 
   InteractablePrefab: {fileID: 1290440283570394, guid: 2289d9dd8a0faa744b238b8a61146ddf,
     type: 3}
   MobPrefab: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6, type: 3}

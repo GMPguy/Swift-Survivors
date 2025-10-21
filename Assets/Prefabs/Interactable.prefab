@@ -3375,7 +3375,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MapSize: 0
-  MinimapSize: 8
+  MinimapSize: 16
   UpdateRotation: 1
 --- !u!1 &1494848878369341131
 GameObject:
@@ -3853,7 +3853,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MapSize: 0
-  MinimapSize: 8
+  MinimapSize: 16
   UpdateRotation: 1
 --- !u!1 &4454042345940911946
 GameObject:

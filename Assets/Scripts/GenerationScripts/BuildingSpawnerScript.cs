@@ -8,6 +8,7 @@ public class BuildingSpawnerScript : MonoBehaviour {
     public GameObject[] Buildings, Ruins;
 
     public Color[] WallColors, InnerColors, BathColors, PorchColors, RoofColors;
+    Color WallColor, InnerWallColor, BathWallColor, PorchWallColor, RoofColor;
     
     public void SpawnBuilding (float diff, Transform parent, Transform foward) {
 
@@ -30,43 +31,50 @@ public class BuildingSpawnerScript : MonoBehaviour {
             int pickID;
             
             pickID = Random.Range(0, WallColors.Length - 1);
-            Color WallColor = Color.Lerp(WallColors[pickID], WallColors[pickID + 1], Random.value);
+            WallColor = Color.Lerp(WallColors[pickID], WallColors[pickID + 1], Random.value);
 
             pickID = Random.Range(0, InnerColors.Length - 1);
-            Color InnerWallColor = Color.Lerp(InnerColors[pickID], InnerColors[pickID + 1], Random.value);
+            InnerWallColor = Color.Lerp(InnerColors[pickID], InnerColors[pickID + 1], Random.value);
 
             pickID = Random.Range(0, BathColors.Length - 1);
-            Color BathWallColor = Color.Lerp(BathColors[pickID], BathColors[pickID + 1], Random.value);
+            BathWallColor = Color.Lerp(BathColors[pickID], BathColors[pickID + 1], Random.value);
 
             pickID = Random.Range(0, PorchColors.Length - 1);
-            Color PorchWallColor = Color.Lerp(PorchColors[pickID], PorchColors[pickID + 1], Random.value);
+            PorchWallColor = Color.Lerp(PorchColors[pickID], PorchColors[pickID + 1], Random.value);
 
             pickID = Random.Range(0, RoofColors.Length - 1);
-            Color RoofColor = Color.Lerp(RoofColors[pickID], RoofColors[pickID + 1], Random.value);
+            RoofColor = Color.Lerp(RoofColors[pickID], RoofColors[pickID + 1], Random.value);
 
             foreach (Transform child in newBuilding.transform) {
-                if (child.TryGetComponent<MeshRenderer>(out MeshRenderer renderer))
-                    foreach (Material Mat in renderer.materials) {
-                        if (Mat.name == "HouseOuter1 (Instance)") {
-                            Mat.color = WallColor;
-                        } else if (Mat.name == "HouseOuter2 (Instance)") {
-                            Mat.color = WallColor * .75f;
-                        } else if (Mat.name == "HouseInner (Instance)") {
-                            Mat.color = InnerWallColor;
-                        } else if (Mat.name == "HouseBath (Instance)") {
-                            Mat.color = BathWallColor;
-                        } else if (Mat.name == "HousePorch (Instance)") {
-                            Mat.color = PorchWallColor;
-                        } else if (Mat.name == "HouseRoof (Instance)") {
-                            Mat.color = RoofColor;
-                        } else if (Mat.name == "HouseCarpet1 (Instance)") {
-                            Mat.color = Color.HSVToRGB((.7f + Random.value * .6f) % 1f, 1f, .25f);
-                        }
-                    }
+                TryPart(child);
+                if (child.childCount > 0)
+                    foreach (Transform subChild in child)
+                        TryPart(subChild);
             }
 
         }
 
+    }
+
+    void TryPart (Transform Part) {
+        if (Part.TryGetComponent<MeshRenderer>(out MeshRenderer renderer))
+            foreach (Material Mat in renderer.materials) {
+                if (Mat.name == "HouseOuter1 (Instance)") {
+                    Mat.color = WallColor;
+                } else if (Mat.name == "HouseOuter2 (Instance)") {
+                    Mat.color = WallColor * .75f;
+                } else if (Mat.name == "HouseInner (Instance)") {
+                    Mat.color = InnerWallColor;
+                } else if (Mat.name == "HouseBath (Instance)") {
+                    Mat.color = BathWallColor;
+                } else if (Mat.name == "HousePorch (Instance)") {
+                    Mat.color = PorchWallColor;
+                } else if (Mat.name == "HouseRoof (Instance)") {
+                    Mat.color = RoofColor;
+                } else if (Mat.name == "HouseCarpet1 (Instance)") {
+                    Mat.color = Color.HSVToRGB((.7f + Random.value * .6f) % 1f, 1f, .25f);
+                }
+            }
     }
 
 }

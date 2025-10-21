@@ -28,6 +28,7 @@ public class RoundScript : MonoBehaviour {
     public int[] AmmoItems;
     public int[] AttachmentItems;
     public int[] CraftingItems;
+    public int[] BuildingItems;
     public GameObject InteractablePrefab;
     public GameObject MobPrefab;
     public GameObject MobPHprefab;
@@ -1217,6 +1218,7 @@ public class RoundScript : MonoBehaviour {
         HealingItems = new int[] { 22, 23, 24, 25, 26, 106, 107 };
         AttachmentItems = new int[] { 100, 101, 102, 103, 104, 105 };
         CraftingItems = new int[] { 140, 141, 142, 143, 144, 145, 146, 147, 171, 172, 173, 174, 175 };
+        BuildingItems = new int[] { 148, 149, 150, 151 };
 
         List<int> SetTotal = new List<int>();
         foreach (int GiveF in FoodItems) {

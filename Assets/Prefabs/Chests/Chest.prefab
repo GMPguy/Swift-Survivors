@@ -255,7 +255,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MapSize: 0
-  MinimapSize: 8
+  MinimapSize: 16
   UpdateRotation: 1
 --- !u!1001 &3493852754685048645
 PrefabInstance:
@@ -451,7 +451,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -553,7 +553,7 @@ MonoBehaviour:
     y: 300
   OpeningTimes:
     x: 5
-    y: 5
+    y: 10
     z: 10
     w: 20
   LockChances:
@@ -774,7 +774,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0

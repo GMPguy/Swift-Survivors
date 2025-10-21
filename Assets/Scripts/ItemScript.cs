@@ -93,10 +93,11 @@ public class ItemScript : MonoBehaviour {
         }
 
         string ID = GS.GetSemiClass(Variables, "id");
-        if(ID == "148" || ID == "149" || ID == "150") ID = "Toolbox";
+        string meshID = ID;
+        if(ID == "148" || ID == "149" || ID == "150" || ID == "151") meshID = "Toolbox";
 
         foreach (Transform GetMesh in this.transform) {
-            if (GetMesh.name == ID) {
+            if (GetMesh.name == meshID) {
                 GetMesh.gameObject.SetActive(true);
                 SelectedMesh = GetMesh.gameObject;
 
@@ -111,7 +112,7 @@ public class ItemScript : MonoBehaviour {
 
                 if (State != 1) SelectedMesh.transform.localPosition = SelectedMesh.transform.localEulerAngles = Vector3.zero;
 
-                if (GS.GetSemiClass(Variables, "id") == "133" && InWater == false && State == 2) {
+                if (meshID == "133" && InWater == false && State == 2) {
                     GetMesh.transform.GetChild(0).gameObject.SetActive(true);
                 }
 
@@ -123,7 +124,7 @@ public class ItemScript : MonoBehaviour {
                             GetMat.color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f);
                         }
                     }
-                    if (GS.GetSemiClass(Variables, "id") == "13") {
+                    if (meshID == "13") {
                         GetMesh.transform.GetChild(1).GetComponent<Light>().color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f);
                         ParticleSystem.MainModule SetMesh = GetMesh.transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>().main;
                         SetMesh.startColor = new ParticleSystem.MinMaxGradient(Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f));
@@ -135,7 +136,7 @@ public class ItemScript : MonoBehaviour {
             }
         }
 
-        Name = GS.itemCache[int.Parse(GS.GetSemiClass(Variables, "id"))].getName();
+        Name = GS.itemCache[int.Parse(ID)].getName();
         if(GS.ExistSemiClass(Variables, "sq") && GS.GetSemiClass(Variables, "sq") != "1") 
             Name += " x" + GS.GetSemiClass(Variables, "sq");
         if(GS.ExistSemiClass(Variables, "rep")) CanBeFixed = true;

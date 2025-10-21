@@ -108,12 +108,12 @@ Chests 10/20
         2. x Wall unit
         3. x Chest
         4. x Fridge
-        5. m Kitchen
-        6. m Bathroom
-        7. m Bathroom 2
-        8. m Desk
-        9. m Hardware desk
-        10. m Safe
+        5. x Kitchen
+        6. x Bathroom
+        7. x Bathroom 2
+        8. x Desk
+        9. x Hardware desk
+        10. x Safe
     2. Outside
         1. m Briefcases
         2. m Car

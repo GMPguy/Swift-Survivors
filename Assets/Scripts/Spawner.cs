@@ -54,7 +54,7 @@ public class Spawner : MonoBehaviour {
                 NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]].startVariables};
             }
             Chance = new float[] { 50f, 10f };
-        } else if (Special == "BasementSpecial" || Special == "WellSpecial") {
+        } else if (Special == "BasementSpecial" || Special == "WellSpecial" || Special == "SafeSpecial") {
             int WhatExactly = Random.Range(0, 3);
             if (WhatExactly == 0) {
                 //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)]) };
@@ -66,7 +66,7 @@ public class Spawner : MonoBehaviour {
                 //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]) };
                 NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().Utilities[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Utilities.Length - 0.1f)]].startVariables};
             }
-            Chance = new float[] { 100f, 25f };
+            Chance = Special == "SafeSpecial" ? new float[] {100f, 100f} :  new float[] { 100f, 25f };
         } else if (Special == "Weaponary") {
             //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)]) };
             NewStuffToSpawn = new string[]{ GS.itemCache[RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)]].startVariables };
@@ -96,6 +96,10 @@ public class Spawner : MonoBehaviour {
             //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().HealingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().HealingItems.Length - 0.1f)]) };
             NewStuffToSpawn = new string[]{GS.itemCache[RS.GetComponent<RoundScript>().HealingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().HealingItems.Length - 0.1f)]].startVariables };
             Chance = new float[] { 50f, 10f };
+        } else if (Special == "BuildingItems") {
+            //StuffToSpawn = new Vector3[] { GameObject.Find("_GameScript").GetComponent<GameScript>().ReceiveItemVariables(RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - 0.1f)]) };
+            NewStuffToSpawn = new string[]{ GS.itemCache[RS.GetComponent<RoundScript>().BuildingItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().BuildingItems.Length - 0.1f)]].startVariables };
+            Chance = new float[] { 100f, 100f };
         } else if (Special == "LeftBarrel") {
             //StuffToSpawn = new Vector3[] { new Vector3(1f, 0f, 0f), new Vector3(1f, 0f, 0f) };
             NewStuffToSpawn = new string[]{"x1;y0;z0;"};
@@ -112,6 +116,30 @@ public class Spawner : MonoBehaviour {
             //StuffToSpawn = new Vector3[] { new Vector3(4f, 0f, 0f), new Vector3(4f, 0f, 0f) };
             NewStuffToSpawn = new string[]{"x4;y0;z0;"};
             Chance = new float[] { 10f, 5f };
+        } else if (Special == "Chests_SmallHouse") {
+            NewStuffToSpawn = new string[] {"Closet", "Chest", "Fridge", "Desk", "Safe", "Bathroom"};
+            Chance = new float[] { 100f, 25f };
+        } else if (Special == "Chests_BigHouse") {
+            NewStuffToSpawn = new string[] {"Closet", "WallUnit", "Chest", "Fridge", "Kitchen", "Desk", "Safe", "Bathroom", "Bathroom2"};
+            Chance = new float[] { 75f, 5f };
+        } else if (Special == "Chests_SmallLivingroom") {
+            NewStuffToSpawn = new string[] {"Closet", "Chest", "Desk", "Safe"};
+            Chance = new float[] { 100f, 25f };
+        } else if (Special == "Chests_BigLivingroom") {
+            NewStuffToSpawn = new string[] {"Closet", "WallUnit", "Chest", "Desk", "Safe"};
+            Chance = new float[] { 75f, 5f };
+        } else if (Special == "Chests_SmallKitchen") {
+            NewStuffToSpawn = new string[] {"Fridge", "Safe", "Bathroom"};
+            Chance = new float[] { 100f, 25f };
+        } else if (Special == "Chests_BigKitchen") {
+            NewStuffToSpawn = new string[] {"Fridge", "Kitchen", "Safe", "Bathroom", "Bathroom2", "HardwareDesk"};
+            Chance = new float[] { 75f, 5f };
+        } else if (Special == "Chests_SmallRuin") {
+            NewStuffToSpawn = new string[] {"Closet", "Chest", "Fridge", "Desk", "Safe", "Bathroom"};
+            Chance = new float[] { 50f, 2f };
+        } else if (Special == "Chests_BigRuin") {
+            NewStuffToSpawn = new string[] {"Closet", "WallUnit", "Chest", "Fridge", "Kitchen", "Desk", "Safe", "Bathroom", "Bathroom2"};
+            Chance = new float[] { 25f, 1f };
         } else if (NewStuffToSpawn.Length <= 0){
             Chance = new float[]{};
         }
@@ -120,9 +148,6 @@ public class Spawner : MonoBehaviour {
         if (Chance.Length >= 2 && PickChance <= Mathf.Lerp(Chance[0], Chance[1], RS.GetComponent<RoundScript>().DifficultySliderB)) {
             if (ObjectToSpawn.tag == "Item") {
                 GameObject SpawnItem = Instantiate(ObjectToSpawn) as GameObject;
-                SpawnItem.transform.position = this.transform.position;
-                //print(Special);
-                //print(NewStuffToSpawn.Length);
                 SpawnItem.GetComponent<ItemScript>().Variables = NewStuffToSpawn[(int)Random.Range(0f, NewStuffToSpawn.Length - 0.1f)];
                 
                 if (args != null && args.Length > 0 && args[0] == "BrokenChest") {
@@ -134,6 +159,8 @@ public class Spawner : MonoBehaviour {
                     ), ForceMode.VelocityChange);
                 } else
                     SpawnItem.GetComponent<ItemScript>().State = 1;
+
+                SpawnItem.transform.SetPositionAndRotation(this.transform.position, this.transform.rotation);
             } else if (ObjectToSpawn.tag == "Interactable") {
                 GameObject SpawnItem = Instantiate(ObjectToSpawn) as GameObject;
                 SpawnItem.transform.position = this.transform.position;
@@ -157,8 +184,7 @@ public class Spawner : MonoBehaviour {
                         Debug.LogError($"No chest of name {chosen} found");
                     else if (ObjectToSpawn.transform.GetChild(c).name == chosen) {
                         ChestScript SpawnChest = Instantiate(ObjectToSpawn.transform.GetChild(c).gameObject).GetComponent<ChestScript>();
-                        SpawnChest.transform.position = this.transform.position;
-                        SpawnChest.transform.rotation = this.transform.rotation;
+                        SpawnChest.transform.SetPositionAndRotation(this.transform.position, this.transform.rotation);
                         break;
                     }
                 

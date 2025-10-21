@@ -1,5 +1,57 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &204319205981486132
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 170293950778296360}
+  - component: {fileID: 461621602076061635}
+  m_Layer: 0
+  m_Name: BigKitchenSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &170293950778296360
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204319205981486132}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -1.43, y: 0.126, z: 0.376}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1854562286376462038}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &461621602076061635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204319205981486132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c667889124b2c614e965ec8dcc5da865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Special: Chests_BigKitchen
+  NewStuffToSpawn: []
+  Chance: []
+  Freeze: 0
+  GS: {fileID: 0}
+  ObjectToSpawn: {fileID: 1823309744821960283, guid: c7d0af915eaf9484f8ae62d6fd497e35,
+    type: 3}
+  RS: {fileID: 0}
 --- !u!1 &4154282575919771138
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,7 +63,7 @@ GameObject:
   - component: {fileID: 9203116687066190567}
   - component: {fileID: 5902998589496649520}
   m_Layer: 0
-  m_Name: IndustrialSpawner
+  m_Name: BigLivingroom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,15 +96,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c667889124b2c614e965ec8dcc5da865, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Special: Chest
+  Special: Chests_BigLivingroom
+  NewStuffToSpawn: []
+  Chance: []
+  Freeze: 0
+  GS: {fileID: 0}
+  ObjectToSpawn: {fileID: 1823309744821960283, guid: c7d0af915eaf9484f8ae62d6fd497e35,
+    type: 3}
+  RS: {fileID: 0}
+--- !u!1 &7691673157593165645
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3352846909348876713}
+  - component: {fileID: 7086661105676201659}
+  m_Layer: 0
+  m_Name: EasyChest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3352846909348876713
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7691673157593165645}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -0.126, y: 2.829, z: 3.893}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1854562286376462038}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &7086661105676201659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7691673157593165645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c667889124b2c614e965ec8dcc5da865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Special: 
   NewStuffToSpawn:
-  - WallUnit
-  - Closet
   - Chest
-  - Fridge
+  - Safe
   Chance:
-  - 100
-  - 100
+  - 10
+  - 10
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1823309744821960283, guid: c7d0af915eaf9484f8ae62d6fd497e35,
@@ -194,6 +296,14 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 9203116687066190567}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 103949aaabb02d649878d5b8eff18192,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 170293950778296360}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 103949aaabb02d649878d5b8eff18192,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3352846909348876713}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: -7067292239182340893, guid: 103949aaabb02d649878d5b8eff18192,
         type: 3}

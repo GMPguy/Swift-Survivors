@@ -147,8 +147,9 @@ public class GameScript : MonoBehaviour {
         }
         public itemClass(){}
 
-        public string getName(){ return GS.SetString(Name[0], Name[1]); }
-        public string getDesc(){ return GS.SetString(Desc[0], Desc[1]); }
+        public string getName() => GS.SetString(Name[0], Name[1]);
+        public string getNameEng() => Name[0];
+        public string getDesc() => GS.SetString(Desc[0], Desc[1]);
     }
     // Improved item classification
 

@@ -203,7 +203,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MapSize: 0
-  MinimapSize: 8
+  MinimapSize: 16
   UpdateRotation: 1
 --- !u!1 &6112414040782838778
 GameObject:
@@ -529,7 +529,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -616,9 +616,9 @@ MonoBehaviour:
     y: 500
   OpeningTimes:
     x: 2
-    y: 2
+    y: 4
     z: 5
-    w: 5
+    w: 10
   LockChances:
     x: 0
     y: 0
@@ -888,7 +888,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1012,7 +1012,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
