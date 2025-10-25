@@ -7,16 +7,21 @@ public class BuildingSpawnerScript : MonoBehaviour {
     public AnimationCurve ChanceOfRuing, ChanceOfResignation;
     public GameObject[] Buildings, Ruins;
 
-    public Color[] WallColors, InnerColors, BathColors, PorchColors, RoofColors;
-    Color WallColor, InnerWallColor, BathWallColor, PorchWallColor, RoofColor;
+    public Color[] WallColors, InnerColors, BathColors, PorchColors, RoofColors, TileColorsA, TileColorsB;
+    Color WallColor, InnerWallColor, BathWallColor, PorchWallColor, RoofColor, TileColorA, TileColorB;
     
     public void SpawnBuilding (float diff, Transform parent, Transform foward) {
 
         if (Random.value > ChanceOfResignation.Evaluate(diff)) {
 
-            GameObject newBuilding = GameObject.Instantiate( Random.value > ChanceOfRuing.Evaluate(diff)
-                ? Buildings[Random.Range(0, Buildings.Length)]
-                : Ruins[Random.Range(0, Ruins.Length)] );
+            GameObject newBuilding;
+
+            if (Ruins != null && Ruins.Length > 0)
+                newBuilding = GameObject.Instantiate( Random.value > ChanceOfRuing.Evaluate(diff)
+                    ? Buildings[Random.Range(0, Buildings.Length)]
+                    : Ruins[Random.Range(0, Ruins.Length)] );
+            else
+                newBuilding = GameObject.Instantiate(Buildings[Random.Range(0, Buildings.Length)]);
             
             Vector3 localRotation = newBuilding.transform.eulerAngles;
             newBuilding.transform.SetParent(foward);
@@ -27,23 +32,14 @@ public class BuildingSpawnerScript : MonoBehaviour {
             newBuilding.transform.SetParent(parent);
             newBuilding.name = "OVER HERE";
             
-            // Set up material colors
-            int pickID;
-            
-            pickID = Random.Range(0, WallColors.Length - 1);
-            WallColor = Color.Lerp(WallColors[pickID], WallColors[pickID + 1], Random.value);
-
-            pickID = Random.Range(0, InnerColors.Length - 1);
-            InnerWallColor = Color.Lerp(InnerColors[pickID], InnerColors[pickID + 1], Random.value);
-
-            pickID = Random.Range(0, BathColors.Length - 1);
-            BathWallColor = Color.Lerp(BathColors[pickID], BathColors[pickID + 1], Random.value);
-
-            pickID = Random.Range(0, PorchColors.Length - 1);
-            PorchWallColor = Color.Lerp(PorchColors[pickID], PorchColors[pickID + 1], Random.value);
-
-            pickID = Random.Range(0, RoofColors.Length - 1);
-            RoofColor = Color.Lerp(RoofColors[pickID], RoofColors[pickID + 1], Random.value);
+            // Set up material colors            
+            WallColor = GenerateColor(WallColors);
+            InnerWallColor = GenerateColor(InnerColors);
+            BathWallColor = GenerateColor(BathColors);
+            PorchWallColor = GenerateColor(PorchColors);
+            RoofColor = GenerateColor(RoofColors);
+            TileColorA = GenerateColor(TileColorsA);
+            TileColorB = GenerateColor(TileColorsB);
 
             foreach (Transform child in newBuilding.transform) {
                 TryPart(child);
@@ -71,10 +67,29 @@ public class BuildingSpawnerScript : MonoBehaviour {
                     Mat.color = PorchWallColor;
                 } else if (Mat.name == "HouseRoof (Instance)") {
                     Mat.color = RoofColor;
+                } else if (Mat.name == "HouseRoof2 (Instance)") {
+                    Mat.color = RoofColor * .8f;
+                } else if (Mat.name == "HouseRoof3 (Instance)") {
+                    Mat.color = RoofColor * .6f;
                 } else if (Mat.name == "HouseCarpet1 (Instance)") {
                     Mat.color = Color.HSVToRGB((.7f + Random.value * .6f) % 1f, 1f, .25f);
+                } else if (Mat.name == "HouseTiles1 (Instance)") {
+                    Mat.color = TileColorA;
+                } else if (Mat.name == "HouseTiles2 (Instance)") {
+                    Mat.color = TileColorB;
                 }
             }
+    }
+
+    Color GenerateColor (Color[] colors) {
+        int pickID = Random.Range(0, colors.Length - 1);
+
+        if (colors == null || colors.Length == 0)
+            return Color.clear;
+        else if (colors.Length == 1)
+            return colors[0];
+        else
+            return Color.Lerp(colors[pickID], colors[pickID + 1], Random.value);
     }
 
 }

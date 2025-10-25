@@ -390,6 +390,10 @@ MonoBehaviour:
   - {r: 0.3509434, g: 0.3007977, b: 0.23241721, a: 1}
   - {r: 0.3509434, g: 0.18753341, b: 0.13176927, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
+  TileColorsA:
+  - {r: 0.13962269, g: 0.13962269, b: 0.13962269, a: 1}
+  TileColorsB:
+  - {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &2471991494744577652
 GameObject:
   m_ObjectHideFlags: 0
@@ -658,6 +662,10 @@ MonoBehaviour:
   - {r: 0.3509434, g: 0.3007977, b: 0.23241721, a: 1}
   - {r: 0.3509434, g: 0.18753341, b: 0.13176927, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
+  TileColorsA:
+  - {r: 0.13962269, g: 0.13962269, b: 0.13962269, a: 1}
+  TileColorsB:
+  - {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &3665278479498604769
 GameObject:
   m_ObjectHideFlags: 0
@@ -849,8 +857,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: LeftBarrel
   NewStuffToSpawn: []
-  StuffToSpawn: []
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1290440283570394, guid: 2289d9dd8a0faa744b238b8a61146ddf,
     type: 3}
@@ -999,6 +1007,10 @@ MonoBehaviour:
   - {r: 0.3509434, g: 0.3007977, b: 0.23241721, a: 1}
   - {r: 0.3509434, g: 0.18753341, b: 0.13176927, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
+  TileColorsA:
+  - {r: 0.13962269, g: 0.13962269, b: 0.13962269, a: 1}
+  TileColorsB:
+  - {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &3872898805465340581
 GameObject:
   m_ObjectHideFlags: 0
@@ -1143,6 +1155,10 @@ MonoBehaviour:
   - {r: 0.3509434, g: 0.3007977, b: 0.23241721, a: 1}
   - {r: 0.3509434, g: 0.18753341, b: 0.13176927, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
+  TileColorsA:
+  - {r: 0.13962269, g: 0.13962269, b: 0.13962269, a: 1}
+  TileColorsB:
+  - {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &6236545946974899610
 GameObject:
   m_ObjectHideFlags: 0
@@ -1410,6 +1426,10 @@ MonoBehaviour:
   - {r: 0.3509434, g: 0.3007977, b: 0.23241721, a: 1}
   - {r: 0.3509434, g: 0.18753341, b: 0.13176927, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
+  TileColorsA:
+  - {r: 0.13962269, g: 0.13962269, b: 0.13962269, a: 1}
+  TileColorsB:
+  - {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &6655599828590221637
 GameObject:
   m_ObjectHideFlags: 0

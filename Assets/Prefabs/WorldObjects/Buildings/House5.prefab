@@ -378,7 +378,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7827290094704374470, guid: be5821a63df058e4cac37f0102396659,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -7516863440216746366, guid: be5821a63df058e4cac37f0102396659,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: be5821a63df058e4cac37f0102396659,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -6834176881332923034, guid: be5821a63df058e4cac37f0102396659,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -4300916876990890711, guid: be5821a63df058e4cac37f0102396659,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -2456589464880675337, guid: be5821a63df058e4cac37f0102396659,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -1787593864234053010, guid: be5821a63df058e4cac37f0102396659,
         type: 3}
       propertyPath: m_CastShadows
       value: 2
@@ -387,6 +417,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: House5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4463703420452239612, guid: be5821a63df058e4cac37f0102396659,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6289256941690352606, guid: be5821a63df058e4cac37f0102396659,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
