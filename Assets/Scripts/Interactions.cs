@@ -15,6 +15,7 @@ public class Interactions : MonoBehaviour {
     public string[] Icons = new string[] { "" };
     public string[] Options = new string[] { "" };
     public int ThisOption = 0;
+    public bool CanBePicklocked;
 
     GameScript GS;
 
@@ -34,6 +35,9 @@ public class Interactions : MonoBehaviour {
         RS = GameObject.Find("_RoundScript");
         MainCamera = GameObject.Find("MainCamera");
         MainCanvas = GameObject.Find("MainCanvas");
+
+        if (Options[0] is "Locked" or "Door" or "BreakBarel" or "OpenChest")
+            CanBePicklocked = true;
 
     }
 	
@@ -83,6 +87,8 @@ public class Interactions : MonoBehaviour {
             ReturnThis = GS.GetComponent<GameScript>().SetString(
                 "Open " + this.transform.parent.GetComponent<ChestScript>().Name[0],
                 "Otwórz " + this.transform.parent.GetComponent<ChestScript>().Name[1]);
+        } else if (Options[ThisOption] == "Locked") {
+            ReturnThis = GS.GetComponent<GameScript>().SetString("Locked...", "Zamknięte...");
         }
 
         return ReturnThis;

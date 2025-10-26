@@ -3286,37 +3286,58 @@ public class PlayerScript : MonoBehaviour {
                     break;
                 case 97:
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && InteractedGameobject != null) {
-                        if (InteractedGameobject.tag == "Interactable") {
-                            if ((InteractedGameobject.GetComponent<InteractableScript>().Variables.x == 3f && InteractedGameobject.GetComponent<InteractableScript>().Variables.z == 2f) || InteractedGameobject.GetComponent<InteractableScript>().Variables.x == 1f) {
-                                CantUseItem = 0.5f;
-                                CantSwitchItem = 0.5f;
-                                ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("LockPick", "97", AnimationAddition), 0, 0f);
-                                int Picklock = (int)Random.Range(0f, 3.9f);
-                                if (Picklock == 0 || Picklock == 1) {
-                                    GameObject Ring = Instantiate(EffectPrefab) as GameObject;
-                                    Ring.transform.position = this.transform.position;
-                                    Ring.GetComponent<EffectScript>().EffectName = "Unpin";
-                                    MainCanvas.Flash(new Color32(255, 255, 255, 75), new float[]{0.02f, 0.02f});
-                                    if (InteractedGameobject.GetComponent<InteractableScript>().Variables.x == 1f) {
-                                        GS.Mess(GS.SetString("Barrel has been opened", "Beczka została otwarta"), "Good");
-                                        InteractedGameobject.GetComponent<InteractableScript>().Interaction("Break", 9999f);
-                                    } else if (InteractedGameobject.GetComponent<InteractableScript>().Variables.x == 3f) {
-                                        GS.Mess(GS.SetString("Door has been opened", "Drzwi zostały otwarta"), "Good");
-                                        InteractedGameobject.GetComponent<InteractableScript>().Variables.z = 0f;
-                                    }
-                                } else if (Picklock == 2) {
+                        Transform picked = null;
+                        bool success = false;
+
+                        if (InteractedGameobject.TryGetComponent<Interactions>(out Interactions inter)) {
+                            if (inter.CanBePicklocked) {
+                                picked = InteractedGameobject.transform.parent;
+                            }
+                        }
+
+                        if (picked != null) {
+                            CantUseItem = 1f;
+                            CantSwitchItem = 1f;
+
+                            switch (Random.Range(0, 5)) {
+                                case 0: case 1:
+                                    success = true;
+                                    break;
+                                case 2:
                                     InvGet(CurrentItemHeld.ToString(), 1);
                                     MainCanvas.Flash(new Color32(255, 255, 255, 75), new float[]{0.5f, 0.5f});
                                     GS.Mess(GS.SetString("Lockpick broke!", "Wytrych się złamał!"), "ItemBroke");
-                                } else if (Picklock == 3) {
-                                    GameObject Ring = Instantiate(EffectPrefab) as GameObject;
-                                    Ring.transform.position = this.transform.position;
-                                    Ring.GetComponent<EffectScript>().EffectName = "Unpin";
-                                    MainCanvas.Flash(new Color32(255, 255, 255, 75), new float[]{0.5f, 0.5f});
+                                    ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("LockpickFail", "97", AnimationAddition), 0, 0f);
+                                    break;
+                                default:
                                     GS.Mess(GS.SetString("Nothing...", "Nic..."));
-                                }
-                            }
+                                    ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Lockpick", "97", AnimationAddition), 0, 0f);
+                                    break;
+                            };
                         }
+
+                        if (success) {
+                            GameObject Ring = Instantiate(EffectPrefab) as GameObject;
+                            Ring.transform.position = this.transform.position;
+                            Ring.GetComponent<EffectScript>().EffectName = "Unpin";
+                            MainCanvas.Flash(new Color32(255, 255, 255, 75), new float[]{0.02f, 0.02f});
+                            ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Lockpick", "97", AnimationAddition), 0, 0f);
+
+                            if (picked.TryGetComponent<InteractableScript>(out InteractableScript interactable)) {
+                                if (interactable.Variables.x == 1f) {
+                                    GS.Mess(GS.SetString("Barrel has been opened", "Beczka została otwarta"), "Good");
+                                    interactable.Interaction("Break", 9999f);
+                                } else if (interactable.Variables.x == 3f) {
+                                    GS.Mess(GS.SetString("Door has been opened", "Drzwi zostały otwarte"), "Good");
+                                    interactable.Variables.z = 0f;
+                                }
+                            } else if (picked.TryGetComponent<ChestScript>(out ChestScript chest)) {
+                                GS.Mess(GS.SetString(chest.Name[0] + " has been opened", "Otwarto " + chest.Name[1]), "Good");
+                                chest.Unlock(this);
+                            }
+                            
+                        }
+                        
                     }
                     break;
                 case 98: case 178:

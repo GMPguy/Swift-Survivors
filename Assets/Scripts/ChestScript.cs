@@ -64,7 +64,7 @@ public class ChestScript : MonoBehaviour {
         );
 
         if (Random.value < Mathf.Lerp(LockChances.x, LockChances.y, diff))
-            Opening.y = Random.Range(.1f, .9f) * doorOpening.z;
+            Opening.y = Mathf.Lerp(.1f, .9f, Mathf.Pow(Random.value, 3)) * Opening.z;
         else
             Opening.y = Opening.z * 2f;
 
@@ -124,6 +124,25 @@ public class ChestScript : MonoBehaviour {
              RoundScript.CachedChest.Add(this);
     }
 
+    public void Unlock (PlayerScript ps) {
+        if (State != 0 && State != 1)
+            return;
+
+        // Unlock
+        Destroy(Lock);
+        Destroy(MinimapMarker);
+        ps.CantInteract = .5f;
+
+        Random.InitState(Seed);
+        if (State != 2)
+            for (int s = 0; s < Spawners.Length; s++)
+                Spawners[s].Spawn();
+
+        State = 2;
+            
+        Activate(doorOpening.y);
+    }
+
     public void Open (PlayerScript ps) {
         
         if (State != 0)
@@ -135,7 +154,7 @@ public class ChestScript : MonoBehaviour {
         if (Opening.x >= Opening.y) {
             // Locked
             State = 1;
-            Destroy(Lock);
+            Lock.GetComponent<Interactions>().Options[0] = "Locked";
             Destroy(MinimapMarker);
             if (ps != null)
                 GS.Mess(GS.SetString("Actually it's locked", "A jednak zamknięte"), "Error");
