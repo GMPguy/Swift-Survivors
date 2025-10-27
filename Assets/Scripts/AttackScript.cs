@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
+﻿using System.Globalization;
 using UnityEngine;
 
 public class AttackScript : MonoBehaviour {
@@ -63,6 +60,7 @@ public class AttackScript : MonoBehaviour {
     public GameObject WaterNull;
     Vector3 SlimenPos;
     float DropBullet = 0f;
+    float Gravity = 0f;
     // Misc
 
 	// Use this for initialization
@@ -389,7 +387,7 @@ public class AttackScript : MonoBehaviour {
                     AttackSpeeds = new float[] { 50f, 0f };
                     Lifetime = new float[] { 1f, 0f };
                 } else {
-                    AttackSpeeds = new float[] { 50f, 30f };
+                    AttackSpeeds = new float[] { 50f, 10f };
                     Lifetime = new float[] { 5f, 0f };
                 }
                 DiesInWater = true;
@@ -867,11 +865,11 @@ public class AttackScript : MonoBehaviour {
         }
 
         if (AttackType == "Gun" && (AttackHit == 0 || HitWater)) {
-            this.transform.position += this.transform.forward * (AttackSpeeds[0] / 50f);
-            this.transform.eulerAngles += Vector3.right * (Vector3.Distance(SlimenPos, this.transform.position) / AttackDistance) / 5f;
+            Gravity += AttackSpeeds[1] * Time.fixedDeltaTime;
+            this.transform.position += (transform.forward * (AttackSpeeds[0] / 50f)) + (Vector3.up * Gravity / -50f);
         } else if (AttackMechanic == "Projectile" && (AttackHit == 0 || HitWater)) {
-            this.transform.position += this.transform.forward * (AttackSpeeds[0] / 50f);
-            this.transform.eulerAngles += Vector3.right * (AttackSpeeds[1] / 50f);
+            Gravity += AttackSpeeds[1] * Time.fixedDeltaTime;
+            this.transform.position += (transform.forward * (AttackSpeeds[0] / 50f)) + (Vector3.up * Gravity / -50f);
         }
 
         if (GunFireObj && Slimend){ //&& FollowSlimend != null){

@@ -168,6 +168,7 @@ public class PlayerScript : MonoBehaviour {
     //public float CantPickOrDrop = 0f;
     public float CantInteract = 0f;
     public float CantCraft = 0f;
+    float IsOpeningChest = 0f;
     float IsReloading = 0f;
     float EnergyRegen = 0f;
     float GunSpreadRegain = 0f;
@@ -317,6 +318,7 @@ public class PlayerScript : MonoBehaviour {
             if (CantInteract > 0f) CantInteract -= 0.02f;
             if (EnergyRegen > 0f) EnergyRegen -= 0.02f;
             if (IsReloading > 0f) IsReloading -= 0.02f;
+            if (IsOpeningChest > 0f) IsOpeningChest -= 0.02f;
             if (GunSpreadRegain > 0f) GunSpreadRegain -= 0.02f;
             if (GunSpreadPC > 0f && GunSpreadRegain <= 0f) GunSpreadPC -= 0.02f;
             if (JumpCooldown > 0f) JumpCooldown -= 0.2f;
@@ -958,7 +960,7 @@ public class PlayerScript : MonoBehaviour {
                 int moved = 0;
                 int SlowDown = 0; // 0 Normal   1 Can't sprint   2 Slow Movement   3 Can't jump
 
-                if ((InWater == true && GS.GetSemiClass(Inventory[CurrentItemHeld], "id") != "87") || BrokenBone == 1 || IsCrouching > 0f || GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "998") {
+                if ((InWater == true && GS.GetSemiClass(Inventory[CurrentItemHeld], "id") != "87") || BrokenBone == 1 || IsCrouching > 0f || GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "998" || IsOpeningChest > 0f) {
                     SlowDown = 3;
                 } else if (ZoomValues[1] != ZoomValues[2]) {
                     SlowDown = 2;
@@ -1101,12 +1103,12 @@ public class PlayerScript : MonoBehaviour {
                     CantInteract = 0.25f;
                     InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Interaction("GatherAmmo", 0f);
                 }
-            } else if (InteractedGameobject.transform.parent != null && InteractedGameobject.transform.parent.tag == "Chest" && GS.ReceiveButtonPress("Interaction", "Hold") > 0f) {
+            } else if (InteractedGameobject.transform.parent != null && InteractedGameobject.transform.parent.tag == "Chest" && GS.ReceiveButtonPress("Interaction", "Hold") > 0f && CantInteract <= 0f) {
                 if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "OpenChest" && InteractedGameobject.transform.parent.GetComponent<ChestScript>().State == 0 && CantInteract <= 0f) {
                     InteractedGameobject.transform.parent.GetComponent<ChestScript>().Open(this);
-                    CantMove = Mathf.Max(CantMove, .2f);
-                    CantUseItem = Mathf.Max(CantUseItem, .2f);
-                    CantSwitchItem = Mathf.Max(CantSwitchItem, .2f);
+                    CantUseItem = Mathf.Max(CantUseItem, .1f);
+                    CantSwitchItem = Mathf.Max(CantSwitchItem, .1f);
+                    IsOpeningChest = Mathf.Max(IsOpeningChest, .1f);
                     ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Pullup", GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), ""), 0, 0f);
                 }
             } else if (InteractedGameobject.tag == "Mob" && GS.ReceiveButtonPress("Interaction", "Hold") > 0f) {
@@ -3212,7 +3214,7 @@ public class PlayerScript : MonoBehaviour {
                                 CantUseItem = 0.5f;
                                 CantSwitchItem = 0.5f;
                                 ItemsShown.GetComponent<Animator>().Play(PlayItemAnim(AnimationToPlay, GS.GetSemiClass(Inventory[CurrentItemHeld], "id"), AnimationAddition), 0, 0f);
-                                InteractedGameobject.GetComponent<ItemScript>().Variables = GS.SetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "va", (Mathf.Clamp( float.Parse(GS.GetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "va"), CultureInfo.InvariantCulture) + AmountToFix, 0f, 100f)).ToString() );//InteractedGameobject.GetComponent<ItemScript>().Variables.y = Mathf.Clamp(InteractedGameobject.GetComponent<ItemScript>().Variables.y + AmountToFix, 0f, 100f);
+                                InteractedGameobject.GetComponent<ItemScript>().Variables = GS.SetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "va", (Mathf.Clamp( float.Parse(GS.GetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "va"), CultureInfo.InvariantCulture) + AmountToFix, 0f, 100f)).ToString(CultureInfo.InvariantCulture) );//InteractedGameobject.GetComponent<ItemScript>().Variables.y = Mathf.Clamp(InteractedGameobject.GetComponent<ItemScript>().Variables.y + AmountToFix, 0f, 100f);
                                 if (SoundToPlay != "") {
                                     GameObject RepairEffect = Instantiate(EffectPrefab) as GameObject;
                                     RepairEffect.transform.position = InteractedGameobject.transform.position;

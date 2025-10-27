@@ -563,22 +563,24 @@ public class CanvasScript : MonoBehaviour {
             // Crosshairs
 
             // Interact icon
-            if (MainPlayer.InteractedGameobject != null && MainPlayer.InteractedGameobject.GetComponent<Interactions>().Options[MainPlayer.InteractedGameobject.GetComponent<Interactions>().ThisOption] != "") {
+            if (MainPlayer.InteractedGameobject != null && MainPlayer.InteractedGameobject.TryGetComponent<Interactions>(out Interactions inter) && inter.Options[inter.ThisOption] != "") {
                 InteractableIcon.transform.localScale = Vector3.one;
                 GameObject i = MainPlayer.InteractedGameobject;
-                InteractableIcon.transform.position = Vector3.Lerp(InteractableIcon.transform.position, MainCamera.GetComponent<Camera>().WorldToScreenPoint(i.transform.position + i.transform.forward * i.GetComponent<Interactions>().Offset.z + i.transform.right * i.GetComponent<Interactions>().Offset.x + i.transform.up * i.GetComponent<Interactions>().Offset.y), 0.5f * (Time.deltaTime * 50f));
+                InteractableIcon.transform.position = Vector3.Lerp(InteractableIcon.transform.position, MainCamera.GetComponent<Camera>().WorldToScreenPoint(i.transform.position + i.transform.forward * inter.Offset.z + i.transform.right * inter.Offset.x + i.transform.up * inter.Offset.y), 0.5f * (Time.deltaTime * 50f));
                 foreach (Transform CheckInterIcon in InteractableIcon.transform) {
                     if (CheckInterIcon.GetComponent<Text>() != null) {
-                        CheckInterIcon.GetComponent<Text>().text = i.GetComponent<Interactions>().SetText();
+                        CheckInterIcon.GetComponent<Text>().text = inter.SetText();
                         if(i.tag == "Item"){
                             int CHIid = int.Parse(GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id"));
                             if(i.GetComponent<ItemScript>().CanBeFixed && GS.GetSemiClass(i.GetComponent<ItemScript>().Variables, "va") != "100" && (CHIid >= 88 & CHIid <= 90)){
-                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n[LMB] Repair ", "\n[LMB] Napraw ") + (int)float.Parse(GS.GetSemiClass(i.GetComponent<ItemScript>().Variables, "va"), CultureInfo.InvariantCulture);
+                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Repair ", "\n> Napraw ") + (int)float.Parse(GS.GetSemiClass(i.GetComponent<ItemScript>().Variables, "va"), CultureInfo.InvariantCulture);
                             } else if(i.GetComponent<ItemScript>().CanHaveAttachments && (CHIid >= 100 && CHIid <= 105 || CHIid == 14)){
-                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n[LMB] Attach ", "\n[LMB] Zamontuj ") + GS.itemCache[CHIid].getName();
+                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Attach ", "\n> Zamontuj ") + GS.itemCache[CHIid].getName();
                             }
+                        } else if (inter.CanBePicklocked && GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id") == "97") {
+                            CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Pick lock ", "\n> Otwórz wytrychem ");
                         }
-                    } else if (CheckInterIcon.name == i.GetComponent<Interactions>().Icons[i.GetComponent<Interactions>().ThisOption]) {
+                    } else if (CheckInterIcon.name == inter.Icons[inter.ThisOption]) {
                         CheckInterIcon.localScale = Vector3.one;
                     } else {
                         CheckInterIcon.localScale = Vector3.zero;
