@@ -40,6 +40,16 @@ MonoBehaviour:
     rgba: 4294967295
   - serializedVersion: 2
     rgba: 4293714633
+  Noises:
+  - MinMap:
+    - {fileID: 2800000, guid: 65fafbe62c5b3854380e43429f272927, type: 3}
+    - {fileID: 2800000, guid: 31b051c7de76a5e42ba562d78c27364b, type: 3}
+    MaxMap:
+    - {fileID: 2800000, guid: 55ecd58767c14174d89fb67b9b119209, type: 3}
+    - {fileID: 2800000, guid: 6901857b03d89774bbffe62334366f17, type: 3}
+    FlipLongitude: 1
+    FlipLatitude: 1
+    Rotations: 00000000
   MobPHsuggestion: Default
   AmountOfMobs: 0a00000005000000
   AmountOfMutants:

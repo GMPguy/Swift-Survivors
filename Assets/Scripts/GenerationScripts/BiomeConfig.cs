@@ -11,9 +11,12 @@ public class BiomeConfig : ScriptableObject {
     // Variables
     public string[] BiomeName;
     public string[] AvailableTerrainTypes;
+    public GameObject Bottomland;
+
     public GameObject[] Grasses;
     public string[] Sponges;
     public Color32[] GrassColor;
+    public NoiseMap[] Noises;
 
     public string MobPHsuggestion = "Default";
     public int[] AmountOfMobs;
@@ -86,6 +89,14 @@ public class BiomeConfig : ScriptableObject {
     public struct Tile {
         public TileBase TileObject;
         public int2 Chances;
+    }
+
+    [System.Serializable]
+    public struct NoiseMap {
+        public Texture2D[] MinMap;
+        public Texture2D[] MaxMap;
+        public bool FlipLongitude, FlipLatitude;
+        public int[] Rotations;
     }
 
 }

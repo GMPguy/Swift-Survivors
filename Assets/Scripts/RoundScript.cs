@@ -5,6 +5,8 @@ using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using Unity.Mathematics;
+using Random=UnityEngine.Random;
 
 public class RoundScript : MonoBehaviour {
 
@@ -60,7 +62,11 @@ public class RoundScript : MonoBehaviour {
     public BiomeConfig[] ListOfBiomes;
     public GameObject HordeMapList;
     public GameObject[] HordeWaypoints;
+
     public BiomeConfig Map_Biome;
+    public int Map_BiomeNoiseMap;
+    public int3 Map_BiomeNoiseMapRotation;
+
     public MapInfo Map_Horde;
     public GameObject SkyboxObj;
     public Texture[] SkyboxImages;
@@ -286,7 +292,7 @@ public class RoundScript : MonoBehaviour {
 
                 DifficultySliderA = Mathf.Clamp(GS.Round / (30f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 5f)), 0f, 1f);
                 if (IsCausual)
-                    DifficultySliderB = GS.Round > 1 ? Random.value /*GS.SeedPerlin(GS.RoundSeed)*/ : .1f;
+                    DifficultySliderB = GS.Round > 1 ? Mathf.Lerp(Random.Range(0f, .75f), Random.Range(.75f, 1f), DifficultySliderA * .66f) : .1f;
                 else
                     DifficultySliderB = DifficultySliderA;
 
@@ -297,6 +303,13 @@ public class RoundScript : MonoBehaviour {
                         case 0: // Default world spawn
                             // GTODO - This is where generation of default worlds begin
                             Map_Biome = ListOfBiomes[GS.Biome];
+                            Map_BiomeNoiseMap = Random.Range(0, Map_Biome.Noises.Length);
+                            Map_BiomeNoiseMapRotation = new int3 (
+                                Map_Biome.Noises[Map_BiomeNoiseMap].FlipLongitude && Random.value > .5f ? -1 : 1,
+                                Map_Biome.Noises[Map_BiomeNoiseMap].FlipLatitude && Random.value > .5f ? -1 : 1,
+                                Map_Biome.Noises[Map_BiomeNoiseMap].Rotations[Random.Range(0,  Map_Biome.Noises[Map_BiomeNoiseMap].Rotations.Length)]
+                            );
+
                             Map_Horde = null;
 
                             if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
@@ -1526,11 +1539,20 @@ public class RoundScript : MonoBehaviour {
         } else if (WhatSet == "Horde"){
             float LerpValue = RoundTime / 5f;
             if(GS.SkyboxType < 2) LerpValue = 0f;
-            GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = Color32.Lerp(Map_Horde.SkyColors[1], Map_Horde.SkyColors[0], RoundTime / 5f);
-            RenderSettings.fogColor = GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor;
-            RenderSettings.fogEndDistance = Mathf.Lerp(Map_Horde.FogDistances[1], Map_Horde.FogDistances[0], RoundTime / 5f);
-            RenderSettings.ambientLight = Color32.Lerp(Map_Horde.AmbientColors[1], Map_Horde.AmbientColors[0], RoundTime / 5f);
-            GameObject.Find("Sun").GetComponent<Light>().color = Color32.Lerp(Map_Horde.LightColors[1], Map_Horde.LightColors[0], RoundTime / 5f);
+
+            FogColor = Color32.Lerp(Map_Horde.SkyColors[1], Map_Horde.SkyColors[0], LerpValue);
+            GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = FogColor;
+            RenderSettings.fogColor = FogColor;
+            RenderSettings.fogEndDistance = Mathf.Lerp(Map_Horde.FogDistances[1], Map_Horde.FogDistances[0], LerpValue);
+            
+            float ambientBias = Mathf.Lerp(.1f, .5f, LerpValue);
+            AmbientColor = Color32.Lerp(Map_Horde.AmbientColors[1], Map_Horde.AmbientColors[0], LerpValue);
+            SkyColor = Color32.Lerp(Map_Horde.LightColors[1], Map_Horde.LightColors[0], LerpValue);
+            RenderSettings.ambientSkyColor = Color.Lerp(AmbientColor, SkyColor, ambientBias);
+            RenderSettings.ambientEquatorColor = AmbientColor;
+            RenderSettings.ambientGroundColor = Color.Lerp(AmbientColor, FogColor, ambientBias);
+            
+            GameObject.Find("Sun").GetComponent<Light>().color = SkyColor;
             GameObject.Find("Sun").GetComponent<LightControlScript>().SetLight();
             DefPPC = Color.white;
             DefCST = new float[]{0f, 0f, 0f, 0f};
@@ -1545,7 +1567,11 @@ public class RoundScript : MonoBehaviour {
                 SwimDepthA = 1f;
             }
             RenderSettings.fogColor = Color32.Lerp(FogColor, new Color32(0, 0, 25, 255), SwimDepthA);
-            RenderSettings.ambientLight = Color32.Lerp(FogColor, new Color32(0, 0, 0, 255), SwimDepthA);
+
+            RenderSettings.ambientSkyColor = Color32.Lerp(SkyColor, new Color32(0, 0, 0, 255), SwimDepthA);
+            RenderSettings.ambientEquatorColor = Color32.Lerp(AmbientColor, new Color32(0, 0, 0, 255), SwimDepthA);
+            RenderSettings.ambientGroundColor = Color32.Lerp(FogColor, new Color32(0, 0, 0, 255), SwimDepthA);
+
             GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = RenderSettings.fogColor;
             GameObject.Find("Sun").transform.eulerAngles = SunRotation;
             GameObject.Find("Sun").GetComponent<Light>().intensity = Mathf.Lerp(1f, 0f, SwimDepthA);
@@ -1562,7 +1588,11 @@ public class RoundScript : MonoBehaviour {
             RenderSettings.fogColor = GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor;
             RenderSettings.fogEndDistance = 75f;
             GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = 75f;
-            RenderSettings.ambientLight = new Color32(0, 0, 55, 255);
+
+            RenderSettings.ambientSkyColor = new Color32(0, 0, 55, 255);
+            RenderSettings.ambientEquatorColor = new Color32(0, 0, 55, 255);
+            RenderSettings.ambientGroundColor = new Color32(0, 0, 55, 255);
+
             GameObject.Find("Sun").transform.eulerAngles = SunRotation;
             GameObject.Find("Sun").GetComponent<Light>().color = new Color32(0, 0, 255, 255);
             GameObject.Find("Sun").GetComponent<Light>().intensity = 0.5f;

@@ -20,6 +20,8 @@ MonoBehaviour:
   - EEEENNNNOOJJAAAAAAAAAAAAAAA
   - EEEENNNNOJAAAAAAAAAAAAAAAAA
   - EEEENNNNJAAAAAAAAAAAAAAAAAA
+  Bottomland: {fileID: 7232120550781198528, guid: 893ef06a7e3a8b744811ff85fea9e240,
+    type: 3}
   Grasses:
   - {fileID: 6914950661892449310, guid: cace1ec3681342e45b8ae96545b0e0af, type: 3}
   - {fileID: 0}
@@ -34,6 +36,16 @@ MonoBehaviour:
     rgba: 4287089893
   - serializedVersion: 2
     rgba: 4286235113
+  Noises:
+  - MinMap:
+    - {fileID: 2800000, guid: 65fafbe62c5b3854380e43429f272927, type: 3}
+    - {fileID: 2800000, guid: 31b051c7de76a5e42ba562d78c27364b, type: 3}
+    MaxMap:
+    - {fileID: 2800000, guid: 55ecd58767c14174d89fb67b9b119209, type: 3}
+    - {fileID: 2800000, guid: 6901857b03d89774bbffe62334366f17, type: 3}
+    FlipLongitude: 1
+    FlipLatitude: 1
+    Rotations: 00000000
   MobPHsuggestion: Urban
   AmountOfMobs: 0200000005000000
   AmountOfMutants:

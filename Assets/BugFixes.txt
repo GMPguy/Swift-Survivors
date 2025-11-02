@@ -38,4 +38,14 @@ x Dirty punishment makes you drunk
 x Kill function
 	- Immortality glitch
 
-- Fix wrench
+x Fix wrench
+
+x Ambient light fix
+- Grass colors noise map
+- Overcast skybox (and multiple skyboxes)
+- Add new lands
+	x Flatlands
+	- Beach lands
+- Ragdoll deaths
+- Windowses
+- Exploreable object

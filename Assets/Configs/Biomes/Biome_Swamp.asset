@@ -20,6 +20,8 @@ MonoBehaviour:
   - AAEEIFHHOOOOOOOOOOOO
   - AAEEFHHOOOOOOOOOOOO
   - AAEEHHOOOOOOOOOOOO
+  Bottomland: {fileID: 7232120550781198528, guid: 893ef06a7e3a8b744811ff85fea9e240,
+    type: 3}
   Grasses:
   - {fileID: 6664517548747912425, guid: 4b29d943b66f4d64f87a7817234372be, type: 3}
   - {fileID: 1996152671267683359, guid: a0d8fe5dd8f64b349b8870cc1e539a00, type: 3}
@@ -36,6 +38,16 @@ MonoBehaviour:
     rgba: 4285504657
   - serializedVersion: 2
     rgba: 4285036580
+  Noises:
+  - MinMap:
+    - {fileID: 2800000, guid: 65fafbe62c5b3854380e43429f272927, type: 3}
+    - {fileID: 2800000, guid: 31b051c7de76a5e42ba562d78c27364b, type: 3}
+    MaxMap:
+    - {fileID: 2800000, guid: 55ecd58767c14174d89fb67b9b119209, type: 3}
+    - {fileID: 2800000, guid: 6901857b03d89774bbffe62334366f17, type: 3}
+    FlipLongitude: 1
+    FlipLatitude: 1
+    Rotations: 00000000
   MobPHsuggestion: Infested
   AmountOfMobs: 0a0000000f000000
   AmountOfMutants:

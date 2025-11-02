@@ -326,6 +326,16 @@ public class LandScript : MonoBehaviour {
     public void SetLand(GameObject Land){
 
         //Land.transform.eulerAngles = Random.Range(0, 5) * 90f * Vector3.up;//new Vector3(0f, (int)(GS.SeedPerlin2D(GS.RoundSeed, Land.transform.position.x + GS.Round, Land.transform.position.z + GS.Round) * 4.9f) * 90f, 0f);
+        void MeshColor (MeshRenderer mesh, float x, float z) {
+            float2 values = GetNoise(x, z, 0);
+            foreach (Material Mat in mesh.materials) {
+                if (Mat.name == "Grass1 (Instance)" || Mat.name == "Grass2 (Instance)" || Mat.name == "Grass3 (Instance)") {
+                    Mat.color = Color32.Lerp(Biome.GrassColor[0], Biome.GrassColor[1], Random.Range(values.x, values.y));
+                } else if (Mat.name == "WoodenFence1 (Instance)") {
+                    Mat.color = Color32.Lerp(new Color32(100, 75, 55, 255), new Color32(188, 155, 133, 255), Random.Range(values.x, values.y));
+                }
+            }
+        }
 
         foreach (Transform LandInLand in Land.transform) {
             float randomFactor = Random.value;//GS.FixedPerlinNoise(LandInLand.position.x, LandInLand.position.z);
@@ -333,14 +343,12 @@ public class LandScript : MonoBehaviour {
                 TreeChunks.Add(LandInLand);
             } else if (LandInLand.name == "Building") {
                 LandInLand.GetComponent<BuildingSpawnerScript>().SpawnBuilding(RS.DifficultySliderB, Land.transform, LandInLand.transform);
-            } else if (LandInLand.GetComponent<MeshRenderer>() != null) {
-                foreach (Material Mat in LandInLand.GetComponent<MeshRenderer>().materials) {
-                    if (Mat.name == "Grass1 (Instance)" || Mat.name == "Grass2 (Instance)" || Mat.name == "Grass3 (Instance)") {
-                        Mat.color = Color32.Lerp(Biome.GrassColor[0], Biome.GrassColor[1], Random.Range(0f, 1f));
-                    } else if (Mat.name == "WoodenFence1 (Instance)") {
-                        Mat.color = Color32.Lerp(new Color32(100, 75, 55, 255), new Color32(188, 155, 133, 255), randomFactor);
-                    }
-                }
+            } else if (LandInLand.TryGetComponent<MeshRenderer>(out MeshRenderer mesh)) {
+                MeshColor(mesh, LandInLand.transform.position.x, LandInLand.transform.position.z);
+            } else if (LandInLand.GetComponent<LODGroup>()) {
+                foreach(Transform child in LandInLand)
+                    if (child.TryGetComponent<MeshRenderer>(out MeshRenderer meshB))
+                        MeshColor(meshB, LandInLand.transform.position.x, LandInLand.transform.position.z);
             } else if (LandInLand.name == "Water" || LandInLand.name == "DeepWater") {
                 bool Freeze = false;
                 if (Biome != null) {
@@ -358,6 +366,17 @@ public class LandScript : MonoBehaviour {
                     Waters.Add(LandInLand.gameObject);
                     LandInLand.transform.GetChild(0).GetComponent<MeshRenderer>().material.color = new Color(GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor.r, GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor.g, GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor.b, 0.75f);
                 }
+            }
+
+            // Add bottomlands
+            if (LandInLand.name == "Flatland" && RS.Map_Biome.Bottomland) {
+                Transform newBottom = GameObject.Instantiate(RS.Map_Biome.Bottomland).transform;
+                newBottom.SetParent(LandInLand);
+                newBottom.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+
+                foreach(Transform child in newBottom)
+                    if (child.TryGetComponent<MeshRenderer>(out MeshRenderer meshB))
+                        MeshColor(meshB, LandInLand.transform.position.x, LandInLand.transform.position.z);
             }
 
         }
@@ -525,6 +544,25 @@ public class LandScript : MonoBehaviour {
 
     }
 
+    public float2 GetNoise(float x, float z, int map) {
+        Texture2D minMap = RS.Map_Biome.Noises[RS.Map_BiomeNoiseMap].MinMap[map];
+        Texture2D maxMap = RS.Map_Biome.Noises[RS.Map_BiomeNoiseMap].MaxMap[map];
+
+        x *= RS.Map_BiomeNoiseMapRotation.x;
+        z *= RS.Map_BiomeNoiseMapRotation.y;
+
+        float Long = (x / RS.Map_Biome.WorldSize.x) + .5f;
+        float Latit = (z / RS.Map_Biome.WorldSize.y) + .5f;
+
+        int intLong = (int)Mathf.Lerp(0, minMap.width, Long);
+        int intLatit = (int)Mathf.Lerp(0, minMap.height, Latit);
+
+        return new (
+            minMap.GetPixel(intLong, intLatit).r,
+            maxMap.GetPixel(intLong, intLatit).r
+        );
+    }
+
     public void DrawGrass() {
 
         float Quality = (float)GameObject.Find("_GameScript").GetComponent<GameScript>().GrassQuality / 4f;
@@ -597,7 +635,12 @@ public class LandScript : MonoBehaviour {
                             Vector3 PlantedPos = CheckForLandHIT.point;
                             float PerlinA = GS.FixedPerlinNoise(PlantedPos.x / 2f, PlantedPos.z / 2f);
                             float PerlinB = GS.FixedPerlinNoise(PlantedPos.x, PlantedPos.z);
-                            GameObject ToInstantiante = Biome.Grasses[ (int)(PerlinA * (Biome.Grasses.Length - 0.1f)) ];
+
+                            float2 grassMargins = GetNoise(PlantedPos.x, PlantedPos.z, 1);
+                            grassMargins.x *= Biome.Grasses.Length - .01f;
+                            grassMargins.y *= Biome.Grasses.Length - .01f;
+                            GameObject ToInstantiante = Biome.Grasses[(int)Mathf.Lerp(grassMargins.x, grassMargins.y, PerlinA)];
+
                             if (ToInstantiante != null) {
                                 GameObject PlantGrass = Instantiate(ToInstantiante) as GameObject;
                                 PlantGrass.transform.forward = CheckForLandHIT.normal;

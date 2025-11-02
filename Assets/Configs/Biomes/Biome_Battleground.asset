@@ -20,19 +20,31 @@ MonoBehaviour:
   - NNYYXXXXVVVVAAAA
   - NNYXXXVVVVVAAAA
   - NNXVVVVVVVAAAA
+  Bottomland: {fileID: 7232120550781198528, guid: 893ef06a7e3a8b744811ff85fea9e240,
+    type: 3}
   Grasses:
   - {fileID: 6664517548747912425, guid: 4b29d943b66f4d64f87a7817234372be, type: 3}
   - {fileID: 6914950661892449310, guid: cace1ec3681342e45b8ae96545b0e0af, type: 3}
-  - {fileID: 2513046724558220200, guid: 06503d6e9d7e35149b1297288774079b, type: 3}
   - {fileID: 5256667467341612758, guid: 86e9ada2c9e823e42984a9ce2ea1280f, type: 3}
+  - {fileID: 2513046724558220200, guid: 06503d6e9d7e35149b1297288774079b, type: 3}
   Sponges:
   - Pebbles
   - Rumble
   GrassColor:
   - serializedVersion: 2
-    rgba: 4283203252
-  - serializedVersion: 2
     rgba: 4284397504
+  - serializedVersion: 2
+    rgba: 4283203252
+  Noises:
+  - MinMap:
+    - {fileID: 2800000, guid: b76dda14772dbbe42b06c0ce3dd847cd, type: 3}
+    - {fileID: 2800000, guid: 31b051c7de76a5e42ba562d78c27364b, type: 3}
+    MaxMap:
+    - {fileID: 2800000, guid: 821b630d3db0b6640b9a49a039eda60a, type: 3}
+    - {fileID: 2800000, guid: 821b630d3db0b6640b9a49a039eda60a, type: 3}
+    FlipLongitude: 0
+    FlipLatitude: 0
+    Rotations: 00000000
   MobPHsuggestion: War
   AmountOfMobs: 140000000a000000
   AmountOfMutants:
