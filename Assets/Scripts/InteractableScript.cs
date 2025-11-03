@@ -19,9 +19,6 @@ public class InteractableScript : MonoBehaviour {
     public GameObject EffectPrefab;
 
     // Misc
-    public bool Discovered = false;
-    bool prevDiscovery = false;
-    public MinimapMarker[] DiscoveryIcons;
     int ammoID;
     Vector3[] ammoScale;
     // Misc
@@ -212,14 +209,6 @@ public class InteractableScript : MonoBehaviour {
 
         if (!wasStarted)
             TheStart();
-        
-        // Show map icon upon getting discovery
-        if (prevDiscovery != Discovered) {
-            prevDiscovery = Discovered;
-
-            for (int i = 0; i < DiscoveryIcons.Length; i++)
-                DiscoveryIcons[i].MapSize = DiscoveryIcons[i].MinimapSize;
-        }
 
 
         if (Variables.x == 1f) {
@@ -242,11 +231,6 @@ public class InteractableScript : MonoBehaviour {
                     }
                 }
                 SelectedModel.transform.GetChild(0).gameObject.SetActive(false);
-            }
-            if (Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, this.transform.position) < GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane * 0.75f && Discovered == false) {
-                Discovered = true;
-                GS.Mess(GS.SetString("Exit tunnel found!", "Znaleziono tunel ewakuacyjny"), "Draw");
-                GS.AddToScore(50);
             }
         } else if (Variables.x == 3f) {
             if (Variables.z == 0f && SelectedModel.transform.localEulerAngles.y < 90f) {

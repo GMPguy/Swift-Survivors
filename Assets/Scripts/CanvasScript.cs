@@ -1117,7 +1117,11 @@ public class CanvasScript : MonoBehaviour {
                             if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0)) {
                                 bool SaidSomething = false;
                                 DialogedMob.GetComponent<MobScript>().ToldPlaces = true;
-                                foreach (GameObject FoundInteract in GameObject.FindGameObjectsWithTag("Interactable")) {
+                                foreach (DiscoveryScript FoundDisc in RoundScript.CachedDiscoveries) {
+                                    if (FoundDisc.Found(false))
+                                        SaidSomething = true;
+                                }
+                                /*foreach (GameObject FoundInteract in GameObject.FindGameObjectsWithTag("Interactable")) {
                                     if (FoundInteract.GetComponent<InteractableScript>().Discovered == false && FoundInteract.GetComponent<InteractableScript>().Variables.x == 2f) {
                                         FoundInteract.GetComponent<InteractableScript>().Discovered = true;
                                         GS.Score += 50;
@@ -1130,7 +1134,7 @@ public class CanvasScript : MonoBehaviour {
                                         GS.Score += 50;
                                         SaidSomething = true;
                                     }
-                                }
+                                }*/
                                 if (SaidSomething == true) {
                                     DialogSetting = "PlacesKnown";
                                     GS.Mess(GS.SetString("You now know of some new places", "Poznałeś kilka nowych miejsc"), "Draw");
@@ -1364,10 +1368,13 @@ public class CanvasScript : MonoBehaviour {
                 if (GS.GameModePrefab.x == 0) {
                     float TimeOfDayA = RS.TimeOfDay[1];
                     string Weather = "";
+                    bool oc = RS.Map_Biome.Atmospheres[RS.Map_BiomeAtmosphere].IsOvercast;
                     if (RS.Weather == 0) {
-                        Weather = GS.SetString("clear sky", "czyste niebo");
+                        Weather = oc ? GS.SetString("thin overcast", "lekkie zachmurzenie")
+                                     : GS.SetString("clear sky", "czyste niebo");
                     } else if (RS.Weather == 1) {
-                        Weather = GS.SetString("mostly clear sky", "prawie czyste niebo");
+                        Weather = oc ? GS.SetString("overcast", "zachmurzenie")
+                                     : GS.SetString("mostly clear sky", "prawie czyste niebo");
                     } else if (RS.Weather == 2) {
                         Weather = GS.SetString("partly cloudy", "częściowe zachmurzenie");
                     } else if (RS.Weather == 3) {

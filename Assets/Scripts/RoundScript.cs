@@ -64,6 +64,7 @@ public class RoundScript : MonoBehaviour {
     public GameObject[] HordeWaypoints;
 
     public BiomeConfig Map_Biome;
+    public int Map_BiomeAtmosphere;
     public int Map_BiomeNoiseMap;
     public int3 Map_BiomeNoiseMapRotation;
 
@@ -114,6 +115,7 @@ public class RoundScript : MonoBehaviour {
     public static List<ChestScript> CachedChest;
     public static List<MobScript> CachedMobs;
     public static List<Spawner> CachedSpawner;
+    public static List<DiscoveryScript> CachedDiscoveries;
 
     public bool SunHidden = false;
 
@@ -148,6 +150,8 @@ public class RoundScript : MonoBehaviour {
         CachedInteractables = new List<InteractableScript>();
         CachedChest = new List<ChestScript>();
         CachedMobs = new List<MobScript>();
+        CachedDiscoveries = new List<DiscoveryScript>();
+
         ActiveDestructs = new List<DestructionScript>();
         ActiveBuildings = new List<BuildingScript>();
         FragElements = new List<Vector3>();
@@ -303,6 +307,7 @@ public class RoundScript : MonoBehaviour {
                         case 0: // Default world spawn
                             // GTODO - This is where generation of default worlds begin
                             Map_Biome = ListOfBiomes[GS.Biome];
+                            Map_BiomeAtmosphere = Random.Range(0, Map_Biome.Atmospheres.Length);
                             Map_BiomeNoiseMap = Random.Range(0, Map_Biome.Noises.Length);
                             Map_BiomeNoiseMapRotation = new int3 (
                                 Map_Biome.Noises[Map_BiomeNoiseMap].FlipLongitude && Random.value > .5f ? -1 : 1,
@@ -1410,6 +1415,7 @@ public class RoundScript : MonoBehaviour {
         }
         if(WhatSet == "Normal" && GS.GameModePrefab.x == 1) WhatSet = "Horde";
 
+        AtmosphereConfig Atmosphere = Map_Biome ? Map_Biome.Atmospheres[Map_BiomeAtmosphere] : null;
         Color32 FogColor = new Color32(0, 0, 0, 0);
         Color32 SkyColor = new Color32(0, 0, 0, 0);
         Color32 CloudColor = new Color32(0, 0, 0, 0);
@@ -1433,15 +1439,15 @@ public class RoundScript : MonoBehaviour {
                     if(TimeOfDay[1] < 360f) ColorLerpValues = new float[]{2f, 1f, ((float)TimeOfDay[1] - 360f) / 60f};
                     else ColorLerpValues = new float[]{1f, 0f, ((float)TimeOfDay[1] - 360f) / 60f};
                     DrawDistance = Mathf.Lerp(
-                        Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.z, Map_Biome.Atmosphere.FogDistance.w, Sunnyness),
-                        Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.x, Map_Biome.Atmosphere.FogDistance.y, Sunnyness),
+                        Mathf.Lerp(Atmosphere.FogDistance.z, Atmosphere.FogDistance.w, Sunnyness),
+                        Mathf.Lerp(Atmosphere.FogDistance.x, Atmosphere.FogDistance.y, Sunnyness),
                         ((float)TimeOfDay[1] - 360f) / 60f
                     );
                     SunRotation = Vector3.Lerp(new Vector3(0, -90, 0f), new Vector3(30f, -45f, 0f), (TimeOfDay[1] - 360f) / 120f);
                 } else if (TimeOfDay[1] > 480 && TimeOfDay[1] < 1080){
                     // Day
                     ColorLerpValues = new float[]{0f, 0f, 0f};
-                    DrawDistance = Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.x, Map_Biome.Atmosphere.FogDistance.y, Sunnyness);
+                    DrawDistance = Mathf.Lerp(Atmosphere.FogDistance.x, Atmosphere.FogDistance.y, Sunnyness);
                     if(TimeOfDay[1] < 750) SunRotation = Vector3.Lerp(new Vector3(30f, -45, 0f), new Vector3(60f, 0, 0f), (TimeOfDay[1] - 480) / 270f);
                     else SunRotation = Vector3.Lerp(new Vector3(60f, 0, 0f), new Vector3(30f, 90f, 0f), (TimeOfDay[1] - 750) / 270f);
                 } else if (TimeOfDay[1] >= 1080f && TimeOfDay[1] <= 1320f){
@@ -1450,14 +1456,14 @@ public class RoundScript : MonoBehaviour {
                     else ColorLerpValues = new float[]{1f, 2f, ((float)TimeOfDay[1] - 1200f) / 120f};
                     SunRotation = Vector3.Lerp(new Vector3(30f, 90f, 0f), new Vector3(0f, 135f, 0f), (TimeOfDay[1] - 1080) / 240f);
                     DrawDistance = Mathf.Lerp(
-                        Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.x, Map_Biome.Atmosphere.FogDistance.y, Sunnyness),
-                        Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.z, Map_Biome.Atmosphere.FogDistance.w, Sunnyness),
+                        Mathf.Lerp(Atmosphere.FogDistance.x, Atmosphere.FogDistance.y, Sunnyness),
+                        Mathf.Lerp(Atmosphere.FogDistance.z, Atmosphere.FogDistance.w, Sunnyness),
                         ((float)TimeOfDay[1] - 1080f) / 120f
                     );
                 } else {
                     // Night
                     ColorLerpValues = new float[]{2f, 2f, 0f};
-                    DrawDistance = Mathf.Lerp(Map_Biome.Atmosphere.FogDistance.z, Map_Biome.Atmosphere.FogDistance.w, Sunnyness);
+                    DrawDistance = Mathf.Lerp(Atmosphere.FogDistance.z, Atmosphere.FogDistance.w, Sunnyness);
                     if(TimeOfDay[1] > 1260) SunRotation = Vector3.Lerp(new Vector3(0f, -90f, 0f), new Vector3(60f, 0f, 0f), (TimeOfDay[1] - 1260) / 180f);
                     else SunRotation = Vector3.Lerp(new Vector3(60f, 0f, 0f), new Vector3(0f, 135f, 0f), TimeOfDay[1] / 480f);
                 }
@@ -1467,31 +1473,31 @@ public class RoundScript : MonoBehaviour {
                 DrawDistance = Mathf.Clamp(DrawDistance, 0f, 50f);
 
             FogColor = Color32.Lerp( 
-                Color32.Lerp(Map_Biome.Atmosphere.FogColors[(int)ColorLerpValues[0] + 3], Map_Biome.Atmosphere.FogColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
-                Color32.Lerp(Map_Biome.Atmosphere.FogColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.FogColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
+                Color32.Lerp(Atmosphere.FogColors[(int)ColorLerpValues[0] + 3], Atmosphere.FogColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
+                Color32.Lerp(Atmosphere.FogColors[(int)ColorLerpValues[0]], Atmosphere.FogColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
                 Sunnyness);
             SkyColor = Color32.Lerp( 
-                Color32.Lerp(Map_Biome.Atmosphere.AtmosphereColors[(int)ColorLerpValues[0] + 3], Map_Biome.Atmosphere.AtmosphereColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
-                Color32.Lerp(Map_Biome.Atmosphere.AtmosphereColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.AtmosphereColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
+                Color32.Lerp(Atmosphere.AtmosphereColors[(int)ColorLerpValues[0] + 3], Atmosphere.AtmosphereColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
+                Color32.Lerp(Atmosphere.AtmosphereColors[(int)ColorLerpValues[0]], Atmosphere.AtmosphereColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
                 Sunnyness);
             CloudColor = Color32.Lerp(
                 //Color32.Lerp(GitBI.CloudColors[(int)ColorLerpValues[0] + 3], GitBI.CloudColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]),
-                Color32.Lerp(Map_Biome.Atmosphere.CloudColors[(int)ColorLerpValues[0] + 3], Map_Biome.Atmosphere.CloudColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]),
-                Color32.Lerp(Map_Biome.Atmosphere.CloudColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.CloudColors[(int)ColorLerpValues[1]], ColorLerpValues[2]),
+                Color32.Lerp(Atmosphere.CloudColors[(int)ColorLerpValues[0] + 3], Atmosphere.CloudColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]),
+                Color32.Lerp(Atmosphere.CloudColors[(int)ColorLerpValues[0]], Atmosphere.CloudColors[(int)ColorLerpValues[1]], ColorLerpValues[2]),
                 Sunnyness * 2f);
-            SunColors[0] = Color32.Lerp(Map_Biome.Atmosphere.SunColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.SunColors[(int)ColorLerpValues[1]], ColorLerpValues[2]);
+            SunColors[0] = Color32.Lerp(Atmosphere.SunColors[(int)ColorLerpValues[0]], Atmosphere.SunColors[(int)ColorLerpValues[1]], ColorLerpValues[2]);
             SunColors[1] = Color32.Lerp( 
                 new Color32(0, 0, 0, 255), 
-                Color32.Lerp(Map_Biome.Atmosphere.SunColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.SunColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
+                Color32.Lerp(Atmosphere.SunColors[(int)ColorLerpValues[0]], Atmosphere.SunColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
                 Sunnyness*1.3f);
-            AmbientColor = Color.Lerp(Map_Biome.Atmosphere.AmbientColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.AmbientColors[(int)ColorLerpValues[1]], ColorLerpValues[2]) / (1f + (Sunnyness / 2f));
+            AmbientColor = Color.Lerp(Atmosphere.AmbientColors[(int)ColorLerpValues[0]], Atmosphere.AmbientColors[(int)ColorLerpValues[1]], ColorLerpValues[2]) / (1f + (Sunnyness / 2f));
             PostProcessingColor = Color32.Lerp( 
-                Color32.Lerp(Map_Biome.Atmosphere.PostProcessingColors[(int)ColorLerpValues[0] + 3], Map_Biome.Atmosphere.PostProcessingColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
-                Color32.Lerp(Map_Biome.Atmosphere.PostProcessingColors[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.PostProcessingColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
+                Color32.Lerp(Atmosphere.PostProcessingColors[(int)ColorLerpValues[0] + 3], Atmosphere.PostProcessingColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
+                Color32.Lerp(Atmosphere.PostProcessingColors[(int)ColorLerpValues[0]], Atmosphere.PostProcessingColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 
                 Sunnyness * 2f);
             PPV = Vector4.Lerp(
-                Vector4.Lerp(Map_Biome.Atmosphere.PostProcessingVariables[(int)ColorLerpValues[0] + 3], Map_Biome.Atmosphere.PostProcessingVariables[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]),
-                Vector4.Lerp(Map_Biome.Atmosphere.PostProcessingVariables[(int)ColorLerpValues[0]], Map_Biome.Atmosphere.PostProcessingVariables[(int)ColorLerpValues[1]], ColorLerpValues[2]),
+                Vector4.Lerp(Atmosphere.PostProcessingVariables[(int)ColorLerpValues[0] + 3], Atmosphere.PostProcessingVariables[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]),
+                Vector4.Lerp(Atmosphere.PostProcessingVariables[(int)ColorLerpValues[0]], Atmosphere.PostProcessingVariables[(int)ColorLerpValues[1]], ColorLerpValues[2]),
                 Sunnyness * 2f);
         }
 
@@ -1727,6 +1733,14 @@ public class RoundScript : MonoBehaviour {
                 CachedMobs.RemoveAt(um);
             else
                 CachedMobs[um].TheUpdate();
+        }
+
+        // Discoveries
+        for (int ud = CachedDiscoveries.Count - 1; ud >= 0; ud--) {
+            if (!CachedDiscoveries[ud])
+                CachedDiscoveries.RemoveAt(ud);
+            else
+                CachedDiscoveries[ud].TheUpdate();
         }
 
     }

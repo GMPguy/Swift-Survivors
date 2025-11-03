@@ -20,6 +20,7 @@ MonoBehaviour:
   - JJJKKLLDMAAAAAAAA
   - JJJKKKLDDAAAAAAAA
   - JJJKKKKDDDAAAAAAAA
+  Bottomland: {fileID: 0}
   Grasses:
   - {fileID: 1996152671267683359, guid: a0d8fe5dd8f64b349b8870cc1e539a00, type: 3}
   - {fileID: 3763411007635217634, guid: 34da7dfa6e06941458758dfbc73547b7, type: 3}
@@ -59,7 +60,9 @@ MonoBehaviour:
   Monument: 
   Ambience: WindAmbience
   Music: Enter the Maze
-  Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}
+  Atmospheres:
+  - {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}
+  - {fileID: 11400000, guid: cd18801d3fea5054381d37f5b1494297, type: 2}
   WorldSize:
     x: 500
     y: 500

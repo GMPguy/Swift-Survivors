@@ -5,6 +5,7 @@ using UnityEngine;
 public class RagdollScript : MonoBehaviour {
 
     // MainVariables
+    public bool IsImportant;
     public GameObject DroppedBy;
     public Vector4 DeadPush;
     public GameObject[] BodyParts;
@@ -24,6 +25,10 @@ public class RagdollScript : MonoBehaviour {
                 WhatSet = "Humanoid";
                 BodyParts = DroppedBy.GetComponent<MobScript>().HumanoidBodyParts;
             }
+        } else if (DroppedBy.GetComponent<PlayerScript>() != null) {
+            WhatSet = "Humanoid";
+            BodyParts = DroppedBy.GetComponent<PlayerScript>().Gibs;
+            IsImportant = true;
         }
 
         // Remove previous
@@ -36,7 +41,7 @@ public class RagdollScript : MonoBehaviour {
             GameObject RagToRemove = null;
             float Futherest = 0f;
             foreach (RagdollScript CheckRag in GameObject.FindObjectsOfType<RagdollScript>()) {
-                if (Vector3.Distance(CheckRag.gameObject.transform.position, GameObject.Find("MainCamera").transform.position) > Futherest && CheckRag.gameObject != this.gameObject) {
+                if (Vector3.Distance(CheckRag.gameObject.transform.position, GameObject.Find("MainCamera").transform.position) > Futherest && CheckRag.gameObject != this.gameObject && !CheckRag.IsImportant) {
                     Futherest = Vector3.Distance(CheckRag.gameObject.transform.position, GameObject.Find("MainCamera").transform.position);
                     RagToRemove = CheckRag.gameObject;
                 }

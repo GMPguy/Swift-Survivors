@@ -31,7 +31,7 @@ public class BiomeConfig : ScriptableObject {
     public string Ambience = "";
     public string Music = "";
 
-    public AtmosphereConfig Atmosphere;
+    public AtmosphereConfig[] Atmospheres;
 
     // Generation banks
     public float2 WorldSize = new (500f, 500f);

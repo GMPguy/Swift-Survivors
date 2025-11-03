@@ -14,5 +14,6 @@ public class AtmosphereConfig : ScriptableObject {
     public Color32[] PostProcessingColors = new Color32[]{ new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 0)}; // Post processing colors
     public Vector4[] PostProcessingVariables = new Vector4[]{ Vector4.zero, Vector4.zero, Vector4.zero, Vector4.zero, Vector4.zero, Vector4.zero};
     public Vector4 FogDistance = new Vector4(25f, 75f, 25f, 50f);
+    public bool IsOvercast;
 
 }

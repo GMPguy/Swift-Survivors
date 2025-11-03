@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -93,6 +94,7 @@ public class PlayerScript : MonoBehaviour {
     public GameObject EffectPrefab;
     //public GameObject AttackPrefab;
     public GameObject SpecialPrefab;
+    public GameObject RagdollPrefab;
     public GameObject[] Gibs;
     // References
 
@@ -159,6 +161,7 @@ public class PlayerScript : MonoBehaviour {
     // Camera position variables
     List<GameObject> scans;
     float scanBuffer = 0f;
+    bool Gib = false;
 
     // Cants
     public float CantMove = 0f;
@@ -621,18 +624,31 @@ public class PlayerScript : MonoBehaviour {
 
                 if (GS.Ragdolls) {
 
-                    if (this.GetComponent<BoxCollider>().enabled == false) {
-                        this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+                    if (this.GetComponent<CapsuleCollider>().enabled == true) {
+                        /*this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                         this.GetComponent<Rigidbody>().drag = 1f;
                         this.GetComponent<Rigidbody>().AddTorque(Vector3.one * Random.Range(-1f, 1f), ForceMode.Impulse);
                         this.GetComponent<Rigidbody>().AddForce(Vector3.up * Random.Range(0f, 5f), ForceMode.Impulse);
                         this.GetComponent<CapsuleCollider>().height = 1.5f;
                         this.GetComponent<CapsuleCollider>().radius = 0.25f;
-                        this.GetComponent<CapsuleCollider>().material.bounciness = 1f;
-                        this.GetComponent<BoxCollider>().enabled = true;
-                        //this.transform.Rotate(new Vector3(Random.Range(-30f, 30f), Random.Range(-30f, 30f), Random.Range(-30f, 30f)));
+                        this.GetComponent<CapsuleCollider>().material.bounciness = 1f;*/
+                        this.GetComponent<CapsuleCollider>().enabled = false;
+
+                        GameObject DropRagdoll = Instantiate(RagdollPrefab) as GameObject;
+                        DropRagdoll.transform.position = this.transform.position;
+                        DropRagdoll.GetComponent<RagdollScript>().DroppedBy = this.gameObject;
+                        DropRagdoll.GetComponent<RagdollScript>().DeadPush = Vector3.zero;
+
+                        this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
                     }
-                    LookDir.localPosition = Vector3.MoveTowards(LookDir.localPosition, Vector3.zero, 0.025f * (Time.deltaTime * 50f));
+
+                    if (LookDir.parent != Gibs[0].transform && Gibs[0].activeInHierarchy) {
+                        LookDir.SetParent(Gibs[Gib ? 1 : 0].transform);
+                        LookDir.transform.localPosition = (Vector3.up * (Gib ? .2f : .9f)) + (Vector3.forward / 8f);
+                    }
+
+                    //LookDir.LookAt(Gibs[1].transform.position);
+                    this.transform.position = Gibs[1].transform.position;
                     ItemsShown.SetActive(false);
 
                 } else {
@@ -3378,7 +3394,7 @@ public class PlayerScript : MonoBehaviour {
                         bool SeenSomething = false;
                         CantUseItem = 0.5f;
                         CantSwitchItem = 0.5f;
-                        foreach (GameObject FoundInteract in GameObject.FindGameObjectsWithTag("Interactable")) {
+                        /*foreach (GameObject FoundInteract in GameObject.FindGameObjectsWithTag("Interactable")) {
                             if (FoundInteract.GetComponent<InteractableScript>().Discovered == false && FoundInteract.GetComponent<InteractableScript>().Variables.x == 2f) {
                                 FoundInteract.GetComponent<InteractableScript>().Discovered = true;
                                 GS.AddToScore(50);
@@ -3391,10 +3407,15 @@ public class PlayerScript : MonoBehaviour {
                                 GS.AddToScore(50);
                                 SeenSomething = true;
                             }
+                        }*/
+
+                        foreach (DiscoveryScript FoundDisc in RoundScript.CachedDiscoveries) {
+                            if (FoundDisc.Found(false))
+                                SeenSomething = true;
                         }
 
                         if (SeenSomething == true) {
-                            GS.Mess(GS.SetString("You now know of some new places", "Poznałeś kilka nowych miejsc"), "Draw");
+                            GS.Mess(GS.SetString("You found some new places", "Poznałeś kilka nowych miejsc"), "Draw");
                             Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-1");//Inventory[CurrentItemHeld].y -= 1f;
                             if (float.Parse(GS.GetSemiClass(Inventory[CurrentItemHeld], "va"), CultureInfo.InvariantCulture) <= 0f) {
                                 InvGet(CurrentItemHeld.ToString(), 1);
@@ -4368,7 +4389,8 @@ public class PlayerScript : MonoBehaviour {
 
                 bool HardcoreInstaKill = false;
                 int CasualEase = 1;
-                bool Gib = false;
+                Gib = false;
+                
                 if (DamageType == "Nuke") {
                     KilledBy = GS.SetString("You've been obliterated by a nuke.", "Zostałeś rozszarpany przez bombę atomową.");
                 } else if (DamageType == "Starvation") {

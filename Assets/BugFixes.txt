@@ -35,17 +35,25 @@ x Dirty punishment makes you drunk
 
 - Black sun
 - Fog on minimal
+- Changing options at runtime warning
 x Kill function
 	- Immortality glitch
 
 x Fix wrench
 
 x Ambient light fix
-- Grass colors noise map
-- Overcast skybox (and multiple skyboxes)
-- Add new lands
+x Grass colors noise map
+x Overcast skybox (and multiple skyboxes)
+x Add new lands
 	x Flatlands
-	- Beach lands
+	x Beach lands
 - Ragdoll deaths
 - Windowses
 - Exploreable object
+
+- Remove bandage health cap
+- Building distance, prevent campfire Underwater
+- Barrels
+	- Improve randomization
+	- Add explosive Barrels
+- Add scores

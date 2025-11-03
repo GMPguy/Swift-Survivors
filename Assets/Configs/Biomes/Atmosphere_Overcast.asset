@@ -10,69 +10,69 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 648541a4d31f7ce45a2730bf46f7312d, type: 3}
-  m_Name: Atmosphere_Swamp
+  m_Name: Atmosphere_Overcast
   m_EditorClassIdentifier: 
   DaytimeColors: []
   SunColors:
   - serializedVersion: 2
     rgba: 4291362815
   - serializedVersion: 2
-    rgba: 4281826815
+    rgba: 4286371839
   - serializedVersion: 2
-    rgba: 4281018368
+    rgba: 4294915895
   AmbientColors:
   - serializedVersion: 2
     rgba: 4284757815
   - serializedVersion: 2
-    rgba: 4281794615
+    rgba: 4284757815
   - serializedVersion: 2
     rgba: 4278190080
   FogColors:
   - serializedVersion: 2
-    rgba: 4293256383
+    rgba: 4291809231
   - serializedVersion: 2
-    rgba: 4279855585
+    rgba: 4284854469
   - serializedVersion: 2
-    rgba: 4281205504
+    rgba: 4283119415
   - serializedVersion: 2
-    rgba: 4282930240
+    rgba: 4286611584
   - serializedVersion: 2
-    rgba: 4279711026
+    rgba: 4286731321
   - serializedVersion: 2
-    rgba: 4278190080
+    rgba: 4283105280
   AtmosphereColors:
   - serializedVersion: 2
-    rgba: 4294967007
+    rgba: 4294967295
   - serializedVersion: 2
-    rgba: 4285290820
+    rgba: 4288070399
   - serializedVersion: 2
-    rgba: 4281804544
+    rgba: 4281794560
   - serializedVersion: 2
-    rgba: 4286414180
+    rgba: 4286611584
   - serializedVersion: 2
-    rgba: 4283720759
+    rgba: 4288438848
   - serializedVersion: 2
-    rgba: 4280366336
+    rgba: 4283105280
   CloudColors:
   - serializedVersion: 2
-    rgba: 4286414180
+    rgba: 4294967295
   - serializedVersion: 2
-    rgba: 4279828535
-  - serializedVersion: 2
-    rgba: 4278190080
-  - serializedVersion: 2
-    rgba: 4286414180
-  - serializedVersion: 2
-    rgba: 4281153306
+    rgba: 4288080127
   - serializedVersion: 2
     rgba: 4278190080
+  - serializedVersion: 2
+    rgba: 4286611584
+  - serializedVersion: 2
+    rgba: 4286731321
+  - serializedVersion: 2
+    rgba: 4283105280
   PostProcessingColors:
   - serializedVersion: 2
     rgba: 4294967295
   - serializedVersion: 2
-    rgba: 4294934015
+    rgba: 4294967295
   - serializedVersion: 2
-    rgba: 4294933885
+    rgba: 4294967295
   - serializedVersion: 2
     rgba: 4294967295
   - serializedVersion: 2

@@ -20,6 +20,7 @@ MonoBehaviour:
   - CDEEEFAAAAAAAAAAAA
   - CEEEFAAAAAAAAAAAA
   - CEEFAAAAAAAAAAAA
+  Bottomland: {fileID: 0}
   Grasses:
   - {fileID: 6664517548747912425, guid: 4b29d943b66f4d64f87a7817234372be, type: 3}
   - {fileID: 6664517548747912425, guid: 4b29d943b66f4d64f87a7817234372be, type: 3}
@@ -57,7 +58,9 @@ MonoBehaviour:
   Monument: 
   Ambience: WindAmbience
   Music: Pale Rider
-  Atmosphere: {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}
+  Atmospheres:
+  - {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}
+  - {fileID: 11400000, guid: 5a864ddf622c83f48b88aff78d63afda, type: 2}
   WorldSize:
     x: 500
     y: 500

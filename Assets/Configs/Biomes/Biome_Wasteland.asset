@@ -20,6 +20,7 @@ MonoBehaviour:
   - NNDEEEFAAAAAAAA
   - NEEEFAAAAAAAA
   - NEEFAAAAAAAA
+  Bottomland: {fileID: 0}
   Grasses:
   - {fileID: 1591164064408369788, guid: 62eaa41ba9f97fa4aa544ad3ca75c356, type: 3}
   - {fileID: 6914950661892449310, guid: cace1ec3681342e45b8ae96545b0e0af, type: 3}
@@ -57,7 +58,8 @@ MonoBehaviour:
   Monument: 
   Ambience: WindAmbience
   Music: Chase Pulse
-  Atmosphere: {fileID: 11400000, guid: 62db9f88d81e7a34eabe38892eb75148, type: 2}
+  Atmospheres:
+  - {fileID: 11400000, guid: 62db9f88d81e7a34eabe38892eb75148, type: 2}
   WorldSize:
     x: 500
     y: 500

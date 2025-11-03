@@ -20,6 +20,7 @@ MonoBehaviour:
   - NNDEEEFAAAAAAAA
   - NEEEFAAAAAAAA
   - NEEFAAAAAAAA
+  Bottomland: {fileID: 0}
   Grasses:
   - {fileID: 6664517548747912425, guid: 4b29d943b66f4d64f87a7817234372be, type: 3}
   - {fileID: 6914950661892449310, guid: cace1ec3681342e45b8ae96545b0e0af, type: 3}
@@ -64,7 +65,10 @@ MonoBehaviour:
   Monument: 
   Ambience: WindAmbience
   Music: The Descent
-  Atmosphere: {fileID: 11400000, guid: 5a864ddf622c83f48b88aff78d63afda, type: 2}
+  Atmospheres:
+  - {fileID: 11400000, guid: 83a6a540bbc7df54a804fae5f84016de, type: 2}
+  - {fileID: 11400000, guid: cd18801d3fea5054381d37f5b1494297, type: 2}
+  - {fileID: 11400000, guid: 5a864ddf622c83f48b88aff78d63afda, type: 2}
   WorldSize:
     x: 500
     y: 500

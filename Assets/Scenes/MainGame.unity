@@ -148295,7 +148295,7 @@ MonoBehaviour:
   - id173;sq1;do0;
   - id147;sq1;do0;
   - id144;sq1;do0;
-  - id142;sq1;do0;
+  - id171;sq1;do0;
   Special: 
   CraftingTime:
   - 15
@@ -235928,6 +235928,7 @@ MonoBehaviour:
   HordeMapList: {fileID: 2130898477}
   HordeWaypoints: []
   Map_Biome: {fileID: 0}
+  Map_BiomeAtmosphere: 0
   Map_BiomeNoiseMap: 0
   Map_BiomeNoiseMapRotation:
     x: 0
@@ -245967,8 +245968,9 @@ MonoBehaviour:
   WhatToCraft:
   - id97;va0;sq2;
   Resources:
-  - id145;sq4;do0;
-  Special: Fire
+  - id145;sq1;do0;
+  - id171;sq1;do0;
+  Special: 
   CraftingTime:
   - 15
   - 0
