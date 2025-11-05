@@ -164,6 +164,9 @@ public class ChestScript : MonoBehaviour {
             Destroy(MinimapMarker);
             ps.CantInteract = .5f;
 
+            if (ps)
+                RS.SetScore("ChestsOpened_", "/+1");
+
             Random.InitState(Seed);
             if (State != 2)
                 for (int s = 0; s < Spawners.Length; s++)
@@ -176,7 +179,7 @@ public class ChestScript : MonoBehaviour {
 
     }
 
-    public void Damage (float Damage, string[] attackType, Transform affected, Vector3 point) {
+    public void Damage (float Damage, string[] attackType, Transform affected, Vector3 point, GameObject killer = null) {
 
         // Effects regarding hit parts
         Part hitPart = GetPart(affected);
@@ -219,6 +222,9 @@ public class ChestScript : MonoBehaviour {
             for (int dp = 0; dp < AllParts.Length; dp++)
                 DamagePart(AllParts[dp], true);
             
+            if (killer && killer.tag == "Player")
+                RS.SetScore("ChestsDestroyed_", "/+1");
+
             Activate(10f);
         }
     }

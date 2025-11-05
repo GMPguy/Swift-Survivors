@@ -10,6 +10,7 @@ public class InteractableScript : MonoBehaviour {
     public string Name;
     public int[] TradeOptions;
     public int[] TradePrices;
+    public Material[] WarningMaterials;
     // Main variables
 
     public GameObject SelectedModel;
@@ -17,10 +18,14 @@ public class InteractableScript : MonoBehaviour {
     public RoundScript RS;
     public GameObject ItemPrefab;
     public GameObject EffectPrefab;
+    public GameObject SpecialPrefab;
+    public GameObject RadioactivityPrefab;
 
     // Misc
+    public int RandomID;
     int ammoID;
     Vector3[] ammoScale;
+    SpecialScript radiation;
     // Misc
 
     // Use this for initialization
@@ -35,6 +40,8 @@ public class InteractableScript : MonoBehaviour {
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
         RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
 
+        RandomID = Random.Range(int.MinValue, int.MaxValue);
+
         // Set Gameobjects
         foreach (Transform FindObject in this.transform) {
             if (FindObject.name == Variables.x.ToString()) {
@@ -47,53 +54,81 @@ public class InteractableScript : MonoBehaviour {
 
         if (Variables.x == 1f) {
             // Barrels
-            int PickBarrel = (int)Mathf.Clamp(Random.Range(3f, 5.9f) * RS.GetComponent<RoundScript>().DifficultySliderB, 1f, 5f);
-            if (PickBarrel == 1f) {
-                Variables.z = 1f;
-            } else if (PickBarrel == 2f) {
-                Variables.z = 2f;
-            } else if (PickBarrel == 3f) {
-                Variables.z = 3f;
-            } else if (PickBarrel == 4f) {
-                Variables.z = 4f;
-            } else if (PickBarrel == 5f) {
-                Variables.z = 5f;
-            }
+            if (Random.Range(0, 100) < 10)
+                Variables.z = (int)Random.Range(-4, -1);
+            else
+                Variables.z = (int)Mathf.Clamp(Random.Range(3f, 5.9f) * RS.GetComponent<RoundScript>().DifficultySliderB, 1f, 5f);
+            
             Color32 BarrelColor = new Color32(0, 0, 0, 0);
-            if ((int)Variables.z == 1) {
-                Variables.y = 20f;
-                Variables.z = 1f;
-                Name = GS.SetString("Rusty Barrel", "Zardzewiała Beczka");
-                BarrelColor = new Color32(175, 125, 75, 255);
-            } else if ((int)Variables.z == 2f) {
-                Variables.y = 100f;
-                Variables.z = 2f;
-                Name = GS.SetString("Red Barrel", "Czerwona Beczka");
-                BarrelColor = new Color32(155, 0, 0, 255);
-            } else if ((int)Variables.z == 3f) {
-                Variables.y = 150f;
-                Variables.z = 3f;
-                Name = GS.SetString("Blue Barrel", "Niebieska Beczka");
-                BarrelColor = new Color32(0, 128, 255, 255);
-            } else if ((int)Variables.z == 4f) {
-                Variables.y = 200f;
-                Variables.z = 4f;
-                Name = GS.SetString("Green Barrel", "Zielona Beczka");
-                BarrelColor = new Color32(75, 155, 75, 255);
-            } else if ((int)Variables.z == 5f) {
-                Variables.y = 300f;
-                Variables.z = 5f;
-                Name = GS.SetString("Black Barrel", "Czarna Beczka");
-                BarrelColor = new Color32(0, 0, 15, 255);
+            string label = "";
+
+            switch ((int)Variables.z) {
+                case -4:
+                    Variables.y = 20f;
+                    Name = GS.SetString("Explosive Barrel", "Wybuchowa Beczka");
+                    label = "WarningExplosives";
+                    BarrelColor = new Color32(155, 0, 0, 255);
+                    break;
+                case -3:
+                    Variables.y = 20f;
+                    Name = GS.SetString("Radioactive Barrel", "Radioaktywna Beczka");
+                    label = "WarningRadioactivity";
+                    BarrelColor = new Color32(255, 255, 0, 255);
+                    break;
+                case -2:
+                    Variables.y = 20f;
+                    Name = GS.SetString("Flammable Barrel", "Łatwopalna Beczka");
+                    label = "WarningFlames";
+                    BarrelColor = new Color32(25, 0, 25, 255);
+                    break;
+                case -1:
+                    Variables.y = 20f;
+                    Name = GS.SetString("Toxic Barrel", "Toksyczna Beczka");
+                    label = "WarningToxins";
+                    BarrelColor = new Color32(100, 200, 0, 255);
+                    break;
+                case 2:
+                    Variables.y = 100f;
+                    Name = GS.SetString("Red Barrel", "Czerwona Beczka");
+                    BarrelColor = new Color32(155, 0, 0, 255);
+                    break;
+                case 3:
+                    Variables.y = 150f;
+                    Name = GS.SetString("Blue Barrel", "Niebieska Beczka");
+                    BarrelColor = new Color32(0, 128, 255, 255);
+                    break;
+                case 4:
+                    Variables.y = 200f;
+                    Name = GS.SetString("Green Barrel", "Zielona Beczka");
+                    BarrelColor = new Color32(75, 155, 75, 255);
+                    break;
+                case 5:
+                    Variables.y = 300f;
+                    Name = GS.SetString("Black Barrel", "Czarna Beczka");
+                    BarrelColor = new Color32(0, 0, 15, 255);
+                    break;
+                default:
+                    Variables.y = 20f;
+                    Variables.z = 1f;
+                    Name = GS.SetString("Rusty Barrel", "Zardzewiała Beczka");
+                    BarrelColor = new Color32(175, 125, 75, 255);
+                    break;
             }
 
-            foreach (Material BarrelMat in SelectedModel.GetComponent<MeshRenderer>().materials) {
+            for (int m = 0; m < SelectedModel.GetComponent<MeshRenderer>().materials.Length; m++) {
+                Material BarrelMat = SelectedModel.GetComponent<MeshRenderer>().materials[m];
+
                 if (BarrelMat.name == "Barrel2 (Instance)") {
                     BarrelMat.color = new Color32((byte)(BarrelColor.r * 0.75f), (byte)(BarrelColor.g * 0.75f), (byte)(BarrelColor.b * 0.75f), 255);
+                } else if (BarrelMat.name == "BarrelLabel (Instance)" && label != "") {
+                    foreach (Material labelMat in WarningMaterials)
+                        if (labelMat.name == label)
+                            SelectedModel.GetComponent<MeshRenderer>().materials[m] = labelMat;
                 } else {
                     BarrelMat.color = BarrelColor;
                 }
             }
+
         } else if (Variables.x == 2f) {
             // EscapeTunnel
             Variables.y = 20f;
@@ -311,46 +346,110 @@ public class InteractableScript : MonoBehaviour {
                 SelectedModel.transform.GetChild(0).GetComponent<AudioSource>().Play();
                 this.transform.Rotate(new Vector3(Random.Range(-30f, 30f), Random.Range(-30f, 30f), 0f));
 
+                // Funny barrels
+                if (Variables.z < 0f) {
+                    for (int a = 0; a < Mathf.Max(Mathf.RoundToInt(VariableBonus), 1); a++)
+                        if (Random.Range(1, 20) == 1) {
+
+                            SpecialScript danger = GameObject.Instantiate((int)Variables.z == -3 ? RadioactivityPrefab : SpecialPrefab).GetComponent<SpecialScript>();
+
+                            danger.transform.position = this.transform.position;
+                            switch ((int)Variables.z) {
+                                case -4:
+                                    Variables.y = 0f;
+                                    danger.TypeOfSpecial = "Explosion";
+                                    danger.ExplosionRange = 3f;
+                                    break;
+                                case -3:
+                                    float power = Random.Range(2f, 8f);
+                                    Vector3 radius = new Vector3(
+                                        Random.Range(1f, 5f),
+                                        1f,
+                                        Random.Range(1f, 5f)
+                                    );
+
+                                    if (radiation) {
+                                        power = Mathf.Min(radiation.ExplosionRange + Random.Range(1f, 2f), 10f);
+                                        radius = radiation.transform.localScale;
+                                        radius.x += Random.Range(0f, 1f);
+                                        radius.z += Random.Range(0f, 1f);
+                                        Destroy(radiation.gameObject);
+                                    }
+
+                                    danger.TypeOfSpecial = "Radioactivity";
+                                    danger.ExplosionRange = power;
+                                    radiation = danger;
+                                    danger.transform.localScale = radius;
+                                    break;
+                                case -2:
+                                    Variables.y = 0f;
+                                    danger.TypeOfSpecial = "Molotow";
+                                    danger.ExplosionRange = 5f;
+                                    break;
+                                case -1:
+                                    Variables.y = 0f;
+                                    break;
+                            }
+                            break;
+                        }
+                }
+
                 if (Variables.y <= 0f) {
                     GameObject Debris = Instantiate(EffectPrefab) as GameObject;
                     Debris.transform.position = this.transform.position + Vector3.up * 1f;
                     Debris.GetComponent<EffectScript>().EffectName = "BarrelBreak";
                     Debris.GetComponent<EffectScript>().EffectColor = SelectedModel.GetComponent<MeshRenderer>().material.color;
-                    string[] ItemsToSpawn = new string[] { };
-                    int AmountToSpawn = 0;
+                    List<string> ItemsToSpawn = new List<string>();
+                    int AmountToSpawn;
+
+                    Random.InitState(RandomID);
+
                     if (Variables.z == 1f) {
-                        ItemsToSpawn = new string[]{"id2;" + "va" + (int)Random.Range(50f, 100.9f), "id3;", "id14;va" + (int)Random.Range(50f, 100.9f) + ";", "id11;cl" + (int)Random.Range(0f, 10.9f) + ";", "id19;", "id17;", "id18;"};//new Vector3[] { new Vector3(2f, Random.Range(1f, 100f), 0f), new Vector3(3f, 0f, 0f), new Vector3(14f, Random.Range(1f, 100f), 0f), new Vector3(11f, 0f, 0f), new Vector3(19f, 0f, 0f), new Vector3(17f, 0f, 0f), new Vector3(18f, 0f, 0f), new Vector3(19f, 0f, 0f) };
+                        int[] crapItems = new int[] {2, 3, 14, 11, 19, 17, 18};
                         AmountToSpawn = Random.Range(1, 3);
+                        for (int a = 0; a < AmountToSpawn; a++)
+                            ItemsToSpawn.Add(GS.itemCache[crapItems[Random.Range(0, crapItems.Length)]].startVariables);
                     } else if (Variables.z == 2f) {
                         //ItemsToSpawn = new Vector3[] { new Vector3(2f, 100f, 0f), new Vector3(3f, 0f, 0f), new Vector3(14f, 100f, 0f), new Vector3(17f, 0f, 0f), new Vector3(18f, 0f, 0f), new Vector3(6f, 0f, 0f), new Vector3(22f, 0f, 0f), new Vector3(23f, 0f, 0f), new Vector3(15f, 100f, 0f) };
-                        ItemsToSpawn = new string[]{ GS.itemCache[(int)Random.Range(1f, 20f)].startVariables, GS.itemCache[(int)Random.Range(1f, 20f)].startVariables, GS.itemCache[(int)Random.Range(1f, 20f)].startVariables };//new Vector3[] { GS.GetComponent<GameScript>().ReceiveItemVariables(Random.Range(1f, 20f)), GS.GetComponent<GameScript>().ReceiveItemVariables(Random.Range(1f, 20f)), GS.GetComponent<GameScript>().ReceiveItemVariables(Random.Range(1f, 20f)) };
                         AmountToSpawn = Random.Range(2, 5);
+                        for (int a = 0; a < AmountToSpawn; a++)
+                            ItemsToSpawn.Add(GS.itemCache[(int)Random.Range(1f, 20f)].startVariables);
                     } else if (Variables.z == 3f) {
                         //ItemsToSpawn = new Vector3[] { new Vector3(15f, 100f, 0f), new Vector3(4f, 0f, 0f), new Vector3(27f, 100f, 0f), new Vector3(22f, 0f, 0f), new Vector3(23f, 0f, 0f), new Vector3(29f, 0f, 0f), new Vector3(18f, 0f, 0f), new Vector3(16f, 100f, 0f) };
-                        ItemsToSpawn = new string[] { GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables, GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables, GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables };//new Vector3[] { GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)) };
                         AmountToSpawn = Random.Range(2, 5);
+                        for (int a = 0; a < AmountToSpawn; a++)
+                            ItemsToSpawn.Add(GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables);
                     } else if (Variables.z == 4f) {
-                        ItemsToSpawn = new string[]{
-                            GS.itemCache[RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - .1f)]].startVariables,
-                            GS.itemCache[RS.GetComponent<RoundScript>().AmmoItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AmmoItems.Length - .1f)]].startVariables,
-                            GS.itemCache[RS.GetComponent<RoundScript>().AttachmentItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AttachmentItems.Length - .1f)]].startVariables
-                        };
                         AmountToSpawn = Random.Range(1, 2);
+                        for (int a = 0; a < AmountToSpawn; a++)
+                            ItemsToSpawn.Add(Random.Range(0, 3) switch {
+                                0 => GS.itemCache[RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - .1f)]].startVariables,
+                                1 => GS.itemCache[RS.GetComponent<RoundScript>().AmmoItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AmmoItems.Length - .1f)]].startVariables,
+                                _ => GS.itemCache[RS.GetComponent<RoundScript>().AttachmentItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AttachmentItems.Length - .1f)]].startVariables
+                            });
                     } else if (Variables.z == 5f) {
-                        //ItemsToSpawn = new Vector3[] { new Vector3(2f, 100f, 0f), new Vector3(11f, 0f, 0f), new Vector3(12f, 0f, 0f), new Vector3(4f, 0f, 0f), new Vector3(20f, 0f, 0f), new Vector3(16f, 100f, 0f), new Vector3(27f, 100f, 0f), new Vector3(19f, 0f, 0f), new Vector3(17f, 0f, 0f), new Vector3(18f, 0f, 0f), new Vector3(32f, 5f, 0f), new Vector3(33f, 0f, 0f), new Vector3(42f, 30f, 0f), new Vector3(40f, 6f, 0f) };
-                        ItemsToSpawn = new string[]{
-                            GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
-                            GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
-                            GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables
-                        };//new Vector3[] { GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), GS.GetComponent<GameScript>().ReceiveItemVariables((int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)), };
                         AmountToSpawn = Random.Range(5, 10);
+                        for (int a = 0; a < AmountToSpawn; a++)
+                            ItemsToSpawn.Add(Random.Range(0, 3) switch {
+                                0 => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
+                                1 => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
+                                _ => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables
+                            });
+                    } else {
+                        AmountToSpawn = Random.Range(5, 10);
+                        for (int a = 0; a < AmountToSpawn; a++)
+                            ItemsToSpawn.Add(Random.Range(0, 3) switch {
+                                0 => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
+                                1 => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
+                                _ => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables
+                            });
                     }
                 
-                    for (int SpawnStuff = AmountToSpawn; SpawnStuff > 0; SpawnStuff--) {
+                    for (int SpawnStuff = 0; SpawnStuff < ItemsToSpawn.Count; SpawnStuff++) {
                         GameObject CreateItem = Instantiate(ItemPrefab) as GameObject;
                         CreateItem.transform.position = this.transform.position + (Vector3.up * 1f) + (Vector3.up * (SpawnStuff / 2f));
-                        string[] PickRandomItem = ItemsToSpawn;
-                        CreateItem.GetComponent<ItemScript>().Variables = PickRandomItem[(int)Random.Range(0f, PickRandomItem.Length - 0.1f)];
+                        string variables = ItemsToSpawn[SpawnStuff];
+                        CreateItem.GetComponent<ItemScript>().Variables = variables;
                     }
                     
                     Destroy(this.gameObject);

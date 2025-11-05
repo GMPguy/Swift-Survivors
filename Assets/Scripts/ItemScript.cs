@@ -15,6 +15,7 @@ public class ItemScript : MonoBehaviour {
     public bool CanBeFixed = false;
     public bool CanHaveAttachments = false;
     public bool InWater = false;
+    public string PickupReward = "ItemsFound_";
     // Variables
 
     // References
@@ -50,6 +51,9 @@ public class ItemScript : MonoBehaviour {
 
         ThrownVariables = GS.itemCache[int.Parse(GS.GetSemiClass(Variables, "id"))].ThrowVariables;
 
+        if (int.Parse(GS.GetSemiClass(Variables, "id")) >= 990)
+            PickupReward = "TreasuresFound_";
+
         // Flare marker
         if (GS.GetSemiClass(Variables, "id") == "13") {
             MinimapMarker.transform.parent.GetComponent<MinimapMarker>().MapSize = MinimapMarker.transform.parent.GetComponent<MinimapMarker>().MinimapSize;
@@ -62,6 +66,7 @@ public class ItemScript : MonoBehaviour {
             if (CheckWaterUPHIT.collider.gameObject.layer == 4 || CheckWaterUPHIT.collider.gameObject.layer == 16) {
                 InWater = true;
                 MinimapMarker.color = new (0f, .5f, 1f, Random.Range(0f, .25f));
+                PickupReward = "ItemsUnderwaterFound_";
             }
         }
 

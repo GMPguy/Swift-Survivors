@@ -236,6 +236,7 @@ MeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 2810887e1d1f2e14e9de1c327a1e4c9c, type: 2}
   - {fileID: 2100000, guid: 7ff9765278cef15448e5ce2f7b02ee5e, type: 2}
+  - {fileID: 2100000, guid: a6baf8ed945c85942a67ef126f52d349, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -603,12 +604,22 @@ MonoBehaviour:
   Name: 
   TradeOptions: 
   TradePrices: 
+  WarningMaterials:
+  - {fileID: 2100000, guid: bb567c0713f592d42986997c2fd557c3, type: 2}
+  - {fileID: 2100000, guid: 91fa54b5db9090742b4a97937b5718fd, type: 2}
+  - {fileID: 2100000, guid: a712718e4e0a49049bfe4e361942b3cb, type: 2}
+  - {fileID: 2100000, guid: f361a3c52e487524289f2774832144bb, type: 2}
   SelectedModel: {fileID: 0}
   GS: {fileID: 0}
   RS: {fileID: 0}
   ItemPrefab: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398, type: 3}
   EffectPrefab: {fileID: 1917280440325604, guid: 2f76676a0f333824f8e5aaa957c7dd8e,
     type: 3}
+  SpecialPrefab: {fileID: 1686217494258438, guid: c56a1c6f8f494ec4bae007b6749f2b93,
+    type: 3}
+  RadioactivityPrefab: {fileID: 6132514029391038196, guid: 702073abeb5b9be4c8e4190ad4c41f0b,
+    type: 3}
+  RandomID: 0
 --- !u!1 &1293693401759870
 GameObject:
   m_ObjectHideFlags: 0

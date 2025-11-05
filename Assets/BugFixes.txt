@@ -1,3 +1,17 @@
+MAJOR:
+- Add new dialogue menu
+	- dialogue
+	- Trading and buying
+- Rework manual
+	- Visuals
+	- Text
+	- Hints to manual
+- Improve achievement text
+- Item bank (for NPC holding items)
+- For main menu: boot and game over scene
+- Saves versioning system (to update old saves)
+
+MINOR:
 x pathfinding in horde
 x map in horde
 x improve waypoint finding
@@ -38,6 +52,7 @@ x Dirty punishment makes you drunk
 - Changing options at runtime warning
 x Kill function
 	- Immortality glitch
+x Tame hurt effects
 
 x Fix wrench
 
@@ -47,13 +62,18 @@ x Overcast skybox (and multiple skyboxes)
 x Add new lands
 	x Flatlands
 	x Beach lands
-- Ragdoll deaths
+x Ragdoll deaths
 - Windowses
-- Exploreable object
+x Exploreable object
 
-- Remove bandage health cap
+x Remove bandage health cap
 - Building distance, prevent campfire Underwater
-- Barrels
-	- Improve randomization
-	- Add explosive Barrels
-- Add scores
+x Barrels
+	x Improve randomization
+	x Add explosive Barrels
+x Add scores
+	x Specific items
+	x Objects destroyed
+	x Open chests
+	x Lockpicking
+- Add materials for chests

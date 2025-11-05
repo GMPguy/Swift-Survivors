@@ -1029,15 +1029,15 @@ public class AttackScript : MonoBehaviour {
             Lifetime[0] = 0f;
 
             if(ObjectHit.GetComponent<DestructionScript>()){
-                ObjectHit.GetComponent<DestructionScript>().Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit);
+                ObjectHit.GetComponent<DestructionScript>().Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit, Attacker);
             } else if(ObjectHit.layer == 24){
-                ObjectHit.transform.parent.GetComponent<DestructionScript>().Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit);
+                ObjectHit.transform.parent.GetComponent<DestructionScript>().Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit, Attacker);
             }
 
             if(ObjectHit.GetComponent<ChestScript>()){
-                ObjectHit.GetComponent<ChestScript>().Damage(AttackPropertyDamage, new string[]{AttackType, FirearmType}, ObjectHit.transform, PointHit);
+                ObjectHit.GetComponent<ChestScript>().Damage(AttackPropertyDamage, new string[]{AttackType, FirearmType}, ObjectHit.transform, PointHit, Attacker);
             } else if(ObjectHit.layer == 26){
-                ObjectHit.transform.parent.GetComponent<ChestScript>().Damage(AttackPropertyDamage, new string[]{AttackType, FirearmType}, ObjectHit.transform, PointHit);
+                ObjectHit.transform.parent.GetComponent<ChestScript>().Damage(AttackPropertyDamage, new string[]{AttackType, FirearmType}, ObjectHit.transform, PointHit, Attacker);
             }
 
             if (ObjectHit.GetComponent<FootstepMaterial>() != null) {

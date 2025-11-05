@@ -1956,6 +1956,24 @@ public class GameScript : MonoBehaviour {
                 case "ItemsFound":
                     Result = SetString("Items found: ", "Znalezione przedmioty: ") + TypeScore[1];
                     break;
+                case "TreasuresFound":
+                    Result = SetString("Treasures found: ", "Znalezione skarby: ") + TypeScore[1];
+                    break;
+                case "ItemsUnderwaterFound":
+                    Result = SetString("Items found underwater: ", "Znalezione pod wodą przedmioty: ") + TypeScore[1];
+                    break;
+                case "ObjectsDestroyed":
+                    Result = SetString("Objects destroyed: ", "Zniszczono obiektów: ") + TypeScore[1];
+                    break;
+                case "ChestsDestroyed":
+                    Result = SetString("Chests destroyed: ", "Zniszczono skrzyń: ") + TypeScore[1];
+                    break;
+                case "ChestsOpened":
+                    Result = SetString("Chests opened: ", "Otwarto skrzyń: ") + TypeScore[1];
+                    break;
+                case "PickedLocks":
+                    Result = SetString("Picked locks: ", "Otwarto wytrychem: ") + TypeScore[1];
+                    break;
                 case "Killed":
                     Result = SetString("Killed: ", "Zabitych: ") + TypeScore[1];
                     break;

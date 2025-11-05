@@ -91,7 +91,7 @@ public class DestructionScript : MonoBehaviour {
         
     }
 
-    public void Hit(float Damage, string[] AttackType, Vector3 AttackHit){
+    public void Hit(float Damage, string[] AttackType, Vector3 AttackHit, GameObject killer = null){
 
         if(Health > 0f){
 
@@ -125,6 +125,9 @@ public class DestructionScript : MonoBehaviour {
 
                 } else {
 
+                    if (killer && killer.tag == "Player")
+                        RS.SetScore("ObjectsDestroyed_", "/+1");
+
                     // Destroy effect
                     switch(mainType){
                         case "Tree": case "Construction":
@@ -143,10 +146,9 @@ public class DestructionScript : MonoBehaviour {
                     }
 
                     // Destroy anchors
-                    
                     if(Anchors != null) {
                         DestructionScript[] bAnchors = Anchors.ToArray();
-                        for (int bye = 0; bye < bAnchors.Length; bye++) bAnchors[bye].Hit(9999f, new[]{"Broke"}, this.transform.position);
+                        for (int bye = 0; bye < bAnchors.Length; bye++) bAnchors[bye].Hit(9999f, new[]{"Broke"}, this.transform.position, killer);
                     }
 
                 }   

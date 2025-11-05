@@ -625,19 +625,14 @@ public class PlayerScript : MonoBehaviour {
                 if (GS.Ragdolls) {
 
                     if (this.GetComponent<CapsuleCollider>().enabled == true) {
-                        /*this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-                        this.GetComponent<Rigidbody>().drag = 1f;
-                        this.GetComponent<Rigidbody>().AddTorque(Vector3.one * Random.Range(-1f, 1f), ForceMode.Impulse);
-                        this.GetComponent<Rigidbody>().AddForce(Vector3.up * Random.Range(0f, 5f), ForceMode.Impulse);
-                        this.GetComponent<CapsuleCollider>().height = 1.5f;
-                        this.GetComponent<CapsuleCollider>().radius = 0.25f;
-                        this.GetComponent<CapsuleCollider>().material.bounciness = 1f;*/
                         this.GetComponent<CapsuleCollider>().enabled = false;
 
-                        GameObject DropRagdoll = Instantiate(RagdollPrefab) as GameObject;
-                        DropRagdoll.transform.position = this.transform.position;
-                        DropRagdoll.GetComponent<RagdollScript>().DroppedBy = this.gameObject;
-                        DropRagdoll.GetComponent<RagdollScript>().DeadPush = Vector3.zero;
+                        if (!Gib) {
+                            GameObject DropRagdoll = Instantiate(RagdollPrefab) as GameObject;
+                            DropRagdoll.transform.position = this.transform.position;
+                            DropRagdoll.GetComponent<RagdollScript>().DroppedBy = this.gameObject;
+                            DropRagdoll.GetComponent<RagdollScript>().DeadPush = Vector3.zero;
+                        }
 
                         this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
                     }
@@ -857,6 +852,8 @@ public class PlayerScript : MonoBehaviour {
                     CameraShakeForce[1] -= 0.01f * (Time.deltaTime * 50f);
                 }
                 // Camera Shake
+            } else {
+                MainCamera.localPosition = Vector3.zero;
             }
 
         } else if (POV == "Spectate"){
@@ -1397,8 +1394,8 @@ public class PlayerScript : MonoBehaviour {
                     }
                 }
 
-                if(InteractedGameobject.GetComponent<ItemScript>().DroppedBy == null) 
-                    RS.SetScore("ItemsFound_", "/+1");
+                if(InteractedGameobject.TryGetComponent<ItemScript>(out ItemScript item) && item.DroppedBy == null) 
+                    RS.SetScore(item.PickupReward, "/+1");
 
                 if(InteractedGameobject.GetComponent<ItemScript>().InWater && InteractedGameobject.GetComponent<ItemScript>().State == 1) 
                     GS.PS.AchProg("Ach_UnderwaterTreasure", "/+-1");
@@ -1793,7 +1790,7 @@ public class PlayerScript : MonoBehaviour {
                             FoodName = GS.SetString("Bandage", "Bandażu");
                             ConsumeAnimation = "Bandage";
                             DrinkOrWhat = 2;
-                            HealthToAddSub = Mathf.Clamp(25, 0f, (Health[1] * 0.75f) - Health[0]);
+                            HealthToAddSub = 25;
                             FoodColor = new Color32(200, 225, 255, 0);
                             FlashColor = new Color32(0, 255, 0, 155);
                             if (Health[0] >= Health[1] * 0.75f)
@@ -3335,6 +3332,8 @@ public class PlayerScript : MonoBehaviour {
                         }
 
                         if (success) {
+                            RS.SetScore("PickedLocks_", "/+1");
+
                             GameObject Ring = Instantiate(EffectPrefab) as GameObject;
                             Ring.transform.position = this.transform.position;
                             Ring.GetComponent<EffectScript>().EffectName = "Unpin";
@@ -3548,7 +3547,12 @@ public class PlayerScript : MonoBehaviour {
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f) {
                         CantUseItem = 1f;
                         CantSwitchItem = 1f;
-                        Energy[0] = Energy[1];
+
+                        if (IsCasual)
+                            Adrenaline += 5f;
+                        else
+                            Energy[0] = Energy[1];
+
                         ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Puffer", "124", AnimationAddition), 0, 0f);
                         GameObject Ring = Instantiate(EffectPrefab) as GameObject;
                         Ring.transform.position = this.transform.position;
@@ -4373,7 +4377,19 @@ public class PlayerScript : MonoBehaviour {
                     if (GS.GameModePrefab.x == 1 && !MainCanvas.HintsTold.Contains("Hurt")) {
                         MainCanvas.HintsCooldown.Add("Hurt");
                     }
-                    RecoilCam(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), Random.Range(-15f, 15f)), 0.2f, 0f);
+
+                    float damageBias = GotDamage / Health[0];
+                    if (IsCasual) {
+                        ShakeCam(damageBias / 2F, damageBias / 2F);
+                    } else {
+                        ShakeCam(damageBias / 2F, damageBias * damageBias);
+                        RecoilCam(
+                            new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), Random.Range(-15f, 15f)),
+                            Mathf.Max((damageBias - .5f) * 4f, 0f),
+                            0f
+                        );
+                    }
+
                     MainCanvas.DamagedPosition = DamageDirection;
                     MainCanvas.DamageIndicator.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
                     MainCanvas.Flash(new Color32(255, 0, 0, 75), new float[]{0.25f, 0.25f});
