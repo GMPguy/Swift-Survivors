@@ -21,7 +21,7 @@ x Reduce setdestination
 x disable updates for mobs and interactable updates - when the game is paused
 x Move updates for mobs and interactables to a different loop
 - Marks on map
-- show map when told to
+x show map when told to
 
 x Dynamic obstacles
 x Jumps?
@@ -55,6 +55,9 @@ x Kill function
 x Tame hurt effects
 
 x Fix wrench
+x Make healing procentage based
+x Make mags ammo stacking
+- Fix 1b1 reloading
 
 x Ambient light fix
 x Grass colors noise map
@@ -71,9 +74,12 @@ x Remove bandage health cap
 x Barrels
 	x Improve randomization
 	x Add explosive Barrels
+	- Add warning lables
 x Add scores
 	x Specific items
 	x Objects destroyed
 	x Open chests
 	x Lockpicking
-- Add materials for chests
+
+x Add materials for chests
+x Make chests walkthrough

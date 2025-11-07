@@ -48,10 +48,15 @@ public class LightControlScript : MonoBehaviour
                 case "Normal":
                     // Will always be on, but will be low quality at levels less than medium
                     this.GetComponent<Light>().enabled = true;
-                    if (GS.GetComponent<GameScript>().LightingQuality >= 2)
+                    if (GS.LightingQuality == 4)
                     {
                         this.GetComponent<Light>().renderMode = LightRenderMode.ForcePixel;
-                        this.GetComponent<Light>().shadows = LightShadows.Hard;
+                        this.GetComponent<Light>().shadows = LightShadows.Soft;
+                    }
+                    else if (GS.GetComponent<GameScript>().LightingQuality >= 2)
+                    {
+                        this.GetComponent<Light>().renderMode = LightRenderMode.ForcePixel;
+                        this.GetComponent<Light>().shadows = LightShadows.None;
                     }
                     else
                     {
@@ -63,7 +68,7 @@ public class LightControlScript : MonoBehaviour
                     // Always on and high quality
                     this.GetComponent<Light>().enabled = true;
                     this.GetComponent<Light>().renderMode = LightRenderMode.ForcePixel;
-                    this.GetComponent<Light>().shadows = LightShadows.Hard;
+                    this.GetComponent<Light>().shadows = LightShadows.Soft;
                     break;
                 case "Optional":
                     // Will be on if quality will be greater than medium, and will be high quality only at high
@@ -71,7 +76,7 @@ public class LightControlScript : MonoBehaviour
                     {
                         this.GetComponent<Light>().renderMode = LightRenderMode.ForcePixel;
                         this.GetComponent<Light>().enabled = true;
-                        this.GetComponent<Light>().shadows = LightShadows.Hard;
+                        this.GetComponent<Light>().shadows = LightShadows.Soft;
                     }
                     else if (GS.GetComponent<GameScript>().LightingQuality >= 3)
                     {
@@ -90,7 +95,7 @@ public class LightControlScript : MonoBehaviour
                     {
                         this.GetComponent<Light>().renderMode = LightRenderMode.ForcePixel;
                         this.GetComponent<Light>().enabled = true;
-                        this.GetComponent<Light>().shadows = LightShadows.Hard;
+                        this.GetComponent<Light>().shadows = LightShadows.Soft;
                     }
                     else
                     {

@@ -10,7 +10,7 @@ public class InteractableScript : MonoBehaviour {
     public string Name;
     public int[] TradeOptions;
     public int[] TradePrices;
-    public Material[] WarningMaterials;
+    public Texture[] WarningMaterials;
     // Main variables
 
     public GameObject SelectedModel;
@@ -121,9 +121,9 @@ public class InteractableScript : MonoBehaviour {
                 if (BarrelMat.name == "Barrel2 (Instance)") {
                     BarrelMat.color = new Color32((byte)(BarrelColor.r * 0.75f), (byte)(BarrelColor.g * 0.75f), (byte)(BarrelColor.b * 0.75f), 255);
                 } else if (BarrelMat.name == "BarrelLabel (Instance)" && label != "") {
-                    foreach (Material labelMat in WarningMaterials)
+                    foreach (Texture labelMat in WarningMaterials)
                         if (labelMat.name == label)
-                            SelectedModel.GetComponent<MeshRenderer>().materials[m] = labelMat;
+                            SelectedModel.GetComponent<MeshRenderer>().materials[m].mainTexture = labelMat;
                 } else {
                     BarrelMat.color = BarrelColor;
                 }
@@ -341,6 +341,8 @@ public class InteractableScript : MonoBehaviour {
         if (WhatToDo == "Break") {
 
             if (Variables.x == 1f) {
+                if (Variables.y <= 0f)
+                    return;
 
                 Variables.y -= VariableBonus;
                 SelectedModel.transform.GetChild(0).GetComponent<AudioSource>().Play();
@@ -358,21 +360,21 @@ public class InteractableScript : MonoBehaviour {
                                 case -4:
                                     Variables.y = 0f;
                                     danger.TypeOfSpecial = "Explosion";
-                                    danger.ExplosionRange = 3f;
+                                    danger.ExplosionRange = 4f;
                                     break;
                                 case -3:
                                     float power = Random.Range(2f, 8f);
                                     Vector3 radius = new Vector3(
-                                        Random.Range(1f, 5f),
+                                        Random.Range(2f, 5f),
                                         1f,
-                                        Random.Range(1f, 5f)
+                                        Random.Range(2f, 5f)
                                     );
 
                                     if (radiation) {
                                         power = Mathf.Min(radiation.ExplosionRange + Random.Range(1f, 2f), 10f);
                                         radius = radiation.transform.localScale;
-                                        radius.x += Random.Range(0f, 1f);
-                                        radius.z += Random.Range(0f, 1f);
+                                        radius.x += Random.Range(1f, 2f);
+                                        radius.z += Random.Range(1f, 2f);
                                         Destroy(radiation.gameObject);
                                     }
 

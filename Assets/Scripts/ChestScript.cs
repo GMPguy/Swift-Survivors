@@ -25,6 +25,7 @@ public class ChestScript : MonoBehaviour {
     public Spawner[] Spawners;
     public GameObject Lock;
     public GameObject MinimapMarker;
+    public ColorBank[] colorBanks;
     
     public GameScript GS;
     public RoundScript RS;
@@ -51,6 +52,7 @@ public class ChestScript : MonoBehaviour {
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
         RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
 
+        // Stats
         float diff = RS.DifficultySliderB;
         Health.y = Mathf.Lerp(Healths.x, Healths.y, diff);
         Health.x = Health.y;
@@ -67,6 +69,38 @@ public class ChestScript : MonoBehaviour {
             Opening.y = Mathf.Lerp(.1f, .9f, Mathf.Pow(Random.value, 3)) * Opening.z;
         else
             Opening.y = Opening.z * 2f;
+
+        // Colors
+        float[] randoms = new float[colorBanks.Length];
+        for (int r = 0; r < randoms.Length; r++)
+            randoms[r] = Random.Range(0f, .999f);
+
+        for (int cb = 0; cb < colorBanks.Length; cb++) {
+            // Get color
+            ColorBank bank = colorBanks[cb];
+            float randome = randoms[bank.RandomBus] * bank.Colors.Length;
+
+            Color theColor = Color.black;
+
+            if (bank.IsSmooth) {
+                int firstRandom = (int)randome;
+                int secondRandom = (firstRandom + 1) % bank.Colors.Length;
+                theColor = Color.Lerp(bank.Colors[firstRandom], bank.Colors[secondRandom], randome % 1f);
+            } else {
+                theColor = bank.Colors[(int)randome];
+            }
+
+            // Set color
+            for (int mr = 0; mr < bank.Meshes.Length; mr++) {
+                MeshRenderer mesh = bank.Meshes[mr];
+                foreach (Material mat in mesh.materials)
+                    for (int gn = 0; gn < bank.Materials.Length; gn++)
+                        if (mat.name == bank.Materials[gn]) {
+                            mat.color = theColor;
+                            break;
+                        }
+            }
+        }
 
         wasStarted = true;
 
@@ -97,6 +131,8 @@ public class ChestScript : MonoBehaviour {
                         Quaternion.Euler(currDoor.ClosedPosition),
                         openingCurve[pickCurve].Evaluate(doorOpening.x % 1f)
                     );
+
+                    currDoor.transform.gameObject.layer = 13;
                 }
                 break;
         }
@@ -296,6 +332,15 @@ public class ChestScript : MonoBehaviour {
         public string HitEffect;
         public bool RipOffOnHit;
         public AudioClip[] BreakSound;
+    }
+
+    [System.Serializable]
+    public class ColorBank {
+        public MeshRenderer[] Meshes;
+        public string[] Materials;
+        public Color[] Colors;
+        public bool IsSmooth;
+        public int RandomBus;
     }
 
 }

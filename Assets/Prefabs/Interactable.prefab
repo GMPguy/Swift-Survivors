@@ -605,10 +605,10 @@ MonoBehaviour:
   TradeOptions: 
   TradePrices: 
   WarningMaterials:
-  - {fileID: 2100000, guid: bb567c0713f592d42986997c2fd557c3, type: 2}
-  - {fileID: 2100000, guid: 91fa54b5db9090742b4a97937b5718fd, type: 2}
-  - {fileID: 2100000, guid: a712718e4e0a49049bfe4e361942b3cb, type: 2}
-  - {fileID: 2100000, guid: f361a3c52e487524289f2774832144bb, type: 2}
+  - {fileID: 2800000, guid: 43c60f436a66a0249b6900caffd40711, type: 3}
+  - {fileID: 2800000, guid: 6ef2647f5b1b783448764f658f1d0217, type: 3}
+  - {fileID: 2800000, guid: 9ee0e4a596b8e6b49b0656dc7d10e0d9, type: 3}
+  - {fileID: 2800000, guid: 79374cd3cc3be404b9da1420e273fcf2, type: 3}
   SelectedModel: {fileID: 0}
   GS: {fileID: 0}
   RS: {fileID: 0}

@@ -2007,6 +2007,7 @@ public class CanvasScript : MonoBehaviour {
 
             // Marking stuff
             if (MarksTouchPad.GetComponent<ButtonScript>().IsSelected == true && Input.GetButton("Information Tab")) {
+                Debug.Log("Mark");
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(MarksTouchPad, Input.mousePosition, null, out Vector2 clickPos);
                 clickPos = new Vector2 (clickPos.x * MapSize.x, clickPos.y * MapSize.y);
                 float dist = MapSize.x * 1.333f; // 16 / 120 = 1.333

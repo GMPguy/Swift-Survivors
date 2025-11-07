@@ -257,6 +257,7 @@ MonoBehaviour:
   Options:
   - OpenChest
   ThisOption: 0
+  CanBePicklocked: 0
 --- !u!1 &5158153208319058486
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,6 +562,24 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 3748607456005013031}
   m_SourcePrefab: {fileID: 100100000, guid: 442f2dd7937ed30479033db1c1e161cb, type: 3}
+--- !u!23 &2182088434120933001 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6221859186036028436, guid: 442f2dd7937ed30479033db1c1e161cb,
+    type: 3}
+  m_PrefabInstance: {fileID: 5192701126711544477}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &2495866848200017944 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7688550033755161221, guid: 442f2dd7937ed30479033db1c1e161cb,
+    type: 3}
+  m_PrefabInstance: {fileID: 5192701126711544477}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &3254387361989264596 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7294079022077414985, guid: 442f2dd7937ed30479033db1c1e161cb,
+    type: 3}
+  m_PrefabInstance: {fileID: 5192701126711544477}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4822236208348216498 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 791552034271049263, guid: 442f2dd7937ed30479033db1c1e161cb,
@@ -661,6 +680,52 @@ MonoBehaviour:
   - {fileID: 1564796701384820919}
   Lock: {fileID: 4824445048835337833}
   MinimapMarker: {fileID: 1124735293088390746}
+  colorBanks:
+  - Meshes:
+    - {fileID: 2495866848200017944}
+    - {fileID: 2182088434120933001}
+    - {fileID: 3254387361989264596}
+    Materials:
+    - Closet1 (Instance)
+    Colors:
+    - {r: 0.65882355, g: 0.45882353, b: 0.34509805, a: 1}
+    - {r: 0.47058824, g: 0.2627451, b: 0.22745098, a: 1}
+    - {r: 0.47058824, g: 0.2627451, b: 0.22745098, a: 1}
+    - {r: 0.65882355, g: 0.45882356, b: 0.34509805, a: 1}
+    - {r: 1, g: 0.7019608, b: 0.40392157, a: 1}
+    - {r: 0.75686276, g: 0.41568628, b: 0.22352941, a: 1}
+    - {r: 1, g: 0.7019608, b: 0.40392157, a: 1}
+    - {r: 0.75686276, g: 0.41568628, b: 0.22352941, a: 1}
+    IsSmooth: 0
+    RandomBus: 0
+  - Meshes:
+    - {fileID: 2495866848200017944}
+    - {fileID: 2182088434120933001}
+    - {fileID: 3254387361989264596}
+    Materials:
+    - Closet2 (Instance)
+    Colors:
+    - {r: 0.47058824, g: 0.2627451, b: 0.22745098, a: 1}
+    - {r: 0.65882355, g: 0.45882353, b: 0.34509805, a: 1}
+    - {r: 0.47058827, g: 0.2627451, b: 0.227451, a: 1}
+    - {r: 0.65882355, g: 0.45882356, b: 0.34509805, a: 1}
+    - {r: 0.75686276, g: 0.41568628, b: 0.22352941, a: 1}
+    - {r: 1, g: 0.7019608, b: 0.40392157, a: 1}
+    - {r: 1, g: 0.7019608, b: 0.40392157, a: 1}
+    - {r: 0.75686276, g: 0.41568628, b: 0.22352941, a: 1}
+    IsSmooth: 0
+    RandomBus: 0
+  - Meshes:
+    - {fileID: 2495866848200017944}
+    - {fileID: 2182088434120933001}
+    Materials:
+    - Closet3 (Instance)
+    Colors:
+    - {r: 0.7176471, g: 0.7176471, b: 0.7176471, a: 1}
+    - {r: 1, g: 0.8117647, b: 0.49411765, a: 1}
+    - {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 1}
+    IsSmooth: 0
+    RandomBus: 1
   GS: {fileID: 0}
   RS: {fileID: 0}
   EffectPrefab: {fileID: 1917280440325604, guid: 2f76676a0f333824f8e5aaa957c7dd8e,

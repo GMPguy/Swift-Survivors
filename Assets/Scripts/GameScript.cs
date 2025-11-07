@@ -57,6 +57,8 @@ public class GameScript : MonoBehaviour {
     public Vector2 UIResolution = new Vector2(800f, 600f);
     int PrevSkyboxType = 0;
     public int SkyboxType = 0;
+
+    public static List<InstantLODScript> CachedLODs;
     // Volume
     public AudioMixer mainMixer;
     string[] mixerChannels = {"Master", "Music", "Sounds", "EnvSounds"};
@@ -220,6 +222,8 @@ public class GameScript : MonoBehaviour {
 
             if (SceneManager.GetActiveScene().name == "NewMenu")
                 NewMenuScript.LoadingAdditionalInfo = "";
+
+            CachedLODs = new List<InstantLODScript>();
         }
 		
 	}
@@ -663,6 +667,7 @@ public class GameScript : MonoBehaviour {
         if (QualitySettings.GetQualityLevel() != GraphicsQuality) {
             QualitySettings.SetQualityLevel(GraphicsQuality);
         }
+
         if (PrevGraphSet != QualitySettings.GetQualityLevel()) {
             if (QualitySettings.GetQualityLevel() == 0) {
                 // Minimal
@@ -672,7 +677,6 @@ public class GameScript : MonoBehaviour {
                 PPColorGrading.enabled.value = false;
                 PPVignette.enabled.value = false;
                 PPDepth.enabled.value = false;
-                GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = 50f;
             } else if (QualitySettings.GetQualityLevel() == 1) {
                 // Low
                 PPBloom.enabled.value = false;
@@ -681,10 +685,6 @@ public class GameScript : MonoBehaviour {
                 PPColorGrading.enabled.value = true;
                 PPVignette.enabled.value = true;
                 PPDepth.enabled.value = false;
-                PPColorGrading.contrast.value = ContSaturTempInvi[0];
-                PPColorGrading.saturation.value = ContSaturTempInvi[1];
-                PPColorGrading.colorFilter.value = PPColor;
-                PPVignette.intensity.value = ContSaturTempInvi[3];
             } else if (QualitySettings.GetQualityLevel() == 2) {
                 // Medium
                 PPBloom.enabled.value = true;
@@ -693,11 +693,6 @@ public class GameScript : MonoBehaviour {
                 PPColorGrading.enabled.value = true;
                 PPVignette.enabled.value = true;
                 PPDepth.enabled.value = false;
-                PPColorGrading.contrast.value = ContSaturTempInvi[0];
-                PPColorGrading.saturation.value = ContSaturTempInvi[1];
-                PPColorGrading.temperature.value = ContSaturTempInvi[2];
-                PPColorGrading.colorFilter.value = PPColor;
-                PPVignette.intensity.value = ContSaturTempInvi[3];
             } else if (QualitySettings.GetQualityLevel() == 3) {
                 // Good
                 PPBloom.enabled.value = true;
@@ -706,11 +701,6 @@ public class GameScript : MonoBehaviour {
                 PPColorGrading.enabled.value = true;
                 PPVignette.enabled.value = true;
                 PPDepth.enabled.value = false;
-                PPColorGrading.contrast.value = ContSaturTempInvi[0];
-                PPColorGrading.saturation.value = ContSaturTempInvi[1];
-                PPColorGrading.temperature.value = ContSaturTempInvi[2];
-                PPColorGrading.colorFilter.value = PPColor;
-                PPVignette.intensity.value = ContSaturTempInvi[3];
             } else if (QualitySettings.GetQualityLevel() == 4) {
                 // High
                 PPBloom.enabled.value = true;
@@ -719,15 +709,52 @@ public class GameScript : MonoBehaviour {
                 PPColorGrading.enabled.value = true;
                 PPVignette.enabled.value = true;
                 PPDepth.enabled.value = true;
-                PPColorGrading.contrast.value = ContSaturTempInvi[0];
-                PPColorGrading.saturation.value = ContSaturTempInvi[1];
-                PPColorGrading.temperature.value = ContSaturTempInvi[2];
-                PPColorGrading.colorFilter.value = PPColor;
-                PPVignette.intensity.value = ContSaturTempInvi[3];
-                PPDepth.focusDistance.value = CameraFocus[0];
-                PPDepth.aperture.value = CameraFocus[1];
-                PPDepth.focalLength.value = CameraFocus[2];
             }
+
+            // Update LODs
+            for (int ul = CachedLODs.Count - 1; ul >= 0; ul--)
+                if (CachedLODs[ul])
+                    CachedLODs[ul].SetLevel(false);
+                else
+                    CachedLODs.RemoveAt(ul);
+            
+            PrevGraphSet = GraphicsQuality;
+        }
+
+        // Update dynamic graphic settings
+        if (QualitySettings.GetQualityLevel() == 0) {
+            // Minimal
+            GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = 50f;
+        } else if (QualitySettings.GetQualityLevel() == 1) {
+            // Low
+            PPColorGrading.contrast.value = ContSaturTempInvi[0];
+            PPColorGrading.saturation.value = ContSaturTempInvi[1];
+            PPColorGrading.colorFilter.value = PPColor;
+            PPVignette.intensity.value = ContSaturTempInvi[3];
+        } else if (QualitySettings.GetQualityLevel() == 2) {
+            // Medium
+            PPColorGrading.contrast.value = ContSaturTempInvi[0];
+            PPColorGrading.saturation.value = ContSaturTempInvi[1];
+            PPColorGrading.temperature.value = ContSaturTempInvi[2];
+            PPColorGrading.colorFilter.value = PPColor;
+            PPVignette.intensity.value = ContSaturTempInvi[3];
+        } else if (QualitySettings.GetQualityLevel() == 3) {
+            // Good
+            PPColorGrading.contrast.value = ContSaturTempInvi[0];
+            PPColorGrading.saturation.value = ContSaturTempInvi[1];
+            PPColorGrading.temperature.value = ContSaturTempInvi[2];
+            PPColorGrading.colorFilter.value = PPColor;
+            PPVignette.intensity.value = ContSaturTempInvi[3];
+        } else if (QualitySettings.GetQualityLevel() == 4) {
+            // High
+            PPColorGrading.contrast.value = ContSaturTempInvi[0];
+            PPColorGrading.saturation.value = ContSaturTempInvi[1];
+            PPColorGrading.temperature.value = ContSaturTempInvi[2];
+            PPColorGrading.colorFilter.value = PPColor;
+            PPVignette.intensity.value = ContSaturTempInvi[3];
+            PPDepth.focusDistance.value = CameraFocus[0];
+            PPDepth.aperture.value = CameraFocus[1];
+            PPDepth.focalLength.value = CameraFocus[2];
         }
 
         // Lighting quality control
@@ -887,7 +914,7 @@ public class GameScript : MonoBehaviour {
 
     // Item functions
     public void setItemData(bool isCausal){
-        string casualAmmo = isCausal ? "chAmmo;" : "";
+        string casualAmmo = isCausal ? "chAmmo;" : "as;";
 
         itemCache = new itemClass[]{
             new(),
@@ -1170,7 +1197,7 @@ public class GameScript : MonoBehaviour {
                 "id62;va100;at0;",
                 new (2f, 25f, 0f)
             ),
-            new(this, new string[]{"Ammo chain", "Taśma nabojowa"},
+            new(this, new string[]{"Ammo chain", "Taśma z nabojami"},
                 new string[]{"A bunch of bullets, on a chain. This can be used to reload machine guns.", "Łańcuch z kulami. Można tego użyć do przeładowywania karabinów maszynowych."},
                 "id63;va" + (250 * Random.Range(1, 4)).ToString() + ";" + casualAmmo
             ),

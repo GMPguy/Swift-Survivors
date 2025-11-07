@@ -73,6 +73,7 @@ MonoBehaviour:
   Options:
   - OpenChest
   ThisOption: 0
+  CanBePicklocked: 0
 --- !u!1 &3800948811598460066
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,6 +377,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 147772338115484064}
   m_SourcePrefab: {fileID: 100100000, guid: 552b035a0f4d19d4183ccd243dc2bbe3, type: 3}
+--- !u!23 &601280679010396052 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4045504627011866833, guid: 552b035a0f4d19d4183ccd243dc2bbe3,
+    type: 3}
+  m_PrefabInstance: {fileID: 3493852754685048645}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2639977324471906897 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -7719242389130427116, guid: 552b035a0f4d19d4183ccd243dc2bbe3,
@@ -593,6 +600,43 @@ MonoBehaviour:
   - {fileID: 9010838840461911240}
   Lock: {fileID: 3120124619393792963}
   MinimapMarker: {fileID: 6513068701955220631}
+  colorBanks:
+  - Meshes:
+    - {fileID: 601280679010396052}
+    - {fileID: 7222431264179520272}
+    Materials:
+    - Chest2 (Instance)
+    Colors:
+    - {r: 0.6784314, g: 0.50980395, b: 0.38039216, a: 1}
+    - {r: 0.5019608, g: 0.16862746, b: 0.16862746, a: 1}
+    - {r: 0.3886792, g: 0.27127004, b: 0.18993945, a: 1}
+    - {r: 0.81886786, g: 0.46862918, b: 0.27038082, a: 1}
+    IsSmooth: 0
+    RandomBus: 0
+  - Meshes:
+    - {fileID: 601280679010396052}
+    - {fileID: 7222431264179520272}
+    Materials:
+    - Chest3 (Instance)
+    Colors:
+    - {r: 0.7176471, g: 0.7176471, b: 0.7176471, a: 1}
+    - {r: 1, g: 0.8117647, b: 0.49411765, a: 1}
+    - {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 1}
+    IsSmooth: 0
+    RandomBus: 1
+  - Meshes:
+    - {fileID: 601280679010396052}
+    - {fileID: 7222431264179520272}
+    Materials:
+    - Chest1 (Instance)
+    Colors:
+    - {r: 0.5019608, g: 0.16862746, b: 0.16862746, a: 1}
+    - {r: 0.1171876, g: 0.4113207, b: 0.13795368, a: 1}
+    - {r: 0, g: 0.018437404, b: 0.4264151, a: 1}
+    - {r: 0.44179878, g: 0, b: 0.7137255, a: 1}
+    - {r: 1, g: 0, b: 0.74535704, a: 1}
+    IsSmooth: 0
+    RandomBus: 2
   GS: {fileID: 0}
   RS: {fileID: 0}
   EffectPrefab: {fileID: 1917280440325604, guid: 2f76676a0f333824f8e5aaa957c7dd8e,
@@ -711,6 +755,12 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0.5, z: 0.5}
   m_TimeToStationary: 0.5
+--- !u!23 &7222431264179520272 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6072983590534984789, guid: 552b035a0f4d19d4183ccd243dc2bbe3,
+    type: 3}
+  m_PrefabInstance: {fileID: 3493852754685048645}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8997536105868900696 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -3701673040529813987, guid: 552b035a0f4d19d4183ccd243dc2bbe3,

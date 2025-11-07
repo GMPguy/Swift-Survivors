@@ -517,6 +517,7 @@ MonoBehaviour:
   Options:
   - OpenChest
   ThisOption: 0
+  CanBePicklocked: 0
 --- !u!1 &7443131915610235205
 GameObject:
   m_ObjectHideFlags: 0
@@ -1150,6 +1151,64 @@ MonoBehaviour:
   - {fileID: 4013944566742463211}
   Lock: {fileID: 7418793517110067478}
   MinimapMarker: {fileID: 6740110946675089757}
+  colorBanks:
+  - Meshes:
+    - {fileID: 4031869027092824774}
+    - {fileID: 6853784093040560519}
+    - {fileID: 5815216250996723841}
+    - {fileID: 4911436454940691290}
+    - {fileID: 8696618898781932389}
+    - {fileID: 4355307201867880712}
+    - {fileID: 433066441805841576}
+    Materials:
+    - Closet1 (Instance)
+    Colors:
+    - {r: 0.65882355, g: 0.45882353, b: 0.34509805, a: 1}
+    - {r: 0.47058824, g: 0.2627451, b: 0.22745098, a: 1}
+    - {r: 0.47058824, g: 0.2627451, b: 0.22745098, a: 1}
+    - {r: 0.65882355, g: 0.45882356, b: 0.34509805, a: 1}
+    - {r: 1, g: 0.7019608, b: 0.40392157, a: 1}
+    - {r: 0.75686276, g: 0.41568628, b: 0.22352941, a: 1}
+    - {r: 1, g: 0.7019608, b: 0.40392157, a: 1}
+    - {r: 0.75686276, g: 0.41568628, b: 0.22352941, a: 1}
+    IsSmooth: 0
+    RandomBus: 0
+  - Meshes:
+    - {fileID: 4031869027092824774}
+    - {fileID: 6853784093040560519}
+    - {fileID: 5815216250996723841}
+    - {fileID: 4911436454940691290}
+    - {fileID: 8696618898781932389}
+    - {fileID: 4355307201867880712}
+    - {fileID: 433066441805841576}
+    Materials:
+    - Closet2 (Instance)
+    Colors:
+    - {r: 0.47058824, g: 0.2627451, b: 0.22745098, a: 1}
+    - {r: 0.65882355, g: 0.45882353, b: 0.34509805, a: 1}
+    - {r: 0.47058827, g: 0.2627451, b: 0.227451, a: 1}
+    - {r: 0.65882355, g: 0.45882356, b: 0.34509805, a: 1}
+    - {r: 0.75686276, g: 0.41568628, b: 0.22352941, a: 1}
+    - {r: 1, g: 0.7019608, b: 0.40392157, a: 1}
+    - {r: 1, g: 0.7019608, b: 0.40392157, a: 1}
+    - {r: 0.75686276, g: 0.41568628, b: 0.22352941, a: 1}
+    IsSmooth: 0
+    RandomBus: 0
+  - Meshes:
+    - {fileID: 4031869027092824774}
+    - {fileID: 6853784093040560519}
+    - {fileID: 5815216250996723841}
+    - {fileID: 4911436454940691290}
+    - {fileID: 8696618898781932389}
+    - {fileID: 4355307201867880712}
+    Materials:
+    - Closet3 (Instance)
+    Colors:
+    - {r: 0.7176471, g: 0.7176471, b: 0.7176471, a: 1}
+    - {r: 1, g: 0.8117647, b: 0.49411765, a: 1}
+    - {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 1}
+    IsSmooth: 0
+    RandomBus: 1
   GS: {fileID: 0}
   RS: {fileID: 0}
   EffectPrefab: {fileID: 1917280440325604, guid: 2f76676a0f333824f8e5aaa957c7dd8e,
@@ -1268,6 +1327,12 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0.5}
   m_TimeToStationary: 0.5
+--- !u!23 &433066441805841576 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -8135750660948390096, guid: 722d6fb7994387a40bb4450fe7a82b85,
+    type: 3}
+  m_PrefabInstance: {fileID: 655993115810679704}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &612626253238378302 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 115670924248044710, guid: 722d6fb7994387a40bb4450fe7a82b85,
@@ -1664,6 +1729,24 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 655993115810679704}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &4031869027092824774 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4688636680427812514, guid: 722d6fb7994387a40bb4450fe7a82b85,
+    type: 3}
+  m_PrefabInstance: {fileID: 655993115810679704}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4355307201867880712 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3849353446037017232, guid: 722d6fb7994387a40bb4450fe7a82b85,
+    type: 3}
+  m_PrefabInstance: {fileID: 655993115810679704}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4911436454940691290 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -3660754504533704510, guid: 722d6fb7994387a40bb4450fe7a82b85,
+    type: 3}
+  m_PrefabInstance: {fileID: 655993115810679704}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5406697456838296393 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4462226157879326511, guid: 722d6fb7994387a40bb4450fe7a82b85,
@@ -1794,6 +1877,12 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!23 &5815216250996723841 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2762604200498930919, guid: 722d6fb7994387a40bb4450fe7a82b85,
+    type: 3}
+  m_PrefabInstance: {fileID: 655993115810679704}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6082938107388926476 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -2490383143595028076, guid: 722d6fb7994387a40bb4450fe7a82b85,
@@ -1924,9 +2013,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!23 &6853784093040560519 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6198930089600123423, guid: 722d6fb7994387a40bb4450fe7a82b85,
+    type: 3}
+  m_PrefabInstance: {fileID: 655993115810679704}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7688425772988253503 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -2042302432782643545, guid: 722d6fb7994387a40bb4450fe7a82b85,
+    type: 3}
+  m_PrefabInstance: {fileID: 655993115810679704}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8696618898781932389 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1032988370987925251, guid: 722d6fb7994387a40bb4450fe7a82b85,
     type: 3}
   m_PrefabInstance: {fileID: 655993115810679704}
   m_PrefabAsset: {fileID: 0}

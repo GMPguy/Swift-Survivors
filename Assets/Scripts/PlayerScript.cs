@@ -1144,9 +1144,13 @@ public class PlayerScript : MonoBehaviour {
                 if(cash == ""){
 
                     int stackable = 0;
+                    int ammostack = 0;
+
                     if(GS.ExistSemiClass(What, "sq")) {
                         stackable = 1;
                         stackAmount = int.Parse(GS.GetSemiClass(What, "sq"));
+                    } else if(GS.ExistSemiClass(What, "as")) {
+                        ammostack = int.Parse(GS.GetSemiClass(What, "va"));
                     }
 
                     if(stackable == 1) {
@@ -1157,9 +1161,17 @@ public class PlayerScript : MonoBehaviour {
                                 break;
                             }
                         }
+                    } else if (ammostack > 0) {
+                        for (int fmag = 0; fmag <= MaxInventorySlots; fmag++) {
+                            if(fmag == MaxInventorySlots) ammostack = 0;
+                            if ( GS.GetSemiClass(Inventory[fmag], "id") == GS.GetSemiClass(What, "id") ) {
+                                Inventory[fmag] = GS.SetSemiClass(Inventory[fmag], "va", "/+" + ammostack);
+                                break;
+                            }
+                        }
                     }
 
-                    if(stackable != 1){
+                    if(stackable != 1 && ammostack <= 0){
                         if(GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "0"){
                             Inventory[CurrentItemHeld] = What;
                         } else {
@@ -1793,8 +1805,6 @@ public class PlayerScript : MonoBehaviour {
                             HealthToAddSub = 25;
                             FoodColor = new Color32(200, 225, 255, 0);
                             FlashColor = new Color32(0, 255, 0, 155);
-                            if (Health[0] >= Health[1] * 0.75f)
-                                CanUse = false;
                             break;
                         case 23:
                             FoodName = GS.SetString("Antibiotics", "Antybiotyki");
@@ -2066,7 +2076,6 @@ public class PlayerScript : MonoBehaviour {
                             FlashColor = new Color32(128, 255, 0, 155);
                             break;
                         case 167:
-                            // TODO: add nicotine
                             FoodName = GS.SetString("Cigarette", "Papierosa");
                             ConsumeAnimation = "Smoke";
                             DrinkOrWhat = 3;
@@ -2123,9 +2132,9 @@ public class PlayerScript : MonoBehaviour {
                         }
 
                         if (HealthToAddSub >= 0)
-                            Health[0] += HealthToAddSub;
+                            Health[0] += HealthToAddSub * (Health[1] / 100f);
                         else
-                            Hurt(HealthToAddSub * -1f, HealthDamage, false, Vector3.zero);
+                            Hurt(HealthToAddSub * (Health[1] / -100f), HealthDamage, false, Vector3.zero);
 
                         if (currID == 22) {
                             Bleeding = 0f;

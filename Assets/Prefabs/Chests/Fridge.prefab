@@ -73,6 +73,7 @@ MonoBehaviour:
   Options:
   - OpenChest
   ThisOption: 0
+  CanBePicklocked: 0
 --- !u!1 &4898370544601917488
 GameObject:
   m_ObjectHideFlags: 0
@@ -445,6 +446,24 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6200621296817562587}
   m_SourcePrefab: {fileID: 100100000, guid: fb0c7deb98d595240afd8213da4f16a9, type: 3}
+--- !u!23 &1517485391977747134 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -3685008991761050924, guid: fb0c7deb98d595240afd8213da4f16a9,
+    type: 3}
+  m_PrefabInstance: {fileID: 6472525009907335274}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1804267998763290964 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4672778300689469758, guid: fb0c7deb98d595240afd8213da4f16a9,
+    type: 3}
+  m_PrefabInstance: {fileID: 6472525009907335274}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &2012873367037321979 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4772740960092250769, guid: fb0c7deb98d595240afd8213da4f16a9,
+    type: 3}
+  m_PrefabInstance: {fileID: 6472525009907335274}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2720249121411665774 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8940563480467230468, guid: fb0c7deb98d595240afd8213da4f16a9,
@@ -674,6 +693,20 @@ MonoBehaviour:
   - {fileID: 3374156458750886368}
   Lock: {fileID: 4190776583089932553}
   MinimapMarker: {fileID: 5302446831574914833}
+  colorBanks:
+  - Meshes:
+    - {fileID: 2012873367037321979}
+    - {fileID: 1517485391977747134}
+    - {fileID: 1804267998763290964}
+    Materials:
+    - Fridge1 (Instance)
+    Colors:
+    - {r: 1, g: 0.95686275, b: 0.7764706, a: 1}
+    - {r: 0.5254902, g: 0.6039216, b: 0.7490196, a: 1}
+    - {r: 0.77254903, g: 0.77254903, b: 0.77254903, a: 1}
+    - {r: 0.5254902, g: 0.7490196, b: 0.654902, a: 1}
+    IsSmooth: 0
+    RandomBus: 0
   GS: {fileID: 0}
   RS: {fileID: 0}
   EffectPrefab: {fileID: 1917280440325604, guid: 2f76676a0f333824f8e5aaa957c7dd8e,

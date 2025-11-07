@@ -264,24 +264,12 @@ public class LandScript : MonoBehaviour {
                     if ((MainPlayer.transform.position.x > (FoundLand.transform.position.x - 25f) && MainPlayer.transform.position.x < (FoundLand.transform.position.x + 25f)) && (MainPlayer.transform.position.z > (FoundLand.transform.position.z - 25f) && MainPlayer.transform.position.z < (FoundLand.transform.position.z + 25f))) {
                         LandUrStandingOn = FoundLand;
                     }
-                    // TODO - find monument
-                    /*if (FoundLand.name.Substring(0, 1) == "0" && FoundLand.name.Substring(2, 1) == "M" && Vector3.Distance(MainPlayer.transform.position, FoundLand.transform.position) < RS.GetComponent<RoundScript>().DetectionRange) {
-                        FoundLand.name = "1" + FoundLand.name.Substring(1);
-                        GS.Mess(GS.SetString("Monument found!", "Znaleziono monument!"), "Draw");
-                        GS.AddToScore(50);
-                        // Hint
-                        if (!GameObject.Find("MainCanvas").GetComponent<CanvasScript>().HintsTold.Contains("Monument")) {
-                            GameObject.Find("MainCanvas").GetComponent<CanvasScript>().HintsCooldown.Add("Monument");
-                        }
-                    }*/
                 }
                 if (LandUrStandingOn != null) {
                     if (LandUrStandingOn.name.Substring(0, 1) == "0") {
                         LandUrStandingOn.name = "1" + LandUrStandingOn.name.Substring(1);
                         RS.GetComponent<RoundScript>().SetScore("MapDiscovered_", "/+1");
                     }
-                    // TODO - radioactivity
-                    //MainPlayer.GetComponent<PlayerScript>().MicroSiverts[1] = float.Parse(LandUrStandingOn.name.Substring(1, 1));
 
                     LandUrStandingOn.transform.GetChild(0).GetComponent<MinimapMarker>().MapSize = 0f;
                 }
@@ -337,15 +325,16 @@ public class LandScript : MonoBehaviour {
             }
         }
 
+        Land.transform.Rotate(Vector3.up * (Random.Range(0, 4) * 90f));
+
         foreach (Transform LandInLand in Land.transform) {
-            float randomFactor = Random.value;//GS.FixedPerlinNoise(LandInLand.position.x, LandInLand.position.z);
             if (LandInLand.name == "Tree"){
                 TreeChunks.Add(LandInLand);
             } else if (LandInLand.name == "Building") {
                 LandInLand.GetComponent<BuildingSpawnerScript>().SpawnBuilding(RS.DifficultySliderB, Land.transform, LandInLand.transform);
             } else if (LandInLand.TryGetComponent<MeshRenderer>(out MeshRenderer mesh)) {
                 MeshColor(mesh, LandInLand.transform.position.x, LandInLand.transform.position.z);
-            } else if (LandInLand.GetComponent<LODGroup>()) {
+            } else if (LandInLand.GetComponent<LODGroup>() || LandInLand.GetComponent<InstantLODScript>()) {
                 foreach(Transform child in LandInLand)
                     if (child.TryGetComponent<MeshRenderer>(out MeshRenderer meshB))
                         MeshColor(meshB, LandInLand.transform.position.x, LandInLand.transform.position.z);

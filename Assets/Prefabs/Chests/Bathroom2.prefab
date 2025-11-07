@@ -309,6 +309,7 @@ MonoBehaviour:
   Options:
   - OpenChest
   ThisOption: 0
+  CanBePicklocked: 0
 --- !u!1001 &7312283913607155281
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1247,6 +1248,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 7312283913607155281}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &2881548532705208384 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4429533888193583599, guid: 55f1e894742176a44ba7c57f0efb549d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7312283913607155281}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3668222295032495148 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6310202527959741053, guid: 55f1e894742176a44ba7c57f0efb549d,
@@ -1378,6 +1385,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 7312283913607155281}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &4385200324353362146 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6458495070241359539, guid: 55f1e894742176a44ba7c57f0efb549d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7312283913607155281}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4841786091970202648 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -6464062162517884343, guid: 55f1e894742176a44ba7c57f0efb549d,
@@ -1405,6 +1418,24 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.5516956, y: 0.5516956, z: 0.015482471}
   m_Center: {x: 0, y: 0, z: 0.0077412357}
+--- !u!23 &5377565483019351309 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -5775162651644609700, guid: 55f1e894742176a44ba7c57f0efb549d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7312283913607155281}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &5681391024207730565 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -6079252071861380652, guid: 55f1e894742176a44ba7c57f0efb549d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7312283913607155281}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6007814248142349409 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -5324811391153624528, guid: 55f1e894742176a44ba7c57f0efb549d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7312283913607155281}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6141837835682280549 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -5744830047684986316, guid: 55f1e894742176a44ba7c57f0efb549d,
@@ -1420,6 +1451,12 @@ Transform:
 --- !u!4 &6457694756559057024 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4387671865661947601, guid: 55f1e894742176a44ba7c57f0efb549d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7312283913607155281}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6915475038888027790 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4216143935902050527, guid: 55f1e894742176a44ba7c57f0efb549d,
     type: 3}
   m_PrefabInstance: {fileID: 7312283913607155281}
   m_PrefabAsset: {fileID: 0}
@@ -1581,6 +1618,53 @@ MonoBehaviour:
   - {fileID: 8897948016256364730}
   Lock: {fileID: 8551611161663440064}
   MinimapMarker: {fileID: 2178351968687615924}
+  colorBanks:
+  - Meshes:
+    - {fileID: 2881548532705208384}
+    Materials:
+    - Bathroom1 (Instance)
+    Colors:
+    - {r: 1, g: 0.95686275, b: 0.7764706, a: 1}
+    - {r: 0.7546101, g: 0.80098987, b: 0.8867924, a: 1}
+    - {r: 0.77254903, g: 0.77254903, b: 0.77254903, a: 1}
+    - {r: 0.73518693, g: 0.87169814, b: 0.8142197, a: 1}
+    IsSmooth: 0
+    RandomBus: 0
+  - Meshes:
+    - {fileID: 6007814248142349409}
+    - {fileID: 6915475038888027790}
+    - {fileID: 5681391024207730565}
+    - {fileID: 5377565483019351309}
+    - {fileID: 4385200324353362146}
+    - {fileID: 8359813032006445672}
+    Materials:
+    - Bathroom2 (Instance)
+    Colors:
+    - {r: 0.69803923, g: 0.47058824, b: 0.38039216, a: 1}
+    - {r: 0.5254902, g: 0.7490196, b: 0.654902, a: 1}
+    - {r: 0.44313726, g: 0.33333334, b: 0.65882355, a: 1}
+    - {r: 0.6156863, g: 0.2, b: 0.19215687, a: 1}
+    - {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    - {r: 0.6745098, g: 0.3529412, b: 0, a: 1}
+    - {r: 0.7647059, g: 0.4509804, b: 0.74509805, a: 1}
+    - {r: 0.4509804, g: 0.62352943, b: 0.7647059, a: 1}
+    - {r: 0.7882353, g: 0.78431374, b: 0.54509807, a: 1}
+    - {r: 0.16862746, g: 0.21568628, b: 0.18039216, a: 1}
+    IsSmooth: 0
+    RandomBus: 1
+  - Meshes:
+    - {fileID: 5681391024207730565}
+    - {fileID: 5377565483019351309}
+    - {fileID: 4385200324353362146}
+    - {fileID: 8359813032006445672}
+    Materials:
+    - Bathroom3 (Instance)
+    Colors:
+    - {r: 0.7176471, g: 0.7176471, b: 0.7176471, a: 1}
+    - {r: 1, g: 0.8117647, b: 0.49411765, a: 1}
+    - {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 1}
+    IsSmooth: 0
+    RandomBus: 2
   GS: {fileID: 0}
   RS: {fileID: 0}
   EffectPrefab: {fileID: 1917280440325604, guid: 2f76676a0f333824f8e5aaa957c7dd8e,
@@ -1683,6 +1767,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!23 &8359813032006445672 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7962796441490463687, guid: 55f1e894742176a44ba7c57f0efb549d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7312283913607155281}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8918460526665624953 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -7007935396337884376, guid: 55f1e894742176a44ba7c57f0efb549d,
