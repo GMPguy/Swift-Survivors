@@ -325,7 +325,8 @@ public class LandScript : MonoBehaviour {
             }
         }
 
-        Land.transform.Rotate(Vector3.up * (Random.Range(0, 4) * 90f));
+        if (Land.TryGetComponent<LandpartScript>(out LandpartScript mainPart))
+            mainPart.Setup();
 
         foreach (Transform LandInLand in Land.transform) {
             if (LandInLand.name == "Tree"){

@@ -244,6 +244,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5011637811037534797}
+  - component: {fileID: -2612501138057147380}
   m_Layer: 0
   m_Name: 1 Church
   m_TagString: Untagged
@@ -274,6 +275,25 @@ Transform:
   - {fileID: 233313514626176073}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-2612501138057147380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4220486613791860366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c33722b9a454d4cbfbdd70d1fcee87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LandRotations:
+  - 0
+  - 90
+  - 180
+  - 270
+  SmoothRotation: 0
+  KeepTransforms: []
 --- !u!1 &4920938682471331963
 GameObject:
   m_ObjectHideFlags: 0

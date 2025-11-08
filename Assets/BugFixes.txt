@@ -74,7 +74,7 @@ x Remove bandage health cap
 x Barrels
 	x Improve randomization
 	x Add explosive Barrels
-	- Add warning lables
+	x Add warning lables
 x Add scores
 	x Specific items
 	x Objects destroyed
@@ -83,3 +83,8 @@ x Add scores
 
 x Add materials for chests
 x Make chests walkthrough
+
+- Add landpart script
+	- Landpart rotation
+	- Height differation
+	- Narrow bottomland for certain neighboring parts

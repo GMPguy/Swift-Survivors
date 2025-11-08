@@ -133,6 +133,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3263307490967831880}
+  - component: {fileID: 1028827861535152327}
   m_Layer: 0
   m_Name: V Trench
   m_TagString: Untagged
@@ -156,3 +157,22 @@ Transform:
   - {fileID: 841581367728261619}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1028827861535152327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2505460780715542452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c33722b9a454d4cbfbdd70d1fcee87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LandRotations:
+  - 0
+  - 90
+  - 180
+  - 270
+  SmoothRotation: 0
+  KeepTransforms: []

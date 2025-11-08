@@ -19,7 +19,6 @@ public class ChestScript : MonoBehaviour {
     public float2 LockChances;
     public Door[] Doors;
     public Part[] AllParts;
-    public int ArmorGrade;
     // Statistics
 
     public Spawner[] Spawners;
@@ -236,7 +235,7 @@ public class ChestScript : MonoBehaviour {
             return;
 
         // Check if the attack is able to penetrate
-        if (ArmorGrade == 3 || (ArmorGrade == 2 && attackType[0] is "Melee" or "Gun") || (ArmorGrade == 1 && attackType[0] == "Melee"))
+        if (hitPart.ArmorGrade == 3 || (hitPart.ArmorGrade == 2 && attackType[0] is "Melee" or "Gun") || (hitPart.ArmorGrade == 1 && attackType[0] == "Melee"))
             return;
         
         // Damage and destroy
@@ -332,6 +331,7 @@ public class ChestScript : MonoBehaviour {
         public string HitEffect;
         public bool RipOffOnHit;
         public AudioClip[] BreakSound;
+        public int ArmorGrade = 0;
     }
 
     [System.Serializable]

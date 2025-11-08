@@ -622,6 +622,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7051355346382087679}
+  - component: {fileID: -7233225122932123686}
   m_Layer: 0
   m_Name: d SeaHut
   m_TagString: Untagged
@@ -652,6 +653,25 @@ Transform:
   - {fileID: 71457055781577982}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-7233225122932123686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849361601717579492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c33722b9a454d4cbfbdd70d1fcee87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LandRotations:
+  - 0
+  - 90
+  - 180
+  - 270
+  SmoothRotation: 0
+  KeepTransforms: []
 --- !u!1 &8574845039712101564
 GameObject:
   m_ObjectHideFlags: 0

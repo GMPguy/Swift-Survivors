@@ -121,6 +121,7 @@ MonoBehaviour:
   Options:
   - OpenChest
   ThisOption: 0
+  CanBePicklocked: 0
 --- !u!1 &6314940432884557147
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,6 +650,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 174c077cdc0dd974181be9630ed51b3f, type: 3}
     - {fileID: 8300000, guid: f4abff2772c708d4baebfa254588161a, type: 3}
     - {fileID: 8300000, guid: d3bf94bbfc818024aa6c774563b86674, type: 3}
+    ArmorGrade: 2
   - transform: {fileID: 5632417366446707470}
     GlassMaterial: 
     HitEffect: BullethitMetal
@@ -659,12 +661,13 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 174c077cdc0dd974181be9630ed51b3f, type: 3}
     - {fileID: 8300000, guid: f4abff2772c708d4baebfa254588161a, type: 3}
     - {fileID: 8300000, guid: d3bf94bbfc818024aa6c774563b86674, type: 3}
-  ArmorGrade: 2
+    ArmorGrade: 2
   Spawners:
   - {fileID: 5541398349606872788}
   - {fileID: 6432455676404655381}
   Lock: {fileID: 3358319106951734640}
   MinimapMarker: {fileID: 1946124405071387718}
+  colorBanks: []
   GS: {fileID: 0}
   RS: {fileID: 0}
   EffectPrefab: {fileID: 1917280440325604, guid: 2f76676a0f333824f8e5aaa957c7dd8e,

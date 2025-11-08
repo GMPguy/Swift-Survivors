@@ -201,6 +201,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4634981830058904766}
+  - component: {fileID: 1222105949562814643}
   m_Layer: 0
   m_Name: S Sea
   m_TagString: Untagged
@@ -226,6 +227,25 @@ Transform:
   - {fileID: 7919900765927533400}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1222105949562814643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3547003937939082279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c33722b9a454d4cbfbdd70d1fcee87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LandRotations:
+  - 0
+  - 90
+  - 180
+  - 270
+  SmoothRotation: 0
+  KeepTransforms: []
 --- !u!1 &5848132161622068522
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,11 +376,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: 
   NewStuffToSpawn: []
-  StuffToSpawn:
-  - {x: 87, y: 0, z: 0}
   Chance:
   - 25
   - 10
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}

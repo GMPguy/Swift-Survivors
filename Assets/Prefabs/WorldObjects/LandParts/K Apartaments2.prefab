@@ -1048,6 +1048,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8010325744032824492}
+  - component: {fileID: -2955599236133002445}
   m_Layer: 0
   m_Name: K Apartaments2
   m_TagString: Untagged
@@ -1102,6 +1103,25 @@ Transform:
   - {fileID: 958437059999838732}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-2955599236133002445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4456394803371948411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c33722b9a454d4cbfbdd70d1fcee87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LandRotations:
+  - 0
+  - 90
+  - 180
+  - 270
+  SmoothRotation: 0
+  KeepTransforms: []
 --- !u!1 &4458476601671211145
 GameObject:
   m_ObjectHideFlags: 0

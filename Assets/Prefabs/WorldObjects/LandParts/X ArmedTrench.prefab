@@ -566,9 +566,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: HouseStuff
   NewStuffToSpawn: []
-  StuffToSpawn:
-  - {x: 1, y: 0, z: 0}
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
@@ -2212,6 +2211,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8853127902712762475}
+  - component: {fileID: 6969067383539247646}
   m_Layer: 0
   m_Name: X ArmedTrench
   m_TagString: Untagged
@@ -2258,6 +2258,25 @@ Transform:
   - {fileID: 6033712391867681338}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6969067383539247646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979607934851977473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c33722b9a454d4cbfbdd70d1fcee87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LandRotations:
+  - 0
+  - 90
+  - 180
+  - 270
+  SmoothRotation: 0
+  KeepTransforms: []
 --- !u!1 &7448348531153053319
 GameObject:
   m_ObjectHideFlags: 0
@@ -2388,9 +2407,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: HouseStuff
   NewStuffToSpawn: []
-  StuffToSpawn:
-  - {x: 1, y: 0, z: 0}
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}

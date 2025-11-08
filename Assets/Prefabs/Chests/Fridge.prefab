@@ -667,6 +667,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 174c077cdc0dd974181be9630ed51b3f, type: 3}
     - {fileID: 8300000, guid: f4abff2772c708d4baebfa254588161a, type: 3}
     - {fileID: 8300000, guid: d3bf94bbfc818024aa6c774563b86674, type: 3}
+    ArmorGrade: 2
   - transform: {fileID: 3618284154150085010}
     GlassMaterial: 
     HitEffect: BullethitMetal
@@ -677,6 +678,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 174c077cdc0dd974181be9630ed51b3f, type: 3}
     - {fileID: 8300000, guid: f4abff2772c708d4baebfa254588161a, type: 3}
     - {fileID: 8300000, guid: d3bf94bbfc818024aa6c774563b86674, type: 3}
+    ArmorGrade: 2
   - transform: {fileID: 7745612693698251304}
     GlassMaterial: 
     HitEffect: BullethitMetal
@@ -687,7 +689,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 174c077cdc0dd974181be9630ed51b3f, type: 3}
     - {fileID: 8300000, guid: f4abff2772c708d4baebfa254588161a, type: 3}
     - {fileID: 8300000, guid: d3bf94bbfc818024aa6c774563b86674, type: 3}
-  ArmorGrade: 2
+    ArmorGrade: 2
   Spawners:
   - {fileID: 4885017990066369842}
   - {fileID: 3374156458750886368}

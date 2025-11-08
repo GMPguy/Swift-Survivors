@@ -257,6 +257,7 @@ MonoBehaviour:
   Options:
   - OpenChest
   ThisOption: 0
+  CanBePicklocked: 0
 --- !u!1001 &2503928988265431823
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -398,6 +399,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 4207837425078552575}
   m_SourcePrefab: {fileID: 100100000, guid: 063525a916a6e7d498a53fc4355eb77a, type: 3}
+--- !u!23 &665418592345011324 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -6087823770100729997, guid: 063525a916a6e7d498a53fc4355eb77a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2503928988265431823}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &950850157031219756 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3426578544638370083, guid: 063525a916a6e7d498a53fc4355eb77a,
@@ -522,6 +529,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!23 &1137571137257806523 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3276026549247170996, guid: 063525a916a6e7d498a53fc4355eb77a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2503928988265431823}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1327567713583860640 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -5704994290733889361, guid: 063525a916a6e7d498a53fc4355eb77a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2503928988265431823}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1581619138988290203 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3984757803289310100, guid: 063525a916a6e7d498a53fc4355eb77a,
@@ -658,6 +677,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2503928988265431823}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &2724435945697480137 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 536097855816322758, guid: 063525a916a6e7d498a53fc4355eb77a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2503928988265431823}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3350352632497602142 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 063525a916a6e7d498a53fc4355eb77a,
@@ -753,6 +778,31 @@ MonoBehaviour:
   - {fileID: 2527517033706851521}
   Lock: {fileID: 8302997185732011354}
   MinimapMarker: {fileID: 427747958006325201}
+  colorBanks:
+  - Meshes:
+    - {fileID: 665418592345011324}
+    - {fileID: 1137571137257806523}
+    Materials:
+    - Desk1 (Instance)
+    Colors:
+    - {r: 0.7372549, g: 0.38039216, b: 0.18039216, a: 1}
+    - {r: 0.15294118, g: 0.15294118, b: 0.15294118, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    IsSmooth: 0
+    RandomBus: 0
+  - Meshes:
+    - {fileID: 665418592345011324}
+    - {fileID: 1327567713583860640}
+    - {fileID: 2724435945697480137}
+    Materials:
+    - Desk2 (Instance)
+    Colors:
+    - {r: 0.62352943, g: 0.5921569, b: 0.38039216, a: 1}
+    - {r: 1, g: 0.9647059, b: 0.70980394, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 0.6901961, g: 0.6901961, b: 0.6901961, a: 1}
+    IsSmooth: 1
+    RandomBus: 1
   GS: {fileID: 0}
   RS: {fileID: 0}
   EffectPrefab: {fileID: 1917280440325604, guid: 2f76676a0f333824f8e5aaa957c7dd8e,

@@ -779,9 +779,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: MilitaryStuff
   NewStuffToSpawn: []
-  StuffToSpawn:
-  - {x: 1, y: 0, z: 0}
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
@@ -1181,9 +1180,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: HouseStuff
   NewStuffToSpawn: []
-  StuffToSpawn:
-  - {x: 1, y: 0, z: 0}
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
@@ -1500,9 +1498,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: HouseStuff
   NewStuffToSpawn: []
-  StuffToSpawn:
-  - {x: 1, y: 0, z: 0}
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
@@ -1575,9 +1572,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: MilitaryStuff
   NewStuffToSpawn: []
-  StuffToSpawn:
-  - {x: 1, y: 0, z: 0}
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
@@ -1734,6 +1730,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1135016135363315286}
+  - component: {fileID: 170001425475029583}
   m_Layer: 0
   m_Name: Y TrenchCrosssection
   m_TagString: Untagged
@@ -1789,6 +1786,25 @@ Transform:
   - {fileID: 2408946237885220735}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &170001425475029583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4075930896576350352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c33722b9a454d4cbfbdd70d1fcee87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LandRotations:
+  - 0
+  - 90
+  - 180
+  - 270
+  SmoothRotation: 0
+  KeepTransforms: []
 --- !u!1 &4420005047313365619
 GameObject:
   m_ObjectHideFlags: 0
@@ -1958,9 +1974,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: HouseStuff
   NewStuffToSpawn: []
-  StuffToSpawn:
-  - {x: 1, y: 0, z: 0}
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
@@ -2399,8 +2414,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: VendingMachine
   NewStuffToSpawn: []
-  StuffToSpawn: []
   Chance: []
+  Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1290440283570394, guid: 2289d9dd8a0faa744b238b8a61146ddf,
     type: 3}
