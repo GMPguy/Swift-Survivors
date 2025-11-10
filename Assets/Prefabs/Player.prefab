@@ -44837,6 +44837,7 @@ MonoBehaviour:
     rgba: 0
   Pushback_Force: {x: 0, y: 0, z: 0}
   Pushback_Return: {x: 0, y: 1}
+  PlayerMaterial: {fileID: 13400000, guid: 6a35abce211b63c438bf837ca3f4fb5e, type: 2}
   FishingRodBait: {fileID: 1165598331599692}
   IsFishing: 0
   FishingStatus: {x: 0, y: 0}

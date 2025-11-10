@@ -3049,6 +3049,23 @@ MonoBehaviour:
   - 270
   SmoothRotation: 0
   KeepTransforms: []
+  ObjectAnchors:
+  - transforms:
+    - {fileID: 575577371143398269}
+    - {fileID: 114994864285943753}
+    - {fileID: 3139054416456656046}
+    - {fileID: 2955727569628870415}
+    - {fileID: 6775131285782898439}
+    LerpToNormal: 0
+    PullUpAngle: 0
+    Angle: 90
+  - transforms:
+    - {fileID: 6732171379855297693}
+    - {fileID: 8297659342220885364}
+    - {fileID: 4810260634713428059}
+    LerpToNormal: 0
+    PullUpAngle: 0
+    Angle: 90
 --- !u!1 &8391170582738507349
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using UnityEngine;
 
@@ -99,47 +100,47 @@ public class ItemScript : MonoBehaviour {
 
         string ID = GS.GetSemiClass(Variables, "id");
         string meshID = ID;
-        if(ID == "148" || ID == "149" || ID == "150" || ID == "151") meshID = "Toolbox";
+        if(ID == "148" || ID == "149" || ID == "150" || ID == "151") 
+            meshID = "Toolbox";
 
-        foreach (Transform GetMesh in this.transform) {
-            if (GetMesh.name == meshID) {
-                GetMesh.gameObject.SetActive(true);
-                SelectedMesh = GetMesh.gameObject;
+        SelectedMesh = RS.GetItemModel(meshID);
+        SelectedMesh.transform.SetParent(this.transform);
 
-                if(SelectedMesh.GetComponent<MeshFilter>() && State != 1){
-                    MainCollider = this.GetComponent<MeshCollider>();
-                    this.GetComponent<MeshCollider>().sharedMesh = SelectedMesh.GetComponent<MeshFilter>().sharedMesh;
-                    this.GetComponent<BoxCollider>().enabled = false;
-                } else {
-                    MainCollider = this.GetComponent<BoxCollider>();
-                    this.GetComponent<MeshCollider>().enabled = false;
+        if(SelectedMesh.GetComponent<MeshFilter>() && State != 1){
+            MainCollider = this.GetComponent<MeshCollider>();
+            this.GetComponent<MeshCollider>().sharedMesh = SelectedMesh.GetComponent<MeshFilter>().sharedMesh;
+            this.GetComponent<BoxCollider>().enabled = false;
+        } else {
+            MainCollider = this.GetComponent<BoxCollider>();
+            this.GetComponent<MeshCollider>().enabled = false;
+        }
+
+        if (State != 1) 
+            SelectedMesh.transform.localPosition = SelectedMesh.transform.localEulerAngles = Vector3.zero;
+        else {
+            SelectedMesh.transform.localPosition = SelectedMesh.transform.position;
+            SelectedMesh.transform.localEulerAngles = SelectedMesh.transform.eulerAngles;
+        }
+
+        if (meshID == "133" && InWater == false && State == 2) {
+            SelectedMesh.transform.GetChild(0).gameObject.SetActive(true);
+        }
+
+        if (SelectedMesh.GetComponent<MeshRenderer>() != null) {
+            foreach (Material GetMat in SelectedMesh.GetComponent<MeshRenderer>().materials) {
+                if (GetMat.name == "LASER (Instance)" && DroppedBy != null && DroppedBy == GameObject.FindGameObjectWithTag("Player")) {
+                    GetMat.color = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().LaserColor;
+                } else if (GetMat.name == "Glowstick2 (Instance)" || GetMat.name == "Flare2 (Instance)") {
+                    GetMat.color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f);
                 }
-
-                if (State != 1) SelectedMesh.transform.localPosition = SelectedMesh.transform.localEulerAngles = Vector3.zero;
-
-                if (meshID == "133" && InWater == false && State == 2) {
-                    GetMesh.transform.GetChild(0).gameObject.SetActive(true);
-                }
-
-                if (GetMesh.GetComponent<MeshRenderer>() != null) {
-                    foreach (Material GetMat in GetMesh.GetComponent<MeshRenderer>().materials) {
-                        if (GetMat.name == "LASER (Instance)" && DroppedBy != null && DroppedBy == GameObject.FindGameObjectWithTag("Player")) {
-                            GetMat.color = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().LaserColor;
-                        } else if (GetMat.name == "Glowstick2 (Instance)" || GetMat.name == "Flare2 (Instance)") {
-                            GetMat.color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f);
-                        }
-                    }
-                    if (meshID == "13") {
-                        GetMesh.transform.GetChild(1).GetComponent<Light>().color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f);
-                        ParticleSystem.MainModule SetMesh = GetMesh.transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>().main;
-                        SetMesh.startColor = new ParticleSystem.MinMaxGradient(Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f));
-                    }
-                }
-
-            } else if (GetMesh.name != "Bubbles" && GetMesh.name != "HitDetector" && GetMesh.name != "Interactions" && GetMesh.name != "MinimapMarker") {
-                Destroy(GetMesh.gameObject);
+            }
+            if (meshID == "13") {
+                SelectedMesh.transform.GetChild(1).GetComponent<Light>().color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f);
+                ParticleSystem.MainModule SetMesh = SelectedMesh.transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>().main;
+                SetMesh.startColor = new ParticleSystem.MinMaxGradient(Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f));
             }
         }
+
 
         Name = GS.itemCache[int.Parse(ID)].getName();
         if(GS.ExistSemiClass(Variables, "sq") && GS.GetSemiClass(Variables, "sq") != "1") 

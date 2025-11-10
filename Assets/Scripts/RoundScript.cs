@@ -21,6 +21,7 @@ public class RoundScript : MonoBehaviour {
     // References
     public GameObject PlayerPrefab;
     public GameObject ItemPrefab;
+    public Transform ItemBank;
     public string[] GunRecoilAndSpreadValues;
     public int[] TotalItems;
     public int[] FoodItems;
@@ -1705,6 +1706,19 @@ public class RoundScript : MonoBehaviour {
                 }
             }
         }
+
+    }
+
+    public GameObject GetItemModel (string ItemID) {
+        
+        for (int gi = 0; gi < ItemBank.childCount; gi++)
+            if (ItemBank.GetChild(gi).name == ItemID) {
+                GameObject newObject = GameObject.Instantiate(ItemBank.GetChild(gi).gameObject);
+                return newObject;
+            }
+        
+        Debug.LogError($"GetItemModel() incorrect itemID {ItemID}");
+        return null;
 
     }
 

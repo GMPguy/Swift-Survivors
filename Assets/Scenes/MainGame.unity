@@ -228249,7 +228249,7 @@ MonoBehaviour:
     x: 0
     y: 0
   Round: 1
-  Biome: 1
+  Biome: 10
   Score: 0
   Money: 0
   Ammo: 0
@@ -235838,6 +235838,8 @@ MonoBehaviour:
   PlayerPrefab: {fileID: 1613222313705214, guid: b8297cb1f1d68cc45b036a223ada19c3,
     type: 3}
   ItemPrefab: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398, type: 3}
+  ItemBank: {fileID: 6723913381671559880, guid: 317248adac4bede4b8bb2323200e7684,
+    type: 3}
   GunRecoilAndSpreadValues: []
   TotalItems: 
   FoodItems: 

@@ -20,7 +20,7 @@ MonoBehaviour:
   - DDTTTTWWUUAAOOOOOSSSSS
   - TTTTTWWUUAOOOOOSSSSS
   - TTTTTWUUSSSSSSSSSS
-  Bottomland: {fileID: 7232120550781198528, guid: 893ef06a7e3a8b744811ff85fea9e240,
+  Bottomland: {fileID: 3782190088050181865, guid: 71246c816ceb1c9438d6e7b4c1a21eb0,
     type: 3}
   Grasses:
   - {fileID: 6664517548747912425, guid: 4b29d943b66f4d64f87a7817234372be, type: 3}
@@ -85,15 +85,15 @@ MonoBehaviour:
         y: 2
     - TileObject: {fileID: 11400000, guid: 96579d2b092d7ec4d80d939b6b561789, type: 2}
       Chances:
-        x: 3
+        x: 4
         y: 1
     - TileObject: {fileID: 11400000, guid: f0e907c1426291f47b0442af1ae72280, type: 2}
       Chances:
-        x: 4
+        x: 3
         y: 5
     - TileObject: {fileID: 11400000, guid: ca1063a964266e2438a85b460e718b51, type: 2}
       Chances:
-        x: 4
+        x: 3
         y: -4
     - TileObject: {fileID: 11400000, guid: 095a4963ae8b857409da333378bd6139, type: 2}
       Chances:
@@ -103,6 +103,38 @@ MonoBehaviour:
       Chances:
         x: 0
         y: 10
+    - TileObject: {fileID: 11400000, guid: 1f6aa8e33e56f9246babbad3bbe2e6cd, type: 2}
+      Chances:
+        x: 2
+        y: 1
+    PerlinMargins:
+      x: 0
+      y: 1
+    PerlinShift: 0
+    PerlinSize: 1
+    AreaMin:
+      x: 1
+      y: 1
+    AreaMax:
+      x: 8
+      y: 8
+  - Tiles:
+    - TileObject: {fileID: 11400000, guid: 4fb02601e996ec247804a8bb74b60f31, type: 2}
+      Chances:
+        x: 2
+        y: 0
+    - TileObject: {fileID: 11400000, guid: 095a4963ae8b857409da333378bd6139, type: 2}
+      Chances:
+        x: 2
+        y: 2
+    - TileObject: {fileID: 11400000, guid: 77e5378f1c7e3694a869610ae0db20a5, type: 2}
+      Chances:
+        x: 2
+        y: 0
+    - TileObject: {fileID: 11400000, guid: ca1063a964266e2438a85b460e718b51, type: 2}
+      Chances:
+        x: 1
+        y: 0
     PerlinMargins:
       x: 0
       y: 1

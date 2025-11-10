@@ -38,7 +38,7 @@ public class InstantLODScript : MonoBehaviour {
             for (int so = 0; so < group.Objects.Length; so++)
                 group.Objects[so].GetComponent<MeshRenderer>().enabled = main;
 
-            if (initial && cg == GS.GraphicsQuality && InheritedCollider)
+            if (initial && main && InheritedCollider)
                 InheritedCollider.sharedMesh = group.MainCollider;
         }
     }

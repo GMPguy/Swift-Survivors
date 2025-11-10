@@ -8,8 +8,10 @@ MAJOR:
 	- Hints to manual
 - Improve achievement text
 - Item bank (for NPC holding items)
-- For main menu: boot and game over scene
+- For main menu: boot and game over scene, improve credits
 - Saves versioning system (to update old saves)
+- Add kits
+- Replace sound effects
 
 MINOR:
 x pathfinding in horde
@@ -70,7 +72,7 @@ x Ragdoll deaths
 x Exploreable object
 
 x Remove bandage health cap
-- Building distance, prevent campfire Underwater
+x Building distance, prevent campfire Underwater
 x Barrels
 	x Improve randomization
 	x Add explosive Barrels
@@ -83,8 +85,13 @@ x Add scores
 
 x Add materials for chests
 x Make chests walkthrough
+- Add simple/dynamic destruction effects
 
-- Add landpart script
-	- Landpart rotation
-	- Height differation
-	- Narrow bottomland for certain neighboring parts
+x Add landpart script
+	x Landpart rotation
+	x Height differation
+	x Narrow bottomland for certain neighboring parts
+	x LOD collider mesh doesn't match
+	x Plant objects
+
+- Improve spawning

@@ -31,7 +31,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2145653242335465729}
-  - {fileID: 428268677949477424}
+  - {fileID: 2276679275602543429}
+  - {fileID: 394062918090672347}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7910803283214382841
@@ -48,136 +49,164 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LandRotations:
   - 0
-  - 90
-  - 180
-  - 270
-  SmoothRotation: 0
-  KeepTransforms: []
---- !u!1 &4101818202120154409
-GameObject:
+  - 360
+  SmoothRotation: 1
+  LandHeight:
+  - 10
+  - 70
+  LandHeightMap: 1
+  SmoothHeight: 1
+  KeepTransforms:
+  - {fileID: 2145653242335465729}
+  ObjectAnchors: []
+--- !u!1001 &2006506241829449747
+PrefabInstance:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 428268677949477424}
-  - component: {fileID: 3280162157182040486}
-  - component: {fileID: 5898413269029690564}
-  - component: {fileID: 8080862538888066177}
-  - component: {fileID: 4468593438180018230}
-  m_Layer: 0
-  m_Name: Fjord
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &428268677949477424
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4101818202120154409}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.9, y: 0.9, z: 0.75}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8362054756396569749}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3280162157182040486
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8362054756396569749}
+    m_Modifications:
+    - target: {fileID: 1577566388004561522, guid: 226d92200d153f047b780b5ace0a9241,
+        type: 3}
+      propertyPath: m_Name
+      value: FjordLand
+      objectReference: {fileID: 0}
+    - target: {fileID: 2211114486611048648, guid: 226d92200d153f047b780b5ace0a9241,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2211114486611048648, guid: 226d92200d153f047b780b5ace0a9241,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2211114486611048648, guid: 226d92200d153f047b780b5ace0a9241,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2211114486611048648, guid: 226d92200d153f047b780b5ace0a9241,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2211114486611048648, guid: 226d92200d153f047b780b5ace0a9241,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2211114486611048648, guid: 226d92200d153f047b780b5ace0a9241,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2211114486611048648, guid: 226d92200d153f047b780b5ace0a9241,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2211114486611048648, guid: 226d92200d153f047b780b5ace0a9241,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2211114486611048648, guid: 226d92200d153f047b780b5ace0a9241,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2211114486611048648, guid: 226d92200d153f047b780b5ace0a9241,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 226d92200d153f047b780b5ace0a9241, type: 3}
+--- !u!4 &394062918090672347 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2211114486611048648, guid: 226d92200d153f047b780b5ace0a9241,
+    type: 3}
+  m_PrefabInstance: {fileID: 2006506241829449747}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4101818202120154409}
-  m_Mesh: {fileID: 4300000, guid: 8c3ffedb65a2ff946b0f01e1c5c3612c, type: 3}
---- !u!23 &5898413269029690564
-MeshRenderer:
+--- !u!1001 &8081441326289054385
+PrefabInstance:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8362054756396569749}
+    m_Modifications:
+    - target: {fileID: 7274649305332724558, guid: d26d4b2cb7fca754da985deac5842130,
+        type: 3}
+      propertyPath: m_Name
+      value: Fjordland
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052277445557381620, guid: d26d4b2cb7fca754da985deac5842130,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052277445557381620, guid: d26d4b2cb7fca754da985deac5842130,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052277445557381620, guid: d26d4b2cb7fca754da985deac5842130,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052277445557381620, guid: d26d4b2cb7fca754da985deac5842130,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052277445557381620, guid: d26d4b2cb7fca754da985deac5842130,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052277445557381620, guid: d26d4b2cb7fca754da985deac5842130,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052277445557381620, guid: d26d4b2cb7fca754da985deac5842130,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052277445557381620, guid: d26d4b2cb7fca754da985deac5842130,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052277445557381620, guid: d26d4b2cb7fca754da985deac5842130,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052277445557381620, guid: d26d4b2cb7fca754da985deac5842130,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d26d4b2cb7fca754da985deac5842130, type: 3}
+--- !u!4 &2276679275602543429 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8052277445557381620, guid: d26d4b2cb7fca754da985deac5842130,
+    type: 3}
+  m_PrefabInstance: {fileID: 8081441326289054385}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4101818202120154409}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 4294967295
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 84c5fd108efbf77459c4680ba2200908, type: 2}
-  - {fileID: 2100000, guid: 1cb08b199aa52a64bbbaeff53e56b0d0, type: 2}
-  - {fileID: 2100000, guid: 1561782320dcd2140853eaf7a0e5b45b, type: 2}
-  - {fileID: 2100000, guid: 882a9cfac6d602746839a7bc528b9949, type: 2}
-  - {fileID: 2100000, guid: 58f88526358344e40ad68abfd006293d, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8080862538888066177
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4101818202120154409}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 8c3ffedb65a2ff946b0f01e1c5c3612c, type: 3}
---- !u!114 &4468593438180018230
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4101818202120154409}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88b819b682bdf194bb65cd5f0918260a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WhatToPlay: Grass
-  IsTerrain: 0
 --- !u!1001 &8248778046820350197
 PrefabInstance:
   m_ObjectHideFlags: 0

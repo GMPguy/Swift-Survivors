@@ -313,7 +313,6 @@ public class LandScript : MonoBehaviour {
 
     public void SetLand(GameObject Land){
 
-        //Land.transform.eulerAngles = Random.Range(0, 5) * 90f * Vector3.up;//new Vector3(0f, (int)(GS.SeedPerlin2D(GS.RoundSeed, Land.transform.position.x + GS.Round, Land.transform.position.z + GS.Round) * 4.9f) * 90f, 0f);
         void MeshColor (MeshRenderer mesh, float x, float z) {
             float2 values = GetNoise(x, z, 0);
             foreach (Material Mat in mesh.materials) {
@@ -325,10 +324,8 @@ public class LandScript : MonoBehaviour {
             }
         }
 
-        if (Land.TryGetComponent<LandpartScript>(out LandpartScript mainPart))
-            mainPart.Setup();
-
-        foreach (Transform LandInLand in Land.transform) {
+        void SetLandInLand (Transform LandInLand) {
+            
             if (LandInLand.name == "Tree"){
                 TreeChunks.Add(LandInLand);
             } else if (LandInLand.name == "Building") {
@@ -371,11 +368,18 @@ public class LandScript : MonoBehaviour {
 
         }
 
+        if (Land.TryGetComponent<LandpartScript>(out LandpartScript mainPart))
+            mainPart.Setup(this);
+
+        foreach (Transform LandInLand in Land.transform)
+            SetLandInLand(LandInLand);
+
         Land.name = "0";
 
         Transform HideQuad = Instantiate(LandpartHide).transform;
         HideQuad.SetParent(Land.transform);
-        HideQuad.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        HideQuad.localPosition = Vector3.zero;
+        HideQuad.eulerAngles = Vector3.zero;
         HideQuad.SetSiblingIndex(0);
         HideQuad.GetComponent<MinimapMarker>().MapSize = 240 / 10f;
 

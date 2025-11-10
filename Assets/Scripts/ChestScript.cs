@@ -153,7 +153,7 @@ public class ChestScript : MonoBehaviour {
     }
 
     public void Activate (float howLong) {
-        activated = howLong;
+        activated = Mathf.Max(howLong, activated);
 
         if (!RoundScript.CachedChest.Contains(this))
              RoundScript.CachedChest.Add(this);
@@ -235,7 +235,7 @@ public class ChestScript : MonoBehaviour {
             return;
 
         // Check if the attack is able to penetrate
-        if (hitPart.ArmorGrade == 3 || (hitPart.ArmorGrade == 2 && attackType[0] is "Melee" or "Gun") || (hitPart.ArmorGrade == 1 && attackType[0] == "Melee"))
+        if (hitPart != null && (hitPart.ArmorGrade == 3 || (hitPart.ArmorGrade == 2 && attackType[0] is "Melee" or "Gun") || (hitPart.ArmorGrade == 1 && attackType[0] == "Melee")))
             return;
         
         // Damage and destroy

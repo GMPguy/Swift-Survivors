@@ -1,9 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Mathematics;
+using Random=UnityEngine.Random;
 
 public class PlayerScript : MonoBehaviour {
 
@@ -102,6 +102,7 @@ public class PlayerScript : MonoBehaviour {
     public GameObject InteractedGameobject;
     public bool IsGrounded = false;
     float lastGroundY = 0f;
+    float2 normalizeMidAir;
     Vector3 MoveDirNorm, MoveDirSpeed;
     bool InWater = false;
     public bool IsSwimming = false;
@@ -952,47 +953,60 @@ public class PlayerScript : MonoBehaviour {
 
             //if (IsGrounded == true) {
 
-                // Crouching
-                if ((GS.ReceiveButtonPress("Crouch", "Hold") > 0f && InWater == false) || InBox == true) {
-                    IsCrouching = Mathf.MoveTowards(IsCrouching, 1f, 0.2f);
-                } else {
-                    IsCrouching = Mathf.MoveTowards(IsCrouching, 0f, 0.2f);
-                }
+            // Crouching
+            if ((GS.ReceiveButtonPress("Crouch", "Hold") > 0f && InWater == false) || InBox == true) {
+                IsCrouching = Mathf.MoveTowards(IsCrouching, 1f, 0.2f);
+            } else {
+                IsCrouching = Mathf.MoveTowards(IsCrouching, 0f, 0.2f);
+            }
 
-                if (IsCrouching > 0f) {
-                    Ray CheckForRoof = new Ray(this.transform.position, Vector3.up);
-                    RaycastHit CheckForRoofHIT;
-                    if (Physics.Raycast(CheckForRoof, out CheckForRoofHIT, 1f, GS.IngoreMaskWP)) {
-                        IsCrouching = 1f;
-                    }
+            if (IsCrouching > 0f) {
+                Ray CheckForRoof = new Ray(this.transform.position, Vector3.up);
+                RaycastHit CheckForRoofHIT;
+                if (Physics.Raycast(CheckForRoof, out CheckForRoofHIT, 1f, GS.IngoreMaskWP)) {
+                    IsCrouching = 1f;
                 }
-                // Crouching
+            }
+            // Crouching
 
+            // Walking
+            float GotSpeed = 0f;
+            int moved = 0;
+            int SlowDown = 0; // 0 Normal   1 Can't sprint   2 Slow Movement   3 Can't jump
+
+            if ((InWater == true && GS.GetSemiClass(Inventory[CurrentItemHeld], "id") != "87") || BrokenBone == 1 || IsCrouching > 0f || GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "998" || IsOpeningChest > 0f) {
+                SlowDown = 3;
+            } else if (ZoomValues[1] != ZoomValues[2]) {
+                SlowDown = 2;
+            } else if (IsHS == true || RS.RoundState == "TealState") {
+                SlowDown = 1;
+            } else {
+                SlowDown = 0;
+            }
+
+
+            if (IsCrouching <= 0f && IsGrounded && GS.ReceiveButtonPress("Sprint", "Hold") > 0f && GS.ReceiveButtonPress("Sprint", "Hold") > 0f && CheckStamina(10f, 1) && SlowDown == 0){
+                // Sprinting
+                MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, this.transform.forward, 0.25f);
+                moved = 2;
+            } else if (IsGrounded){
                 // Walking
-                float GotSpeed = 0f;
-                int moved = 0;
-                int SlowDown = 0; // 0 Normal   1 Can't sprint   2 Slow Movement   3 Can't jump
-
-                if ((InWater == true && GS.GetSemiClass(Inventory[CurrentItemHeld], "id") != "87") || BrokenBone == 1 || IsCrouching > 0f || GS.GetSemiClass(Inventory[CurrentItemHeld], "id") == "998" || IsOpeningChest > 0f) {
-                    SlowDown = 3;
-                } else if (ZoomValues[1] != ZoomValues[2]) {
-                    SlowDown = 2;
-                } else if (IsHS == true || RS.RoundState == "TealState") {
-                    SlowDown = 1;
-                } else {
-                    SlowDown = 0;
-                }
-
-                if (IsCrouching <= 0f && IsGrounded && GS.ReceiveButtonPress("Sprint", "Hold") > 0f && GS.ReceiveButtonPress("Sprint", "Hold") > 0f && CheckStamina(10f, 1) && SlowDown == 0){
-                    MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, this.transform.forward, 0.25f);
-                    moved = 2;
-                } else if (IsGrounded){
-                    MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, (this.transform.forward * GS.ReceiveButtonPress("MoveForward", "Hold")) + (this.transform.forward * -GS.ReceiveButtonPress("MoveBackwards", "Hold")) + (this.transform.right * GS.ReceiveButtonPress("MoveRight", "Hold")) + (this.transform.right * -GS.ReceiveButtonPress("MoveLeft", "Hold")), 0.25f);
-                    moved = 1;
-                } else if (GS.ReceiveButtonPress("MoveForward", "Hold") > 0f ||GS.ReceiveButtonPress("MoveBackwards", "Hold") > 0f||GS.ReceiveButtonPress("MoveRight", "Hold") > 0f || GS.ReceiveButtonPress("MoveLeft", "Hold") > 0f) {
+                MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, (this.transform.forward * GS.ReceiveButtonPress("MoveForward", "Hold")) + (this.transform.forward * -GS.ReceiveButtonPress("MoveBackwards", "Hold")) + (this.transform.right * GS.ReceiveButtonPress("MoveRight", "Hold")) + (this.transform.right * -GS.ReceiveButtonPress("MoveLeft", "Hold")), 0.25f);
+                moved = 1;
+            } else if (GS.ReceiveButtonPress("MoveForward", "Hold") > 0f ||GS.ReceiveButtonPress("MoveBackwards", "Hold") > 0f||GS.ReceiveButtonPress("MoveRight", "Hold") > 0f || GS.ReceiveButtonPress("MoveLeft", "Hold") > 0f) {
+                // Prevent surfing
+                if (this.GetComponent<Rigidbody>().velocity.y > Jump.x) {
+                    normalizeMidAir = new (1f, this.GetComponent<Rigidbody>().velocity.y);
+                    Debug.Log("Halt");
+                    MoveDirNorm = -MoveDirNorm;
+                } else if (normalizeMidAir.x <= 0f) {
+                    // Midair
                     MoveDirNorm = Vector3.MoveTowards(MoveDirNorm, (this.transform.forward * GS.ReceiveButtonPress("MoveForward", "Hold")) + (this.transform.forward * -GS.ReceiveButtonPress("MoveBackwards", "Hold")) + (this.transform.right * GS.ReceiveButtonPress("MoveRight", "Hold")) + (this.transform.right * -GS.ReceiveButtonPress("MoveLeft", "Hold")), 0.05f);
                     moved = 1;
                 }
+                    
+                    
+            }
 
                 MoveDirNorm = Vector3.ClampMagnitude(MoveDirNorm, 1f);
 
@@ -1018,12 +1032,17 @@ public class PlayerScript : MonoBehaviour {
                     else MoveDirSpeed = (MoveDirNorm * GotSpeed) * (1f - (Drunkenness / 150f)) * WetSlowDown;
                 }
 
-                if(moved != 0 || Pushback_Return.x > 0f)
-                    this.GetComponent<Rigidbody>().velocity = new Vector3(
-                        Mathf.Lerp(MoveDirSpeed.x, Pushback_Force.x, pushLerp),
-                        Mathf.Lerp(this.GetComponent<Rigidbody>().velocity.y, Pushback_Force.y, pushLerp),
-                        Mathf.Lerp(MoveDirSpeed.z, Pushback_Force.z, pushLerp)
-                    );
+            if(moved != 0 || Pushback_Return.x > 0f || normalizeMidAir.x > 0f) {
+                normalizeMidAir.x = Mathf.Max(normalizeMidAir.x - Time.fixedDeltaTime * 2f, 0f);
+
+                this.GetComponent<Rigidbody>().velocity = new Vector3(
+                    Mathf.Lerp(MoveDirSpeed.x, Pushback_Force.x, pushLerp),
+                    normalizeMidAir.x > 0f
+                        ? Mathf.Lerp(-normalizeMidAir.y, normalizeMidAir.y, normalizeMidAir.x)
+                        : Mathf.Lerp(this.GetComponent<Rigidbody>().velocity.y, Pushback_Force.y, pushLerp),
+                    Mathf.Lerp(MoveDirSpeed.z, Pushback_Force.z, pushLerp)
+                );
+            }
                 // Walking
 
                 // Jumping
@@ -4020,10 +4039,24 @@ public class PlayerScript : MonoBehaviour {
             DestructionScript potAnchor = null;
             if(Physics.Raycast(LookDir.position, LookDir.forward, out hitBuild, Mathf.Infinity)){
                 posBuild = hitBuild.point;
-                if (plant) objBuild.up = hitBuild.normal; else objBuild.up = Vector3.up;
-                if(Vector3.Angle(Vector3.up, hitBuild.normal) > maxBuildAngle) avaBuild = false;
-                if(hitBuild.collider.GetComponent<DestructionScript>()) potAnchor = hitBuild.collider.GetComponent<DestructionScript>();
-                else if (hitBuild.collider.gameObject.layer == 24) potAnchor = hitBuild.collider.transform.parent.GetComponent<DestructionScript>();
+                if (plant) 
+                    objBuild.up = hitBuild.normal; 
+                else 
+                    objBuild.up = Vector3.up;
+                
+                if (Vector3.Angle(Vector3.up, hitBuild.normal) > maxBuildAngle) 
+                    avaBuild = false;
+
+                if (Vector3.Distance(this.transform.position, hitBuild.point) > 6f) 
+                    avaBuild = false;
+
+                if (hitBuild.collider.GetComponent<DestructionScript>()) 
+                    potAnchor = hitBuild.collider.GetComponent<DestructionScript>();
+                else if (hitBuild.collider.gameObject.layer == 24) 
+                    potAnchor = hitBuild.collider.transform.parent.GetComponent<DestructionScript>();
+                
+                if (hitBuild.collider.gameObject.layer is 4 or 16 || IsSwimming)
+                    avaBuild = false;
             } else {
                 objBuild.up = Vector3.up;
                 avaBuild = false;
