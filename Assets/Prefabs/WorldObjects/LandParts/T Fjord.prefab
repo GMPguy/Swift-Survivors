@@ -53,7 +53,7 @@ MonoBehaviour:
   SmoothRotation: 1
   LandHeight:
   - 10
-  - 70
+  - 50
   LandHeightMap: 1
   SmoothHeight: 1
   KeepTransforms:

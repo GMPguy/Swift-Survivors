@@ -7,7 +7,8 @@ MAJOR:
 	- Text
 	- Hints to manual
 - Improve achievement text
-- Item bank (for NPC holding items)
+x Item bank (for NPC holding items)
+	- attachments and whatnot
 - For main menu: boot and game over scene, improve credits
 - Saves versioning system (to update old saves)
 - Add kits
@@ -95,3 +96,4 @@ x Add landpart script
 	x Plant objects
 
 - Improve spawning
+- IsHidden

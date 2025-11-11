@@ -1091,8 +1091,8 @@ public class AttackScript : MonoBehaviour {
                         ObjectHit.transform.root.GetComponent<MobScript>().React("Blinded", 2f, this.transform.position);
                     }
                 }
-            } else if (ObjectHit.layer == 11) {
-                ObjectHit.transform.parent.GetComponent<InteractableScript>().Interaction("Break", AttackPropertyDamage);
+            } else if (ObjectHit.layer == 11 && ObjectHit.transform.parent && ObjectHit.transform.parent.TryGetComponent<InteractableScript>(out InteractableScript IS)) {
+                IS.Interaction("Break", AttackPropertyDamage);
                 Penetrate = "Sure";
             }
 

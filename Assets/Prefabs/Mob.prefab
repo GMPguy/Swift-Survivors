@@ -8534,6 +8534,8 @@ MonoBehaviour:
   GunSpread:
   - 0
   - 0
+  ReferencePhantomMaterial: {fileID: 2100000, guid: 72176db0f84c7d149bd4082b7e81a6e9,
+    type: 2}
 --- !u!95 &95827463078727264
 Animator:
   serializedVersion: 5

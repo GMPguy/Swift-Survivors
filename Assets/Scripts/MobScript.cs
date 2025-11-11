@@ -106,6 +106,8 @@ public class MobScript : MonoBehaviour {
     float DroppedRagdoll = -1f;
     Vector4 RagdollPush;
     float PowerLevel = 0f;
+    public Material ReferencePhantomMaterial;
+    public Material phantomMaterial;
     // Misc
 
     // Use this for initialization
@@ -476,9 +478,10 @@ public class MobScript : MonoBehaviour {
                 Humanoid.SetActive(true);
                 SelectedMobModel = Humanoid;
                 AnimationSet = "Mutant";
-                WhichSubModels = "PhantomMutant";
+                WhichSubModels = "BasicMutant";
+                phantomMaterial = new(ReferencePhantomMaterial);
                 MobAudio = "Phantom";
-                MobColor = new Color32(255, 0, 0, 255);
+                MobColor = new Color32(255, 0, 0, 0);
                 break;
             case 8:
                 // Guard
@@ -757,29 +760,37 @@ public class MobScript : MonoBehaviour {
                             newItem.localPosition = Vector3.zero;
                             newItem.localEulerAngles = newItem.eulerAngles;
                         } else if (FoundBodyPart.GetComponent<MeshRenderer>() != null) {
-                            foreach (Material mat in FoundBodyPart.GetComponent<MeshRenderer>().materials) {
-                                if (WhichSubModels == "FireMutant") {
-                                    mat.color = new Color32(55, 0, 0, 255);
-                                } else if (WhichSubModels == "HalfturnedMutant" && mat.name == "Survivor3 (Instance)") {
-                                    mat.color = Color32.Lerp(new Color32(0, 0, 0, 255), new Color32(255, 255, 255, 255), PowerLevel);
-                                } else if (WhichSubModels == "HalfturnedMutant" && mat.name == "Survivor6 (Instance)") {
-                                    mat.color = MutantSkin;
-                                } else if (mat.name == "MutantSkin1 (Instance)") {
-                                    mat.color = MutantSkin;
-                                } else if (mat.name == "MutantSkin2 (Instance)") {
-                                    mat.color = new Color32((byte)(MutantSkin.r / 2f), (byte)(MutantSkin.g / 2f), (byte)(MutantSkin.b / 2f), 255);
-                                } else if (mat.name == "MutantSkin3 (Instance)") {
-                                    mat.color = Color32.Lerp(new Color32(0, 0, 0, 255), new Color32(255, 255, 255, 255), PowerLevel);
-                                } else if (mat.name == "BM-TORSO (Instance)") {
-                                    mat.color = MutantClothing[0];
-                                } else if (mat.name == "BM-SUIT (Instance)") {
-                                    mat.color = MutantClothing[1];
-                                } else if (mat.name == "BM-UPPERARM (Instance)") {
-                                    mat.color = MutantClothing[2];
-                                } else if (mat.name == "BM-LOWERARM (Instance)") {
-                                    mat.color = MutantClothing[3];
-                                } else if (mat.name == "BM-PANTS (Instance)") {
-                                    mat.color = MutantClothing[4];
+                            if (phantomMaterial) {
+                                Material[] mats = FoundBodyPart.GetComponent<MeshRenderer>().materials;
+                                for (int sm = 0; sm < mats.Length; sm++)
+                                    mats[sm] = phantomMaterial;
+                                FoundBodyPart.GetComponent<MeshRenderer>().materials = mats;
+                            } else {
+                                for (int gm = 0; gm < FoundBodyPart.GetComponent<MeshRenderer>().materials.Length; gm++) {
+                                    Material mat = FoundBodyPart.GetComponent<MeshRenderer>().materials[gm];
+                                    if (WhichSubModels == "FireMutant") {
+                                        mat.color = new Color32(55, 0, 0, 255);
+                                    } else if (WhichSubModels == "HalfturnedMutant" && mat.name == "Survivor3 (Instance)") {
+                                        mat.color = Color32.Lerp(new Color32(0, 0, 0, 255), new Color32(255, 255, 255, 255), PowerLevel);
+                                    } else if (WhichSubModels == "HalfturnedMutant" && mat.name == "Survivor6 (Instance)") {
+                                        mat.color = MutantSkin;
+                                    } else if (mat.name == "MutantSkin1 (Instance)") {
+                                        mat.color = MutantSkin;
+                                    } else if (mat.name == "MutantSkin2 (Instance)") {
+                                        mat.color = new Color32((byte)(MutantSkin.r / 2f), (byte)(MutantSkin.g / 2f), (byte)(MutantSkin.b / 2f), 255);
+                                    } else if (mat.name == "MutantSkin3 (Instance)") {
+                                        mat.color = Color32.Lerp(new Color32(0, 0, 0, 255), new Color32(255, 255, 255, 255), PowerLevel);
+                                    } else if (mat.name == "BM-TORSO (Instance)") {
+                                        mat.color = MutantClothing[0];
+                                    } else if (mat.name == "BM-SUIT (Instance)") {
+                                        mat.color = MutantClothing[1];
+                                    } else if (mat.name == "BM-UPPERARM (Instance)") {
+                                        mat.color = MutantClothing[2];
+                                    } else if (mat.name == "BM-LOWERARM (Instance)") {
+                                        mat.color = MutantClothing[3];
+                                    } else if (mat.name == "BM-PANTS (Instance)") {
+                                        mat.color = MutantClothing[4];
+                                    }
                                 }
                             }
                         }
@@ -820,23 +831,6 @@ public class MobScript : MonoBehaviour {
 
         if (!wasStarted)
             TheStart();
-
-        /*if ((Angered > 0f) || State == 1 || (GS.GameModePrefab.x == 1 || Vector3.Distance(this.transform.position, GameObject.Find("MainCamera").transform.position) < RS.DetectionRange)) {
-            TooFar = false;
-        } else {
-            TooFar = true;
-        }
-
-        if (TooFar == false) {
-            Do(1f);
-        } else {
-            if (UpdateDelay > 0f) {
-                UpdateDelay -= 0.02f;
-            } else {
-                UpdateDelay = 4f;
-                Do(UpdateDelay / 0.02f);
-            }
-        }*/
 
         Do(RS.TimeSinceRoundStart - prevTime);
 
@@ -914,24 +908,12 @@ public class MobScript : MonoBehaviour {
             }
         }
 
-        // Occlusion
-        /*if (TooFar == false && State == 0 && WhichModels == "Humanoid" && HumanoidBodyParts[1].transform.GetChild(1).gameObject.activeInHierarchy == false) {
-            foreach (GameObject HidPart in HumanoidBodyParts) {
-                foreach (Transform HidPartB in HidPart.transform) {
-                    if (HidPartB.GetComponent<MeshRenderer>() != null && HidPartB.name != "Plunger") {
-                        HidPartB.gameObject.SetActive(true);
-                    }
-                }
-            }
-        } else if (TooFar == true && State == 0 && WhichModels == "Humanoid" && HumanoidBodyParts[1].transform.GetChild(1).gameObject.activeInHierarchy == true) {
-            foreach (GameObject HidPart in HumanoidBodyParts) {
-                foreach (Transform HidPartB in HidPart.transform) {
-                    if (HidPartB.GetComponent<MeshRenderer>() != null && HidPartB.name != "Plunger") {
-                        HidPartB.gameObject.SetActive(false);
-                    }
-                }
-            }
-        }*/
+        if (phantomMaterial != null) {
+            float alpha = State == 0 
+                ? Mathf.Clamp01(1f - Vector3.Distance(transform.position, GameObject.Find("MainCamera").transform.position) / Mathf.Lerp(25f, 5f, PowerLevel))
+                : Mathf.Clamp01(phantomMaterial.color.a - deltaTime);
+            phantomMaterial.color = new Color(1f, 1f, 1f, alpha);
+        }
 
         if (State == 0) {
 
@@ -943,21 +925,6 @@ public class MobScript : MonoBehaviour {
             } else {
                 Anim.SetFloat("IdleStance", 0f);
             }
-
-            // Check if blocked way
-            /*bool BlockedWay = false;
-            for (float ChechkEach = 0f; ChechkEach < 5f; ChechkEach ++) {
-                Ray CheckIfBlocked = new Ray(this.transform.position + (this.transform.up * (ChechkEach / 5f)), this.transform.forward);
-                RaycastHit CheckIfBlockedHIT;
-                if (Physics.Raycast(CheckIfBlocked, out CheckIfBlockedHIT, 0.75f)) {
-                    if (CheckIfBlockedHIT.collider.GetComponent<MobScript>() != null && GS.GameModePrefab.x == 1) {
-                        CheckIfBlockedHIT.collider.GetComponent<MobScript>().CurrentWaypoint = CurrentWaypoint;
-                    } else if (CheckIfBlockedHIT.collider.name != "MayGoThrough" && CheckIfBlockedHIT.transform.root.tag != "Mob" && CheckIfBlockedHIT.transform.root.tag != "Player") {
-                        BlockedWay = true;
-                    }
-                    break;
-                }
-            }*/
 
             if (Anim.GetCurrentAnimatorStateInfo(0).IsName(AnimationSet + "Idle") && Anim.GetFloat("StayOrGo") <= 0f && Anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.99f) {
                 Anim.speed = 0.25f;
@@ -1514,7 +1481,7 @@ public class MobScript : MonoBehaviour {
 
         if (TypeOfMob == 11) {
             if (InWater == true || RS.Weather == 4) {
-                MobHealth[0] = 0f;
+                Hurt(9999f, null, false, transform.position, "Fire");
             }
             if (BurnCooldown > 0f) {
                 BurnCooldown -= deltaTime;

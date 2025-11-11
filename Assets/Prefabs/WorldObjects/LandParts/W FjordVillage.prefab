@@ -185,7 +185,7 @@ GameObject:
   - component: {fileID: 2367208560883498119}
   - component: {fileID: 7520724303538647234}
   m_Layer: 0
-  m_Name: Building (1)
+  m_Name: Building
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -359,7 +359,7 @@ GameObject:
   - component: {fileID: 6093736879167895071}
   - component: {fileID: 6118751568961422135}
   m_Layer: 0
-  m_Name: Building (2)
+  m_Name: Building
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -702,7 +702,7 @@ MonoBehaviour:
   SmoothRotation: 1
   LandHeight:
   - 10
-  - 70
+  - 50
   LandHeightMap: 1
   SmoothHeight: 1
   KeepTransforms:
@@ -719,7 +719,7 @@ GameObject:
   - component: {fileID: 6413330855472962691}
   - component: {fileID: 2562151152860474737}
   m_Layer: 0
-  m_Name: Building (3)
+  m_Name: Building
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

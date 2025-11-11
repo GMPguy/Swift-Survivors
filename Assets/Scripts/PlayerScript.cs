@@ -165,6 +165,7 @@ public class PlayerScript : MonoBehaviour {
     bool Gib = false;
 
     // Cants
+    public float Hidden = 0f;
     public float CantMove = 0f;
     public float CantLook = 0f;
     public float CantUseItem = 0f;
@@ -250,6 +251,22 @@ public class PlayerScript : MonoBehaviour {
         }
         // Prepare buildings
 
+        // Get spawn position
+        float nearest = 0f;
+        Vector3 theSP = new Vector3(
+            Random.Range(-15f, 15f), 0f, Random.Range(-15f, 15f)
+        );
+
+        if (RS.SpawnPoints != null && RS.SpawnPoints.Count > 0)
+            foreach (Vector3 findSP in RS.SpawnPoints)
+                if (Vector3.Distance(Vector3.zero, findSP) < nearest) {
+                    nearest = Vector3.Distance(Vector3.zero, findSP);
+                    theSP = findSP;
+                }
+            
+        if (Physics.Raycast(theSP + (Vector3.up * 1000f), Vector3.down, out RaycastHit hit))
+            this.transform.position = hit.point + (Vector3.up / 10f);
+
         // Get rewards and punishments
         if (GS.ExistSemiClass(GS.PlaythroughStats, "RItemGot_")){
             for(int ByThatMuch = int.Parse(GS.GetSemiClass(GS.PlaythroughStats, "RItemGot_")); ByThatMuch > 0; ByThatMuch--){
@@ -314,6 +331,7 @@ public class PlayerScript : MonoBehaviour {
         } else {
 
             // Cants
+            if (Hidden > 0f) Hidden -= 0.02f;
             if (CantMove > 0f) CantMove -= 0.02f;
             if (CantLook > 0f) CantLook -= 0.02f;
             if (CantUseItem > 0f) CantUseItem -= 0.02f;

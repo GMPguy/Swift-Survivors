@@ -73,6 +73,7 @@ public class RoundScript : MonoBehaviour {
     public GameObject SkyboxObj;
     public Texture[] SkyboxImages;
     public Sprite[] CloudImages;
+    public List<Vector3> SpawnPoints;
     bool SetUpClouds;
     public MobPH[] MobPHeses;
     int currentMobPHscan = 0;
@@ -157,6 +158,8 @@ public class RoundScript : MonoBehaviour {
         ActiveBuildings = new List<BuildingScript>();
         FragElements = new List<Vector3>();
         FragTransform = new ("FragTransform");
+
+        SpawnPoints = new List<Vector3>();
 
         switch (GS.GetSemiClass(GS.RoundSetting, "G", "?")) {
             case "0": 
