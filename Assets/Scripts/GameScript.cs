@@ -49,6 +49,10 @@ public class GameScript : MonoBehaviour {
     int PrevParticlesQuality = 0;
     public int ParticlesQuality = 1;
     public int GrassQuality = 0;
+
+    public int DestructionQuality = 1; // Disabled, Standard, High
+    public int EffectsQuality = 1; // Disabled, Standard, High
+
     public float CameraBobbing = 1f;
     public float CameraShifting = 1f;
     public float FOV = 50f;
@@ -288,7 +292,22 @@ public class GameScript : MonoBehaviour {
 
     public void AddToScore(int ScoreToAdd){
         Score += ScoreToAdd;
-        PS.GitExp(ScoreToAdd);
+
+        float multiplier = GetSemiClass(RoundSetting, "G") switch {
+            "0" => .25f,
+            _ => 1f
+        };
+
+        multiplier *= GetSemiClass(RoundSetting, "D") switch {
+            "0" => .5f,
+            "2" => 1.5f,
+            "3" => 2f,
+            "4" => 4f,
+            _ => 1f
+        };
+
+
+        PS.GitExp(Mathf.RoundToInt(ScoreToAdd * multiplier));
     }
 
     public void ChangeLevel(string WayOfChange) {
@@ -840,6 +859,9 @@ public class GameScript : MonoBehaviour {
                 ";FoliQ_" + GrassQuality.ToString(CultureInfo.InvariantCulture) +
                 ";PartQ_" + ParticlesQuality.ToString(CultureInfo.InvariantCulture) +
                 ";LiteQ_" + LightingQuality.ToString(CultureInfo.InvariantCulture) +
+                ";GrapQ_" + GraphicsQuality.ToString(CultureInfo.InvariantCulture) +
+                ";DestQ_" + DestructionQuality.ToString(CultureInfo.InvariantCulture) +
+                ";EffeQ_" + EffectsQuality.ToString(CultureInfo.InvariantCulture) +
                 ";Hints_" + ToldHints + //CHUJ
                 ";SkyType_" + SkyboxType.ToString() +
                 ";HudColor_" + HudColorMain +
@@ -880,6 +902,8 @@ public class GameScript : MonoBehaviour {
                     GrassQuality = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "FoliQ_" ), CultureInfo.InvariantCulture);
                     ParticlesQuality = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "PartQ_" ), CultureInfo.InvariantCulture);
                     LightingQuality = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "LiteQ_" ), CultureInfo.InvariantCulture);
+                    DestructionQuality = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "DestQ_" ), CultureInfo.InvariantCulture);
+                    EffectsQuality = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "EffeQ_" ), CultureInfo.InvariantCulture);
                     ToldHints = GetSemiClass(PlayerPrefs.GetString("Options"), "Hints_" );
                     SkyboxType = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "SkyType_" ), CultureInfo.InvariantCulture);
                     HudColorMain = GetSemiClass(PlayerPrefs.GetString("Options"), "HudColor_");

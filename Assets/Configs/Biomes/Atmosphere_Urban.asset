@@ -87,3 +87,17 @@ MonoBehaviour:
   - {x: 0, y: -50, z: 0, w: 0}
   - {x: 0, y: -50, z: 0, w: 0}
   FogDistance: {x: 25, y: 100, z: 25, w: 50}
+  FogSize:
+  - x: 0.25
+    y: 1
+  - x: 0.5
+    y: 1
+  - x: 1
+    y: 1
+  - x: 0.25
+    y: 1
+  - x: 0.5
+    y: 1
+  - x: 1
+    y: 1
+  IsOvercast: 0

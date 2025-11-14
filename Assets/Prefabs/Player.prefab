@@ -19632,6 +19632,7 @@ GameObject:
   - component: {fileID: 4369006199310954}
   - component: {fileID: 135638684610115118}
   - component: {fileID: 114505078714209114}
+  - component: {fileID: 1383014538458465641}
   m_Layer: 2
   m_Name: GroundDetector
   m_TagString: Untagged
@@ -19689,6 +19690,103 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Detected: 0
   DetectedObject: {fileID: 0}
+--- !u!82 &1383014538458465641
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302471742342976}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: -5847124860591138158, guid: 637a0c78a81587046a1377781fcb69e5,
+    type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 50
+  Pan2D: 0
+  rolloffMode: 1
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1303381029055074
 GameObject:
   m_ObjectHideFlags: 0
@@ -44816,6 +44914,8 @@ MonoBehaviour:
   IsST: 0
   IsAiming: 0
   InBox: 0
+  MaterialBank: {fileID: 11400000, guid: 1dac40f59bc978245b8c4c989f54449f, type: 2}
+  Footstep: {fileID: 1383014538458465641}
   CameraShakeForce: []
   DamageIndicator: {fileID: 1182922493050918}
   SlimEnd: {fileID: 0}
@@ -44837,7 +44937,6 @@ MonoBehaviour:
     rgba: 0
   Pushback_Force: {x: 0, y: 0, z: 0}
   Pushback_Return: {x: 0, y: 1}
-  PlayerMaterial: {fileID: 13400000, guid: 6a35abce211b63c438bf837ca3f4fb5e, type: 2}
   FishingRodBait: {fileID: 1165598331599692}
   IsFishing: 0
   FishingStatus: {x: 0, y: 0}
@@ -44860,6 +44959,7 @@ MonoBehaviour:
   - 1
   - 1
   - 60
+  Hidden: 0
   CantMove: 0
   CantLook: 0
   CantUseItem: 0

@@ -705,6 +705,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 466339f76b948e145919cc408bd93b5e, type: 3}
     - {fileID: 8300000, guid: 25adbf8c249f2a443bf32007718447ba, type: 3}
     - {fileID: 8300000, guid: 6af53713031fea9438eb46ce5c7ae16e, type: 3}
+    ArmorGrade: 0
+    IsAlsoDoor: 0
   - transform: {fileID: 6733695263836613291}
     GlassMaterial: 
     HitEffect: BullethitWood
@@ -715,6 +717,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 466339f76b948e145919cc408bd93b5e, type: 3}
     - {fileID: 8300000, guid: 25adbf8c249f2a443bf32007718447ba, type: 3}
     - {fileID: 8300000, guid: 6af53713031fea9438eb46ce5c7ae16e, type: 3}
+    ArmorGrade: 0
+    IsAlsoDoor: 1
   - transform: {fileID: 3010913064041508907}
     GlassMaterial: 
     HitEffect: BullethitWood
@@ -725,12 +729,15 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 466339f76b948e145919cc408bd93b5e, type: 3}
     - {fileID: 8300000, guid: 25adbf8c249f2a443bf32007718447ba, type: 3}
     - {fileID: 8300000, guid: 6af53713031fea9438eb46ce5c7ae16e, type: 3}
+    ArmorGrade: 0
+    IsAlsoDoor: 1
   - transform: {fileID: 7363272315104564779}
     GlassMaterial: Bathroom4 (Instance)
     HitEffect: 
     RipOffOnHit: 1
     BreakSound: []
-  ArmorGrade: 0
+    ArmorGrade: 0
+    IsAlsoDoor: 0
   Spawners:
   - {fileID: 3288764490881478480}
   - {fileID: 6818842628273364329}

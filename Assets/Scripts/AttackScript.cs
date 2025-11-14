@@ -1031,7 +1031,8 @@ public class AttackScript : MonoBehaviour {
             if(ObjectHit.GetComponent<DestructionScript>()){
                 ObjectHit.GetComponent<DestructionScript>().Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit, Attacker);
             } else if(ObjectHit.layer == 24){
-                ObjectHit.transform.parent.GetComponent<DestructionScript>().Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit, Attacker);
+                if (ObjectHit.transform.parent.TryGetComponent<DestructionScript>(out DestructionScript Destruct))
+                    Destruct.Hit(AttackPropertyDamage, new string[]{AttackType, FirearmType}, PointHit, Attacker);
             }
 
             if(ObjectHit.GetComponent<ChestScript>()){

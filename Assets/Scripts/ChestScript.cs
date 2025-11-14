@@ -255,12 +255,13 @@ public class ChestScript : MonoBehaviour {
             Destroy(MinimapMarker);
 
             for (int dp = 0; dp < AllParts.Length; dp++)
-                DamagePart(AllParts[dp], true);
+                if (GS.DestructionQuality == 2 || AllParts[dp].IsAlsoDoor)
+                    DamagePart(AllParts[dp], true);
             
             if (killer && killer.tag == "Player")
                 RS.SetScore("ChestsDestroyed_", "/+1");
 
-            Activate(10f);
+            Activate(GS.DestructionQuality == 2 ? 300f : 10f);
         }
     }
 
@@ -280,7 +281,7 @@ public class ChestScript : MonoBehaviour {
         }
 
         if (ripOff) {
-            part.transform.gameObject.layer = 0;
+            part.ArmorGrade = 3;
 
             if (part.BreakSound != null && part.BreakSound.Length > 0) {
                 AudioSource breakSound = part.transform.GetComponent<AudioSource>();
@@ -288,21 +289,24 @@ public class ChestScript : MonoBehaviour {
                 breakSound.Play();
             }
 
-            if (part.transform.GetComponent<Rigidbody>() == null) {
-                Rigidbody newRig = part.transform.gameObject.AddComponent<Rigidbody>();
+            if (GS.DestructionQuality == 0)
+                part.transform.localScale = Vector3.zero;
+            else
+                if (part.transform.GetComponent<Rigidbody>() == null) {
+                    Rigidbody newRig = part.transform.gameObject.AddComponent<Rigidbody>();
 
-                newRig.AddForce(new (
-                    Random.Range(-10f, 10f),
-                    Random.Range(0f, 5f),
-                    Random.Range(-10f, 10f)
-                ), ForceMode.VelocityChange);
+                    newRig.AddForce(new (
+                        Random.Range(-10f, 10f),
+                        Random.Range(0f, 5f),
+                        Random.Range(-10f, 10f)
+                    ), ForceMode.VelocityChange);
 
-                newRig.AddTorque(new (
-                    Random.Range(-100f, 100f),
-                    Random.Range(-100f, 100f),
-                    Random.Range(-100f, 100f)
-                ), ForceMode.VelocityChange);
-            }
+                    newRig.AddTorque(new (
+                        Random.Range(-100f, 100f),
+                        Random.Range(-100f, 100f),
+                        Random.Range(-100f, 100f)
+                    ), ForceMode.VelocityChange);
+                }
         }
     }
 
@@ -332,6 +336,7 @@ public class ChestScript : MonoBehaviour {
         public bool RipOffOnHit;
         public AudioClip[] BreakSound;
         public int ArmorGrade = 0;
+        public bool IsAlsoDoor;
     }
 
     [System.Serializable]

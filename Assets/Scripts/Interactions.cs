@@ -36,7 +36,7 @@ public class Interactions : MonoBehaviour {
         MainCamera = GameObject.Find("MainCamera");
         MainCanvas = GameObject.Find("MainCanvas");
 
-        if (Options[0] is "Locked" or "Door" or "BreakBarel" or "OpenChest")
+        if (Options[0] is "Locked" or "BreakBarel" or "OpenChest")
             CanBePicklocked = true;
 
     }
@@ -85,8 +85,8 @@ public class Interactions : MonoBehaviour {
                 "Bierz amunicję (") + (int)this.transform.parent.GetComponent<InteractableScript>().Variables.y + ")";
         } else if (Options[ThisOption] == "OpenChest") {
             ReturnThis = GS.GetComponent<GameScript>().SetString(
-                "Open " + this.transform.parent.GetComponent<ChestScript>().Name[0],
-                "Otwórz " + this.transform.parent.GetComponent<ChestScript>().Name[1]);
+                "Loot " + this.transform.parent.GetComponent<ChestScript>().Name[0],
+                "Przeszukaj " + this.transform.parent.GetComponent<ChestScript>().Name[1]);
         } else if (Options[ThisOption] == "Locked") {
             ReturnThis = GS.GetComponent<GameScript>().SetString("Locked...", "Zamknięte...");
         }

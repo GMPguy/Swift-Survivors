@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "AtmosphereConfig", menuName = "Configs/Atmosphere")]
@@ -14,6 +15,11 @@ public class AtmosphereConfig : ScriptableObject {
     public Color32[] PostProcessingColors = new Color32[]{ new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 0)}; // Post processing colors
     public Vector4[] PostProcessingVariables = new Vector4[]{ Vector4.zero, Vector4.zero, Vector4.zero, Vector4.zero, Vector4.zero, Vector4.zero};
     public Vector4 FogDistance = new Vector4(25f, 75f, 25f, 50f);
+    public float2[] FogSize = new float2[] {
+        new (.8f, 1f), new (.8f, 1f),
+        new (.8f, 1f), new (.8f, 1f),
+        new (.8f, 1f), new (.8f, 1f)
+    };
     public bool IsOvercast;
 
 }

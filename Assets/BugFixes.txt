@@ -38,7 +38,7 @@ x Filename special symbols prevention
 - Fix sorting in records
 x Add "Run" seed
 x Icons for flares
-- Do something with phantom mutants
+x Do something with phantom mutants
 x Fix attacking position for mobs
 x Treasure error
 	x Star variables
@@ -51,16 +51,17 @@ x Dirty punishment makes you drunk
 	x Improve buff saving
 
 - Black sun
-- Fog on minimal
+- Change fog model
 - Changing options at runtime warning
 x Kill function
-	- Immortality glitch
+	x Immortality glitch
 x Tame hurt effects
 
 x Fix wrench
 x Make healing procentage based
 x Make mags ammo stacking
 - Fix 1b1 reloading
+x Lockpic opens opened doors
 
 x Ambient light fix
 x Grass colors noise map
@@ -69,7 +70,7 @@ x Add new lands
 	x Flatlands
 	x Beach lands
 x Ragdoll deaths
-- Windowses
+x Windowses
 x Exploreable object
 
 x Remove bandage health cap
@@ -86,7 +87,14 @@ x Add scores
 
 x Add materials for chests
 x Make chests walkthrough
-- Add simple/dynamic destruction effects
+x Add simple/dynamic destruction effects
+	x For destruction
+	- For effects
+	x Save these settings
+	
+x Replace footstep effects with simple audio source
+- Afterburner
+x Forest Fjords
 
 x Add landpart script
 	x Landpart rotation
@@ -95,5 +103,5 @@ x Add landpart script
 	x LOD collider mesh doesn't match
 	x Plant objects
 
-- Improve spawning
+x Improve spawning
 - IsHidden

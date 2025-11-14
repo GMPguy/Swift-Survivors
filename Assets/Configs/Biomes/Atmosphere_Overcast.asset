@@ -29,7 +29,7 @@ MonoBehaviour:
     rgba: 4278190080
   FogColors:
   - serializedVersion: 2
-    rgba: 4291809231
+    rgba: 4293388263
   - serializedVersion: 2
     rgba: 4284854469
   - serializedVersion: 2
@@ -87,4 +87,17 @@ MonoBehaviour:
   - {x: 0, y: -50, z: 0, w: 0}
   - {x: 0, y: -50, z: 0, w: 0}
   FogDistance: {x: 25, y: 100, z: 25, w: 50}
+  FogSize:
+  - x: 1
+    y: 1
+  - x: 1
+    y: 1
+  - x: 1
+    y: 1
+  - x: 1
+    y: 1
+  - x: 1
+    y: 1
+  - x: 1
+    y: 1
   IsOvercast: 1

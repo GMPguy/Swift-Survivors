@@ -438,13 +438,9 @@ public class InteractableScript : MonoBehaviour {
                                 _ => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables
                             });
                     } else {
-                        AmountToSpawn = Random.Range(5, 10);
+                        AmountToSpawn = 5;
                         for (int a = 0; a < AmountToSpawn; a++)
-                            ItemsToSpawn.Add(Random.Range(0, 3) switch {
-                                0 => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
-                                1 => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
-                                _ => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables
-                            });
+                            ItemsToSpawn.Add(GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables);
                     }
                 
                     for (int SpawnStuff = 0; SpawnStuff < ItemsToSpawn.Count; SpawnStuff++) {
@@ -483,6 +479,7 @@ public class InteractableScript : MonoBehaviour {
                 SelectedModel.transform.GetChild(2).GetComponent<AudioSource>().Play();
             } else if (Variables.z == 2f) {
                 SelectedModel.transform.GetChild(3).GetComponent<AudioSource>().Play();
+                SelectedModel.GetComponent<Interactions>().CanBePicklocked = true;
             }
 
         } else if (WhatToDo == "SetItem") {

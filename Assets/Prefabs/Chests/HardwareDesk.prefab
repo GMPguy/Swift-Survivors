@@ -514,6 +514,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 25adbf8c249f2a443bf32007718447ba, type: 3}
     - {fileID: 8300000, guid: 6af53713031fea9438eb46ce5c7ae16e, type: 3}
     ArmorGrade: 0
+    IsAlsoDoor: 0
   - transform: {fileID: 545706477101980079}
     GlassMaterial: 
     HitEffect: BullethitMetal
@@ -525,6 +526,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: f4abff2772c708d4baebfa254588161a, type: 3}
     - {fileID: 8300000, guid: d3bf94bbfc818024aa6c774563b86674, type: 3}
     ArmorGrade: 1
+    IsAlsoDoor: 0
   - transform: {fileID: 6279403858630878473}
     GlassMaterial: 
     HitEffect: BullethitMetal
@@ -536,6 +538,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: f4abff2772c708d4baebfa254588161a, type: 3}
     - {fileID: 8300000, guid: d3bf94bbfc818024aa6c774563b86674, type: 3}
     ArmorGrade: 1
+    IsAlsoDoor: 1
   Spawners:
   - {fileID: 6317377941723325972}
   Lock: {fileID: 437993046787556350}
@@ -733,7 +736,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -857,7 +860,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -987,7 +990,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0

@@ -1107,7 +1107,7 @@ public class NewMenuScript : MonoBehaviour {
                     OptionInfos[0].text = GS.SetString("OPTIONS", "OPCJE"); 
                     break;
                 case "graphics": 
-                    OptionOptions = new string[]{ "graphs", "GQ", "LQ", "PQ", "FQ", "SQ", "", "hudsettings", "HC", "MR", "HR" }; 
+                    OptionOptions = new string[]{ "graphs", "GQ", "LQ", "PQ", "FQ", "SQ", "", "perf", "DQ", "EQ", "", "hudsettings", "HC", "MR", "HR" }; 
                     OptionInfos[0].text = GS.SetString("GRAPHICS", "GRAFIKA"); 
                     break;
                 case "sound": 
@@ -1120,7 +1120,7 @@ public class NewMenuScript : MonoBehaviour {
                     break;
                 case "camera": 
                     OptionOptions = new string[]{"FOV", "CB", "CS", "HS", "", "camerasettings", "MS", "MSM", "MI" }; 
-                    OptionInfos[0].text = GS.SetString("MISC", "INNE"); 
+                    OptionInfos[0].text = GS.SetString("CAMERA", "KAMERA"); 
                     break;
                 case "controls": 
                     OptionOptions = new string[]{ "kb0" , "kb1", "kb2", "kb3", "kb4", "kb5", "kb6", "", "kb7", "kb8", "kb10", "kb12", "kb9", "", "kb11", "kb13" }; 
@@ -1148,12 +1148,19 @@ public class NewMenuScript : MonoBehaviour {
 
             // Options display
             string[] QualityNames = new string[]{
-                GS.SetString("Minimal", "Minimal"),
+                GS.SetString("Minimal quality", "Minimalna jakość"),
                 GS.SetString("Low quality", "Niska jakość"),
                 GS.SetString("Medium quality", "Średnia jakość"),
                 GS.SetString("Good quality", "Dobra jakość"),
                 GS.SetString("High quality", "Wysoka jakość")
             };
+
+            string[] QualityNames2 = new string[]{
+                GS.SetString("Minimal quality", "Minimalna jakość"),
+                GS.SetString("Standard quality", "Standardowa jakość"),
+                GS.SetString("High quality", "Wysoka jakość")
+            };
+
             string[] OnOff = new string[]{ GS.SetString("No", "Nie"), GS.SetString("Yes", "Tak") };
 
             OptionSlider.MaxA = 11;
@@ -1217,6 +1224,17 @@ public class NewMenuScript : MonoBehaviour {
                         string[] SkyboxQualities = new string[]{GS.SetString("Plain", "Blade"), GS.SetString("Static", "Statyczne"), GS.SetString("Dynamic", "Dynamiczne")};
                         objVARS = new string[]{ GS.SetString("Skybox: ", "Skybox: "), SkyboxQualities[GS.SkyboxType], "" };
                         if(Clicked != 0) GS.SkyboxType = (3 + (GS.SkyboxType + Clicked ))%3;
+                        break;
+                    case "perf": 
+                        objVARS = new string[]{ GS.SetString("Performance qualities", "Jakość efektów wpływających na optymalizację"), "", "" };
+                        objBG = 0; Activated = false; break;
+                    case "DQ":
+                        objVARS = new string[]{ GS.SetString("Destruction: ", "Destrukcja: "), QualityNames2[GS.DestructionQuality], "" };
+                        if(Clicked != 0) GS.DestructionQuality = (3 + (GS.DestructionQuality + Clicked ))%3;
+                        break;
+                    case "EQ":
+                        objVARS = new string[]{ GS.SetString("Effects: ", "Efekty: "), QualityNames2[GS.EffectsQuality], "" };
+                        if(Clicked != 0) GS.EffectsQuality = (3 + (GS.EffectsQuality + Clicked ))%3;
                         break;
                     case "camerasettings": 
                         objVARS = new string[]{ GS.SetString("Camera controls", "Kontrola kamery"), "", "" };
@@ -1904,13 +1922,24 @@ public class NewMenuScript : MonoBehaviour {
             }
 
             // Displayed records
-            string[] gmrec = {GS.SetString("Classic", "Klasyczny"), GS.SetString("Horde", "Horda"), GS.SetString("Casual", "Niedzielny")};
-            string[] gmdl = {GS.SetString("Easy", "Łatwy"), GS.SetString("Normal", "Normalny"), GS.SetString("Hard", "Trudny"), GS.SetString("Very hard", "Bardzo trudny"), GS.SetString("Hardcore", "Hardkorowy")};
+            string[] gmrec = {
+                "<color=#e8ffceff>" + GS.SetString("Classic", "Klasyczny") + "</color>",
+                "<color=brown>" + GS.SetString("Horde", "Horda") + "</color>",
+                "<color=blue>" + GS.SetString("Casual", "Niedzielny") + "</color>"
+            };
+            string[] gmdl = {
+                "<color=lime>" + GS.SetString("Easy", "Łatwy") + "</color>",
+                "<color=cyan>" + GS.SetString("Normal", "Normalny") + "</color>", 
+                "<color=yellow>" + GS.SetString("Hard", "Trudny") + "</color>",
+                "<color=orange>" + GS.SetString("Very hard", "Bardzo trudny") + "</color>", 
+                "<color=red>" + GS.SetString("Hardcore", "Hardkorowy") + "</color>"
+            };
+
             for(int SR = 0; SR < 30; SR++){
                 string DisplayText = "";
                 Color DisplayColor = new Color(0f, 0f, 0f, 0f);
                 if (SR < RecordList.Length) {
-                    DisplayText = GS.GetSemiClass(RecordList[SR], "N") + " - " + GS.SetString("rounds: ", "rundy: ") + GS.GetSemiClass(RecordList[SR], "R") + GS.SetString(" / score: ", " / wynik: ") + GS.GetSemiClass(RecordList[SR], "S") + " - " + gmdl[int.Parse(GS.GetSemiClass(RecordList[SR], "D"))-1] + " " + gmrec[int.Parse(GS.GetSemiClass(RecordList[SR], "G"))];
+                    DisplayText = GS.GetSemiClass(RecordList[SR], "N") + " - <color=#e8ffceff>" + GS.SetString("rounds: ", "rundy: ") + GS.GetSemiClass(RecordList[SR], "R") + "</color>" + GS.SetString(" / score: ", " / wynik: ") + GS.GetSemiClass(RecordList[SR], "S") + " - " + gmdl[int.Parse(GS.GetSemiClass(RecordList[SR], "D"))-1] + " " + gmrec[int.Parse(GS.GetSemiClass(RecordList[SR], "G"))];
                     DisplayColor = Color.white;
                 }
                 RecordOptions[SR].GetComponent<Text>().text = DisplayText;

@@ -82,6 +82,9 @@ public class MobScript : MonoBehaviour {
     public float ReturnPushBack;
     Vector3 PrevPosition;
     Vector3 StartPosition;
+    public FootstepConfig MaterialBank;
+    public AudioSource Footstep;
+    int FootstepSequence = 0;
     float FootstepCooldown = 0f;
     float CleanupAfterDead = 100f;
     float FixedTimeCooldown = 1f;
@@ -480,6 +483,7 @@ public class MobScript : MonoBehaviour {
                 AnimationSet = "Mutant";
                 WhichSubModels = "BasicMutant";
                 phantomMaterial = new(ReferencePhantomMaterial);
+                phantomMaterial.SetColor("_EmissionColor", Color.HSVToRGB(Random.value, 1f, 1f));
                 MobAudio = "Phantom";
                 MobColor = new Color32(255, 0, 0, 0);
                 break;
@@ -981,7 +985,7 @@ public class MobScript : MonoBehaviour {
             if (TypeOfMob != 7f) {
 
                 if (Vector3.Distance(this.transform.position, PrevPosition) > 0.1f) {
-                    FootstepCooldown -= Vector3.Distance(this.transform.position, PrevPosition);
+                    FootstepCooldown -= Vector3.Distance(this.transform.position, PrevPosition) / (MovementSpeed[1] / 50f) / 20f;
                     PrevPosition = this.transform.position;
 
                     Ray CheckGround = new Ray(this.transform.position, Vector3.down);
@@ -995,10 +999,9 @@ public class MobScript : MonoBehaviour {
                             }
                         }
                         if (FootstepCooldown <= 0f && CheckGroundHIT.collider.gameObject.GetComponent<FootstepMaterial>() != null) {
-                            FootstepCooldown = 2f;
-                            GameObject Step = Instantiate(EffectPrefab);
-                            Step.transform.position = this.transform.position - Vector3.up * 0.5f;
-                            Step.GetComponent<EffectScript>().EffectName = "Footstep" + CheckGroundHIT.collider.gameObject.GetComponent<FootstepMaterial>().WhatToPlay;
+                            FootstepCooldown = 1f;
+                            Footstep.clip = MaterialBank.GetFootstep(CheckGroundHIT.collider.gameObject.GetComponent<FootstepMaterial>().WhatToPlay, ref FootstepSequence);
+                            Footstep.Play();
                         }
                     }
                 }

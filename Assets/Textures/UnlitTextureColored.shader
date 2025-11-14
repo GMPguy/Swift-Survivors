@@ -7,24 +7,29 @@
 Shader "Unlit/Texture Colored" {
     Properties {
         // Adds Color field we can modify
-        _Color ("Main Color", Color) = (1, 1, 1, 1)        
+        _Color ("_TintColor", Color) = (1, 1, 1, 1)        
         _MainTex ("Base (RGB)", 2D) = "white" {}
     }
 
     SubShader {
-        Tags { "RenderType"="Transparent" }
+        Tags { 
+            "Queue"="Transparent"
+            "RenderType"="Transparent"
+        }
         LOD 100
         
+        // Enable blending & disable writing to depth to avoid sorting artifacts
+        Blend SrcAlpha OneMinusSrcAlpha
+        ZWrite Off
+
         Pass {
             Lighting Off
-            
-            SetTexture [_MainTex] { 
-                // Sets our color as the 'constant' variable
+
+            SetTexture [_MainTex] {
                 constantColor [_Color]
-                
-                // Multiplies color (in constant) with texture
+                // Multiply color and texture including alpha
                 combine constant * texture
-            } 
+            }
         }
     }
 }

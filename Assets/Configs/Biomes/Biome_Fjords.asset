@@ -107,6 +107,10 @@ MonoBehaviour:
       Chances:
         x: 2
         y: 1
+    - TileObject: {fileID: 11400000, guid: c598ac27b304dc242852271957a1efe9, type: 2}
+      Chances:
+        x: 2
+        y: 3
     PerlinMargins:
       x: 0
       y: 1

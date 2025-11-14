@@ -73,6 +73,8 @@ public class RoundScript : MonoBehaviour {
     public GameObject SkyboxObj;
     public Texture[] SkyboxImages;
     public Sprite[] CloudImages;
+    float2 FogSizes;
+
     public List<Vector3> SpawnPoints;
     bool SetUpClouds;
     public MobPH[] MobPHeses;
@@ -1003,8 +1005,10 @@ public class RoundScript : MonoBehaviour {
                 GameObject SkyboxChild = SkyboxObj.transform.GetChild(0).GetChild(SC).gameObject;
                 if(SkyboxChild.name == "Fog") {
                     SkyboxChild.transform.eulerAngles = new Vector3(0f, MainPlayer.MainCamera.eulerAngles.y, 0f);
-                    SkyboxChild.transform.GetChild(0).GetComponent<SpriteRenderer>().color = RenderSettings.fogColor;
-                    SkyboxChild.transform.localScale = new Vector3(1f, Mathf.Lerp(1f, 0.5f, Quaternion.Angle(SkyboxChild.transform.rotation, SkyboxObj.transform.rotation) / 180f), 1f);
+                    SkyboxChild.transform.GetChild(0).GetComponent<MeshRenderer>().material.color = RenderSettings.fogColor;
+                    SkyboxChild.transform.localScale = new Vector3(
+                        1f, Mathf.Lerp(FogSizes.y, FogSizes.x, Quaternion.Angle(SkyboxChild.transform.rotation, SkyboxObj.transform.rotation) / 180f), 1f
+                    );
                 } else if (SkyboxChild.name == "Clouds1" || SkyboxChild.name == "Clouds2"){
                     float CRotation = GS.FixedPerlinNoise(GS.Round + (Time.time / 10000f) + (TimeOfDay[1] / 100f), GS.Round + (Time.time / 10000f)) * 360f;
                     float CAlpha = GS.FixedPerlinNoise(GS.Round + (Time.time / 10000f), GS.Round + (Time.time / 10000f) + (TimeOfDay[1] / 100f)) * 0.75f;
@@ -1331,14 +1335,6 @@ public class RoundScript : MonoBehaviour {
 
     }
 
-    public void Effect(string[] Args, Vector3[] Vecs){
-
-        GameObject NewEffect = Instantiate(EffectPrefab) as GameObject;
-        NewEffect.transform.position = Vecs[0];
-        if(Vecs.Length > 1) NewEffect.transform.eulerAngles = Vecs[1];
-
-    }
-
     public void Attack(string[] Args, Vector3 From, Vector3 To, GameObject Attacker = null, GameObject Slimend = null, GameObject BulletChamber = null){
 
         GameObject ThisAttack = GeneralAttack;
@@ -1452,6 +1448,7 @@ public class RoundScript : MonoBehaviour {
                     // Day
                     ColorLerpValues = new float[]{0f, 0f, 0f};
                     DrawDistance = Mathf.Lerp(Atmosphere.FogDistance.x, Atmosphere.FogDistance.y, Sunnyness);
+
                     if(TimeOfDay[1] < 750) SunRotation = Vector3.Lerp(new Vector3(30f, -45, 0f), new Vector3(60f, 0, 0f), (TimeOfDay[1] - 480) / 270f);
                     else SunRotation = Vector3.Lerp(new Vector3(60f, 0, 0f), new Vector3(30f, 90f, 0f), (TimeOfDay[1] - 750) / 270f);
                 } else if (TimeOfDay[1] >= 1080f && TimeOfDay[1] <= 1320f){
@@ -1468,6 +1465,7 @@ public class RoundScript : MonoBehaviour {
                     // Night
                     ColorLerpValues = new float[]{2f, 2f, 0f};
                     DrawDistance = Mathf.Lerp(Atmosphere.FogDistance.z, Atmosphere.FogDistance.w, Sunnyness);
+
                     if(TimeOfDay[1] > 1260) SunRotation = Vector3.Lerp(new Vector3(0f, -90f, 0f), new Vector3(60f, 0f, 0f), (TimeOfDay[1] - 1260) / 180f);
                     else SunRotation = Vector3.Lerp(new Vector3(60f, 0f, 0f), new Vector3(0f, 135f, 0f), TimeOfDay[1] / 480f);
                 }
@@ -1476,6 +1474,17 @@ public class RoundScript : MonoBehaviour {
             if(QualitySettings.GetQualityLevel() == 0)
                 DrawDistance = Mathf.Clamp(DrawDistance, 0f, 50f);
 
+            float fogSizeX = Mathf.Lerp( 
+                Mathf.Lerp(Atmosphere.FogSize[(int)ColorLerpValues[0] + 3].x, Atmosphere.FogSize[(int)ColorLerpValues[1] + 3].x, ColorLerpValues[2]), 
+                Mathf.Lerp(Atmosphere.FogSize[(int)ColorLerpValues[0]].x, Atmosphere.FogSize[(int)ColorLerpValues[1]].x, ColorLerpValues[2]), 
+                Sunnyness);
+            float fogSizeY = Mathf.Lerp( 
+                Mathf.Lerp(Atmosphere.FogSize[(int)ColorLerpValues[0] + 3].y, Atmosphere.FogSize[(int)ColorLerpValues[1] + 3].y, ColorLerpValues[2]), 
+                Mathf.Lerp(Atmosphere.FogSize[(int)ColorLerpValues[0]].y, Atmosphere.FogSize[(int)ColorLerpValues[1]].y, ColorLerpValues[2]), 
+                Sunnyness);
+            
+            FogSizes = new (fogSizeX, fogSizeY);
+            
             FogColor = Color32.Lerp( 
                 Color32.Lerp(Atmosphere.FogColors[(int)ColorLerpValues[0] + 3], Atmosphere.FogColors[(int)ColorLerpValues[1] + 3], ColorLerpValues[2]), 
                 Color32.Lerp(Atmosphere.FogColors[(int)ColorLerpValues[0]], Atmosphere.FogColors[(int)ColorLerpValues[1]], ColorLerpValues[2]), 

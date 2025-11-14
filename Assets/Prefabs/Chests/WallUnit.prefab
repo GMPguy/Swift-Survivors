@@ -1079,6 +1079,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 466339f76b948e145919cc408bd93b5e, type: 3}
     - {fileID: 8300000, guid: 25adbf8c249f2a443bf32007718447ba, type: 3}
     - {fileID: 8300000, guid: 6af53713031fea9438eb46ce5c7ae16e, type: 3}
+    ArmorGrade: 0
+    IsAlsoDoor: 1
   - transform: {fileID: 1916528615057070389}
     GlassMaterial: 
     HitEffect: BullethitWood
@@ -1089,6 +1091,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 466339f76b948e145919cc408bd93b5e, type: 3}
     - {fileID: 8300000, guid: 25adbf8c249f2a443bf32007718447ba, type: 3}
     - {fileID: 8300000, guid: 6af53713031fea9438eb46ce5c7ae16e, type: 3}
+    ArmorGrade: 0
+    IsAlsoDoor: 1
   - transform: {fileID: 5406697456838296393}
     GlassMaterial: Closet4 (Instance)
     HitEffect: BullethitWood
@@ -1099,6 +1103,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 466339f76b948e145919cc408bd93b5e, type: 3}
     - {fileID: 8300000, guid: 25adbf8c249f2a443bf32007718447ba, type: 3}
     - {fileID: 8300000, guid: 6af53713031fea9438eb46ce5c7ae16e, type: 3}
+    ArmorGrade: 0
+    IsAlsoDoor: 1
   - transform: {fileID: 2668930442064364199}
     GlassMaterial: Closet4 (Instance)
     HitEffect: BullethitWood
@@ -1109,6 +1115,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 466339f76b948e145919cc408bd93b5e, type: 3}
     - {fileID: 8300000, guid: 25adbf8c249f2a443bf32007718447ba, type: 3}
     - {fileID: 8300000, guid: 6af53713031fea9438eb46ce5c7ae16e, type: 3}
+    ArmorGrade: 0
+    IsAlsoDoor: 1
   - transform: {fileID: 6082938107388926476}
     GlassMaterial: Closet4 (Instance)
     HitEffect: BullethitWood
@@ -1119,6 +1127,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 466339f76b948e145919cc408bd93b5e, type: 3}
     - {fileID: 8300000, guid: 25adbf8c249f2a443bf32007718447ba, type: 3}
     - {fileID: 8300000, guid: 6af53713031fea9438eb46ce5c7ae16e, type: 3}
+    ArmorGrade: 0
+    IsAlsoDoor: 1
   - transform: {fileID: 3769847918234829853}
     GlassMaterial: Closet4 (Instance)
     HitEffect: BullethitWood
@@ -1129,6 +1139,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 466339f76b948e145919cc408bd93b5e, type: 3}
     - {fileID: 8300000, guid: 25adbf8c249f2a443bf32007718447ba, type: 3}
     - {fileID: 8300000, guid: 6af53713031fea9438eb46ce5c7ae16e, type: 3}
+    ArmorGrade: 0
+    IsAlsoDoor: 1
   - transform: {fileID: 9184908295796327048}
     GlassMaterial: 
     HitEffect: BullethitWood
@@ -1139,7 +1151,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 466339f76b948e145919cc408bd93b5e, type: 3}
     - {fileID: 8300000, guid: 25adbf8c249f2a443bf32007718447ba, type: 3}
     - {fileID: 8300000, guid: 6af53713031fea9438eb46ce5c7ae16e, type: 3}
-  ArmorGrade: 0
+    ArmorGrade: 0
+    IsAlsoDoor: 0
   Spawners:
   - {fileID: 3545542362259092397}
   - {fileID: 238318246825389108}

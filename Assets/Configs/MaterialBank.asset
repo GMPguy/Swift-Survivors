@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87d968c82ac29fd4582e7db78faac292, type: 3}
+  m_Name: MaterialBank
+  m_EditorClassIdentifier: 
+  MaterialBanks:
+  - FootstepType: Grass
+    FootstepSounds:
+    - {fileID: 8300000, guid: b9fdea072e9101646b68866a5333eb9c, type: 3}
+    - {fileID: 8300000, guid: 2a76723b53835d14fa2bdcbfe744bca6, type: 3}
+    - {fileID: 8300000, guid: 525bfb5bdd39db042a4cfe85a04a820c, type: 3}
+    - {fileID: 8300000, guid: cf2e7de41dd3cc1499fa44b57e7b8e95, type: 3}
+    - {fileID: 8300000, guid: 6523a49205849704cbf3b264511f145c, type: 3}
+    - {fileID: 8300000, guid: 8a4a01f18864edd4e9f5adcf0afdfa87, type: 3}
+    BullethitSounds:
+    - {fileID: 8300000, guid: 77d43649624ba3b47b254694c6642c42, type: 3}
+  - FootstepType: Block
+    FootstepSounds:
+    - {fileID: 8300000, guid: 440f9958073cb964c9ec07a2ec88dc67, type: 3}
+    - {fileID: 8300000, guid: ad82b00b17bdeba43bde793d3f5e1b0e, type: 3}
+    - {fileID: 8300000, guid: a741f82074a9eff48a0b8061f1ae8901, type: 3}
+    - {fileID: 8300000, guid: 5ae40d2e485930743b618057fd371154, type: 3}
+    - {fileID: 8300000, guid: 29c278a5d9279af4397233c0ab413431, type: 3}
+    - {fileID: 8300000, guid: cf9b52a81e1716b46a90fa63e1c10106, type: 3}
+    BullethitSounds:
+    - {fileID: 8300000, guid: ec79cddfdc42141428e66c2891526a7c, type: 3}
+  - FootstepType: Wood
+    FootstepSounds:
+    - {fileID: 8300000, guid: b20547eef8cf942449a16189f7f6ee16, type: 3}
+    - {fileID: 8300000, guid: 78b990e80c9332b4e8920ebf71b0947f, type: 3}
+    - {fileID: 8300000, guid: 7fbb107a42a9bb749904a0665f34be29, type: 3}
+    - {fileID: 8300000, guid: c6851579a6f768a44a5c20f3958242be, type: 3}
+    - {fileID: 8300000, guid: ebf371a19ba07ca4e91220bb75bbbe4f, type: 3}
+    - {fileID: 8300000, guid: e29eac4e4252ad143b87e7c778c8a22b, type: 3}
+    BullethitSounds:
+    - {fileID: 8300000, guid: fae97a9c8d47f9d428666c465ad23f83, type: 3}
+  - FootstepType: Metal
+    FootstepSounds:
+    - {fileID: 8300000, guid: c6f35bea2c7066e42b6dcabfafdc2e59, type: 3}
+    - {fileID: 8300000, guid: 06fd59c72c1163a4ca7d71cf932cfc30, type: 3}
+    - {fileID: 8300000, guid: c5310035ac572b54dad568e68a472c29, type: 3}
+    - {fileID: 8300000, guid: e961f80134693d24eb7513f2afa7718d, type: 3}
+    - {fileID: 8300000, guid: df2c1bb0a6c85224e97b7236544298f5, type: 3}
+    - {fileID: 8300000, guid: 9f2b55becf5b145469ed510044878422, type: 3}
+    BullethitSounds:
+    - {fileID: 8300000, guid: a0f4e227534ec934694c1625d73da64c, type: 3}
+  - FootstepType: Water
+    FootstepSounds:
+    - {fileID: 8300000, guid: bc325d350fceaba499256752ca6b62f9, type: 3}
+    - {fileID: 8300000, guid: 69f0b1c6ec1a5b34a92ea3bed9b3705a, type: 3}
+    - {fileID: 8300000, guid: 4681ed51b16b03b45932e904e0e631cf, type: 3}
+    - {fileID: 8300000, guid: 700d03632b1ccad439b0e3f2729eb7f6, type: 3}
+    - {fileID: 8300000, guid: 01f831885f53bcd439e5fc9a3b476795, type: 3}
+    - {fileID: 8300000, guid: 6433d76751d9d204daec726dcd9e2e0f, type: 3}
+    BullethitSounds:
+    - {fileID: 8300000, guid: 52cffc7f75281ad4ba154dd952a51031, type: 3}

@@ -35,7 +35,7 @@ public class DestructionScript : MonoBehaviour {
             case "Tree":
                 TreeLean = new Vector3[]{this.transform.eulerAngles, this.transform.eulerAngles, this.transform.localScale};
                 break;
-            case "Construction":
+            case "Construction": case "Construction3":
                 TreeLean = new Vector3[]{this.transform.localScale, this.transform.eulerAngles, this.transform.localScale * Random.Range(0.8f, 0.9f), this.transform.eulerAngles + Vector3.one*Random.Range(-10f, 10f)};
                 break;
             case "Construction2":
@@ -55,17 +55,49 @@ public class DestructionScript : MonoBehaviour {
                 case "Chop":
                     this.transform.eulerAngles = Vector3.Lerp(TreeLean[0], TreeLean[1], KeepState);
                     break;
-                case "Timber":
+                case "Timber": case "Bashed":
                     if(KeepState < 1f){
-                        if(this.GetComponent<Rigidbody>()) Destroy(this.GetComponent<Rigidbody>());
+                        if(this.GetComponent<Rigidbody>()) 
+                            Destroy(this.GetComponent<Rigidbody>());
                         this.transform.localScale = Vector3.Lerp( Vector3.zero, orgScale, KeepState);
                     } else if(this.GetComponent<MeshCollider>() && !this.GetComponent<MeshCollider>().convex){
                         this.GetComponent<MeshCollider>().convex = true;
-                        this.gameObject.AddComponent<Rigidbody>();
-                        this.GetComponent<Rigidbody>().mass = 10f;
+                        Rigidbody rig = this.gameObject.AddComponent<Rigidbody>();
+                        rig.mass = State == "Bashed" ? 1f : 10f;
+
+                        if (State == "Bashed") {
+                            transform.localScale *= .8f;
+                            rig.AddForce(new (
+                                Random.Range(-10f, 10f),
+                                Random.Range(0f, 5f),
+                                Random.Range(-10f, 10f)
+                            ), ForceMode.VelocityChange);
+
+                            rig.AddTorque(new (
+                                Random.Range(-100f, 100f),
+                                Random.Range(-100f, 100f),
+                                Random.Range(-100f, 100f)
+                            ), ForceMode.VelocityChange);
+                        }
                     } else if (!this.GetComponent<Rigidbody>()) {
                         this.gameObject.AddComponent<Rigidbody>();
-                        this.GetComponent<Rigidbody>().mass = 10f;
+                        Rigidbody rig = this.gameObject.AddComponent<Rigidbody>();
+                        rig.mass = State == "Bashed" ? 1f : 10f;
+
+                        if (State == "Bashed") {
+                            transform.localScale *= .8f;
+                            rig.AddForce(new (
+                                Random.Range(-10f, 10f),
+                                Random.Range(0f, 5f),
+                                Random.Range(-10f, 10f)
+                            ), ForceMode.VelocityChange);
+
+                            rig.AddTorque(new (
+                                Random.Range(-100f, 100f),
+                                Random.Range(-100f, 100f),
+                                Random.Range(-100f, 100f)
+                            ), ForceMode.VelocityChange);
+                        }
                     }
                     break;
                 case "Construction":
@@ -112,15 +144,28 @@ public class DestructionScript : MonoBehaviour {
                     // Hit effect
                     switch(mainType){
                         case "Tree":
-                            KeepState = 1f;
-                            State = "Chop";
-                            TreeLean[1] = TreeLean[0] + Vector3.one*15f;
+                            if (GS.DestructionQuality > 0) {
+                                KeepState = 1f;
+                                State = "Chop";
+                                TreeLean[1] = TreeLean[0] + Vector3.one*15f;
+                            }
                             break;
-                        case "Construction":
-                            this.transform.localScale = Vector3.Lerp(TreeLean[2], TreeLean[0], Health/prevHealth);
-                            this.transform.eulerAngles = Vector3.Lerp(TreeLean[3], TreeLean[1], Health/prevHealth);
+                        case "Construction": case "Construction3":
+                            if (GS.DestructionQuality > 0) {
+                                this.transform.localScale = Vector3.Lerp(TreeLean[2], TreeLean[0], Health/prevHealth);
+                                this.transform.eulerAngles = Vector3.Lerp(TreeLean[3], TreeLean[1], Health/prevHealth);
+                            }
+
+                            if (subType == "Window" && transform.childCount > 0 && transform.GetChild(0).name == "Glass") {
+                                Transform effect = GameObject.Instantiate(RS.EffectPrefab).transform;
+                                effect.position = transform.position;
+                                effect.GetComponent<EffectScript>().EffectName = "GlassBreak";
+                                effect.GetComponent<EffectScript>().EffectColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
+                                Destroy(transform.GetChild(0).gameObject);
+                            }
                             break;
-                        default:break;
+                        default:
+                            break;
                     }
 
                 } else {
@@ -130,10 +175,36 @@ public class DestructionScript : MonoBehaviour {
 
                     // Destroy effect
                     switch(mainType){
-                        case "Tree": case "Construction":
-                            KeepState = 5f;
+                        case "Tree":
+                            KeepState = GS.DestructionQuality == 0 ? .9f : 5f;
                             State = "Timber";
                             TreeLean[1] = TreeLean[0] + Vector3.one*15f;
+                            break;
+                        case "Construction":
+                            KeepState = GS.DestructionQuality switch {
+                                0 => .9f,
+                                1 => 10f,
+                                _ => 300f
+                            };
+                            State = "Timber";
+                            TreeLean[1] = TreeLean[0] + Vector3.one*15f;
+                            break;
+                        case "Construction3":
+                            KeepState = GS.DestructionQuality switch {
+                                0 => .9f,
+                                1 => 10f,
+                                _ => 300f
+                            };
+                            State = "Bashed";
+                            TreeLean[1] = TreeLean[0] + Vector3.one*15f;
+
+                            if (subType == "Window" && transform.childCount > 0 && transform.GetChild(0).name == "Glass") {
+                                Transform effect = GameObject.Instantiate(RS.EffectPrefab).transform;
+                                effect.position = transform.position;
+                                effect.GetComponent<EffectScript>().EffectName = "GlassBreak";
+                                effect.GetComponent<EffectScript>().EffectColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
+                                Destroy(transform.GetChild(0).gameObject);
+                            }
                             break;
                         case "Construction2":
                             KeepState = 2f;
@@ -148,7 +219,8 @@ public class DestructionScript : MonoBehaviour {
                     // Destroy anchors
                     if(Anchors != null) {
                         DestructionScript[] bAnchors = Anchors.ToArray();
-                        for (int bye = 0; bye < bAnchors.Length; bye++) bAnchors[bye].Hit(9999f, new[]{"Broke"}, this.transform.position, killer);
+                        for (int bye = 0; bye < bAnchors.Length; bye++) 
+                            bAnchors[bye].Hit(9999f, new[]{"Broke"}, this.transform.position, killer);
                     }
 
                 }   

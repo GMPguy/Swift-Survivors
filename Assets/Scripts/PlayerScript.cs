@@ -113,7 +113,10 @@ public class PlayerScript : MonoBehaviour {
     int BulletsLoaded = 0;
     public bool InBox = false;
     int[] previousItem;
+    public FootstepConfig MaterialBank;
+    public AudioSource Footstep;
     float FootstepCooldown = 1f;
+    int FootstepSequence = 0;
     float JumpCooldown = 0f;
     string WhatWalkingOn = "";
     public float[] CameraShakeForce;
@@ -257,15 +260,17 @@ public class PlayerScript : MonoBehaviour {
             Random.Range(-15f, 15f), 0f, Random.Range(-15f, 15f)
         );
 
-        if (RS.SpawnPoints != null && RS.SpawnPoints.Count > 0)
-            foreach (Vector3 findSP in RS.SpawnPoints)
-                if (Vector3.Distance(Vector3.zero, findSP) < nearest) {
-                    nearest = Vector3.Distance(Vector3.zero, findSP);
-                    theSP = findSP;
-                }
-            
-        if (Physics.Raycast(theSP + (Vector3.up * 1000f), Vector3.down, out RaycastHit hit))
-            this.transform.position = hit.point + (Vector3.up / 10f);
+        if (GS.GameModePrefab.x == 0) {
+            if (RS.SpawnPoints != null && RS.SpawnPoints.Count > 0)
+                foreach (Vector3 findSP in RS.SpawnPoints)
+                    if (Vector3.Distance(Vector3.zero, findSP) < nearest) {
+                        nearest = Vector3.Distance(Vector3.zero, findSP);
+                        theSP = findSP;
+                    }
+                
+            if (Physics.Raycast(theSP + (Vector3.up * 1000f), Vector3.down, out RaycastHit hit))
+                this.transform.position = hit.point + (Vector3.up / 10f);
+        }
 
         // Get rewards and punishments
         if (GS.ExistSemiClass(GS.PlaythroughStats, "RItemGot_")){
@@ -535,13 +540,8 @@ public class PlayerScript : MonoBehaviour {
                 this.GetComponent<Rigidbody>().drag = 10f;
                 if (FootstepCooldown <= 0f) {
                     FootstepCooldown = 1f;
-                    GameObject Footstep = Instantiate(EffectPrefab) as GameObject;
-                    Footstep.transform.position = this.transform.position;
-                    if (IsSwimming == true) {
-                        Footstep.GetComponent<EffectScript>().EffectName = "Swimming";
-                    } else {
-                        Footstep.GetComponent<EffectScript>().EffectName = "Footstep" + WhatWalkingOn;
-                    }
+                    Footstep.clip = MaterialBank.GetFootstep(IsSwimming ? "Swimming" : WhatWalkingOn, ref FootstepSequence);
+                    Footstep.Play();
                 } else {
                     FootstepCooldown -= (this.GetComponent<Rigidbody>().velocity.magnitude / Speed) / 30f;
                 }
@@ -1201,7 +1201,7 @@ public class PlayerScript : MonoBehaviour {
                     } else if (ammostack > 0) {
                         for (int fmag = 0; fmag <= MaxInventorySlots; fmag++) {
                             if(fmag == MaxInventorySlots) ammostack = 0;
-                            if ( GS.GetSemiClass(Inventory[fmag], "id") == GS.GetSemiClass(What, "id") ) {
+                            else if ( GS.GetSemiClass(Inventory[fmag], "id") == GS.GetSemiClass(What, "id") ) {
                                 Inventory[fmag] = GS.SetSemiClass(Inventory[fmag], "va", "/+" + ammostack);
                                 break;
                             }
