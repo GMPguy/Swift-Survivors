@@ -13,6 +13,7 @@ x Item bank (for NPC holding items)
 - Saves versioning system (to update old saves)
 - Add kits
 - Replace sound effects
+- Replace Semiclasses with JStructs
 
 MINOR:
 x pathfinding in horde
@@ -105,3 +106,5 @@ x Add landpart script
 
 x Improve spawning
 - IsHidden
+
+x Adjust grass quality

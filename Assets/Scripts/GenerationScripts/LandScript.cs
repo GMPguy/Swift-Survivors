@@ -560,8 +560,13 @@ public class LandScript : MonoBehaviour {
     public void DrawGrass() {
 
         float Quality = (float)GameObject.Find("_GameScript").GetComponent<GameScript>().GrassQuality / 4f;
-        float Distance = Mathf.Lerp(0f, 25f, Quality);
-        if (((PrevSkyColor != GameObject.Find("Sun").GetComponent<Light>().color && Time.time - (int)Time.time >= 0.9f) || Vector3.Distance(new Vector3(GameObject.Find("MainCamera").transform.position.x, 0f, GameObject.Find("MainCamera").transform.position.z), PreviousCampos) > Distance / 2f) && GS.GameModePrefab.x == 0) {// && RS.GetComponent<RoundScript>().GotTerrain != null && RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>() != null) {
+        float Distance = Mathf.Lerp(0f, RS.Map_Biome.Atmospheres[RS.Map_BiomeAtmosphere].FogDistance.y / 3f, Quality);
+        int GrassQuality = GameObject.Find("_GameScript").GetComponent<GameScript>().GrassQuality switch {
+            0 or 1 => 5,
+            _ => 5
+        };
+
+        if ((Vector3.Distance(new Vector3(GameObject.Find("MainCamera").transform.position.x, 0f, GameObject.Find("MainCamera").transform.position.z), PreviousCampos) > Distance / 2f) && GS.GameModePrefab.x == 0) {// && RS.GetComponent<RoundScript>().GotTerrain != null && RS.GetComponent<RoundScript>().GotTerrain.GetComponent<BiomeInfo>() != null) {
             PrevSkyColor = GameObject.Find("Sun").GetComponent<Light>().color;
             // Set grasses colors
             foreach (GameObject GetGrass in Grasses) {
@@ -622,31 +627,27 @@ public class LandScript : MonoBehaviour {
 
             for (int GrassX = 0; GrassX < Distance; GrassX ++) {
                 for (int GrassZ = 0; GrassZ < Distance; GrassZ ++) {
-                    Ray CheckForLand = new Ray( new Vector3(PreviousCampos.x - (Distance * 2.5f) + (GrassX * 5f) + 2.4f, 1000f, PreviousCampos.z - (Distance * 2.5f) + (GrassZ * 5f) + 2.4f), Vector3.down );
-                    RaycastHit CheckForLandHIT;
-                    if (Physics.Raycast(CheckForLand, out CheckForLandHIT, Mathf.Infinity)) {
-                        if (CheckForLandHIT.collider.GetComponent<FootstepMaterial>() != null && CheckForLandHIT.collider.GetComponent<FootstepMaterial>().IsTerrain == true) {
-                            Vector3 PlantedPos = CheckForLandHIT.point;
-                            float PerlinA = GS.FixedPerlinNoise(PlantedPos.x / 2f, PlantedPos.z / 2f);
-                            float PerlinB = GS.FixedPerlinNoise(PlantedPos.x, PlantedPos.z);
+                    if (CheckGrassPosition(GrassQuality, new Vector3(PreviousCampos.x - (Distance * 2.5f) + (GrassX * 5f) + 2.4f, 1000f, PreviousCampos.z - (Distance * 2.5f) + (GrassZ * 5f) + 2.4f), out Vector3 point, out Vector3 normal)) {
+                        Vector3 PlantedPos = point;
+                        float PerlinA = GS.FixedPerlinNoise(PlantedPos.x / 2f, PlantedPos.z / 2f);
+                        float PerlinB = GS.FixedPerlinNoise(PlantedPos.x, PlantedPos.z);
 
-                            float2 grassMargins = GetNoise(PlantedPos.x, PlantedPos.z, 1);
-                            grassMargins.x *= Biome.Grasses.Length - .01f;
-                            grassMargins.y *= Biome.Grasses.Length - .01f;
-                            GameObject ToInstantiante = Biome.Grasses[(int)Mathf.Lerp(grassMargins.x, grassMargins.y, PerlinA)];
+                        float2 grassMargins = GetNoise(PlantedPos.x, PlantedPos.z, 1);
+                        grassMargins.x *= Biome.Grasses.Length - .01f;
+                        grassMargins.y *= Biome.Grasses.Length - .01f;
+                        GameObject ToInstantiante = Biome.Grasses[(int)Mathf.Lerp(grassMargins.x, grassMargins.y, PerlinA)];
 
-                            if (ToInstantiante != null) {
-                                GameObject PlantGrass = Instantiate(ToInstantiante) as GameObject;
-                                PlantGrass.transform.forward = CheckForLandHIT.normal;
-                                if (Vector3.Distance(PlantGrass.transform.forward, Vector3.up) < 0.5f) {
-                                    PlantGrass.transform.position = PlantedPos + new Vector3(Mathf.Lerp(-0.5f, 0.5f, PerlinA), 0f, Mathf.Lerp(-0.5f, 0.5f, PerlinB));
-                                    PlantGrass.transform.forward = CheckForLandHIT.normal;
-                                    PlantGrass.transform.SetParent(GrassAnchor.transform);
-                                    PlantGrass.transform.Rotate(new Vector3(0f, 0f, PerlinA * 90f));
-                                    PlantGrass.transform.localScale = Vector3.one * Mathf.Lerp(1f, 1.5f, PerlinB);
-                                } else {
-                                    Destroy(PlantGrass.gameObject);
-                                }
+                        if (ToInstantiante != null) {
+                            GameObject PlantGrass = Instantiate(ToInstantiante) as GameObject;
+                            PlantGrass.transform.forward = normal;
+                            if (Vector3.Distance(PlantGrass.transform.forward, Vector3.up) < 0.5f) {
+                                PlantGrass.transform.position = PlantedPos + new Vector3(Mathf.Lerp(-0.5f, 0.5f, PerlinA), 0f, Mathf.Lerp(-0.5f, 0.5f, PerlinB));
+                                PlantGrass.transform.forward = normal;
+                                PlantGrass.transform.SetParent(GrassAnchor.transform);
+                                PlantGrass.transform.Rotate(new Vector3(0f, 0f, PerlinA * 90f));
+                                PlantGrass.transform.localScale = Vector3.one * Mathf.Lerp(1f, 1.5f, PerlinB);
+                            } else {
+                                Destroy(PlantGrass.gameObject);
                             }
                         }
                     }
@@ -655,6 +656,82 @@ public class LandScript : MonoBehaviour {
 
         }
 
+    }
+
+    Vector3[] rayOffset = new Vector3[] {
+        Vector3.zero,
+        new (-2.5f, 0f, -2.5f),
+        new (2.5f, 0f, 2.5f),
+        new (-2.5f, 0f, 2.5f),
+        new (2.5f, 0f, -2.5f)
+    };
+
+    bool CheckGrassPosition (int quality, Vector3 rayCenter, out Vector3 point, out Vector3 normal) {
+
+        Vector3[] Verts = new Vector3 [4];
+        Vector3[] Norms = new Vector3 [4];
+
+        point = Vector3.zero;
+        normal = Vector3.zero;
+        
+        for (int cr = 0; cr < quality; cr++) {
+            Ray CheckForLand = new Ray(rayCenter + rayOffset[cr], Vector3.down );
+            RaycastHit CheckForLandHIT;
+
+            if (Physics.Raycast(CheckForLand, out CheckForLandHIT, Mathf.Infinity)) {
+                if (Vector3.Angle(CheckForLandHIT.normal, Vector3.up) > 45f)
+                    goto UtterFail;
+
+                if (CheckForLandHIT.collider.GetComponent<FootstepMaterial>() != null && CheckForLandHIT.collider.GetComponent<FootstepMaterial>().IsTerrain == true) {
+                    if (cr == 0) {
+                        normal = CheckForLandHIT.normal;
+                        point = CheckForLandHIT.point;
+                    } else {
+                        Verts[cr - 1] = CheckForLandHIT.point;
+                        Norms[cr - 1] = CheckForLandHIT.normal;
+                    }
+                } else
+                    goto UtterFail;
+            } else
+                goto UtterFail;
+        }
+
+        switch (quality) {
+            case 5:
+
+                // Calculate centroid
+                point = Vector3.zero;
+                for (int c = 0; c < Verts.Length; c++)
+                    point += Verts[c];
+                point /= Verts.Length;
+
+                // Calculate normal
+                normal = Vector3.zero;
+                for (int c = 0; c < Norms.Length; c++)
+                    normal += Norms[c];
+                normal = normal.normalized;
+
+                for (int dl = 0; dl < 4; dl++)
+                    Debug.DrawLine(Verts[dl], point, Color.cyan, 9999f);
+                
+                Debug.DrawRay(point, normal * 1f, Color.cyan, 9999f);
+                break;
+            case 3:
+                Vector3 diff =  Verts[0] - Verts[1];
+
+                normal = -Vector3.Cross(diff, Vector3.right + Vector3.back);
+                point = Vector3.Lerp(Verts[0], Verts[1], .5f);
+
+                Debug.DrawLine(Verts[0], Verts[1], Color.magenta, 9999f);
+                Debug.DrawRay(point, normal * 1f, Color.magenta, 9999f);
+                break;
+        }
+
+        return true;
+
+        UtterFail:;
+        point = normal = Vector3.zero;
+        return false;
     }
 
 }
