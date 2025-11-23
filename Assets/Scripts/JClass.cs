@@ -6,6 +6,30 @@ using UnityEngine;
 public class JClass {
     List<JEntry> Values;
 
+    //
+
+    // Empty constructor
+    public JClass () =>
+        Values = new ();
+
+    // Default constructor
+    public JClass (JEntry[] newEntries) {
+        Values = new ();
+        Values.AddRange(newEntries);
+    }
+
+    // Basic item constructor
+    public JClass (int itemID, JTemplate template) {
+        Values = new ();
+        SetInt(JType.ID, itemID);
+        SetFloat(JType.VariableA, 0f);
+
+        if (template == JTemplate.BasicItemStackable)
+            SetInt(JType.StackQuantity, 1);
+    }
+
+    // Adding and manipulating entries
+
     // Ints
     public int GetInt(JType what) {
         int fetch = FetchStruct(what);
@@ -35,7 +59,7 @@ public class JClass {
         int fetch = FetchStruct(what);
         if (fetch == -1) return 0;
 
-        JFLoat getFloat = (JFLoat)Values[fetch];
+        JFloat getFloat = (JFloat)Values[fetch];
         return getFloat.Value;
     }
 
@@ -43,9 +67,9 @@ public class JClass {
         int fetch = FetchStruct(what);
 
         if (fetch == -1)
-            Values.Add(new JFLoat (what, value));
+            Values.Add(new JFloat (what, value));
         else {
-            JFLoat getFloat = (JFLoat)Values[fetch];
+            JFloat getFloat = (JFloat)Values[fetch];
             getFloat.Value = operation switch{
                 Maths.Add => getFloat.Value + value,
                 Maths.Multiply => getFloat.Value * value,
@@ -112,8 +136,8 @@ public class JClass {
                     JInt getInt = (JInt)Values[c];
                     SetInt(entryType, getInt.Value);
                     break;
-                case JFLoat:
-                    JFLoat getFloat = (JFLoat)Values[c];
+                case JFloat:
+                    JFloat getFloat = (JFloat)Values[c];
                     SetFloat(entryType, getFloat.Value);
                     break;
                 case JString:
@@ -163,9 +187,17 @@ public class JString : JEntry {
     }
 }
 
-public class JFLoat : JEntry { 
+public class JFloat : JEntry { 
     public float Value;
-    public JFLoat (JType type, float value) : base (type) {
+    public JFloat (JType type, float value) : base (type) {
+        Name = type;
+        Value = value;
+    }
+}
+
+public class JList : JEntry {
+    public List<JClass> Value;
+    public JList (JType type, List<JClass> value) : base (type) {
         Name = type;
         Value = value;
     }
@@ -182,7 +214,14 @@ public enum JType {
     ScanOption,
     NightVision,
     AmmoStack,
-    StraightToInvID
+    StraightToInvID,
+    Repairable,
+    CasualAmmo
+}
+
+public enum JTemplate {
+    BasicItem,
+    BasicItemStackable
 }
 
 public enum Maths {
