@@ -505,8 +505,8 @@ public class CanvasScript : MonoBehaviour {
                 }
             }
 
-            if(MainPlayer.Inventory[MainPlayer.CurrentItemHeld] != PrevInvSlot || SwitchItemInfo > 0f){
-                if(MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID) != PrevInvSlot.GetInt(JType.ID)) 
+            if(PrevInvSlot == null || !MainPlayer.Inventory[MainPlayer.CurrentItemHeld].CompareTo(PrevInvSlot) || SwitchItemInfo > 0f){
+                if(PrevInvSlot == null || MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID) != PrevInvSlot.GetInt(JType.ID)) 
                     SwitchItemInfo = 1f;
                 PrevInvSlot = MainPlayer.Inventory[MainPlayer.CurrentItemHeld];
                 SwitchItemInfo = Mathf.Clamp(SwitchItemInfo - 0.04f * (Time.deltaTime * 50f), 0f, 1f);
@@ -1519,7 +1519,7 @@ public class CanvasScript : MonoBehaviour {
                             if (Input.GetMouseButtonDown(0)) {
                                 GS.Mess(GS.SetString(GS.itemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + " unequipped", "Zdjęto: " + GS.itemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)]), "Unwear");
                                 MainPlayer.InvGet(MainPlayer.Equipment[CheckEq], 0);
-                                MainPlayer.Equipment[CheckEq] = null;
+                                MainPlayer.Equipment[CheckEq] = new (0, JTemplate.JustID);
                             } else if (Input.GetMouseButtonDown(1)) {
                                 if (MainPlayer.Equipment[CheckEq].GetInt(JType.ID) == 53) {
                                     if (MainPlayer.Equipment[CheckEq].GetInt(JType.NightVision) == 0) {

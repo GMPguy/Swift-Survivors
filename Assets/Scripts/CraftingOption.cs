@@ -73,7 +73,7 @@ public class CraftingOption : MonoBehaviour {
                                 AcquiredItems.Add(new Vector3Int(CheckItem, requiredAmount, 0));
                                 requiredAmount = 0;
                             }
-                            GotItems[CheckItem] = null;//new Vector3(-1f, 0f, 0f);
+                            GotItems[CheckItem] = new (0, JTemplate.JustID);//new Vector3(-1f, 0f, 0f);
                             if(requiredAmount <= 0) break;
                         }
                     }

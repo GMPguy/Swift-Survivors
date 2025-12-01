@@ -103,7 +103,7 @@ public class Spawner : MonoBehaviour {
             Chance = new float[] { 100f, 100f };
         } else if (Special == "LeftBarrel") {
             //StuffToSpawn = new Vector3[] { new Vector3(1f, 0f, 0f), new Vector3(1f, 0f, 0f) };
-            theNewStuffToSpawn = new JClass[]{new (1)};//new string[]{"x1;y0;z0;"};
+            theNewStuffToSpawn = new JClass[]{new (1, JTemplate.JustID)};//new string[]{"x1;y0;z0;"};
             Chance = new float[] { 50f, 50f };
         } else if (Special == "Doors") {
             //StuffToSpawn = new Vector3[] { new Vector3(3f, 200f, 0f), new Vector3(3f, 200f, 0f) };
@@ -116,11 +116,11 @@ public class Spawner : MonoBehaviour {
             Chance = new float[] { 25f, 25f };
         } else if (Special == "Guards") {
             //StuffToSpawn = new Vector3[] { new Vector3(8f, 0f, 0f)};
-            theNewStuffToSpawn = new JClass[]{ new JClass(8) };
+            theNewStuffToSpawn = new JClass[]{ new JClass(8, JTemplate.JustID) };
             Chance = new float[] { 100f, 100f };
         } else if (Special == "VendingMachine") {
             //StuffToSpawn = new Vector3[] { new Vector3(4f, 0f, 0f), new Vector3(4f, 0f, 0f) };
-            theNewStuffToSpawn = new JClass[]{ new JClass(4) };
+            theNewStuffToSpawn = new JClass[]{ new JClass(4, JTemplate.JustID) };
             Chance = new float[] { 10f, 5f };
         } else if (Special == "Chests_SmallHouse") {
             theNewStuffToSpawn = new JClass[] {

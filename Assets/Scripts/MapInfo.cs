@@ -37,7 +37,7 @@ public class MapInfo : MonoBehaviour {
         GameObject createCrate = Instantiate (RS.InteractablePrefab);
         createCrate.transform.position = Vector3.one * -999f;
         AmmoCrate = createCrate.GetComponent<InteractableScript>();
-        AmmoCrate.Variables = new JClass(7);// new Vector3(7, 0, 0);
+        AmmoCrate.Variables = new JClass(7, JTemplate.JustID);// new Vector3(7, 0, 0);
 
         foreach (Transform SetColorable in ColorableProps.transform) {
             Color WallColor = new Color(Random.Range(0.5f, 1f), Random.Range(0.5f, 1f), Random.Range(0.5f, 1f), 1f);

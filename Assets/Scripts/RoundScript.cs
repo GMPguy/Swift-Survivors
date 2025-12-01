@@ -499,8 +499,8 @@ public class RoundScript : MonoBehaviour {
                         MainPlayer.Health[1] = GS.HealthSave.y;
                         MainPlayer.Food[0] = GS.HungerSave.x;
                         MainPlayer.Food[1] = GS.HungerSave.y;
-                        MainPlayer.InventoryFunctions(GS.PlayerInventory);
-                        MainPlayer.EquipmentFunctions(GS.PlayerEquipment);
+                        MainPlayer.InventoryFunctions(GS.PlayerInventory, true);
+                        MainPlayer.EquipmentFunctions(GS.PlayerEquipment, true);
                         MainPlayer.MaxInventorySlots = GS.MaxInventory;
                         MainPlayer.Buffs(GS.PlayerBuffs);
                         MainPlayer.Speed = GS.PlayerSpeed;
@@ -1131,7 +1131,7 @@ public class RoundScript : MonoBehaviour {
                                     int offset = CheckThisOne + Unlucky;
                                     if(offset > MainPlayer.MaxInventorySlots) offset -= MainPlayer.MaxInventorySlots;
                                     if(MainPlayer.Inventory[offset].GetInt(JType.ID) != 0) {
-                                        MainPlayer.Inventory[offset] = null;
+                                        MainPlayer.Inventory[offset] = new (0,JTemplate.JustID);
                                         break;
                                     }
                                 }

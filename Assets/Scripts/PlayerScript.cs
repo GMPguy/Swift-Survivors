@@ -213,6 +213,24 @@ public class PlayerScript : MonoBehaviour {
         CameraRecoilVars = new float[] { 0f, 1f };
         CAMvectors = new Vector3[]{Vector3.zero, Vector3.zero};
 
+        // Set up class arrays
+        Inventory = new JClass[10];
+        for (int c = 0; c < 10; c++)
+            Inventory[c] = new (0, JTemplate.JustID);
+        
+        InventoryText = new JClass[10];
+        for (int c = 0; c < 10; c++)
+            InventoryText[c] = new (0, JTemplate.JustID);
+        
+        Equipment = new JClass[4];
+        for (int c = 0; c < 4; c++)
+            Equipment[c] = new (0, JTemplate.JustID);
+
+        EquipmentText = new JClass[4];
+        for (int c = 0; c < 4; c++)
+            EquipmentText[c] = new (0,JTemplate.JustID);
+        // Set up class arrays
+
         // Sleeping Bag
         if (Tiredness > 0f) {
             for (int CheckINV = 0; CheckINV <= 9; CheckINV++) {
@@ -1181,7 +1199,7 @@ public class PlayerScript : MonoBehaviour {
                     Inventory[Where] = GS.itemCache[ Inventory[Where].GetInt(JType.ID) ].startVariables;
                     Inventory[Where].SetInt(JType.StackQuantity, keepStack);//= GS.SetSemiClass(Inventory[at], "sq", keepStack.ToString());
                 } else 
-                    Inventory[Where] = null;
+                    Inventory[Where] = new (0, JTemplate.JustID);
                 break;
             case 2: case -1: case -2: // drop item - drop item by player - throw item by player
                     //stackAmount = (int)Mathf.Clamp(stackAmount, 0, float.Parse(GS.GetSemiClass(Inventory[at], "sq")));
@@ -1297,8 +1315,8 @@ public class PlayerScript : MonoBehaviour {
                             int keepStack = Inventory[rs].GetInt(JType.StackQuantity) - stackAmount;
                             Inventory[rs] = GS.itemCache[ Inventory[rs].GetInt(JType.ID) ].startVariables;
                             Inventory[rs].SetInt(JType.StackQuantity, keepStack);// = GS.SetSemiClass(Inventory[rs], "sq", keepStack.ToString());
-                        } else 
-                            Inventory[rs] = null;
+                        } else // ] == null
+                            Inventory[rs] = new (0, JTemplate.JustID);
                         break;
                     }
                 break;
@@ -1333,18 +1351,20 @@ public class PlayerScript : MonoBehaviour {
 
     }
 
-    public void InventoryFunctions(JClass[] InventoryToSet){
+    public void InventoryFunctions(JClass[] InventoryToSet, bool load = false){
 
         // Set Inventory from text
-        if (InventoryToSet != null) {
+        if (load) {
+
+            Debug.Log("Kaka pupu");
 
             for (int SetInv = 0; SetInv <= 9; SetInv ++) {
                 //string[] LoadInv = GS.ListSemiClass(InventoryToSet, "/");
                 for(int Check = 0; Check <= 9; Check++){
                     if(Check >= InventoryToSet.Length) 
-                        Inventory[Check] = null;
+                        Inventory[Check] = new (0, JTemplate.BasicItem);
                     else 
-                        InvGet(InventoryToSet[Check], 1);
+                        InvGet(InventoryToSet[Check], 0);
                 }
             }
 
@@ -1354,7 +1374,8 @@ public class PlayerScript : MonoBehaviour {
             string AnimationAddition = "";
 
             for(int SetInv = 0; SetInv <= 9; SetInv ++)
-                InventoryText[SetInv].CopyFrom(Inventory[SetInv]);
+                if(SetInv < InventoryText.Length) 
+                    InventoryText[SetInv] = new (Inventory[SetInv]);
 
             // Set Inventory from text
 
@@ -1687,13 +1708,9 @@ public class PlayerScript : MonoBehaviour {
             // Specifics for items
             if(State != 0)
             for (int CheckInventory = 0; CheckInventory <= 9; CheckInventory++) {
-                if (CheckInventory >= MaxInventorySlots && Inventory[CheckInventory] != null) {
-                    GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
-                    DropItem.transform.position = this.transform.position + this.transform.forward * 1f;
-                    DropItem.GetComponent<ItemScript>().Variables = Inventory[CheckInventory];
-                    DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
-                    InvGet(CheckInventory, 1);
-                }
+                if (CheckInventory >= MaxInventorySlots && Inventory[CheckInventory].GetInt(JType.ID) > 0)
+                    InvGet(CheckInventory, 2);
+
                 if (Inventory[CheckInventory].GetInt(JType.ID) == 13 && CurrentItemHeld != CheckInventory) {
                     GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
                     DropItem.transform.position = this.transform.position;
@@ -3975,10 +3992,10 @@ public class PlayerScript : MonoBehaviour {
 
     }
 
-    public void EquipmentFunctions(JClass[] EquipmentToSet){
+    public void EquipmentFunctions(JClass[] EquipmentToSet, bool load = false){
 
         // Set Inventory from text
-        if (EquipmentToSet != null) {
+        if (load) {
 
             for (int SetEq = 0; SetEq <= 3; SetEq++) {
                 //string RIS = EquipmentToSet.Substring(SetEq * 12, 12);
@@ -3986,19 +4003,18 @@ public class PlayerScript : MonoBehaviour {
                 //string[] EqInv = GS.ListSemiClass(EquipmentToSet, "/");
                 for(int Check = 0; Check <= 3; Check++){
                     if(Check < EquipmentToSet.Length) 
-                        Equipment[Check].CopyFrom(EquipmentToSet[Check]);
+                        Equipment[Check] = new (EquipmentToSet[Check]);
                     else 
-                        Equipment[Check] = null;
+                        Equipment[Check] = new (0, JTemplate.JustID);
                 }
-                //Equipment = GS.ListSemiClass(EquipmentToSet, "/");
             }
 
         } else {
 
             EquipmentText = new JClass[4];
             for (int SetEq = 0; SetEq <= 3; SetEq++)
-                EquipmentText[SetEq].CopyFrom(Equipment[SetEq]);
-                //EquipmentText += Equipment[SetEq] + "/";
+                if (EquipmentText[SetEq] == null)
+                    EquipmentText[SetEq] = new (Equipment[SetEq]);
 
             // Scan equipment
             int MIStoset = 4;
@@ -4016,7 +4032,7 @@ public class PlayerScript : MonoBehaviour {
             for (int ScanEq = 0; ScanEq < 4; ScanEq ++) {
                 if (MoveDownPos != -1 && Equipment[ScanEq].GetInt(JType.ID) != 0) {
                     Equipment[MoveDownPos] = Equipment[ScanEq];
-                    Equipment[ScanEq] = null;
+                    Equipment[ScanEq] = new (0, JTemplate.JustID);
                     ScanEq = MoveDownPos;
                     MoveDownPos = -1;
                 }
@@ -4046,7 +4062,7 @@ public class PlayerScript : MonoBehaviour {
                     }
                     if (Equipment[ScanEq].GetFloat(JType.VariableA) <= 0f) {
                         SetNV = false;
-                        Equipment[ScanEq] = null;
+                        Equipment[ScanEq] = new (0, JTemplate.JustID);
                     }
                 } else if (Equipment[ScanEq].GetInt(JType.ID) == 86) {
                     SetHZ = true;
@@ -4061,7 +4077,7 @@ public class PlayerScript : MonoBehaviour {
                         }
                     } else {
                         SetHZ = false;
-                        Equipment[ScanEq] = null;
+                        Equipment[ScanEq] = new (0, JTemplate.JustID);
                     }
                 } else if (Equipment[ScanEq].GetInt(JType.ID) == 94) {
                     if (GS.GameModePrefab.x == 0) {
@@ -4086,7 +4102,7 @@ public class PlayerScript : MonoBehaviour {
                         Oxygen[0] = Equipment[ScanEq].GetFloat(JType.VariableA) * 3f;
                     } else {
                         SetST = false;
-                        Equipment[ScanEq] = null;
+                        Equipment[ScanEq] = new (0, JTemplate.JustID);
                     }
                 } else if (Equipment[ScanEq].GetInt(JType.ID) == 126) {
                     SwimMultip += 7f;

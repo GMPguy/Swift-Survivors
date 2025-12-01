@@ -25161,9 +25161,11 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id175;va0;sq1;
+  Results: []
   Resources:
   - id165;sq1;do0;
   - id176;sq1;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 5
@@ -25172,6 +25174,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &173002348
 GameObject:
   m_ObjectHideFlags: 0
@@ -25450,8 +25455,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id161;va0;sq3;
+  Results: []
   Resources:
   - id117;sq1;do0;
+  TheResources: []
   Special: Fire
   CraftingTime:
   - 6
@@ -25460,6 +25467,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &175820320
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30864,8 +30874,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id163;va0;sq4;
+  Results: []
   Resources:
   - id162;sq1;do0;
+  TheResources: []
   Special: Fire
   CraftingTime:
   - 9
@@ -30874,6 +30886,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &242199224
 GameObject:
   m_ObjectHideFlags: 0
@@ -42031,9 +42046,11 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id152;va100;rep;
+  Results: []
   Resources:
   - id140;sq2;do0;
   - id145;sq2;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 15
@@ -42042,6 +42059,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &304903245
 GameObject:
   m_ObjectHideFlags: 0
@@ -48032,9 +48052,11 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id153;va100;rep;
+  Results: []
   Resources:
   - id140;sq1;do0;
   - id142;sq1;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 10
@@ -48043,6 +48065,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &368689398
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -55772,8 +55797,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id161;va0;sq5;
+  Results: []
   Resources:
   - id118;sq1;do0;
+  TheResources: []
   Special: Fire
   CraftingTime:
   - 9
@@ -55782,6 +55809,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &460431067
 GameObject:
   m_ObjectHideFlags: 0
@@ -134640,8 +134670,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id171;va0;sq1;
+  Results: []
   Resources:
   - id173;sq1;do0;
+  TheResources: []
   Special: Fire
   CraftingTime:
   - 15
@@ -134650,6 +134682,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &859474371
 GameObject:
   m_ObjectHideFlags: 0
@@ -148222,11 +148257,13 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id176;va100;
+  Results: []
   Resources:
   - id173;sq1;do0;
   - id147;sq1;do0;
   - id144;sq1;do0;
   - id171;sq1;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 15
@@ -148235,6 +148272,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &963279194
 GameObject:
   m_ObjectHideFlags: 0
@@ -163420,8 +163460,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id72;va0;sq1;
+  Results: []
   Resources:
   - id166;sq1;do0;
+  TheResources: []
   Special: Fire
   CraftingTime:
   - 9
@@ -163430,6 +163472,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &1026143701
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -169152,8 +169197,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id145;va0;sq1;
+  Results: []
   Resources:
   - id174;sq3;do0;
+  TheResources: []
   Special: Fire
   CraftingTime:
   - 10
@@ -169162,6 +169209,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1037997368
 GameObject:
   m_ObjectHideFlags: 0
@@ -180863,8 +180913,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id141;va0;sq1;
+  Results: []
   Resources:
   - id172;sq2;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 10
@@ -180873,6 +180925,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1101736342
 GameObject:
   m_ObjectHideFlags: 0
@@ -181489,8 +181544,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id22;va0;sq1;
+  Results: []
   Resources:
   - id144;sq1;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 5
@@ -181499,6 +181556,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1106494487
 GameObject:
   m_ObjectHideFlags: 0
@@ -181926,8 +181986,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id148;va0;sq1;
+  Results: []
   Resources:
   - id140;sq2;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 5
@@ -181936,6 +181998,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1113200926
 GameObject:
   m_ObjectHideFlags: 0
@@ -201448,8 +201513,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id144;va0;sq1;
+  Results: []
   Resources:
   - id141;sq2;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 5
@@ -201458,6 +201525,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &1238675778
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -224816,8 +224886,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id161;va0;sq1;
+  Results: []
   Resources:
   - id116;sq1;do0;
+  TheResources: []
   Special: Fire
   CraftingTime:
   - 3
@@ -224826,6 +224898,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &1338690923
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -228279,7 +228354,7 @@ MonoBehaviour:
     x: 0
     y: 0
   Round: 1
-  Biome: 9
+  Biome: 1
   Score: 0
   Money: 0
   Ammo: 0
@@ -228287,8 +228362,10 @@ MonoBehaviour:
   HealthSave: {x: 0, y: 0}
   HungerSave: {x: 0, y: 0}
   PlayerSpeed: 0
-  PlayerInventory: 
-  PlayerEquipment: 
+  PlayerInventory:
+  - Values: []
+  PlayerEquipment:
+  - Values: []
   MaxInventory: 4
   PlayerBuffs: 
   CurrentSave: 1
@@ -228357,6 +228434,9 @@ MonoBehaviour:
   CameraFocus: []
   Resolutions: []
   Messages: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!4 &1368751314
 Transform:
   m_ObjectHideFlags: 0
@@ -246003,9 +246083,11 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id97;va0;sq2;
+  Results: []
   Resources:
   - id145;sq1;do0;
   - id171;sq1;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 15
@@ -246014,6 +246096,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1574265968
 GameObject:
   m_ObjectHideFlags: 0
@@ -282849,8 +282934,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id147;va0;sq2;
+  Results: []
   Resources:
   - id140;sq4;do0;
+  TheResources: []
   Special: Fire
   CraftingTime:
   - 30
@@ -282859,6 +282946,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1826841430
 GameObject:
   m_ObjectHideFlags: 0
@@ -289784,8 +289874,10 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id149;va0;sq1;
+  Results: []
   Resources:
   - id140;sq4;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 10
@@ -289794,6 +289886,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1923829356
 GameObject:
   m_ObjectHideFlags: 0
@@ -310646,9 +310741,11 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id69;va10;
+  Results: []
   Resources:
   - id140;sq2;do0;
   - id141;sq1;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 5
@@ -310657,6 +310754,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &2071705233
 GameObject:
   m_ObjectHideFlags: 0
@@ -314949,9 +315049,11 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id179;va100;
+  Results: []
   Resources:
   - id140;sq1;do0;
   - id147;sq1;do0;
+  TheResources: []
   Special: 
   CraftingTime:
   - 10
@@ -314960,6 +315062,9 @@ MonoBehaviour:
   COResIcons: []
   CraftButton: {fileID: 0}
   ItemPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &2121417545
 GameObject:
   m_ObjectHideFlags: 0

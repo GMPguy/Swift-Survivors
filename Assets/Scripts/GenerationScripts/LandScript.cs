@@ -186,7 +186,7 @@ public class LandScript : MonoBehaviour {
             WhichWall = WhichWall.Remove(PickedWall, 1);
 
             GameObject NewTunnel = Instantiate(InteractablePrefab) as GameObject;
-            NewTunnel.GetComponent<InteractableScript>().Variables = new JClass(2);//new Vector3(2f, 0f, 0f);
+            NewTunnel.GetComponent<InteractableScript>().Variables = new JClass(2, JTemplate.JustID);//new Vector3(2f, 0f, 0f);
             if (WhichWallA == "N") {
                 NewTunnel.transform.position = new Vector3(Random.Range(-100f, 100f), 0f, 249f);
                 NewTunnel.transform.eulerAngles = new Vector3(0f, 90f, 0f);
