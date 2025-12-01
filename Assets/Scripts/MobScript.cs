@@ -1046,7 +1046,7 @@ public class MobScript : MonoBehaviour {
             // Fleeing
             if ((ClassOfMob == "Bandit" || ClassOfMob == "Survivor") && RS.RoundTime < 30f && RS.RoundState == "Normal") {
                 foreach (GameObject foundExit in GameObject.FindGameObjectsWithTag("Interactable")) {
-                    if (foundExit.GetComponent<InteractableScript>().Variables.x == 2f && Vector3.Distance(this.transform.position, foundExit.transform.position) < 2f) {
+                    if (foundExit.GetComponent<InteractableScript>().Variables.GetInt(JType.ID) == 2 && Vector3.Distance(this.transform.position, foundExit.transform.position) < 2f) {
                         Destroy(this.gameObject);
                     }
                 }
@@ -1619,10 +1619,9 @@ public class MobScript : MonoBehaviour {
                     CantDoAnything = 3f;
                     GameObject Grenade = Instantiate(ItemPrefab) as GameObject;
                     Grenade.transform.position = this.transform.position + this.transform.forward * 0.25f;
-                    string[] Nades = new string[] {"66", "110", "131"};
-                    Grenade.GetComponent<ItemScript>().Variables = "id0;";
-                    Grenade.GetComponent<ItemScript>().Variables = GS.SetSemiClass(Grenade.GetComponent<ItemScript>().Variables, "id", Nades[(int)Random.Range(0f, 2.9f)]);//Grenade.GetComponent<ItemScript>().Variables = new Vector3(Nades[(int)Random.Range(0f, 2.9f)], 33f, 0f);
-                    Grenade.GetComponent<ItemScript>().Variables = GS.SetSemiClass(Grenade.GetComponent<ItemScript>().Variables, "va", "33");
+                    int[] Nades = new int[] {66, 110, 131};
+                    Grenade.GetComponent<ItemScript>().Variables.SetInt(JType.ID, Nades[(int)Random.Range(0f, 2.9f)]);//Grenade.GetComponent<ItemScript>().Variables = new Vector3(Nades[(int)Random.Range(0f, 2.9f)], 33f, 0f);
+                    Grenade.GetComponent<ItemScript>().Variables.SetFloat(JType.VariableA, 33f);
                     Grenade.GetComponent<ItemScript>().State = 2;
                     Grenade.GetComponent<ItemScript>().ThrownDirection = this.transform.forward * 1f + new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0f) + Vector3.up * 0.25f;
                 }

@@ -8,6 +8,7 @@ using System.Globalization;
 using Unity.Mathematics;
 using Random=UnityEngine.Random;
 using UnityEngine.Audio;
+using UnityEngine.Purchasing.MiniJSON;
 
 public class GameScript : MonoBehaviour {
 
@@ -30,8 +31,8 @@ public class GameScript : MonoBehaviour {
     public Vector2 HealthSave;
     public Vector2 HungerSave;
     public float PlayerSpeed;
-    public string PlayerInventory;
-    public string PlayerEquipment;
+    public JClass[] PlayerInventory;
+    public JClass[] PlayerEquipment;
     public int MaxInventory = 4;
     public string PlayerBuffs = "";
 
@@ -489,8 +490,8 @@ public class GameScript : MonoBehaviour {
                 + "®h1" + HungerSave.y.ToString()
 
                 + "®ps" + PlayerSpeed.ToString()
-                + "®pi" + PlayerInventory
-                + "®pe" + PlayerEquipment
+                + "®pi" + Json.Serialize(PlayerInventory)
+                + "®pe" + Json.Serialize(PlayerEquipment)
                 + "®mi" + MaxInventory.ToString()
                 + "®bs" + PlayerBuffs + "®"
                 ;
@@ -539,8 +540,8 @@ public class GameScript : MonoBehaviour {
                     HungerSave.y = (int)float.Parse(GetSemiClass(Receiver, "h1", "®"));
 
                     PlayerSpeed = float.Parse(GetSemiClass(Receiver, "ps", "®"));
-                    PlayerInventory = GetSemiClass(Receiver, "pi", "®");
-                    PlayerEquipment = GetSemiClass(Receiver, "pe", "®");
+                    PlayerInventory = (JClass[])Json.Deserialize(GetSemiClass(Receiver, "ps", "®"));//GetSemiClass(Receiver, "pi", "®");
+                    PlayerEquipment = (JClass[])Json.Deserialize(GetSemiClass(Receiver, "pe", "®"));
                     MaxInventory = int.Parse(GetSemiClass(Receiver, "mi", "®"));
                     PlayerBuffs = GetSemiClass(Receiver, "bs", "®");
 

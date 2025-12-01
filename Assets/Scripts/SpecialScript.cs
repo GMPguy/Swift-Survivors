@@ -329,9 +329,9 @@ public class SpecialScript : MonoBehaviour {
 
         foreach (GameObject FoundItem in GameObject.FindGameObjectsWithTag("Item")) {
             if (Vector3.Distance(FoundItem.transform.position, Where) > 0.01f && Vector3.Distance(FoundItem.transform.position, Where) < ExplosionRange) {
-                string specID = GS.GetSemiClass(FoundItem.GetComponent<ItemScript>().Variables, "id");
-                if((specID == "110" || specID == "66") &&  GS.GetSemiClass(FoundItem.GetComponent<ItemScript>().Variables, "va") == "0"){
-                    FoundItem.GetComponent<ItemScript>().Variables = GS.SetSemiClass(FoundItem.GetComponent<ItemScript>().Variables, "va", Random.Range(0, 99).ToString());
+                int specID = FoundItem.GetComponent<ItemScript>().Variables.GetInt(JType.ID);
+                if((specID == 110 || specID == 66) && FoundItem.GetComponent<ItemScript>().Variables.GetFloat(JType.VariableA) == 0){
+                    FoundItem.GetComponent<ItemScript>().Variables.SetFloat(JType.VariableA, Random.Range(0, 99));
                     FoundItem.GetComponent<ItemScript>().enabled = true;
                 }
             }

@@ -13,7 +13,9 @@ public class CraftingOption : MonoBehaviour {
 
     public bool IsButton = false;
     public string[] WhatToCraft;
+    public JClass[] Results;
     public string[] Resources; // ItemID - Bonus Value - What to do (0 to remove)
+    public JClass[] TheResources;
     public string Special;
     public float[] CraftingTime = new float[] { 1f, 0f }; // Actuall, current
     // For Button
@@ -41,29 +43,37 @@ public class CraftingOption : MonoBehaviour {
             if (IsButton == true && MainPlayer != null && MainPlayer.State == 1 && MainCanvas.ITShown == "Craft") {
                 // Receive resources
                 string CanCraft = "";
-                List<string> GotItems = new List<string>();
-                foreach (string V in MainPlayer.Inventory) {
+                List<JClass> GotItems = new List<JClass>();
+
+                foreach (JClass V in MainPlayer.Inventory) {
                     GotItems.Add(V);
                 }
+
                 List<Vector3Int> AcquiredItems = new List<Vector3Int>();
-                for (int CheckRes = 0; CheckRes < Resources.Length; CheckRes ++) {
+                for (int CheckRes = 0; CheckRes < TheResources.Length; CheckRes ++) {
                     int requiredAmount = 1;
                     
-                    if(GS.ExistSemiClass(Resources[CheckRes], "sq")) requiredAmount = int.Parse(GS.GetSemiClass(Resources[CheckRes], "sq") );
-                    
+                    //if(GS.ExistSemiClass(TheResources[CheckRes], "sq")) requiredAmount = int.Parse(GS.GetSemiClass(TheResources[CheckRes], "sq") );
+                    if (TheResources[CheckRes].Exists(JType.StackQuantity))
+                        requiredAmount = TheResources[CheckRes].GetInt(JType.StackQuantity);
+
                     for (int CheckItem = 0; CheckItem < MainPlayer.MaxInventorySlots; CheckItem ++) {
-                        if (GS.GetSemiClass(Resources[CheckRes], "do") == "0" && GS.GetSemiClass(GotItems[CheckItem], "id") == GS.GetSemiClass(Resources[CheckRes], "id")) {
-                            if(!GS.ExistSemiClass(GotItems[CheckItem], "sq")) {
+                        if (TheResources[CheckRes].GetString(JType.CraftingFunction) == "remove" && GotItems[CheckItem].GetInt(JType.ID) == TheResources[CheckRes].GetInt(JType.ID)) {
+                            if(!GotItems[CheckItem].Exists(JType.StackQuantity)){// GS.ExistSemiClass(GotItems[CheckItem], "sq")) {
                                 AcquiredItems.Add(new Vector3Int(CheckItem, 1, 0));
                                 requiredAmount--;
-                            } else if ( int.Parse( GS.GetSemiClass(GotItems[CheckItem], "sq") ) < requiredAmount ) {
-                                AcquiredItems.Add(new Vector3Int(CheckItem, int.Parse(GS.GetSemiClass(GotItems[CheckItem], "sq")), 0));
-                                requiredAmount -= int.Parse(GS.GetSemiClass(GotItems[CheckItem], "sq"));
-                            } else if ( int.Parse( GS.GetSemiClass(GotItems[CheckItem], "sq") ) >= requiredAmount ) {
+                            } else if (GotItems[CheckItem].GetInt(JType.StackQuantity) < requiredAmount){//int.Parse( GS.GetSemiClass(GotItems[CheckItem], "sq") ) < requiredAmount ) {
+                                AcquiredItems.Add(new Vector3Int(
+                                    CheckItem,
+                                    GotItems[CheckItem].GetInt(JType.StackQuantity),
+                                    0
+                                ));
+                                requiredAmount -= GotItems[CheckItem].GetInt(JType.StackQuantity);
+                            } else if (GotItems[CheckItem].GetInt(JType.StackQuantity) >= requiredAmount ) {
                                 AcquiredItems.Add(new Vector3Int(CheckItem, requiredAmount, 0));
                                 requiredAmount = 0;
                             }
-                            GotItems[CheckItem] = "id-1;";//new Vector3(-1f, 0f, 0f);
+                            GotItems[CheckItem] = null;//new Vector3(-1f, 0f, 0f);
                             if(requiredAmount <= 0) break;
                         }
                     }
@@ -104,11 +114,14 @@ public class CraftingOption : MonoBehaviour {
 
                     string ToDisplay = ""; 
 
-                    for(int cr = 0; cr < WhatToCraft.Length; cr++){
-                        if(cr > 0) ToDisplay += " + ";
-                        ToDisplay += GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName().ToUpper();
-                        //ToDisplay += GS.ReceiveItemName(float.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))).ToUpper();
-                        if(GS.ExistSemiClass(WhatToCraft[0], "sq") && GS.GetSemiClass(WhatToCraft[0], "sq") != "1") ToDisplay += " x" + GS.GetSemiClass(WhatToCraft[0], "sq");
+                    for(int cr = 0; cr < Results.Length; cr++){
+                        if(cr > 0) 
+                            ToDisplay += " + ";
+
+                        ToDisplay += GS.itemCache[Results[0].GetInt(JType.ID)].getName().ToUpper();
+
+                        if(Results[0].Exists(JType.StackQuantity) && Results[0].GetInt(JType.StackQuantity) > 1) 
+                            ToDisplay += " x" + Results[0].GetInt(JType.StackQuantity);
                     }
 
                     switch(Special){
@@ -122,10 +135,14 @@ public class CraftingOption : MonoBehaviour {
 
                     ToDisplay += "\n___________________";
 
-                    for(int sr = 0; sr < Resources.Length; sr++){
-                        if(sr == 0) ToDisplay += "\nResources:";
-                        ToDisplay += "\n- " + GS.itemCache[int.Parse(GS.GetSemiClass(Resources[sr], "id"))].getName();
-                        if(GS.ExistSemiClass(Resources[sr], "sq") && GS.GetSemiClass(Resources[sr], "sq") != "1") ToDisplay += " x" + GS.GetSemiClass(Resources[sr], "sq");
+                    for(int sr = 0; sr < TheResources.Length; sr++){
+                        if(sr == 0) 
+                            ToDisplay += "\nResources:";
+
+                        ToDisplay += "\n- " + GS.itemCache[TheResources[sr].GetInt(JType.ID)].getName();
+
+                        if(TheResources[sr].Exists(JType.StackQuantity) && TheResources[sr].GetInt(JType.StackQuantity) > 1) 
+                            ToDisplay += " x" + TheResources[sr].GetInt(JType.StackQuantity);
                     }
 
                     MainCanvas.CDTstring = ToDisplay;
@@ -134,21 +151,21 @@ public class CraftingOption : MonoBehaviour {
                 if (CraftButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButton(0) && MainPlayer.CantCraft <= 0f) {
                     if (CanCraft == "") {
                         MainCanvas.PlayCraftingSound = 0.25f;
-                        MainPlayer.ItemsShown.GetComponent<Animator>().Play(MainPlayer.PlayItemAnim("Pullup", GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id"), ""), 0, 0f);
+                        MainPlayer.ItemsShown.GetComponent<Animator>().Play(MainPlayer.PlayItemAnim("Pullup", MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID), ""), 0, 0f);
                         MainPlayer.ShakeCam((CraftingTime[1] / CraftingTime[0]) / 3f, 0.1f);
                         MainPlayer.CantUseItem = Mathf.Clamp(MainPlayer.CantUseItem, 1f, Mathf.Infinity);
                         CraftingTime[1] = Mathf.Clamp(CraftingTime[1] + (0.02f * (Time.deltaTime * 50f)), 0f, CraftingTime[0]);
                         if (CraftingTime[1] >= CraftingTime[0]) {
-                            GS.Mess(GS.SetString(GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName() + " crafted!", "Stworzono " + GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName() + "!"), "Craft");
+                            GS.Mess(GS.SetString(GS.itemCache[Results[0].GetInt(JType.ID)].getName() + " crafted!", "Stworzono " + GS.itemCache[Results[0].GetInt(JType.ID)].getName() + "!"), "Craft");
                             MainPlayer.CantCraft = Mathf.Clamp(MainPlayer.CantCraft, 0.5f, Mathf.Infinity);
                             // Retrive resources
                             foreach (Vector3Int GetResource in AcquiredItems) {
                                 if (GetResource.z == 0f) {
-                                    MainPlayer.InvGet(GetResource.x.ToString(), 1, (int)GetResource.y); //MainPlayer.Inventory[(int)GetResource.x] = "id0;";//Vector3.zero;
+                                    MainPlayer.InvGet(GetResource.x, 1, GetResource.y); //MainPlayer.Inventory[(int)GetResource.x] = "id0;";//Vector3.zero;
                                 }
                             }
                             // Craft item
-                            foreach (string SpawnItem in WhatToCraft) {
+                            foreach (JClass SpawnItem in Results) {
                                 MainPlayer.InvGet(SpawnItem, 0);
                             }
 
@@ -177,32 +194,35 @@ public class CraftingOption : MonoBehaviour {
 
             this.transform.localScale = Vector3.one;
 
-            WhatToCraft = WhichTemplate.GetComponent<CraftingOption>().WhatToCraft;
-            Resources = WhichTemplate.GetComponent<CraftingOption>().Resources;
+            Results = WhichTemplate.GetComponent<CraftingOption>().Results;
+            TheResources = WhichTemplate.GetComponent<CraftingOption>().TheResources;
             Special = WhichTemplate.GetComponent<CraftingOption>().Special;
             CraftingTime = new float[] {WhichTemplate.GetComponent<CraftingOption>().CraftingTime[0], 0f};
 
-            this.transform.GetChild(1).GetComponent<Text>().text = GS.itemCache[int.Parse(GS.GetSemiClass(WhatToCraft[0], "id"))].getName();//GS.ReceiveItemName(WhatToCraft[0].x);
+            this.transform.GetChild(1).GetComponent<Text>().text = GS.itemCache[Results[0].GetInt(JType.ID)].getName();//GS.ReceiveItemName(WhatToCraft[0].x);
             foreach (Sprite SetIcon in MainCanvas.ItemIcons) {
-                if (SetIcon.name.Substring(1) == GS.GetSemiClass(WhatToCraft[0], "id")) {
+                if (SetIcon.name.Substring(1) == Results[0].GetInt(JType.ID).ToString()) {
                     COIcon.transform.GetChild(0).GetComponent<Image>().sprite = SetIcon;
                     COIcon.transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                 }
                 for (int CheckResIcon = 0; CheckResIcon < 4; CheckResIcon ++) {
-                    if (CheckResIcon >= Resources.Length) {
+                    if (CheckResIcon >= TheResources.Length) {
                         COResIcons[CheckResIcon].transform.GetChild(0).GetComponent<Image>().sprite = null;
                         COResIcons[CheckResIcon].transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                         COResIcons[CheckResIcon].transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                         COResIcons[CheckResIcon].transform.GetChild(1).GetComponent<Image>().fillAmount = 0f;
                         COResIcons[CheckResIcon].transform.GetChild(2).GetComponent<Text>().text = "";
-                    } else if (SetIcon.name.Substring(1) == GS.GetSemiClass(Resources[CheckResIcon], "id")) {
+                    } else if (SetIcon.name.Substring(1) == TheResources[CheckResIcon].GetInt(JType.ID).ToString()) {
                         COResIcons[CheckResIcon].transform.GetChild(0).GetComponent<Image>().sprite = SetIcon;
                         COResIcons[CheckResIcon].transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
                         COResIcons[CheckResIcon].transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
 
                         COResIcons[CheckResIcon].transform.GetChild(2).GetComponent<Text>().fontSize = 24;
-                        if(GS.ExistSemiClass(Resources[CheckResIcon], "sq") && GS.GetSemiClass(Resources[CheckResIcon], "sq") != "1") COResIcons[CheckResIcon].transform.GetChild(2).GetComponent<Text>().text = GS.GetSemiClass(Resources[CheckResIcon], "sq");
-                        else COResIcons[CheckResIcon].transform.GetChild(2).GetComponent<Text>().text = "";
+
+                        if(TheResources[CheckResIcon].Exists(JType.StackQuantity) && TheResources[CheckResIcon].GetInt(JType.StackQuantity) > 1) 
+                            COResIcons[CheckResIcon].transform.GetChild(2).GetComponent<Text>().text = TheResources[CheckResIcon].GetInt(JType.StackQuantity).ToString();
+                        else 
+                            COResIcons[CheckResIcon].transform.GetChild(2).GetComponent<Text>().text = "";
 
                     }
                 }

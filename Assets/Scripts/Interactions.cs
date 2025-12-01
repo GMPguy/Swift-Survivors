@@ -51,22 +51,22 @@ public class Interactions : MonoBehaviour {
                 "Podnieś ") + this.GetComponent<ItemScript>().Name;
         } else if (Options[ThisOption] == "BreakBarel") {
             ReturnThis = GS.GetComponent<GameScript>().SetString(
-                "Break " + this.transform.parent.GetComponent<InteractableScript>().Name + " (" + (int)this.transform.parent.GetComponent<InteractableScript>().Variables.y + ")", 
-                "Zniszcz " + this.transform.parent.GetComponent<InteractableScript>().Name + " (" + (int)this.transform.parent.GetComponent<InteractableScript>().Variables.y + ")");
+                "Break " + this.transform.parent.GetComponent<InteractableScript>().Name + " (" + (int)this.transform.parent.GetComponent<InteractableScript>().Variables.GetFloat(JType.VariableA) + ")", 
+                "Zniszcz " + this.transform.parent.GetComponent<InteractableScript>().Name + " (" + (int)this.transform.parent.GetComponent<InteractableScript>().Variables.GetFloat(JType.VariableA) + ")");
         } else if (Options[ThisOption] == "EscapeTunel") {
             ReturnThis = GS.GetComponent<GameScript>().SetString("Escape via tunel", "Ucieknij przez tunel");
         } else if (Options[ThisOption] == "Door") {
-            if (this.transform.parent.GetComponent<InteractableScript>().Variables.z == 0f) {
+            if (this.transform.parent.GetComponent<InteractableScript>().Variables.GetInt(JType.InteractableType) == 0f) {
                 ReturnThis = GS.GetComponent<GameScript>().SetString("Open", "Otwórz");
-            } else if (this.transform.parent.GetComponent<InteractableScript>().Variables.z == 1f) {
+            } else if (this.transform.parent.GetComponent<InteractableScript>().Variables.GetInt(JType.InteractableType) == 1f) {
                 ReturnThis = GS.GetComponent<GameScript>().SetString("Close", "Zamnkij");
-            } else if (this.transform.parent.GetComponent<InteractableScript>().Variables.z == 2f) {
+            } else if (this.transform.parent.GetComponent<InteractableScript>().Variables.GetInt(JType.InteractableType) == 2f) {
                 ReturnThis = GS.GetComponent<GameScript>().SetString("Locked...", "Zamknięte...");
             }
         } else if (Options[ThisOption] == "VendingMachine") {
             ReturnThis = GS.GetComponent<GameScript>().SetString("Buy supplies", "Kup zasoby");
         } else if (Options[ThisOption] == "EmergencyItem") {
-            if (this.transform.parent.GetComponent<InteractableScript>().Variables.z > -1f) {
+            if (this.transform.parent.GetComponent<InteractableScript>().Variables.GetInt(JType.InteractableType) > -1) {
                 ReturnThis = GS.GetComponent<GameScript>().SetString("Break glass", "Stłucz szybę");
             } else {
                 ReturnThis = GS.GetComponent<GameScript>().SetString("It's empty", "Puste");
@@ -82,7 +82,7 @@ public class Interactions : MonoBehaviour {
         } else if (Options[ThisOption] == "GrabAmmo") {
             ReturnThis = GS.GetComponent<GameScript>().SetString(
                 "Grab ammo (", 
-                "Bierz amunicję (") + (int)this.transform.parent.GetComponent<InteractableScript>().Variables.y + ")";
+                "Bierz amunicję (") + (int)this.transform.parent.GetComponent<InteractableScript>().Variables.GetFloat(JType.VariableA) + ")";
         } else if (Options[ThisOption] == "OpenChest") {
             ReturnThis = GS.GetComponent<GameScript>().SetString(
                 "Loot " + this.transform.parent.GetComponent<ChestScript>().Name[0],

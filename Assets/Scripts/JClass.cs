@@ -12,6 +12,12 @@ public class JClass {
     public JClass () =>
         Values = new ();
 
+    // Single constructor
+    public JClass (JEntry newEntry) {
+        Values = new ();
+        Values.Add(newEntry);
+    }
+
     // Default constructor
     public JClass (JEntry[] newEntries) {
         Values = new ();
@@ -19,7 +25,7 @@ public class JClass {
     }
 
     // Basic item constructor
-    public JClass (int itemID, JTemplate template) {
+    public JClass (int itemID, JTemplate template = default) {
         Values = new ();
         SetInt(JType.ID, itemID);
         SetFloat(JType.VariableA, 0f);
@@ -204,6 +210,7 @@ public class JList : JEntry {
 }
 
 public enum JType {
+    none,
     ID,
     VariableA,
     Attachment,
@@ -216,7 +223,10 @@ public enum JType {
     AmmoStack,
     StraightToInvID,
     Repairable,
-    CasualAmmo
+    CasualAmmo,
+    CraftingFunction,
+    InteractableType,
+    SpawnStuffString
 }
 
 public enum JTemplate {

@@ -146,15 +146,15 @@ public class HordeDropScript : MonoBehaviour {
         if (other.tag == "Player") {
             if (WhatToDrop == "Weapon") {
                 int FreeSpace = -1;
-                if (GS.GetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "id") == "0") {
+                if (other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].GetInt(JType.ID) == 0) {
                     FreeSpace = other.GetComponent<PlayerScript>().CurrentItemHeld;
                 }
                 for (int CheckSpace = other.GetComponent<PlayerScript>().MaxInventorySlots - 1; CheckSpace >= 0; CheckSpace--) {
-                    if (GS.GetSemiClass((other.GetComponent<PlayerScript>().Inventory[CheckSpace]), "id") == "0") {
+                    if (other.GetComponent<PlayerScript>().Inventory[CheckSpace].GetInt(JType.ID) == 0) {
                         FreeSpace = CheckSpace;
                     }
                 }
-                if (FreeSpace == -1 || GS.GetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "id") == "0") {
+                if (FreeSpace == -1 || other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].GetInt(JType.ID) == 0) {
                     FreeSpace = other.GetComponent<PlayerScript>().CurrentItemHeld;
                 }
                 other.GetComponent<PlayerScript>().Inventory[FreeSpace] = GS.itemCache[SpecificValue].startVariables;
@@ -168,7 +168,7 @@ public class HordeDropScript : MonoBehaviour {
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
                 GS.Mess(GS.SetString("Healed +" + SpecificValue, "Uleczono +" + SpecificValue), SoundWhenFlash);
             } else if (WhatToDrop == "Attachment") {
-                SpecificValue = int.Parse(GS.GetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "id"));
+                SpecificValue = other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].GetInt(JType.ID);
                 int[] AvailableAttachments = new int[] { 0 };
                 if (SpecificValue == 38 || SpecificValue == 42 || SpecificValue == 34 || SpecificValue == 56 || SpecificValue == 57 || SpecificValue == 59 || SpecificValue == 60 || SpecificValue == 65 || SpecificValue == 137) {
                     AvailableAttachments = new int[] { 14, 100, 101, 102, 103, 104, 105 };
@@ -190,7 +190,7 @@ public class HordeDropScript : MonoBehaviour {
 
                 if(SpecificValue != -1){
                     SpecificValue = AvailableAttachments[(int)Random.Range(0f, AvailableAttachments.Length - 0.1f)];
-                    other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld] = GS.SetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "at", SpecificValue.ToString());//other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].z = SpecificValue;
+                    other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].SetInt(JType.Attachment, SpecificValue);//= GS.SetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "at", SpecificValue.ToString());//other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].z = SpecificValue;
                     GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
                     GS.Mess(GS.SetString("New attachement: " + GS.itemCache[SpecificValue].getName(), "Nowy dodatek: " + GS.itemCache[SpecificValue].getName()), SoundWhenFlash);
                 }

@@ -247,13 +247,13 @@ public class DestructionScript : MonoBehaviour {
                     for(int Wood = Random.Range(1, 3); Wood > 0; Wood--){
                         GameObject Wooddrop = Instantiate(ItemPrefab) as GameObject;
                         Wooddrop.transform.position = this.transform.position + this.transform.forward*Random.Range(1f, 5f);
-                        Wooddrop.GetComponent<ItemScript>().Variables = "id140;va0;sq1;";
+                        Wooddrop.GetComponent<ItemScript>().Variables = GS.itemCache[140].startVariables;//"id140;va0;sq1;";
                     }
 
                     if (subType=="TreeApple") for(int Apple = Random.Range(1, 3); Apple > 0; Apple--){
                         GameObject Wooddrop = Instantiate(ItemPrefab) as GameObject;
                         Wooddrop.transform.position = this.transform.position + this.transform.forward*Random.Range(1f, 5f);
-                        Wooddrop.GetComponent<ItemScript>().Variables = "id1;va0;sq1;";
+                        Wooddrop.GetComponent<ItemScript>().Variables = GS.itemCache[1].startVariables;// "id1;va0;sq1;";
                     }
 
                     int pickfrut = (int)Random.Range(119f, 120.9f);
@@ -267,15 +267,15 @@ public class DestructionScript : MonoBehaviour {
                     for(int Wood = Random.Range(3, 9); Wood > 0; Wood--){
                         GameObject Wooddrop = Instantiate(ItemPrefab) as GameObject;
                         Wooddrop.transform.position = this.transform.position + this.transform.forward*Random.Range(1f, 5f);
-                        Wooddrop.GetComponent<ItemScript>().Variables = "id140;va0;sq1;";
+                        Wooddrop.GetComponent<ItemScript>().Variables = GS.itemCache[140].startVariables;// "id140;va0;sq1;";
                     }
                     break;
                 case "TreeDead":
                     for(int Wood = Random.Range(-2, 2); Wood > 0; Wood--){
                         GameObject Wooddrop = Instantiate(ItemPrefab) as GameObject;
                         Wooddrop.transform.position = this.transform.position + this.transform.forward*Random.Range(1f, 5f);
-                        if(Random.Range(0f, 1f) > 0.5f) Wooddrop.GetComponent<ItemScript>().Variables = "id140;va0;sq1;";
-                        else Wooddrop.GetComponent<ItemScript>().Variables = "id147;va0;sq1;";
+                        if(Random.Range(0f, 1f) > 0.5f) Wooddrop.GetComponent<ItemScript>().Variables = GS.itemCache[140].startVariables;// "id140;va0;sq1;";
+                        else Wooddrop.GetComponent<ItemScript>().Variables = GS.itemCache[147].startVariables;// "id147;va0;sq1;";
                     }
                     break;
             }

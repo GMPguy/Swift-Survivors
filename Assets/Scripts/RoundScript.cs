@@ -389,7 +389,7 @@ public class RoundScript : MonoBehaviour {
                             if (GameObject.FindGameObjectsWithTag("Item").Length > 150) {
                                 for (int TooClean = GameObject.FindGameObjectsWithTag("Item").Length - 150; TooClean > 0; TooClean--) {
                                     GameObject ItemToDestroy = GameObject.FindGameObjectsWithTag("Item")[(int)Random.Range(0f, GameObject.FindGameObjectsWithTag("Item").Length - 0.1f)];
-                                    if (GS.GetSemiClass(ItemToDestroy.GetComponent<ItemScript>().Variables, "id") == "990") {
+                                    if (ItemToDestroy.GetComponent<ItemScript>().Variables.GetInt(JType.ID) == 990) {
                                         Destroy(ItemToDestroy);
                                     }
                                 }
@@ -397,7 +397,7 @@ public class RoundScript : MonoBehaviour {
                             if (GameObject.FindGameObjectsWithTag("Interactable").Length > 25) {
                                 for (int TooClean = GameObject.FindGameObjectsWithTag("Interactable").Length - 25; TooClean > 0; TooClean--) {
                                     GameObject InteractableToDestroy = GameObject.FindGameObjectsWithTag("Interactable")[(int)Random.Range(0f, GameObject.FindGameObjectsWithTag("Interactable").Length - 0.1f)];
-                                    if (InteractableToDestroy.GetComponent<InteractableScript>().Variables.x != 2f) {
+                                    if (InteractableToDestroy.GetComponent<InteractableScript>().Variables.GetInt(JType.ID) != 2f) {
                                         Destroy(InteractableToDestroy);
                                     }
                                 }
@@ -608,7 +608,7 @@ public class RoundScript : MonoBehaviour {
                         GameObject Exit = null;
                         float NearestExit = Mathf.Infinity;
                         foreach (GameObject AcquireExit in GameObject.FindGameObjectsWithTag("Interactable")) {
-                            if (AcquireExit.GetComponent<InteractableScript>().Variables.x == 2f && Vector3.Distance(FleeMob.transform.position, AcquireExit.transform.position) < NearestExit) {
+                            if (AcquireExit.GetComponent<InteractableScript>().Variables.GetInt(JType.ID) == 2 && Vector3.Distance(FleeMob.transform.position, AcquireExit.transform.position) < NearestExit) {
                                 Exit = AcquireExit;
                                 NearestExit = Vector3.Distance(FleeMob.transform.position, AcquireExit.transform.position);
                             }
@@ -792,13 +792,13 @@ public class RoundScript : MonoBehaviour {
                             HordeVariables[1] = 10;
                         }
                         foreach (GameObject GetInt in GameObject.FindGameObjectsWithTag("Interactable")){
-                            if (GetInt.GetComponent<InteractableScript>().Variables.x == 5f) {
+                            if (GetInt.GetComponent<InteractableScript>().Variables.GetInt(JType.ID) == 5) {
                                 int pickItem = Random.Range(0, GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount);//(int)Mathf.Clamp(GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.x + GS.Round, GetInt.transform.position.y + GS.Round) * GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount, 0f, GetInt.GetComponent<InteractableScript>().SelectedModel.transform.GetChild(1).childCount - 0.1f);
                                 if (GS.Round <= 1 && (pickItem == 3 || pickItem == 4 || pickItem == 6 || pickItem == 7 || pickItem == 8)) {
                                     pickItem = 0;
                                 }
                                 GetInt.GetComponent<InteractableScript>().Interaction("SetItem", pickItem);
-                            } else if (GetInt.GetComponent<InteractableScript>().Variables.x == 4f) {
+                            } else if (GetInt.GetComponent<InteractableScript>().Variables.GetInt(JType.ID) == 4) {
                                 for (int AddTradeOptions = 5; AddTradeOptions >= 0; AddTradeOptions--) {
                                     List<int> AvailableOffers = new List<int>();
                                     //int WhichCategory = (int)(Mathf.PerlinNoise(GS.GetComponent<GameScript>().LandSeed.y + GS.GetComponent<GameScript>().Round + (float)AddTradeOptions, GS.GetComponent<GameScript>().LandSeed.y + GS.GetComponent<GameScript>().Round + (float)AddTradeOptions) * 3.9f);
@@ -895,8 +895,8 @@ public class RoundScript : MonoBehaviour {
                     SetShops = true;
                     RoundTime = 60f;
                     RoundState = "BeforeWave";
-                    MainPlayer.InventoryFunctions("");
-                    MainPlayer.EquipmentFunctions("");
+                    MainPlayer.InventoryFunctions(null);
+                    MainPlayer.EquipmentFunctions(null);
                     MainPlayer.Buffs("");
                     SpecialEvent("SaveHordeProgress");
                     GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(new Color32(255, 255, 255, 255), new float[]{4f, 4f});
@@ -1048,22 +1048,22 @@ public class RoundScript : MonoBehaviour {
 
     public void SpecialEvent(string Event){
         if (Event == "Escape") {
-            MainPlayer.InventoryFunctions("");
-            MainPlayer.EquipmentFunctions("");
+            MainPlayer.InventoryFunctions(null);
+            MainPlayer.EquipmentFunctions(null);
             MainPlayer.Buffs("");
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.LoadingTime = Random.Range(0.5f, 1f);
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.AfterLoading = "f_EscapeMap";
             //GS.GetComponent<GameScript>().ChangeLevel("EscapeMap");
         } else if (Event == "Reset") {
-            MainPlayer.InventoryFunctions("");
-            MainPlayer.EquipmentFunctions("");
+            MainPlayer.InventoryFunctions(null);
+            MainPlayer.EquipmentFunctions(null);
             MainPlayer.Buffs("");
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.LoadingTime = Random.Range(0.5f, 1f);
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.AfterLoading = "f_ResetMap";
             //GS.GetComponent<GameScript>().ChangeLevel("ResetMap");
         } else if (Event == "GameOver") {
-            MainPlayer.InventoryFunctions("");
-            MainPlayer.EquipmentFunctions("");
+            MainPlayer.InventoryFunctions(null);
+            MainPlayer.EquipmentFunctions(null);
             MainPlayer.Buffs("");
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.LoadingTime = Random.Range(0.5f, 1f);
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.AfterLoading = "f_GameOver";
@@ -1071,8 +1071,12 @@ public class RoundScript : MonoBehaviour {
             GS.RoundsSeed = Random.Range(int.MinValue / 2, int.MaxValue / 2);
             GS.HealthSave = new Vector2(MainPlayer.Health[0], MainPlayer.Health[1]);
             GS.PlayerSpeed = MainPlayer.Speed;
-            GS.PlayerInventory = MainPlayer.InventoryText;
-            GS.PlayerEquipment = MainPlayer.EquipmentText;
+
+            for (int i = 0; i < 10; i++)
+                GS.PlayerInventory[i].CopyFrom(MainPlayer.InventoryText[i]);
+            for (int i = 0; i < 4; i++)
+                GS.PlayerEquipment[i].CopyFrom(MainPlayer.EquipmentText[i]);
+
             GS.MaxInventory = MainPlayer.MaxInventorySlots;
             GS.PlayerBuffs = MainPlayer.BuffsText;
             GS.SaveManipulation(GS.CurrentSave, 0);
@@ -1126,8 +1130,8 @@ public class RoundScript : MonoBehaviour {
                                 for(int Unlucky = MainPlayer.MaxInventorySlots; Unlucky > 0; Unlucky --){
                                     int offset = CheckThisOne + Unlucky;
                                     if(offset > MainPlayer.MaxInventorySlots) offset -= MainPlayer.MaxInventorySlots;
-                                    if(MainPlayer.Inventory[offset] != "id0;") {
-                                        MainPlayer.Inventory[offset] = "id0;";
+                                    if(MainPlayer.Inventory[offset].GetInt(JType.ID) != 0) {
+                                        MainPlayer.Inventory[offset] = null;
                                         break;
                                     }
                                 }
@@ -1152,8 +1156,8 @@ public class RoundScript : MonoBehaviour {
                             case "4":
                                 // NoAmmo
                                 for(int LoseAmmo = 0; LoseAmmo < MainPlayer.MaxInventorySlots; LoseAmmo ++){
-                                    if(GS.ExistSemiClass(MainPlayer.Inventory[LoseAmmo], "va")) 
-                                        MainPlayer.Inventory[LoseAmmo] = GS.SetSemiClass(MainPlayer.Inventory[LoseAmmo], "va", "0");
+                                    if(MainPlayer.Inventory[LoseAmmo].Exists(JType.VariableA)) 
+                                        MainPlayer.Inventory[LoseAmmo].SetFloat(JType.VariableA, 0f);
                                 }
                                 SetScore("PNoAmmo_", "1");
                                 break;
@@ -1224,8 +1228,8 @@ public class RoundScript : MonoBehaviour {
 
                 }
 
-                MainPlayer.InventoryFunctions("");
-                MainPlayer.EquipmentFunctions("");
+                MainPlayer.InventoryFunctions(null);
+                MainPlayer.EquipmentFunctions(null);
                 MainPlayer.Buffs("");
 
                 RoundState = Event;

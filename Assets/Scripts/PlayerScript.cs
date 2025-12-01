@@ -23,9 +23,9 @@ public class PlayerScript : MonoBehaviour {
     public string ArmType = "ConscriptJacket";
     // Stats
     // Inventory
-    public string InventoryText;
+    public JClass[] InventoryText;
     public JClass[] Inventory; // id for ids, va for variable a, at for attachment, cl for color, sw scan what
-    public string EquipmentText;
+    public JClass[] EquipmentText;
     public JClass[] Equipment; // ct for category, tr for turn on/off
     public int CurrentItemHeld = 0;
     public int MaxInventorySlots = 4;
@@ -592,7 +592,7 @@ public class PlayerScript : MonoBehaviour {
 
                 Movement();
                 InteractionFunctioning();
-                InventoryFunctions("");
+                InventoryFunctions(null);
                 EquipmentFunctions(null);
                 Buffs("");
 
@@ -1143,13 +1143,13 @@ public class PlayerScript : MonoBehaviour {
                 } else if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "VendingMachine" && CantInteract <= 0f) {
                     MainCanvas.DialogedMob = InteractedGameobject.transform.parent.gameObject;
                     MainCanvas.DialogSetting = "VendingMachine";
-                } else if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "EmergencyItem" && InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Variables.y >= 0f && CantInteract <= 0f) {
+                } else if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "EmergencyItem" && InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Variables.GetFloat(JType.VariableA) >= 0f && CantInteract <= 0f) {
                     CantInteract = 0.5f;
                     InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Interaction("GetItem", 0f);
-                } else if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "RingBell" && InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Variables.y == 0f && CantInteract <= 0f) {
+                } else if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "RingBell" && InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Variables.GetFloat(JType.VariableA) == 0f && CantInteract <= 0f) {
                     CantInteract = 0.5f;
                     InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Interaction("RingTheBell", 0f);
-                } else if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "GrabAmmo" && InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Variables.y > 0f && CantInteract <= 0f) {
+                } else if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "GrabAmmo" && InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Variables.GetFloat(JType.VariableA) > 0f && CantInteract <= 0f) {
                     CantInteract = 0.25f;
                     InteractedGameobject.transform.parent.GetComponent<InteractableScript>().Interaction("GatherAmmo", 0f);
                 }
@@ -1188,8 +1188,10 @@ public class PlayerScript : MonoBehaviour {
                     GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
                     DropItem.transform.position = this.transform.position + LookDir.forward * 0.5f;
                     DropItem.GetComponent<ItemScript>().Variables = Inventory[Where];
-                    if(GS.ExistSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq")) 
-                        DropItem.GetComponent<ItemScript>().Variables = GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
+
+                    if(DropItem.GetComponent<ItemScript>().Variables.Exists(JType.StackQuantity)) 
+                        DropItem.GetComponent<ItemScript>().Variables.SetInt(JType.StackQuantity, stackAmount);// = GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
+                    
                     DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
                     if (Spec == -1) DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
                     else if (Spec == -2){
@@ -1301,56 +1303,58 @@ public class PlayerScript : MonoBehaviour {
                     }
                 break;
             case 2: case -1: case -2: // drop item - drop item by player - throw item by player
-                for(int rs = 0; rs < MaxInventorySlots; rs++) 
+                for(int rs = 0; rs < MaxInventorySlots; rs++) {
                     if (Inventory[rs] == What) {
                         stackAmount = (int)Mathf.Clamp(stackAmount, 0, Inventory[rs].GetInt(JType.StackQuantity));
                         GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
                         DropItem.transform.position = this.transform.position + LookDir.forward * 0.5f;
                         DropItem.GetComponent<ItemScript>().Variables = What;
 
-                    if(GS.ExistSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq")) 
-                        DropItem.GetComponent<ItemScript>().Variables = GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
-                    if (Spec == -1) 
-                        DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
-                    else if (Spec == -2){
-                        DropItem.transform.position = LookDir.position + LookDir.forward * 0.5f;
-                        DropItem.GetComponent<ItemScript>().ThrownDirection = LookDir.forward;
-                        DropItem.GetComponent<ItemScript>().State = 2;
-                        DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
-                        DropItem.GetComponent<ItemScript>().transform.forward = LookDir.forward;
-                        ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Throw", Inventory[CurrentItemHeld].GetInt(JType.ID), ""), 0, 0f);
+                        if(DropItem.GetComponent<ItemScript>().Variables.Exists(JType.StackQuantity))//GS.ExistSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq")) 
+                            DropItem.GetComponent<ItemScript>().Variables.SetInt(JType.StackQuantity, stackAmount);//= GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
+                        
+                        if (Spec == -1) 
+                            DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
+                        else if (Spec == -2){
+                            DropItem.transform.position = LookDir.position + LookDir.forward * 0.5f;
+                            DropItem.GetComponent<ItemScript>().ThrownDirection = LookDir.forward;
+                            DropItem.GetComponent<ItemScript>().State = 2;
+                            DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
+                            DropItem.GetComponent<ItemScript>().transform.forward = LookDir.forward;
+                            ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Throw", Inventory[CurrentItemHeld].GetInt(JType.ID), ""), 0, 0f);
+                        }
+
+                        InvGet(rs, 1, stackAmount);
+                        break;
                     }
-                    InvGet(rs, 1, stackAmount);
-                    break;
                 }
                 break;
         }
 
     }
 
-    public void InventoryFunctions(string InventoryToSet){
+    public void InventoryFunctions(JClass[] InventoryToSet){
 
         // Set Inventory from text
-        if (InventoryToSet != "") {
+        if (InventoryToSet != null) {
 
             for (int SetInv = 0; SetInv <= 9; SetInv ++) {
-                string[] LoadInv = GS.ListSemiClass(InventoryToSet, "/");
+                //string[] LoadInv = GS.ListSemiClass(InventoryToSet, "/");
                 for(int Check = 0; Check <= 9; Check++){
-                    if(Check <= LoadInv.Length) 
-                        Inventory[Check] = LoadInv[Check];
+                    if(Check >= InventoryToSet.Length) 
+                        Inventory[Check] = null;
                     else 
-                        InvGet(Check, 1);
+                        InvGet(InventoryToSet[Check], 1);
                 }
             }
 
         } else {
 
-            InventoryText = "";
+            InventoryText = new JClass[10];
             string AnimationAddition = "";
 
-            for(int SetInv = 0; SetInv <= 9; SetInv ++){
-                InventoryText += Inventory[SetInv] + "/";
-            }
+            for(int SetInv = 0; SetInv <= 9; SetInv ++)
+                InventoryText[SetInv].CopyFrom(Inventory[SetInv]);
 
             // Set Inventory from text
 
@@ -3359,7 +3363,7 @@ public class PlayerScript : MonoBehaviour {
                                 CantUseItem = 0.5f;
                                 CantSwitchItem = 0.5f;
                                 ItemsShown.GetComponent<Animator>().Play(PlayItemAnim(AnimationToPlay, Inventory[CurrentItemHeld].GetInt(JType.ID), AnimationAddition), 0, 0f);
-                                InteractedGameobject.GetComponent<ItemScript>().Variables = GS.SetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "va", (Mathf.Clamp(InteractedGameobject.GetComponent<ItemScript>().Variables.GetFloat(JType.VariableA) + AmountToFix, 0f, 100f)).ToString(CultureInfo.InvariantCulture) );//InteractedGameobject.GetComponent<ItemScript>().Variables.y = Mathf.Clamp(InteractedGameobject.GetComponent<ItemScript>().Variables.y + AmountToFix, 0f, 100f);
+                                InteractedGameobject.GetComponent<ItemScript>().Variables.SetFloat(JType.VariableA, Mathf.Clamp(InteractedGameobject.GetComponent<ItemScript>().Variables.GetFloat(JType.VariableA) + AmountToFix, 0f, 100f) );//InteractedGameobject.GetComponent<ItemScript>().Variables.y = Mathf.Clamp(InteractedGameobject.GetComponent<ItemScript>().Variables.y + AmountToFix, 0f, 100f);
                                 if (SoundToPlay != "") {
                                     GameObject RepairEffect = Instantiate(EffectPrefab) as GameObject;
                                     RepairEffect.transform.position = InteractedGameobject.transform.position;
@@ -3477,12 +3481,12 @@ public class PlayerScript : MonoBehaviour {
                             ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Lockpick", 97, AnimationAddition), 0, 0f);
 
                             if (picked.TryGetComponent<InteractableScript>(out InteractableScript interactable)) {
-                                if (interactable.Variables.x == 1f) {
+                                if (interactable.Variables.GetInt(JType.ID) == 1) {
                                     GS.Mess(GS.SetString("Barrel has been opened", "Beczka została otwarta"), "Good");
                                     interactable.Interaction("Break", 9999f);
-                                } else if (interactable.Variables.x == 3f) {
+                                } else if (interactable.Variables.GetInt(JType.ID) == 3) {
                                     GS.Mess(GS.SetString("Door has been opened", "Drzwi zostały otwarte"), "Good");
-                                    interactable.Variables.z = 0f;
+                                    interactable.Variables.SetInt(JType.InteractableType, 0);
                                 }
                             } else if (picked.TryGetComponent<ChestScript>(out ChestScript chest)) {
                                 GS.Mess(GS.SetString(chest.Name[0] + " has been opened", "Otwarto " + chest.Name[1]), "Good");
@@ -3808,7 +3812,7 @@ public class PlayerScript : MonoBehaviour {
                                     // Interactables
                                     Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "UtilityScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
                                     foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Interactable")) {
-                                        if (Vector3.Distance(this.transform.position, ScanItem.transform.position) < 200f && ((int)ScanItem.GetComponent<InteractableScript>().Variables.x == 1 || (int)ScanItem.GetComponent<InteractableScript>().Variables.x == 4)) {
+                                        if (Vector3.Distance(this.transform.position, ScanItem.transform.position) < 200f && ((int)ScanItem.GetComponent<InteractableScript>().Variables.GetInt(JType.ID) == 1 || (int)ScanItem.GetComponent<InteractableScript>().Variables.GetInt(JType.ID) == 4)) {
                                             scans.Add(ScanItem);
                                         }
                                     }
@@ -3816,7 +3820,7 @@ public class PlayerScript : MonoBehaviour {
                                     // Exit
                                     Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "ExitScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
                                     foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Interactable"))
-                                        if ((int)ScanItem.GetComponent<InteractableScript>().Variables.x == 2)
+                                        if ((int)ScanItem.GetComponent<InteractableScript>().Variables.GetInt(JType.ID) == 2)
                                             scans.Add(ScanItem);
                                 }
 
@@ -3971,7 +3975,7 @@ public class PlayerScript : MonoBehaviour {
 
     }
 
-    public void EquipmentFunctions(JList EquipmentToSet){
+    public void EquipmentFunctions(JClass[] EquipmentToSet){
 
         // Set Inventory from text
         if (EquipmentToSet != null) {
@@ -3981,8 +3985,8 @@ public class PlayerScript : MonoBehaviour {
                 //Equipment[SetEq] = new Vector4(float.Parse(RIS.Substring(0, 3)), float.Parse(RIS.Substring(3, 3)), float.Parse(RIS.Substring(6, 3)), float.Parse(RIS.Substring(9, 3)));
                 //string[] EqInv = GS.ListSemiClass(EquipmentToSet, "/");
                 for(int Check = 0; Check <= 3; Check++){
-                    if(Check < EquipmentToSet.Value.Count) 
-                        Equipment[Check] = EquipmentToSet.Value[Check];
+                    if(Check < EquipmentToSet.Length) 
+                        Equipment[Check].CopyFrom(EquipmentToSet[Check]);
                     else 
                         Equipment[Check] = null;
                 }
@@ -3991,10 +3995,10 @@ public class PlayerScript : MonoBehaviour {
 
         } else {
 
-            EquipmentText = "";
-            for (int SetEq = 0; SetEq <= 3; SetEq++) {
-                EquipmentText += Equipment[SetEq] + "/";
-            }
+            EquipmentText = new JClass[4];
+            for (int SetEq = 0; SetEq <= 3; SetEq++)
+                EquipmentText[SetEq].CopyFrom(Equipment[SetEq]);
+                //EquipmentText += Equipment[SetEq] + "/";
 
             // Scan equipment
             int MIStoset = 4;
