@@ -119,6 +119,26 @@ public class JClass {
         }
     }
 
+    // List
+    public JList GetList(JType what) {
+        int fetch = FetchStruct(what);
+        if (fetch == -1) return null;
+
+        JList getList = (JList)Values[fetch];
+        return getList;
+    }
+
+    public void SetList(JType what, List<JClass> value) {
+        int fetch = FetchStruct(what);
+
+        if (fetch == -1)
+            Values.Add(new JList (what, value));
+        else {
+            JList getString = (JList)Values[fetch];
+            getString.Value = new List<JClass>(value);
+        }
+    }
+
     // Default
     public void SetEntry(JType what) {
         int fetch = FetchStruct(what);
@@ -225,7 +245,7 @@ public class JList : JEntry {
     public List<JClass> Value;
     public JList (JType type, List<JClass> value) : base (type) {
         Name = type;
-        Value = value;
+        Value = new List<JClass>(value);
     }
 }
 
@@ -246,7 +266,9 @@ public enum JType {
     CasualAmmo,
     CraftingFunction,
     InteractableType,
-    SpawnStuffString
+    SpawnStuffString,
+    InvEqCache_Inventory,
+    InvEqCache_Equipment
 }
 
 public enum JTemplate {

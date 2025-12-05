@@ -31,8 +31,7 @@ public class GameScript : MonoBehaviour {
     public Vector2 HealthSave;
     public Vector2 HungerSave;
     public float PlayerSpeed;
-    public JClass[] PlayerInventory;
-    public JClass[] PlayerEquipment;
+    public JClass PlayerInvEq;
     public int MaxInventory = 4;
     public string PlayerBuffs = "";
 
@@ -345,10 +344,9 @@ public class GameScript : MonoBehaviour {
             HealthSave = new Vector2(FoundPlayer.GetComponent<PlayerScript>().Health[0], FoundPlayer.GetComponent<PlayerScript>().Health[1]);
             HungerSave = new Vector2(FoundPlayer.GetComponent<PlayerScript>().Food[0], FoundPlayer.GetComponent<PlayerScript>().Food[1]);
             PlayerSpeed = FoundPlayer.GetComponent<PlayerScript>().Speed;
-            PlayerInventory = FoundPlayer.GetComponent<PlayerScript>().InventoryText;
+            PlayerInvEq = FoundPlayer.GetComponent<PlayerScript>().InvEqCache;
 
             MaxInventory = FoundPlayer.GetComponent<PlayerScript>().MaxInventorySlots;
-            PlayerEquipment = FoundPlayer.GetComponent<PlayerScript>().EquipmentText;
             PlayerBuffs = FoundPlayer.GetComponent<PlayerScript>().BuffsText;
 
             //Saves(CurrentSave, 0);
@@ -490,8 +488,7 @@ public class GameScript : MonoBehaviour {
                 + "®h1" + HungerSave.y.ToString()
 
                 + "®ps" + PlayerSpeed.ToString()
-                + "®pi" + Json.Serialize(PlayerInventory)
-                + "®pe" + Json.Serialize(PlayerEquipment)
+                + "®pi" + JsonUtility.ToJson(PlayerInvEq)
                 + "®mi" + MaxInventory.ToString()
                 + "®bs" + PlayerBuffs + "®"
                 ;
@@ -519,6 +516,7 @@ public class GameScript : MonoBehaviour {
                     break;
                 }
 
+                Debug.Log(Receiver);
                 if(Receiver != ""){
                     SaveFileName = GetSemiClass(Receiver, "sn", "®");
 
@@ -540,8 +538,7 @@ public class GameScript : MonoBehaviour {
                     HungerSave.y = (int)float.Parse(GetSemiClass(Receiver, "h1", "®"));
 
                     PlayerSpeed = float.Parse(GetSemiClass(Receiver, "ps", "®"));
-                    PlayerInventory = (JClass[])Json.Deserialize(GetSemiClass(Receiver, "ps", "®"));//GetSemiClass(Receiver, "pi", "®");
-                    PlayerEquipment = (JClass[])Json.Deserialize(GetSemiClass(Receiver, "pe", "®"));
+                    PlayerInvEq = JsonUtility.FromJson<JClass>(GetSemiClass(Receiver, "pi", "®"));//GetSemiClass(Receiver, "pi", "®");
                     MaxInventory = int.Parse(GetSemiClass(Receiver, "mi", "®"));
                     PlayerBuffs = GetSemiClass(Receiver, "bs", "®");
 

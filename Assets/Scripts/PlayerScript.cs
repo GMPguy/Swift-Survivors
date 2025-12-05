@@ -23,9 +23,8 @@ public class PlayerScript : MonoBehaviour {
     public string ArmType = "ConscriptJacket";
     // Stats
     // Inventory
-    public JClass[] InventoryText;
+    public JClass InvEqCache;
     public JClass[] Inventory; // id for ids, va for variable a, at for attachment, cl for color, sw scan what
-    public JClass[] EquipmentText;
     public JClass[] Equipment; // ct for category, tr for turn on/off
     public int CurrentItemHeld = 0;
     public int MaxInventorySlots = 4;
@@ -214,21 +213,13 @@ public class PlayerScript : MonoBehaviour {
         CAMvectors = new Vector3[]{Vector3.zero, Vector3.zero};
 
         // Set up class arrays
-        Inventory = new JClass[10];
         for (int c = 0; c < 10; c++)
-            Inventory[c] = new (0, JTemplate.JustID);
+            if (Inventory[c] == null || Inventory[c].Values == null)
+                Inventory[c] = new (0, JTemplate.JustID);
         
-        InventoryText = new JClass[10];
-        for (int c = 0; c < 10; c++)
-            InventoryText[c] = new (0, JTemplate.JustID);
-        
-        Equipment = new JClass[4];
         for (int c = 0; c < 4; c++)
-            Equipment[c] = new (0, JTemplate.JustID);
-
-        EquipmentText = new JClass[4];
-        for (int c = 0; c < 4; c++)
-            EquipmentText[c] = new (0,JTemplate.JustID);
+            if (Equipment[c] == null || Equipment[c].Values == null)
+                Equipment[c] = new (0, JTemplate.JustID);
         // Set up class arrays
 
         // Sleeping Bag
@@ -610,8 +601,8 @@ public class PlayerScript : MonoBehaviour {
 
                 Movement();
                 InteractionFunctioning();
-                InventoryFunctions(null);
-                EquipmentFunctions(null);
+                InventoryFunctions();
+                EquipmentFunctions();
                 Buffs("");
 
                 // Stats
@@ -722,22 +713,24 @@ public class PlayerScript : MonoBehaviour {
             POV = "FPP";
         }
 
+        float mouseDelta = Time.timeScale * Time.unscaledDeltaTime * 50f;
+
         // Rotation and zoom stuff specific for FPP camera and maybe third person camera
         if (POV == "FPP"){
             BonusZ = Mathf.Lerp(BonusZ, 0f, 0.1f);
             BonusZ = Mathf.Lerp(BonusZ, Vector3.Dot(this.GetComponent<Rigidbody>().velocity, this.transform.right) * GS.CameraShifting, 0.25f);
             if (CantLook <= 0f) {
                 if (GS.InvertedMouse == false) {
-                    LookX -= (Input.GetAxis("Mouse Y") * GS.MouseSensitivity) * Time.timeScale;
+                    LookX -= (Input.GetAxis("Mouse Y") * GS.MouseSensitivity) * mouseDelta;
                 } else {
-                    LookX += (Input.GetAxis("Mouse Y") * GS.MouseSensitivity) * Time.timeScale;
+                    LookX += (Input.GetAxis("Mouse Y") * GS.MouseSensitivity) * mouseDelta;
                 }
-                LookX = Mathf.Clamp(LookX, -80f, 80f);
-                float BonusAdd = ((Input.GetAxis("Mouse X") * GS.MouseSensitivity) * Time.timeScale) * GS.CameraShifting;
+                LookX = Mathf.Clamp(LookX, -89f, 89f);
+                float BonusAdd = ((Input.GetAxis("Mouse X") * GS.MouseSensitivity) * mouseDelta) * GS.CameraShifting;
                 if (BonusZ + BonusAdd > -15f && BonusZ + BonusAdd < 15f) {
                     BonusZ = Mathf.Lerp(BonusZ, BonusZ + BonusAdd, 0.25f);
                 }
-                LookY += (Input.GetAxis("Mouse X") * GS.MouseSensitivity) * Time.timeScale;
+                LookY += (Input.GetAxis("Mouse X") * GS.MouseSensitivity) * mouseDelta;
             }
 
             // Camera rotation
@@ -1351,33 +1344,36 @@ public class PlayerScript : MonoBehaviour {
 
     }
 
-    public void InventoryFunctions(JClass[] InventoryToSet, bool load = false){
+    // Save inventory and equipment into JClass with two JLists
+    public void InvEq_save () {
+        List<JClass> getInv = new ();
+        for (int gi = 0; gi < 10; gi++)
+            getInv.Add(Inventory[gi]);
 
-        // Set Inventory from text
-        if (load) {
+        List<JClass> getEq = new ();
+        for (int ge = 0; ge < 4; ge++)
+            getEq.Add(Equipment[ge]);
 
-            Debug.Log("Kaka pupu");
+        InvEqCache = new(new JEntry[]{
+            new JList(JType.InvEqCache_Inventory, getInv),
+            new JList(JType.InvEqCache_Equipment, getEq)
+        });
+    }
 
-            for (int SetInv = 0; SetInv <= 9; SetInv ++) {
-                //string[] LoadInv = GS.ListSemiClass(InventoryToSet, "/");
-                for(int Check = 0; Check <= 9; Check++){
-                    if(Check >= InventoryToSet.Length) 
-                        Inventory[Check] = new (0, JTemplate.BasicItem);
-                    else 
-                        InvGet(InventoryToSet[Check], 0);
-                }
-            }
+    // Get JClass with two JLists, and load their values into inventory and equipment
+    public void InvEq_load (JClass loadedData) {
+        List<JClass> getInv = loadedData.GetList(JType.InvEqCache_Inventory).Value;
+        List<JClass> getEq = loadedData.GetList(JType.InvEqCache_Equipment).Value;
 
-        } else {
+        for (int gi = 0; gi < 10; gi++)
+            Inventory[gi].CopyFrom(getInv[gi]);
+        for (int ge = 0; ge < 4; ge++)
+            Equipment[ge].CopyFrom(getEq[ge]);
+    }
 
-            InventoryText = new JClass[10];
+    public void InventoryFunctions(){
+
             string AnimationAddition = "";
-
-            for(int SetInv = 0; SetInv <= 9; SetInv ++)
-                if(SetInv < InventoryText.Length) 
-                    InventoryText[SetInv] = new (Inventory[SetInv]);
-
-            // Set Inventory from text
 
             // BackPack Limitation
             CurrentItemHeld = (int)Mathf.Clamp(0f, CurrentItemHeld, 9f);
@@ -3988,33 +3984,10 @@ public class PlayerScript : MonoBehaviour {
             }
             // Specifics for held items
 
-        }
 
     }
 
-    public void EquipmentFunctions(JClass[] EquipmentToSet, bool load = false){
-
-        // Set Inventory from text
-        if (load) {
-
-            for (int SetEq = 0; SetEq <= 3; SetEq++) {
-                //string RIS = EquipmentToSet.Substring(SetEq * 12, 12);
-                //Equipment[SetEq] = new Vector4(float.Parse(RIS.Substring(0, 3)), float.Parse(RIS.Substring(3, 3)), float.Parse(RIS.Substring(6, 3)), float.Parse(RIS.Substring(9, 3)));
-                //string[] EqInv = GS.ListSemiClass(EquipmentToSet, "/");
-                for(int Check = 0; Check <= 3; Check++){
-                    if(Check < EquipmentToSet.Length) 
-                        Equipment[Check] = new (EquipmentToSet[Check]);
-                    else 
-                        Equipment[Check] = new (0, JTemplate.JustID);
-                }
-            }
-
-        } else {
-
-            EquipmentText = new JClass[4];
-            for (int SetEq = 0; SetEq <= 3; SetEq++)
-                if (EquipmentText[SetEq] == null)
-                    EquipmentText[SetEq] = new (Equipment[SetEq]);
+    public void EquipmentFunctions(){
 
             // Scan equipment
             int MIStoset = 4;
@@ -4153,8 +4126,6 @@ public class PlayerScript : MonoBehaviour {
             }
 
             if(!IsST && IsSwimming == true) {MainCanvas.CameraBlur = 7f;}
-
-        }
 
     }
 

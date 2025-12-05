@@ -111,6 +111,6 @@ x Adjust grass quality
 
 - Finish JClasses
 	- Fix stackable items
-	- Inventory and equipment does not carry over
+	x Inventory and equipment does not carry over
 	- Fix spawnders
 	- Find a way to add JClasses in inspector

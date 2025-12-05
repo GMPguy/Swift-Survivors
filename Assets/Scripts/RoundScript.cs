@@ -499,8 +499,7 @@ public class RoundScript : MonoBehaviour {
                         MainPlayer.Health[1] = GS.HealthSave.y;
                         MainPlayer.Food[0] = GS.HungerSave.x;
                         MainPlayer.Food[1] = GS.HungerSave.y;
-                        MainPlayer.InventoryFunctions(GS.PlayerInventory, true);
-                        MainPlayer.EquipmentFunctions(GS.PlayerEquipment, true);
+                        MainPlayer.InvEq_load(GS.PlayerInvEq);
                         MainPlayer.MaxInventorySlots = GS.MaxInventory;
                         MainPlayer.Buffs(GS.PlayerBuffs);
                         MainPlayer.Speed = GS.PlayerSpeed;
@@ -895,8 +894,7 @@ public class RoundScript : MonoBehaviour {
                     SetShops = true;
                     RoundTime = 60f;
                     RoundState = "BeforeWave";
-                    MainPlayer.InventoryFunctions(null);
-                    MainPlayer.EquipmentFunctions(null);
+                    MainPlayer.InvEq_save();
                     MainPlayer.Buffs("");
                     SpecialEvent("SaveHordeProgress");
                     GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(new Color32(255, 255, 255, 255), new float[]{4f, 4f});
@@ -1048,22 +1046,19 @@ public class RoundScript : MonoBehaviour {
 
     public void SpecialEvent(string Event){
         if (Event == "Escape") {
-            MainPlayer.InventoryFunctions(null);
-            MainPlayer.EquipmentFunctions(null);
+            MainPlayer.InvEq_save();
             MainPlayer.Buffs("");
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.LoadingTime = Random.Range(0.5f, 1f);
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.AfterLoading = "f_EscapeMap";
             //GS.GetComponent<GameScript>().ChangeLevel("EscapeMap");
         } else if (Event == "Reset") {
-            MainPlayer.InventoryFunctions(null);
-            MainPlayer.EquipmentFunctions(null);
+            MainPlayer.InvEq_save();
             MainPlayer.Buffs("");
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.LoadingTime = Random.Range(0.5f, 1f);
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.AfterLoading = "f_ResetMap";
             //GS.GetComponent<GameScript>().ChangeLevel("ResetMap");
         } else if (Event == "GameOver") {
-            MainPlayer.InventoryFunctions(null);
-            MainPlayer.EquipmentFunctions(null);
+            MainPlayer.InvEq_save();
             MainPlayer.Buffs("");
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.LoadingTime = Random.Range(0.5f, 1f);
             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().PauseMenu.AfterLoading = "f_GameOver";
@@ -1072,10 +1067,7 @@ public class RoundScript : MonoBehaviour {
             GS.HealthSave = new Vector2(MainPlayer.Health[0], MainPlayer.Health[1]);
             GS.PlayerSpeed = MainPlayer.Speed;
 
-            for (int i = 0; i < 10; i++)
-                GS.PlayerInventory[i].CopyFrom(MainPlayer.InventoryText[i]);
-            for (int i = 0; i < 4; i++)
-                GS.PlayerEquipment[i].CopyFrom(MainPlayer.EquipmentText[i]);
+            GS.PlayerInvEq.CopyFrom(MainPlayer.InvEqCache);
 
             GS.MaxInventory = MainPlayer.MaxInventorySlots;
             GS.PlayerBuffs = MainPlayer.BuffsText;
@@ -1228,8 +1220,7 @@ public class RoundScript : MonoBehaviour {
 
                 }
 
-                MainPlayer.InventoryFunctions(null);
-                MainPlayer.EquipmentFunctions(null);
+                MainPlayer.InvEq_save();
                 MainPlayer.Buffs("");
 
                 RoundState = Event;
