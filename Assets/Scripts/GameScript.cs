@@ -516,7 +516,6 @@ public class GameScript : MonoBehaviour {
                     break;
                 }
 
-                Debug.Log(Receiver);
                 if(Receiver != ""){
                     SaveFileName = GetSemiClass(Receiver, "sn", "®");
 

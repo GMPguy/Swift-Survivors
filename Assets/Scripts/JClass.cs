@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using SerializeReferenceDropdown;
 
 [Serializable]
 public class JClass {
+    [SerializeReferenceDropdown]
     [SerializeReference]
     public List<JEntry> Values;
-
-    //
 
     // Empty constructor
     public JClass () =>
@@ -160,7 +160,7 @@ public class JClass {
 
     int FetchStruct(JType what) {
         for (int f = 0; f < Values.Count; f++)
-            if (Values[f].Name == what)
+            if (Values[f] != null && Values[f].Name == what)
                 return f;
         
         return -1;
@@ -281,70 +281,4 @@ public enum Maths {
     Set,
     Add,
     Multiply
-}
-
-[CustomPropertyDrawer(typeof(JEntry), true)]
-public class EntryDrawer : PropertyDrawer {
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-        return EditorGUI.GetPropertyHeight(property, label, true);
-    }
-
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-        EditorGUI.PropertyField(position, property, label, true);
-    }
-}
-
-[CustomPropertyDrawer(typeof(List<JEntry>), true)]
-public class EntryListDrawer : PropertyDrawer
-{
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-    {
-        SerializedProperty arrayProp = property;
-
-        // Draw label
-        position = EditorGUI.PrefixLabel(position, label);
-
-        // Reduce indent
-        int indent = EditorGUI.indentLevel;
-        EditorGUI.indentLevel = 0;
-
-        // Button height
-        float buttonHeight = 18f;
-
-        // Buttons row
-        Rect buttonRect = new Rect(position.x, position.y, position.width, buttonHeight);
-
-        float third = position.width / 3f;
-
-        if (GUI.Button(new Rect(buttonRect.x, buttonRect.y, third, buttonHeight), "Int"))
-            AddEntry(arrayProp, typeof(JInt));
-
-        if (GUI.Button(new Rect(buttonRect.x + third, buttonRect.y, third, buttonHeight), "Float"))
-            AddEntry(arrayProp, typeof(JFloat));
-
-        if (GUI.Button(new Rect(buttonRect.x + third * 2, buttonRect.y, third, buttonHeight), "String"))
-            AddEntry(arrayProp, typeof(JString));
-
-        // Move down for list itself
-        Rect listRect = new Rect(position.x, position.y + buttonHeight + 4, position.width,
-            EditorGUI.GetPropertyHeight(arrayProp, true));
-        EditorGUI.PropertyField(listRect, arrayProp, GUIContent.none, true);
-
-        EditorGUI.indentLevel = indent;
-    }
-
-    private void AddEntry(SerializedProperty listProp, Type type)
-    {
-        listProp.arraySize++;
-        SerializedProperty element = listProp.GetArrayElementAtIndex(listProp.arraySize - 1);
-
-        element.managedReferenceValue = Activator.CreateInstance(type);
-        listProp.serializedObject.ApplyModifiedProperties();
-    }
-
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        // Buttons + list
-        return 22f + EditorGUI.GetPropertyHeight(property, true);
-    }
 }
