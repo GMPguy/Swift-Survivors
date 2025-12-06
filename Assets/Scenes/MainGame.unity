@@ -25161,11 +25161,23 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id175;va0;sq1;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234761
+    - rid: 5346892213381234762
+    - rid: 5346892213381234763
   Resources:
   - id165;sq1;do0;
   - id176;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234764
+    - rid: 5346892213381234765
+    - rid: 5346892213381234766
+  - Values:
+    - rid: 5346892213381234767
+    - rid: 5346892213381234768
+    - rid: 5346892213381234769
   Special: 
   CraftingTime:
   - 5
@@ -25176,7 +25188,52 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234761
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 175
+    - rid: 5346892213381234762
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234763
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234764
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 165
+    - rid: 5346892213381234765
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234766
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
+    - rid: 5346892213381234767
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 176
+    - rid: 5346892213381234768
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234769
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &173002348
 GameObject:
   m_ObjectHideFlags: 0
@@ -25455,10 +25512,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id161;va0;sq3;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234719
+    - rid: 5346892213381234720
+    - rid: 5346892213381234721
   Resources:
   - id117;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234722
+    - rid: 5346892213381234723
+    - rid: 5346892213381234724
   Special: Fire
   CraftingTime:
   - 6
@@ -25469,7 +25534,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234719
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 161
+    - rid: 5346892213381234720
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234721
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 3
+    - rid: 5346892213381234722
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 117
+    - rid: 5346892213381234723
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234724
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1001 &175820320
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30874,10 +30969,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id163;va0;sq4;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234731
+    - rid: 5346892213381234732
+    - rid: 5346892213381234733
   Resources:
   - id162;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234734
+    - rid: 5346892213381234735
+    - rid: 5346892213381234736
   Special: Fire
   CraftingTime:
   - 9
@@ -30888,7 +30991,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234731
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 163
+    - rid: 5346892213381234732
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234733
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 4
+    - rid: 5346892213381234734
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 162
+    - rid: 5346892213381234735
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234736
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &242199224
 GameObject:
   m_ObjectHideFlags: 0
@@ -42046,11 +42179,23 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id152;va100;rep;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234703
+    - rid: 5346892213381234704
+    - rid: 5346892213381234706
   Resources:
   - id140;sq2;do0;
   - id145;sq2;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234707
+    - rid: 5346892213381234708
+    - rid: 5346892213381234709
+  - Values:
+    - rid: 5346892213381234710
+    - rid: 5346892213381234711
+    - rid: 5346892213381234712
   Special: 
   CraftingTime:
   - 15
@@ -42061,7 +42206,51 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234703
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 152
+    - rid: 5346892213381234704
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 100
+    - rid: 5346892213381234706
+      type: {class: JTag, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 12
+    - rid: 5346892213381234707
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 140
+    - rid: 5346892213381234708
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 2
+    - rid: 5346892213381234709
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
+    - rid: 5346892213381234710
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 145
+    - rid: 5346892213381234711
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 2
+    - rid: 5346892213381234712
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &304903245
 GameObject:
   m_ObjectHideFlags: 0
@@ -48052,11 +48241,23 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id153;va100;rep;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234694
+    - rid: 5346892213381234695
+    - rid: 5346892213381234696
   Resources:
   - id140;sq1;do0;
   - id142;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234697
+    - rid: 5346892213381234698
+    - rid: 5346892213381234699
+  - Values:
+    - rid: 5346892213381234700
+    - rid: 5346892213381234701
+    - rid: 5346892213381234702
   Special: 
   CraftingTime:
   - 10
@@ -48067,7 +48268,51 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234694
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 153
+    - rid: 5346892213381234695
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 100
+    - rid: 5346892213381234696
+      type: {class: JTag, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 12
+    - rid: 5346892213381234697
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 140
+    - rid: 5346892213381234698
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 1
+    - rid: 5346892213381234699
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
+    - rid: 5346892213381234700
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 142
+    - rid: 5346892213381234701
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 1
+    - rid: 5346892213381234702
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1001 &368689398
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -55797,10 +56042,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id161;va0;sq5;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234725
+    - rid: 5346892213381234726
+    - rid: 5346892213381234727
   Resources:
   - id118;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234728
+    - rid: 5346892213381234729
+    - rid: 5346892213381234730
   Special: Fire
   CraftingTime:
   - 9
@@ -55811,7 +56064,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234725
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 161
+    - rid: 5346892213381234726
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234727
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 5
+    - rid: 5346892213381234728
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 118
+    - rid: 5346892213381234729
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234730
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &460431067
 GameObject:
   m_ObjectHideFlags: 0
@@ -134670,10 +134953,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id171;va0;sq1;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234749
+    - rid: 5346892213381234750
+    - rid: 5346892213381234751
   Resources:
   - id173;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234752
+    - rid: 5346892213381234753
+    - rid: 5346892213381234754
   Special: Fire
   CraftingTime:
   - 15
@@ -134684,7 +134975,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234749
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 171
+    - rid: 5346892213381234750
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234751
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234752
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 173
+    - rid: 5346892213381234753
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234754
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &859474371
 GameObject:
   m_ObjectHideFlags: 0
@@ -148257,13 +148578,32 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id176;va100;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234770
+    - rid: 5346892213381234771
   Resources:
   - id173;sq1;do0;
   - id147;sq1;do0;
   - id144;sq1;do0;
   - id171;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234774
+    - rid: 5346892213381234773
+    - rid: 5346892213381234772
+  - Values:
+    - rid: 5346892213381234777
+    - rid: 5346892213381234776
+    - rid: 5346892213381234775
+  - Values:
+    - rid: 5346892213381234780
+    - rid: 5346892213381234779
+    - rid: 5346892213381234778
+  - Values:
+    - rid: 5346892213381234783
+    - rid: 5346892213381234782
+    - rid: 5346892213381234781
   Special: 
   CraftingTime:
   - 15
@@ -148274,7 +148614,77 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234770
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 176
+    - rid: 5346892213381234771
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 100
+    - rid: 5346892213381234772
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
+    - rid: 5346892213381234773
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234774
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 173
+    - rid: 5346892213381234775
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
+    - rid: 5346892213381234776
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234777
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 147
+    - rid: 5346892213381234778
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
+    - rid: 5346892213381234779
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234780
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 144
+    - rid: 5346892213381234781
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
+    - rid: 5346892213381234782
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234783
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 171
 --- !u!1 &963279194
 GameObject:
   m_ObjectHideFlags: 0
@@ -163460,10 +163870,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id72;va0;sq1;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234737
+    - rid: 5346892213381234738
+    - rid: 5346892213381234739
   Resources:
   - id166;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234740
+    - rid: 5346892213381234741
+    - rid: 5346892213381234742
   Special: Fire
   CraftingTime:
   - 9
@@ -163474,7 +163892,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234737
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 72
+    - rid: 5346892213381234738
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234739
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234740
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 166
+    - rid: 5346892213381234741
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234742
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1001 &1026143701
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -169197,10 +169645,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id145;va0;sq1;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234755
+    - rid: 5346892213381234756
+    - rid: 5346892213381234757
   Resources:
   - id174;sq3;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234758
+    - rid: 5346892213381234759
+    - rid: 5346892213381234760
   Special: Fire
   CraftingTime:
   - 10
@@ -169211,7 +169667,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234755
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 145
+    - rid: 5346892213381234756
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234757
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234758
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 174
+    - rid: 5346892213381234759
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 3
+    - rid: 5346892213381234760
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &1037997368
 GameObject:
   m_ObjectHideFlags: 0
@@ -180913,10 +181399,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id141;va0;sq1;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234743
+    - rid: 5346892213381234744
+    - rid: 5346892213381234745
   Resources:
   - id172;sq2;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234746
+    - rid: 5346892213381234747
+    - rid: 5346892213381234748
   Special: 
   CraftingTime:
   - 10
@@ -180927,7 +181421,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234743
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 141
+    - rid: 5346892213381234744
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234745
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234746
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 172
+    - rid: 5346892213381234747
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 2
+    - rid: 5346892213381234748
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &1101736342
 GameObject:
   m_ObjectHideFlags: 0
@@ -181544,10 +182068,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id22;va0;sq1;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892207435808835
+    - rid: 5346892207435808836
+    - rid: 5346892207435808838
   Resources:
   - id144;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892207435808839
+    - rid: 5346892207435808842
+    - rid: 5346892207435808841
   Special: 
   CraftingTime:
   - 5
@@ -181558,7 +182090,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892207435808835
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 22
+    - rid: 5346892207435808836
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892207435808838
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892207435808839
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 144
+    - rid: 5346892207435808841
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
+    - rid: 5346892207435808842
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
 --- !u!1 &1106494487
 GameObject:
   m_ObjectHideFlags: 0
@@ -181986,10 +182548,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id148;va0;sq1;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234688
+    - rid: 5346892213381234689
+    - rid: 5346892213381234690
   Resources:
   - id140;sq2;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234691
+    - rid: 5346892213381234692
+    - rid: 5346892213381234693
   Special: 
   CraftingTime:
   - 5
@@ -182000,7 +182570,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234688
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 148
+    - rid: 5346892213381234689
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234690
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234691
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 140
+    - rid: 5346892213381234692
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 2
+    - rid: 5346892213381234693
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 0
+        Value: 0
 --- !u!1 &1113200926
 GameObject:
   m_ObjectHideFlags: 0
@@ -201513,10 +202113,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id144;va0;sq1;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892207435808843
+    - rid: 5346892207435808844
+    - rid: 5346892207435808845
   Resources:
   - id141;sq2;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892207435808846
+    - rid: 5346892207435808847
+    - rid: 5346892207435808848
   Special: 
   CraftingTime:
   - 5
@@ -201527,7 +202135,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892207435808843
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 144
+    - rid: 5346892207435808844
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892207435808845
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892207435808846
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 141
+    - rid: 5346892207435808847
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 2
+    - rid: 5346892207435808848
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1001 &1238675778
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -224886,10 +225524,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id161;va0;sq1;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234713
+    - rid: 5346892213381234714
+    - rid: 5346892213381234715
   Resources:
   - id116;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234716
+    - rid: 5346892213381234717
+    - rid: 5346892213381234718
   Special: Fire
   CraftingTime:
   - 3
@@ -224900,7 +225546,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234713
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 161
+    - rid: 5346892213381234714
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234715
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234716
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 116
+    - rid: 5346892213381234717
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234718
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1001 &1338690923
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -228362,10 +229038,8 @@ MonoBehaviour:
   HealthSave: {x: 0, y: 0}
   HungerSave: {x: 0, y: 0}
   PlayerSpeed: 0
-  PlayerInventory:
-  - Values: []
-  PlayerEquipment:
-  - Values: []
+  PlayerInvEq:
+    Values: []
   MaxInventory: 4
   PlayerBuffs: 
   CurrentSave: 1
@@ -246083,11 +246757,23 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id97;va0;sq2;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234798
+    - rid: 5346892213381234799
+    - rid: 5346892213381234800
   Resources:
   - id145;sq1;do0;
   - id171;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234801
+    - rid: 5346892213381234802
+    - rid: 5346892213381234803
+  - Values:
+    - rid: 5346892213381234804
+    - rid: 5346892213381234805
+    - rid: 5346892213381234806
   Special: 
   CraftingTime:
   - 15
@@ -246098,7 +246784,52 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234798
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 97
+    - rid: 5346892213381234799
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234800
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 2
+    - rid: 5346892213381234801
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 145
+    - rid: 5346892213381234802
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234803
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
+    - rid: 5346892213381234804
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 171
+    - rid: 5346892213381234805
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234806
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &1574265968
 GameObject:
   m_ObjectHideFlags: 0
@@ -282934,10 +283665,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id147;va0;sq2;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234792
+    - rid: 5346892213381234793
+    - rid: 5346892213381234794
   Resources:
   - id140;sq4;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234795
+    - rid: 5346892213381234796
+    - rid: 5346892213381234797
   Special: Fire
   CraftingTime:
   - 30
@@ -282948,7 +283687,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234792
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 147
+    - rid: 5346892213381234793
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892213381234794
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 2
+    - rid: 5346892213381234795
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 140
+    - rid: 5346892213381234796
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 4
+    - rid: 5346892213381234797
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &1826841430
 GameObject:
   m_ObjectHideFlags: 0
@@ -289874,10 +290643,18 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id149;va0;sq1;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892207435808857
+    - rid: 5346892207435808858
+    - rid: 5346892207435808859
   Resources:
   - id140;sq4;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892207435808860
+    - rid: 5346892207435808861
+    - rid: 5346892207435808862
   Special: 
   CraftingTime:
   - 10
@@ -289888,7 +290665,37 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892207435808857
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 149
+    - rid: 5346892207435808858
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 0
+    - rid: 5346892207435808859
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892207435808860
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 140
+    - rid: 5346892207435808861
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 4
+    - rid: 5346892207435808862
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &1923829356
 GameObject:
   m_ObjectHideFlags: 0
@@ -310741,11 +311548,22 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id69;va10;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892207435808849
+    - rid: 5346892207435808850
   Resources:
   - id140;sq2;do0;
   - id141;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892207435808851
+    - rid: 5346892207435808852
+    - rid: 5346892207435808853
+  - Values:
+    - rid: 5346892207435808854
+    - rid: 5346892207435808855
+    - rid: 5346892207435808856
   Special: 
   CraftingTime:
   - 5
@@ -310756,7 +311574,47 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892207435808849
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 69
+    - rid: 5346892207435808850
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 10
+    - rid: 5346892207435808851
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 140
+    - rid: 5346892207435808852
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 2
+    - rid: 5346892207435808853
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
+    - rid: 5346892207435808854
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 141
+    - rid: 5346892207435808855
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892207435808856
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &2071705233
 GameObject:
   m_ObjectHideFlags: 0
@@ -315049,11 +315907,22 @@ MonoBehaviour:
   IsButton: 0
   WhatToCraft:
   - id179;va100;
-  Results: []
+  Results:
+  - Values:
+    - rid: 5346892213381234784
+    - rid: 5346892213381234785
   Resources:
   - id140;sq1;do0;
   - id147;sq1;do0;
-  TheResources: []
+  TheResources:
+  - Values:
+    - rid: 5346892213381234788
+    - rid: 5346892213381234787
+    - rid: 5346892213381234786
+  - Values:
+    - rid: 5346892213381234789
+    - rid: 5346892213381234790
+    - rid: 5346892213381234791
   Special: 
   CraftingTime:
   - 10
@@ -315064,7 +315933,47 @@ MonoBehaviour:
   ItemPrefab: {fileID: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5346892213381234784
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 179
+    - rid: 5346892213381234785
+      type: {class: JFloat, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 2
+        Value: 100
+    - rid: 5346892213381234786
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
+    - rid: 5346892213381234787
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234788
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 140
+    - rid: 5346892213381234789
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 147
+    - rid: 5346892213381234790
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 5
+        Value: 1
+    - rid: 5346892213381234791
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 14
+        Value: 0
 --- !u!1 &2121417545
 GameObject:
   m_ObjectHideFlags: 0

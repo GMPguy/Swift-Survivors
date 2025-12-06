@@ -505,13 +505,17 @@ public class CanvasScript : MonoBehaviour {
                 }
             }
 
-            if(PrevInvSlot == null || !MainPlayer.Inventory[MainPlayer.CurrentItemHeld].CompareTo(PrevInvSlot) || SwitchItemInfo > 0f){
-                if(PrevInvSlot == null || MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID) != PrevInvSlot.GetInt(JType.ID)) 
-                    SwitchItemInfo = 1f;
+            // Item side info
+            if(PrevInvSlot == null || MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID) != PrevInvSlot.GetInt(JType.ID)) {
+                SwitchItemInfo = 1f;
                 PrevInvSlot = MainPlayer.Inventory[MainPlayer.CurrentItemHeld];
-                SwitchItemInfo = Mathf.Clamp(SwitchItemInfo - 0.04f * (Time.deltaTime * 50f), 0f, 1f);
-                SetItemInfo(PrevInvSlot);
             }
+
+            if(SwitchItemInfo > 0f)
+                SwitchItemInfo = Mathf.Clamp(SwitchItemInfo - 0.04f * (Time.deltaTime * 50f), 0f, 1f);
+
+            if (PrevInvSlot != null)
+                SetItemInfo(PrevInvSlot);
             // Inventory
 
             // Crosshairs
@@ -671,7 +675,7 @@ public class CanvasScript : MonoBehaviour {
 
                     if(Hovered) BuffText = GS.SetString(
                         "Your blood is leaking, and you're losing health.",
-                        "Twoja krew się leje, i tracisz punkty zdrowia co sekundę.");
+                        "Twoja krew się leje, i tracisz punkty zdrowia.");
                 } else if (GetBuffA.name == "Hydration" && MainPlayer.Hydration > 0f) {
                     GetBuffA.SetActive(true);
                     GetBuffA.transform.GetChild(0).GetComponent<Text>().text = (int)MainPlayer.Hydration + " sec";

@@ -58,7 +58,7 @@ public class CraftingOption : MonoBehaviour {
                         requiredAmount = TheResources[CheckRes].GetInt(JType.StackQuantity);
 
                     for (int CheckItem = 0; CheckItem < MainPlayer.MaxInventorySlots; CheckItem ++) {
-                        if (TheResources[CheckRes].GetString(JType.CraftingFunction) == "remove" && GotItems[CheckItem].GetInt(JType.ID) == TheResources[CheckRes].GetInt(JType.ID)) {
+                        if (TheResources[CheckRes].GetInt(JType.CraftingFunction) == 0 && GotItems[CheckItem].GetInt(JType.ID) == TheResources[CheckRes].GetInt(JType.ID)) {
                             if(!GotItems[CheckItem].Exists(JType.StackQuantity)){// GS.ExistSemiClass(GotItems[CheckItem], "sq")) {
                                 AcquiredItems.Add(new Vector3Int(CheckItem, 1, 0));
                                 requiredAmount--;

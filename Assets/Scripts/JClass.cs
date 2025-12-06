@@ -214,6 +214,13 @@ public class JEntry {
 }
 
 [Serializable]
+public class JTag : JEntry { 
+    public JTag (JType type) : base (type) {
+        Name = type;
+    }
+}
+
+[Serializable]
 public class JInt : JEntry { 
     public int Value; 
     public JInt (JType type, int value) : base (type) {
