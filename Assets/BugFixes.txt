@@ -110,7 +110,11 @@ x Improve spawning
 x Adjust grass quality
 
 - Finish JClasses
-	- Fix stackable items
+	x Fix JClass = x to JClass.CopyFrom()
+	x Fix stackable items
+	x Fix attachments
 	x Inventory and equipment does not carry over
 	- Fix spawnders
+	- Fix crafting recipes
+	- Fix canvas item info
 	x Find a way to add JClasses in inspector

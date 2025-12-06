@@ -136,7 +136,7 @@ public class GameScript : MonoBehaviour {
     public List<string> Messages; // ti_Good;de_Description;vi_BonusVisuals;im_0; - importance levels 0-not 1-save 2-popup 3-popupinstant
 
     // Improved item classification
-    public itemClass[] itemCache;
+    public itemClass[] ItemCache;
     public class itemClass{
         GameScript GS;
         public JClass startVariables;
@@ -147,7 +147,7 @@ public class GameScript : MonoBehaviour {
             GS = sGS;
             Name = sName; 
             Desc = sDesc;
-            startVariables = startervariables;
+            startVariables = new (startervariables);
             if(setThrow != default) ThrowVariables = setThrow;
             imageIndex = setImage;
         }
@@ -937,7 +937,7 @@ public class GameScript : MonoBehaviour {
     public void setItemData(bool isCausal){
         JType casualAmmo = isCausal ? JType.CasualAmmo : JType.AmmoStack;
 
-        itemCache = new itemClass[]{
+        ItemCache = new itemClass[]{
             new(),
             new(this, new string[]{"Apple", "Jabłko"},
                 new string[]{"A red and round edible fruit.", "Okrągły i czerwony owoc"},
@@ -2079,8 +2079,8 @@ public class GameScript : MonoBehaviour {
 
         // filler
         List<itemClass> filIC = new();
-        filIC.AddRange(itemCache);
-        for (int fil = itemCache.Length; fil < 990; fil++){
+        filIC.AddRange(ItemCache);
+        for (int fil = ItemCache.Length; fil < 990; fil++){
             filIC.Add(null);
         }
 
@@ -2145,7 +2145,7 @@ public class GameScript : MonoBehaviour {
             )
         });
 
-        itemCache = filIC.ToArray();
+        ItemCache = filIC.ToArray();
 
     }
 

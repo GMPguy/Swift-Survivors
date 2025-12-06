@@ -1012,10 +1012,10 @@ public class AttackScript : MonoBehaviour {
                                 DigupItem.transform.position = PointHit + Vector3.up / 4f;
 
                                 if(Digup == 0)
-                                    DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[(int)Random.Range(1, GameObject.Find("_RoundScript").GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables;
+                                    DigupItem.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[(int)Random.Range(1, GameObject.Find("_RoundScript").GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables);
                                 else {
                                     int[] materials = new[]{142, 145, 147, 146, 146, 146};
-                                    DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[materials[(int)Random.Range(0f, 5.9f)]].startVariables;
+                                    DigupItem.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[materials[(int)Random.Range(0f, 5.9f)]].startVariables);
                                 }
                             }
                         } else if (ItemID == 156) {

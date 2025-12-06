@@ -118,7 +118,7 @@ public class CraftingOption : MonoBehaviour {
                         if(cr > 0) 
                             ToDisplay += " + ";
 
-                        ToDisplay += GS.itemCache[Results[0].GetInt(JType.ID)].getName().ToUpper();
+                        ToDisplay += GS.ItemCache[Results[0].GetInt(JType.ID)].getName().ToUpper();
 
                         if(Results[0].Exists(JType.StackQuantity) && Results[0].GetInt(JType.StackQuantity) > 1) 
                             ToDisplay += " x" + Results[0].GetInt(JType.StackQuantity);
@@ -139,7 +139,7 @@ public class CraftingOption : MonoBehaviour {
                         if(sr == 0) 
                             ToDisplay += "\nResources:";
 
-                        ToDisplay += "\n- " + GS.itemCache[TheResources[sr].GetInt(JType.ID)].getName();
+                        ToDisplay += "\n- " + GS.ItemCache[TheResources[sr].GetInt(JType.ID)].getName();
 
                         if(TheResources[sr].Exists(JType.StackQuantity) && TheResources[sr].GetInt(JType.StackQuantity) > 1) 
                             ToDisplay += " x" + TheResources[sr].GetInt(JType.StackQuantity);
@@ -156,7 +156,7 @@ public class CraftingOption : MonoBehaviour {
                         MainPlayer.CantUseItem = Mathf.Clamp(MainPlayer.CantUseItem, 1f, Mathf.Infinity);
                         CraftingTime[1] = Mathf.Clamp(CraftingTime[1] + (0.02f * (Time.deltaTime * 50f)), 0f, CraftingTime[0]);
                         if (CraftingTime[1] >= CraftingTime[0]) {
-                            GS.Mess(GS.SetString(GS.itemCache[Results[0].GetInt(JType.ID)].getName() + " crafted!", "Stworzono " + GS.itemCache[Results[0].GetInt(JType.ID)].getName() + "!"), "Craft");
+                            GS.Mess(GS.SetString(GS.ItemCache[Results[0].GetInt(JType.ID)].getName() + " crafted!", "Stworzono " + GS.ItemCache[Results[0].GetInt(JType.ID)].getName() + "!"), "Craft");
                             MainPlayer.CantCraft = Mathf.Clamp(MainPlayer.CantCraft, 0.5f, Mathf.Infinity);
                             // Retrive resources
                             foreach (Vector3Int GetResource in AcquiredItems) {
@@ -199,7 +199,7 @@ public class CraftingOption : MonoBehaviour {
             Special = WhichTemplate.GetComponent<CraftingOption>().Special;
             CraftingTime = new float[] {WhichTemplate.GetComponent<CraftingOption>().CraftingTime[0], 0f};
 
-            this.transform.GetChild(1).GetComponent<Text>().text = GS.itemCache[Results[0].GetInt(JType.ID)].getName();//GS.ReceiveItemName(WhatToCraft[0].x);
+            this.transform.GetChild(1).GetComponent<Text>().text = GS.ItemCache[Results[0].GetInt(JType.ID)].getName();//GS.ReceiveItemName(WhatToCraft[0].x);
             foreach (Sprite SetIcon in MainCanvas.ItemIcons) {
                 if (SetIcon.name.Substring(1) == Results[0].GetInt(JType.ID).ToString()) {
                     COIcon.transform.GetChild(0).GetComponent<Image>().sprite = SetIcon;

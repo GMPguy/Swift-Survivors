@@ -285,7 +285,7 @@ public class PlayerScript : MonoBehaviour {
         if (GS.ExistSemiClass(GS.PlaythroughStats, "RItemGot_")){
             for(int ByThatMuch = int.Parse(GS.GetSemiClass(GS.PlaythroughStats, "RItemGot_")); ByThatMuch > 0; ByThatMuch--){
                 int GivenID = RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)];
-                InvGet(GS.itemCache[GivenID].startVariables, 0);
+                InvGet(GS.ItemCache[GivenID].startVariables, 0);
             }
             GS.PlaythroughStats = GS.RemoveSemiClass(GS.PlaythroughStats, "RItemGot_");
         }
@@ -293,7 +293,7 @@ public class PlayerScript : MonoBehaviour {
         if (GS.ExistSemiClass(GS.PlaythroughStats, "RTreasure_")){
             for(int ByThatMuch = int.Parse(GS.GetSemiClass(GS.PlaythroughStats, "RTreasure_")); ByThatMuch > 0; ByThatMuch--){
                 int GivenID = (int)Random.Range(990f, 999.9f);
-                InvGet(GS.itemCache[GivenID].startVariables, 0);
+                InvGet(GS.ItemCache[GivenID].startVariables, 0);
             }
             GS.PlaythroughStats = GS.RemoveSemiClass(GS.PlaythroughStats, "RTreasure_");
         }
@@ -423,7 +423,7 @@ public class PlayerScript : MonoBehaviour {
                             GameObject SpawnFish = Instantiate(ItemPrefab) as GameObject;
                             SpawnFish.transform.position = FishingRodBait.transform.position;
                             int pickedFish = (int)Random.Range(0f, FishesChance.Length - 0.1f);
-                            SpawnFish.GetComponent<ItemScript>().Variables = GS.itemCache[FishesChance[pickedFish]].startVariables;
+                            SpawnFish.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[FishesChance[pickedFish]].startVariables);
                             SpawnFish.GetComponent<ItemScript>().State = 2;
                             SpawnFish.GetComponent<ItemScript>().ThrownDirection = FishingRodBait.transform.GetChild(0).forward;
                             if(pickedFish == 6) GS.PS.AchProg("Ach_Fisherman", "", new string[]{"vcarp_", "1"});
@@ -431,7 +431,7 @@ public class PlayerScript : MonoBehaviour {
                             GS.Mess(GS.SetString("You caught some trash!", "Złowiłeś jakiś przedmiot!"), "Good");
                             GameObject SpawnFish = Instantiate(ItemPrefab) as GameObject;
                             SpawnFish.transform.position = FishingRodBait.transform.position;
-                            SpawnFish.GetComponent<ItemScript>().Variables = GS.itemCache[RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]].startVariables;
+                            SpawnFish.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]].startVariables);
                             SpawnFish.GetComponent<ItemScript>().State = 2;
                             SpawnFish.GetComponent<ItemScript>().ThrownDirection = FishingRodBait.transform.GetChild(0).forward + FishingRodBait.transform.GetChild(0).up;
                             GS.PS.AchProg("Ach_Fisherman", "", new string[]{"vgarbage_", "1"});
@@ -1189,16 +1189,16 @@ public class PlayerScript : MonoBehaviour {
             case 1: // remove item
                 if(Inventory[Where].Exists(JType.StackQuantity) && Inventory[Where].GetInt(JType.StackQuantity) > stackAmount) {
                     int keepStack = Inventory[Where].GetInt(JType.StackQuantity) - stackAmount;
-                    Inventory[Where] = GS.itemCache[ Inventory[Where].GetInt(JType.ID) ].startVariables;
+                    Inventory[Where].CopyFrom(GS.ItemCache[ Inventory[Where].GetInt(JType.ID) ].startVariables);
                     Inventory[Where].SetInt(JType.StackQuantity, keepStack);//= GS.SetSemiClass(Inventory[at], "sq", keepStack.ToString());
                 } else 
                     Inventory[Where] = new (0, JTemplate.JustID);
                 break;
             case 2: case -1: case -2: // drop item - drop item by player - throw item by player
-                    //stackAmount = (int)Mathf.Clamp(stackAmount, 0, float.Parse(GS.GetSemiClass(Inventory[at], "sq")));
+                    stackAmount = (int)Mathf.Clamp(stackAmount, 0, Inventory[Where].GetInt(JType.StackQuantity));
                     GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
                     DropItem.transform.position = this.transform.position + LookDir.forward * 0.5f;
-                    DropItem.GetComponent<ItemScript>().Variables = Inventory[Where];
+                    DropItem.GetComponent<ItemScript>().Variables.CopyFrom(Inventory[Where]);
 
                     if(DropItem.GetComponent<ItemScript>().Variables.Exists(JType.StackQuantity)) 
                         DropItem.GetComponent<ItemScript>().Variables.SetInt(JType.StackQuantity, stackAmount);// = GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
@@ -1278,7 +1278,7 @@ public class PlayerScript : MonoBehaviour {
                                 if(ci == MaxInventorySlots) {
                                     GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
                                     DropItem.transform.position = this.transform.position + LookDir.forward * 1f;
-                                    DropItem.GetComponent<ItemScript>().Variables = What;
+                                    DropItem.GetComponent<ItemScript>().Variables.CopyFrom(What);
                                     DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
                                 } else if (Inventory[ci].GetInt(JType.ID) == 0) {
                                     Inventory[ci] = What;
@@ -1306,7 +1306,7 @@ public class PlayerScript : MonoBehaviour {
                     if (Inventory[rs].CompareTo(What)) {
                         if(Inventory[rs].Exists(JType.StackQuantity) && Inventory[rs].GetInt(JType.StackQuantity) > stackAmount) {
                             int keepStack = Inventory[rs].GetInt(JType.StackQuantity) - stackAmount;
-                            Inventory[rs] = GS.itemCache[ Inventory[rs].GetInt(JType.ID) ].startVariables;
+                            Inventory[rs] = GS.ItemCache[ Inventory[rs].GetInt(JType.ID) ].startVariables;
                             Inventory[rs].SetInt(JType.StackQuantity, keepStack);// = GS.SetSemiClass(Inventory[rs], "sq", keepStack.ToString());
                         } else // ] == null
                             Inventory[rs] = new (0, JTemplate.JustID);
@@ -1319,7 +1319,7 @@ public class PlayerScript : MonoBehaviour {
                         stackAmount = (int)Mathf.Clamp(stackAmount, 0, Inventory[rs].GetInt(JType.StackQuantity));
                         GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
                         DropItem.transform.position = this.transform.position + LookDir.forward * 0.5f;
-                        DropItem.GetComponent<ItemScript>().Variables = What;
+                        DropItem.GetComponent<ItemScript>().Variables.CopyFrom(What);
 
                         if(DropItem.GetComponent<ItemScript>().Variables.Exists(JType.StackQuantity))//GS.ExistSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq")) 
                             DropItem.GetComponent<ItemScript>().Variables.SetInt(JType.StackQuantity, stackAmount);//= GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
@@ -1525,13 +1525,13 @@ public class PlayerScript : MonoBehaviour {
                     int prevAt = InteractedGameobject.GetComponent<ItemScript>().Variables.GetInt(JType.ID);
                     JClass newItem = null;
                     if (prevAt != 0) {
-                        newItem = GS.itemCache[prevAt].startVariables;
+                        newItem = new (GS.ItemCache[prevAt].startVariables);
                     }
                     InteractedGameobject.GetComponent<ItemScript>().Variables.SetInt(JType.Attachment, Inventory[CurrentItemHeld].GetInt(JType.ID)) ;//= GS.SetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "at", GS.GetSemiClass(Inventory[CurrentItemHeld].GetInt(JType.ID)); //InteractedGameobject.GetComponent<ItemScript>().Variables.z = GS.GetSemiClass(Inventory[CurrentItemHeld].GetInt(JType.ID);
                     InteractedGameobject.GetComponent<ItemScript>().setAtt();
-                    GS.Mess(GS.SetString(GS.itemCache[Inventory[CurrentItemHeld].GetInt(JType.ID)].getName() + " attached to weapon", "Dodano " + GS.itemCache[Inventory[CurrentItemHeld].GetInt(JType.ID)].getName() + " do broni"));
+                    GS.Mess(GS.SetString(GS.ItemCache[Inventory[CurrentItemHeld].GetInt(JType.ID)].getName() + " attached to weapon", "Dodano " + GS.ItemCache[Inventory[CurrentItemHeld].GetInt(JType.ID)].getName() + " do broni"));
                     InvGet(CurrentItemHeld, 1);
-                    if(prevAt != null)
+                    if(prevAt != 0)
                         InvGet(prevAt, 0);
                 } else {
                     CantUseItem = 0.5f;
@@ -1710,7 +1710,7 @@ public class PlayerScript : MonoBehaviour {
                 if (Inventory[CheckInventory].GetInt(JType.ID) == 13 && CurrentItemHeld != CheckInventory) {
                     GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
                     DropItem.transform.position = this.transform.position;
-                    DropItem.GetComponent<ItemScript>().Variables = Inventory[CheckInventory];
+                    DropItem.GetComponent<ItemScript>().Variables.CopyFrom( Inventory[CheckInventory] );
                     InvGet(CheckInventory, 1);
                     GS.Mess(GS.SetString("Flare must be held in hand!", "Flara musi być trzymana w ręce!"), "Error");
                 } else if (Inventory[CheckInventory].GetInt(JType.ID) == 997 && Inventory[CheckInventory].GetFloat(JType.VariableA) < 100f) {
@@ -2852,32 +2852,32 @@ public class PlayerScript : MonoBehaviour {
                     // Get range info
 
                     // Attachment stats change
-                    if(Inventory[CurrentItemHeld].GetInt(JType.ID) == 101){
+                    if(Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 101){
                         FireAnimation[0] = "Grip" + FireAnimation[0];
                         FireAnimation[1] = "Grip" + FireAnimation[1];
                         ReloadingAnimation[0] = "Grip" + ReloadingAnimation[0];
                         AimingAnimation = new [] {"", FireAnimation[0]};
                         if(currID == 55) 
                             FireAnimation = new string[]{"GripThompson-Shoot", "GripTHompson-Shoot"};
-                    } else if (Inventory[CurrentItemHeld].GetInt(JType.ID) == 103) {
+                    } else if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 103) {
                         AimZoom = 5f;
                         BurstFire = 1;
                         GunCooldown[0] = 1f;
                         GunSpreadPC = 0f;
-                    } else if (Inventory[CurrentItemHeld].GetInt(JType.ID) == 104) {
+                    } else if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 104) {
                         AimZoom = 25f;
                     }
                     GunSpreadPC = Mathf.Clamp(GunSpreadPC, 0f, 1f);
 
                     if (GS.GetComponent<GameScript>().ReceiveButtonPress("AltAction", "Hold") > 0f) {
-                        if (Inventory[CurrentItemHeld].GetInt(JType.ID) == 14) {
+                        if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 14) {
                             if (CantUseItem <= 0f) {
                                 CantUseItem = 0.5f;
                                 CantSwitchItem = 0.5f;
                                 ItemsShown.GetComponent<Animator>().Play(FireAnimation[1], 0, 0f);
                                 RS.Attack(new string[]{ "Bayonet", "Power" + (Drunkenness / 10f), "Inventory" + CurrentItemHeld }, LookDir.position, MainCamera.forward, this.gameObject, SlimEnd, SlimEnd);
                             }
-                        } else if (Inventory[CurrentItemHeld].GetInt(JType.ID) == 102) {
+                        } else if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 102) {
                             if (CantUseItem <= 0f && Inventory[CurrentItemHeld].GetFloat(JType.VariableA) >= (int)(ReloadVariables[0] / 2f)) {
                                 //Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-" + ((int)(ReloadVariables[0] / 2f)).ToString(CultureInfo.InvariantCulture));//Inventory[CurrentItemHeld].y -= (int)(ReloadVariables[0] / 2f);
                                 Inventory[CurrentItemHeld].SetFloat(JType.VariableA, -(ReloadVariables[0] / 2f), Maths.Add);
@@ -2928,7 +2928,7 @@ public class PlayerScript : MonoBehaviour {
                         Inventory[CurrentItemHeld].SetFloat(JType.VariableA, -AmmoInUse, Maths.Add);
 
                         if (ZoomValues[1] <= ZoomValues[0] + 1) {
-                            if (Inventory[CurrentItemHeld].GetInt(JType.ID) == 103) {
+                            if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 103) {
                                 ItemsShown.GetComponent<Animator>().Play(FireAnimation[0], 0, 0f);
                             } else if (AimingAnimation[1] != "") {
                                 ItemsShown.GetComponent<Animator>().Play(AimingAnimation[1], 0, 0f);
@@ -2946,7 +2946,7 @@ public class PlayerScript : MonoBehaviour {
                             if(ZoomValues[1] <= ZoomValues[0] + 1) Gunspread /= 3f;
                             Additionals.Add("GunSpread" + Gunspread.ToString(CultureInfo.InvariantCulture));
                             Additionals.Add("Inventory" + CurrentItemHeld);
-                            if (Inventory[CurrentItemHeld].GetInt(JType.ID) == 103) {
+                            if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 103) {
                                 Additionals.Add("Power10");
                             } else {
                                 Additionals.Add("Power" + (Drunkenness / 10f));
@@ -2954,12 +2954,12 @@ public class PlayerScript : MonoBehaviour {
                             if (BulletsToSpanw > AmountOfGunFires) {
                                 Additionals.Add("HideGunFire");
                             }
-                            if (Inventory[CurrentItemHeld].GetInt(JType.ID) == 100) {
+                            if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 100) {
                                 Additionals.Add("IsSilenced");
                             }
                             RS.Attack(Additionals.ToArray(), LookDir.position, MainCamera.forward, this.gameObject, SlimEnd, BulletChamber);
                         }
-                        if (!(IsCrouching >= 1f && Inventory[CurrentItemHeld].GetInt(JType.ID) == 105)) {
+                        if (!(IsCrouching >= 1f && Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 105)) {
                             float[] RecoilMP = new float[] { Mathf.Lerp(1f, Random.Range(-0.25f, 0.25f), Mathf.Clamp(GunSpreadPC * RecoilPhysics[0], 0f, 1f) ) , Mathf.Lerp(0f, 2f, Mathf.Clamp(GunSpreadPC * RecoilPhysics[1], 0f, 1f) ) };
                             float GunspreadMP = 1f;
                             float YrecoilRandomizer = (Mathf.PerlinNoise(Time.time / 3f, Time.time / -3f) * 2f) - 1f;
@@ -3050,7 +3050,7 @@ public class PlayerScript : MonoBehaviour {
                                 IsReloading = ReloadVariables[2];
                             } else {
                                 CantUseItem = 0.5f;
-                                GS.Mess(GS.SetString("You need " + GS.itemCache[(int)ReloadVariables[1]].getName() + "!", "Potrzebujesz " + GS.itemCache[(int)ReloadVariables[1]].getName() + "!"), "Error");
+                                GS.Mess(GS.SetString("You need " + GS.ItemCache[(int)ReloadVariables[1]].getName() + "!", "Potrzebujesz " + GS.ItemCache[(int)ReloadVariables[1]].getName() + "!"), "Error");
                             }
                                 
                         }
@@ -3190,7 +3190,7 @@ public class PlayerScript : MonoBehaviour {
                     break;
                 case 45: case 46: case 47: case 48: case 49: case 994: case 51: case 53: case 86: case 94: case 125: case 126: case 180:
                     // Get Clothing Infos
-                    string ClothingName = GS.itemCache[currID].getName();
+                    string ClothingName = GS.ItemCache[currID].getName();
                     Color32 WearColor = new Color32(255, 255, 255, 255);
 
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f) {
@@ -3204,9 +3204,9 @@ public class PlayerScript : MonoBehaviour {
                                 CantUseItem = 0.5f;
                                 string WhatCategory = "";
                                 if (Category == 1) {
-                                    WhatCategory = GS.itemCache[Equipment[CheckEq].GetInt(JType.ID)].getName();
+                                    WhatCategory = GS.ItemCache[Equipment[CheckEq].GetInt(JType.ID)].getName();
                                 }
-                                GS.Mess(GS.SetString("Can't wear that, unequip " + GS.itemCache[Equipment[CheckEq].GetInt(JType.ID)].getName() + " first!", "Nie można tego ubrać, " + GS.itemCache[Equipment[CheckEq].GetInt(JType.ID)].getName() + " zajmuje miejsce!"), "Error");
+                                GS.Mess(GS.SetString("Can't wear that, unequip " + GS.ItemCache[Equipment[CheckEq].GetInt(JType.ID)].getName() + " first!", "Nie można tego ubrać, " + GS.ItemCache[Equipment[CheckEq].GetInt(JType.ID)].getName() + " zajmuje miejsce!"), "Error");
                                 break;
                             } else if (Equipment[CheckEq].GetInt(JType.ID) == 0) {
                                 AddHere = CheckEq;
@@ -3288,7 +3288,7 @@ public class PlayerScript : MonoBehaviour {
                         for (int DropItems = 10; DropItems > 0; DropItems--) {
                             GameObject Present = Instantiate(ItemPrefab) as GameObject;
                             Present.transform.position = this.transform.position + new Vector3(Random.Range(-3f, 3f), 2f, Random.Range(-3f, 3f));
-                            Present.GetComponent<ItemScript>().Variables = GS.itemCache[RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]].startVariables;
+                            Present.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]].startVariables);
                         }
                         MainCanvas.Flash(new Color32(255, 255, 255, 75), new float[]{0.5f, 0.5f});
                         GS.Mess(GS.SetString("Here are some items", "Masz tu kilka przedmiotów"), "Wear");
@@ -3922,7 +3922,7 @@ public class PlayerScript : MonoBehaviour {
                             plant = false;
                             break;
                         default:
-                            currBuild = GS.itemCache[currID].getNameEng();
+                            currBuild = GS.ItemCache[currID].getNameEng();
                             plant = true;
                             maxBuildAngle = 10f;
                             break;

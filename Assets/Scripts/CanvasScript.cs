@@ -578,7 +578,7 @@ public class CanvasScript : MonoBehaviour {
                             if(i.GetComponent<ItemScript>().CanBeFixed && i.GetComponent<ItemScript>().Variables.GetFloat(JType.VariableA) != 100 && (CHIid >= 88 & CHIid <= 90)){
                                 CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Repair ", "\n> Napraw ") + (int)i.GetComponent<ItemScript>().Variables.GetFloat(JType.VariableA);
                             } else if(i.GetComponent<ItemScript>().CanHaveAttachments && (CHIid >= 100 && CHIid <= 105 || CHIid == 14)){
-                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Attach ", "\n> Zamontuj ") + GS.itemCache[CHIid].getName();
+                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Attach ", "\n> Zamontuj ") + GS.ItemCache[CHIid].getName();
                             }
                         } else if (inter.CanBePicklocked && MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID) == 97) {
                             CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Pick lock ", "\n> Otwórz wytrychem ");
@@ -1069,12 +1069,12 @@ public class CanvasScript : MonoBehaviour {
                             } else {
                                 if (GS.GameModePrefab.x == 1 && DialogedMob.GetComponent<InteractableScript>() != null) {
                                     GS.SetText(CheckedButton.GetComponent<Text>(),
-                                    "- Get " + GS.itemCache[(int)TradeOptions.x].getName() + " for " + TradeOptions.y + "$",
-                                    "- Dostaniesz " + GS.itemCache[(int)TradeOptions.x].getName() + " za " + TradeOptions.y + "$");
+                                    "- Get " + GS.ItemCache[(int)TradeOptions.x].getName() + " for " + TradeOptions.y + "$",
+                                    "- Dostaniesz " + GS.ItemCache[(int)TradeOptions.x].getName() + " za " + TradeOptions.y + "$");
                                 } else {
                                     GS.SetText(CheckedButton.GetComponent<Text>(),
-                                    "- Get " + GS.itemCache[(int)TradeOptions.x].getName() + " for " + GS.itemCache[(int)TradeOptions.y].getName(),
-                                    "- Dostaniesz " + GS.itemCache[(int)TradeOptions.x].getName() + " za " + GS.itemCache[(int)TradeOptions.y].getName());
+                                    "- Get " + GS.ItemCache[(int)TradeOptions.x].getName() + " for " + GS.ItemCache[(int)TradeOptions.y].getName(),
+                                    "- Dostaniesz " + GS.ItemCache[(int)TradeOptions.x].getName() + " za " + GS.ItemCache[(int)TradeOptions.y].getName());
                                 }
                             }
                             int GotTradedItem = -1;
@@ -1091,7 +1091,7 @@ public class CanvasScript : MonoBehaviour {
                                     }
                             }
                             if (GS.GameModePrefab.x == 1 && CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GS.Money >= TradeOptions.y && Input.GetMouseButtonDown(0)) {
-                                MainPlayer.InvGet(GS.itemCache[(int)TradeOptions.x].startVariables, 0);
+                                MainPlayer.InvGet(GS.ItemCache[(int)TradeOptions.x].startVariables, 0);
                                 GS.Mess(GS.SetString("Item purchased!", "Kupiono ten przedmiot!"), "Buy");
                                 DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = -1;
                                 GS.Money -= (int)TradeOptions.y;
@@ -1107,7 +1107,7 @@ public class CanvasScript : MonoBehaviour {
                                     DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = -1;
                                 }
                                 MainPlayer.InvGet(GotTradedItem, 1);//MainPlayer.Inventory[GotTradedItem] = GS.ReceiveItemVariables(TradeOptions.x);
-                                MainPlayer.InvGet(GS.itemCache[(int)TradeOptions.x].startVariables, 0);
+                                MainPlayer.InvGet(GS.ItemCache[(int)TradeOptions.x].startVariables, 0);
 
                                 GS.Score += 50;
 
@@ -1226,35 +1226,35 @@ public class CanvasScript : MonoBehaviour {
             case  14: case  15: case  16: case  27: case  28: case  993: case 88: case 95: case 96: case 115: case 132: case 134: case 136: case 138: case 152: case 153: case 154: case 155: case 156:
                 // Mele weapons
                 Infos = new string[]{
-                    GS.itemCache[id].getName(),
+                    GS.ItemCache[id].getName(),
                     GS.SetString("Durability: ", "Wytrzymałość: ") + (int)ItemInfos.GetFloat(JType.VariableA) + "%"};
                 break;
             case 2: case 68: case 100: case 127: case 128: case 130: case 177: case 997:
                 // Power stuff
                 Infos = new string[]{
-                    GS.itemCache[id].getName(),
+                    GS.ItemCache[id].getName(),
                     GS.SetString("Power: ", "Moc: ") + (int)ItemInfos.GetFloat(JType.VariableA) + "%"};
                 break;
             case 89: case 991:
                 Infos = new string[]{
-                    GS.itemCache[id].getName(),
+                    GS.ItemCache[id].getName(),
                     GS.SetString("Uses: ", "Użycia: ") + (int)(ItemInfos.GetFloat(JType.VariableA) / 30f) };
                 break;
             case 98: case 124: case 176: case 178:
                 Infos = new string[]{
-                    GS.itemCache[id].getName(),
+                    GS.ItemCache[id].getName(),
                     GS.SetString("Uses: ", "Użycia: ") + (int)(ItemInfos.GetFloat(JType.VariableA) / 10f) };
                 break;
             case 75: case 109: case 179:
                 // Fuel stuff
                 Infos = new string[]{
-                    GS.itemCache[id].getName(),
+                    GS.ItemCache[id].getName(),
                     GS.SetString("Fuel: ", "Paliwo: ") + (int)ItemInfos.GetFloat(JType.VariableA) + "%"};
                 break;
             case 30: case 33: case 37: case 39: case 63: case 69: case 111: case 112: case 139: case 158:
                 // Stuff that has ammo
                 Infos = new string[]{
-                    GS.itemCache[id].getName(),
+                    GS.ItemCache[id].getName(),
                     GS.SetString("Ammo: ", "Amunicja: ") + ItemInfos.GetFloat(JType.VariableA)};
                 break;
             case 29: case 31: case 32: case 34: case 35: case 36: case 38: case 40: case 41: case 42: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 64: case 65: case 113: case 135: case 137: case 157: case 159: case 160: case 996:
@@ -1299,26 +1299,26 @@ public class CanvasScript : MonoBehaviour {
                 
                 if(ItemInfos.Exists(JType.Attachment) && ItemInfos.GetInt(JType.Attachment) != 0) 
                     Infos = new string[]{
-                        GS.itemCache[id].getName(),
+                        GS.ItemCache[id].getName(),
                         GS.SetString("Ammo: ", "Amunicja: ") + (int)ItemInfos.GetFloat(JType.VariableA) + " / " + SpareAmmo,
-                        GS.SetString("Attachment: ", "Dodatek: ") + GS.itemCache[ItemInfos.GetInt(JType.Attachment)].getName()};
+                        GS.SetString("Attachment: ", "Dodatek: ") + GS.ItemCache[ItemInfos.GetInt(JType.Attachment)].getName()};
                 else
                     Infos = new string[]{
-                        GS.itemCache[id].getName(),
+                        GS.ItemCache[id].getName(),
                         GS.SetString("Ammo: ", "Amunicja: ") + ItemInfos.GetFloat(JType.VariableA) + " / " + SpareAmmo};
 
                 break;
             case 13: case 66: case 86: case 94: case 110: case 125: case 131:
                 // Has additional variables, but doesn't show them
-                Infos = new string[]{GS.itemCache[id].getName()};
+                Infos = new string[]{GS.ItemCache[id].getName()};
                 break;
             default:
                 if(ItemInfos.Exists(JType.VariableA) && ItemInfos.GetFloat(JType.VariableA) != 0)
                     Infos = new string[]{
-                        GS.itemCache[id].getName(),
+                        GS.ItemCache[id].getName(),
                         GS.SetString("Uses: ", "Użycia: ") + ItemInfos.GetFloat(JType.VariableA)};
                 else
-                    Infos = new string[]{GS.itemCache[id].getName()};
+                    Infos = new string[]{GS.ItemCache[id].getName()};
                 break;
         }
 
@@ -1467,8 +1467,8 @@ public class CanvasScript : MonoBehaviour {
                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                     }
-                    ITItemHeldInfo.transform.GetChild(1).GetComponent<Text>().text = GS.itemCache[ItemHeld.GetInt(JType.ID)].getName();
-                    ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>().text = GS.itemCache[ItemHeld.GetInt(JType.ID)].getDesc();
+                    ITItemHeldInfo.transform.GetChild(1).GetComponent<Text>().text = GS.ItemCache[ItemHeld.GetInt(JType.ID)].getName();
+                    ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>().text = GS.ItemCache[ItemHeld.GetInt(JType.ID)].getDesc();
                 }
                 // Item Held
 
@@ -1508,16 +1508,16 @@ public class CanvasScript : MonoBehaviour {
                             Equipment.transform.GetChild(0).GetComponent<Text>().color = new Color(1f, 1f, 1f, EqTextScroll[0]);
                             if (MainPlayer.Equipment[CheckEq].GetInt(JType.ID) == 53) {
                                 GS.SetText(Equipment.transform.GetChild(0).GetComponent<Text>(),
-                                    GS.itemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLMB - Unequip   RMB - Turn on/off",
-                                    GS.itemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLPM - Zdejmij   PPM - Włącz/wyłącz");
+                                    GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLMB - Unequip   RMB - Turn on/off",
+                                    GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLPM - Zdejmij   PPM - Włącz/wyłącz");
                             } else {
                                 GS.SetText(Equipment.transform.GetChild(0).GetComponent<Text>(),
-                                    GS.itemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLMB - Unequip",
-                                    GS.itemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLPM - Zdejmij");
+                                    GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLMB - Unequip",
+                                    GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLPM - Zdejmij");
                             }
 
                             if (Input.GetMouseButtonDown(0)) {
-                                GS.Mess(GS.SetString(GS.itemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + " unequipped", "Zdjęto: " + GS.itemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)]), "Unwear");
+                                GS.Mess(GS.SetString(GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + " unequipped", "Zdjęto: " + GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)]), "Unwear");
                                 MainPlayer.InvGet(MainPlayer.Equipment[CheckEq], 0);
                                 MainPlayer.Equipment[CheckEq] = new (0, JTemplate.JustID);
                             } else if (Input.GetMouseButtonDown(1)) {

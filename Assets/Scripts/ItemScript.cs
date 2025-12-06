@@ -53,7 +53,7 @@ public class ItemScript : MonoBehaviour {
 
         HitDetector.transform.position = this.transform.position;
 
-        ThrownVariables = GS.itemCache[Variables.GetInt(JType.ID)].ThrowVariables;
+        ThrownVariables = GS.ItemCache[Variables.GetInt(JType.ID)].ThrowVariables;
 
         if (Variables.GetInt(JType.ID) >= 990)
             PickupReward = "TreasuresFound_";
@@ -145,7 +145,7 @@ public class ItemScript : MonoBehaviour {
         }
 
 
-        Name = GS.itemCache[int.Parse(ID)].getName();
+        Name = GS.ItemCache[int.Parse(ID)].getName();
         if(Variables.Exists(JType.StackQuantity) && Variables.GetInt(JType.StackQuantity) != 1) 
             Name += " x" + Variables.GetInt(JType.StackQuantity);
         if(Variables.Exists(JType.Repairable)) CanBeFixed = true;
@@ -343,16 +343,15 @@ public class ItemScript : MonoBehaviour {
                             Ring.GetComponent<EffectScript>().EffectName = "Cowbell";
                         }
 
-                        if (CanHaveAttachments == true && Variables.GetInt(JType.Attachment) != 0 && Variables.GetInt(JType.Attachment) != 0) {
+                        if (CanHaveAttachments == true && Variables.GetInt(JType.Attachment) != 0) {
                             GameObject DropEffect = Instantiate(EffectPrefab) as GameObject;
                             DropEffect.GetComponent<EffectScript>().EffectName = "Unpin";
                             DropEffect.transform.position = this.transform.position;
                             DropEffect.transform.LookAt(Vector3.up);
                             GameObject Attachment = Instantiate(GameObject.Find("_RoundScript").GetComponent<RoundScript>().ItemPrefab) as GameObject;
-                            Attachment.GetComponent<ItemScript>().Variables = GS.itemCache[Variables.GetInt(JType.Attachment)].startVariables;
+                            Attachment.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[Variables.GetInt(JType.Attachment)].startVariables);
                             Attachment.transform.position = this.transform.position;
-                            //Variables = GS.SetSemiClass(Variables, "at", "0"); //Variables = new Vector3(Variables.x, Variables.y, 0f);
-                            Variables.SetFloat(JType.VariableA, 0);
+                            Variables.SetInt(JType.Attachment, 0);
                             setAtt();
                         } else {
                             // Hit
@@ -409,7 +408,7 @@ public class ItemScript : MonoBehaviour {
 
                                         for (int s = 0; s < slice; s++) {
                                             GameObject item = Instantiate(GameObject.Find("_RoundScript").GetComponent<RoundScript>().ItemPrefab) as GameObject;
-                                            item.GetComponent<ItemScript>().Variables = GS.itemCache[169].startVariables;
+                                            item.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[169].startVariables);
                                             item.transform.position = this.transform.position + Vector3.up * s / 4f;
                                         }
                                         break;

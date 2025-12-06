@@ -1295,7 +1295,7 @@ public class MobScript : MonoBehaviour {
             for (int DropLoot = Random.Range(0, 3); DropLoot > 0; DropLoot--) {
                 GameObject DropedLoot = Instantiate(ItemPrefab) as GameObject;
                 DropedLoot.transform.position = this.transform.position + new Vector3(Random.Range(-1f, 1f), 1f, Random.Range(-1f, 1f));
-                DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.TotalItems[(int)Random.Range(0f, (RS.TotalItems.Length - 0.1f))]].startVariables;
+                DropedLoot.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[RS.TotalItems[(int)Random.Range(0f, (RS.TotalItems.Length - 0.1f))]].startVariables);
             }
         } else if (ClassOfMob == "Mutant") {
             int SpawnChance = (int)Random.Range(-10f, 1.9f);
@@ -1316,15 +1316,15 @@ public class MobScript : MonoBehaviour {
                     GameObject DropedLoot = Instantiate(ItemPrefab) as GameObject;
                     DropedLoot.transform.position = this.transform.position + new Vector3(Random.Range(-1f, 1f), 1f, Random.Range(-1f, 1f));
                     if (BasicMutantJob == "Police") {
-                        DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.Weapons[(int)Random.Range(0f, RS.Weapons.Length - 0.1f)]].startVariables;
+                        DropedLoot.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[RS.Weapons[(int)Random.Range(0f, RS.Weapons.Length - 0.1f)]].startVariables);
                     } else if (BasicMutantJob == "Builder") {
-                        DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.Utilities[(int)Random.Range(0f, RS.Utilities.Length - 0.1f)]].startVariables;
+                        DropedLoot.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[RS.Utilities[(int)Random.Range(0f, RS.Utilities.Length - 0.1f)]].startVariables);
                     } else if (BasicMutantJob == "Doctor") {
-                        DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.HealingItems[(int)Random.Range(0f, RS.HealingItems.Length - 0.1f)]].startVariables;
+                        DropedLoot.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[RS.HealingItems[(int)Random.Range(0f, RS.HealingItems.Length - 0.1f)]].startVariables);
                     } else if (BasicMutantJob == "Cook") {
-                        DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.FoodItems[(int)Random.Range(0f, RS.FoodItems.Length - 0.1f)]].startVariables;
+                        DropedLoot.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[RS.FoodItems[(int)Random.Range(0f, RS.FoodItems.Length - 0.1f)]].startVariables);
                     } else {
-                        DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]].startVariables;
+                        DropedLoot.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)]].startVariables);
                     }
                 }
                         
@@ -1340,7 +1340,7 @@ public class MobScript : MonoBehaviour {
         if (WeaponToDrop > -1 && GS.GameModePrefab.x != 1) {
             GameObject DropedLoot = Instantiate(ItemPrefab) as GameObject;
             DropedLoot.transform.position = this.transform.position + this.transform.forward * 0.5f;
-            DropedLoot.GetComponent<ItemScript>().Variables = GS.itemCache[WeaponToDrop].startVariables;
+            DropedLoot.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[WeaponToDrop].startVariables);
             foreach (Transform HideGun in HumanoidBodyParts[3].transform.GetChild(0)) {
                 HideGun.gameObject.SetActive(false);
             }

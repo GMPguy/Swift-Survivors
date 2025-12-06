@@ -410,45 +410,53 @@ public class InteractableScript : MonoBehaviour {
                         int[] crapItems = new int[] {2, 3, 14, 11, 19, 17, 18};
                         AmountToSpawn = Random.Range(1, 3);
                         for (int a = 0; a < AmountToSpawn; a++)
-                            ItemsToSpawn.Add(GS.itemCache[crapItems[Random.Range(0, crapItems.Length)]].startVariables);
+                            ItemsToSpawn.Add(
+                                new (GS.ItemCache[crapItems[Random.Range(0, crapItems.Length)]].startVariables)
+                            );
                     } else if (Variables.GetInt(JType.InteractableType) == 2) {
                         //ItemsToSpawn = new Vector3[] { new Vector3(2f, 100f, 0f), new Vector3(3f, 0f, 0f), new Vector3(14f, 100f, 0f), new Vector3(17f, 0f, 0f), new Vector3(18f, 0f, 0f), new Vector3(6f, 0f, 0f), new Vector3(22f, 0f, 0f), new Vector3(23f, 0f, 0f), new Vector3(15f, 100f, 0f) };
                         AmountToSpawn = Random.Range(2, 5);
                         for (int a = 0; a < AmountToSpawn; a++)
-                            ItemsToSpawn.Add(GS.itemCache[(int)Random.Range(1f, 20f)].startVariables);
+                            ItemsToSpawn.Add(
+                                new (GS.ItemCache[(int)Random.Range(1f, 20f)].startVariables)
+                            );
                     } else if (Variables.GetInt(JType.InteractableType) == 3) {
                         //ItemsToSpawn = new Vector3[] { new Vector3(15f, 100f, 0f), new Vector3(4f, 0f, 0f), new Vector3(27f, 100f, 0f), new Vector3(22f, 0f, 0f), new Vector3(23f, 0f, 0f), new Vector3(29f, 0f, 0f), new Vector3(18f, 0f, 0f), new Vector3(16f, 100f, 0f) };
                         AmountToSpawn = Random.Range(2, 5);
                         for (int a = 0; a < AmountToSpawn; a++)
-                            ItemsToSpawn.Add(GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables);
+                            ItemsToSpawn.Add(
+                                new (GS.ItemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables)
+                            );
                     } else if (Variables.GetInt(JType.InteractableType) == 4) {
                         AmountToSpawn = Random.Range(1, 2);
                         for (int a = 0; a < AmountToSpawn; a++)
-                            ItemsToSpawn.Add(Random.Range(0, 3) switch {
-                                0 => GS.itemCache[RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - .1f)]].startVariables,
-                                1 => GS.itemCache[RS.GetComponent<RoundScript>().AmmoItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AmmoItems.Length - .1f)]].startVariables,
-                                _ => GS.itemCache[RS.GetComponent<RoundScript>().AttachmentItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AttachmentItems.Length - .1f)]].startVariables
-                            });
+                            ItemsToSpawn.Add( new (Random.Range(0, 3) switch {
+                                0 => GS.ItemCache[RS.GetComponent<RoundScript>().Weapons[(int)Random.Range(0f, RS.GetComponent<RoundScript>().Weapons.Length - .1f)]].startVariables,
+                                1 => GS.ItemCache[RS.GetComponent<RoundScript>().AmmoItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AmmoItems.Length - .1f)]].startVariables,
+                                _ => GS.ItemCache[RS.GetComponent<RoundScript>().AttachmentItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AttachmentItems.Length - .1f)]].startVariables
+                            }));
                     } else if (Variables.GetInt(JType.InteractableType) == 5) {
                         AmountToSpawn = Random.Range(5, 10);
                         for (int a = 0; a < AmountToSpawn; a++)
-                            ItemsToSpawn.Add(Random.Range(0, 3) switch {
-                                0 => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
-                                1 => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
-                                _ => GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables
-                            });
+                            ItemsToSpawn.Add( new (Random.Range(0, 3) switch {
+                                0 => GS.ItemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
+                                1 => GS.ItemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables,
+                                _ => GS.ItemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables
+                            }));
                     } else {
                         AmountToSpawn = 5;
                         for (int a = 0; a < AmountToSpawn; a++)
-                            ItemsToSpawn.Add(GS.itemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables);
+                            ItemsToSpawn.Add(
+                                new (GS.ItemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables)
+                            );
                     }
                 
                     for (int SpawnStuff = 0; SpawnStuff < ItemsToSpawn.Count; SpawnStuff++) {
                         GameObject CreateItem = Instantiate(ItemPrefab) as GameObject;
                         CreateItem.transform.position = this.transform.position + (Vector3.up * 1f) + (Vector3.up * (SpawnStuff / 2f));
 
-                        JClass variables = ItemsToSpawn[SpawnStuff];
-                        CreateItem.GetComponent<ItemScript>().Variables = variables;
+                        JClass variables = new (ItemsToSpawn[SpawnStuff]);
+                        CreateItem.GetComponent<ItemScript>().Variables.CopyFrom(variables);
                     }
                     
                     Destroy(this.gameObject);
@@ -529,7 +537,7 @@ public class InteractableScript : MonoBehaviour {
                 } else {
                     GameObject DropItem = Instantiate(ItemPrefab);
                     DropItem.transform.position = this.transform.position + (this.transform.forward * 0.25f);
-                    DropItem.GetComponent<ItemScript>().Variables = GS.itemCache[int.Parse(PickedObject.name.Substring(4))].startVariables;
+                    DropItem.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[int.Parse(PickedObject.name.Substring(4))].startVariables);
                 }
             } else {
                 SelectedModel.transform.GetChild(0).gameObject.SetActive(false);

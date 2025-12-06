@@ -157,7 +157,7 @@ public class HordeDropScript : MonoBehaviour {
                 if (FreeSpace == -1 || other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].GetInt(JType.ID) == 0) {
                     FreeSpace = other.GetComponent<PlayerScript>().CurrentItemHeld;
                 }
-                other.GetComponent<PlayerScript>().Inventory[FreeSpace] = GS.itemCache[SpecificValue].startVariables;
+                other.GetComponent<PlayerScript>().Inventory[FreeSpace].CopyFrom(GS.ItemCache[SpecificValue].startVariables);
                 GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
                 GS.Mess(GS.SetString("Picked up weapon", "Podniesiono broń"), SoundWhenFlash);
             } else if (WhatToDrop == "Health") {
@@ -192,7 +192,7 @@ public class HordeDropScript : MonoBehaviour {
                     SpecificValue = AvailableAttachments[(int)Random.Range(0f, AvailableAttachments.Length - 0.1f)];
                     other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].SetInt(JType.Attachment, SpecificValue);//= GS.SetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "at", SpecificValue.ToString());//other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].z = SpecificValue;
                     GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
-                    GS.Mess(GS.SetString("New attachement: " + GS.itemCache[SpecificValue].getName(), "Nowy dodatek: " + GS.itemCache[SpecificValue].getName()), SoundWhenFlash);
+                    GS.Mess(GS.SetString("New attachement: " + GS.ItemCache[SpecificValue].getName(), "Nowy dodatek: " + GS.ItemCache[SpecificValue].getName()), SoundWhenFlash);
                 }
             } else if (WhatToDrop == "Money") {
                 GS.GetComponent<GameScript>().Money += SpecificValue;
