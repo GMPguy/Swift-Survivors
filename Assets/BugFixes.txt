@@ -114,7 +114,8 @@ x Adjust grass quality
 	x Fix stackable items
 	x Fix attachments
 	x Inventory and equipment does not carry over
-	- Fix spawnders
-	- Fix crafting recipes
-	x Fix canvas item info
+	- Fix spawners
+	x Fix crafting recipes
+	- Fix canvas item info
 	x Find a way to add JClasses in inspector
+	- Turn options into JClasses
