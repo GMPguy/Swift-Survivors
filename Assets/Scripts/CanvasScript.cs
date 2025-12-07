@@ -24,7 +24,7 @@ public class CanvasScript : MonoBehaviour {
     public GameObject SBGOxygen;
     public GameObject Inventory;
     public Transform ItemInfo;
-    string PrevInvSlot = "-----";
+    JClass PrevInvSlot;
     float SwitchItemInfo = 0f;
     public GameObject Equipment;
     float[] EqTextScroll = new float[] { 0f, 0f };
@@ -447,22 +447,22 @@ public class CanvasScript : MonoBehaviour {
                     Inventory.transform.GetChild(InventoryCheck).gameObject.SetActive(false);
                 } else {
                     Inventory.transform.GetChild(InventoryCheck).gameObject.SetActive(true);
-                    string ItemHeld = MainPlayer.Inventory[InventoryCheck];
-                    if (float.Parse(GS.GetSemiClass(ItemHeld, "id")) > 0f) {
-                        if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(1) != GS.GetSemiClass(ItemHeld, "id") || Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color.a <= 0f) {
+                    JClass ItemHeld = MainPlayer.Inventory[InventoryCheck];
+                    if (ItemHeld.GetInt(JType.ID) > 0) {
+                        if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(1) != ItemHeld.GetInt(JType.ID).ToString() || Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color.a <= 0f) {
                             foreach (Sprite GetSprite in ItemIcons) {
-                                if (GetSprite.name.Substring(1) == GS.GetSemiClass(ItemHeld, "id")) {
+                                if (GetSprite.name.Substring(1) == ItemHeld.GetInt(JType.ID).ToString()) {
                                     Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite = GetSprite;
-                                    if (GS.GetSemiClass(ItemHeld, "id") == "11" || GS.GetSemiClass(ItemHeld, "id") == "12" || GS.GetSemiClass(ItemHeld, "id") == "13") {
-                                        Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(ItemHeld, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f);
+                                    if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13) {
+                                        Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color = Color.HSVToRGB(ItemHeld.GetFloat(JType.Color) / 10f, 1f, 1f);
                                     } else {
                                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
                                     }
                                 }
                             }
-                            if (GS.GetSemiClass(ItemHeld, "id") == "11" || GS.GetSemiClass(ItemHeld, "id") == "12" || GS.GetSemiClass(ItemHeld, "id") == "13") {
+                            if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13) {
                                 foreach (Sprite GetSubSprite in SubItemIcons) {
-                                    if (GetSubSprite.name.Substring(2) == GS.GetSemiClass(ItemHeld, "id")) {
+                                    if (GetSubSprite.name.Substring(2) == ItemHeld.GetInt(JType.ID).ToString()) {
                                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = GetSubSprite;
                                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
                                     }
@@ -476,20 +476,20 @@ public class CanvasScript : MonoBehaviour {
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = 0f;
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text = "";
                         } else if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(0, 1) == "B") {
-                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = 1f - (float.Parse(GS.GetSemiClass(ItemHeld, "va"), CultureInfo.InvariantCulture) / 100f);
+                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = 1f - (ItemHeld.GetFloat(JType.VariableA) / 100f);
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text = "";
                         } else if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(0, 1) == "G") {
-                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = float.Parse(GS.GetSemiClass(ItemHeld, "va"), CultureInfo.InvariantCulture) / 100f;
+                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = ItemHeld.GetFloat(JType.VariableA) / 100f;
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text = "";
                         } else if (Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(0, 1) == "C") {
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = 0f;
-                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text = GS.GetSemiClass(ItemHeld, "va");
+                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text = ItemHeld.GetFloat(JType.VariableA).ToString();
                         }
 
-                        if (GS.ExistSemiClass(ItemHeld, "sq") && int.Parse(GS.GetSemiClass(ItemHeld, "sq")) > 1) 
-                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text += " x"+GS.GetSemiClass(ItemHeld, "sq");
+                        if (ItemHeld.Exists(JType.StackQuantity) && ItemHeld.GetInt(JType.StackQuantity) > 1) 
+                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text += " x" + ItemHeld.GetInt(JType.StackQuantity);
 
-                    } else if (float.Parse(GS.GetSemiClass(ItemHeld, "id")) <= 0f) {
+                    } else if (ItemHeld.GetInt(JType.ID) <= 0f) {
                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(1).GetComponent<Image>().fillAmount = 0f;
@@ -505,16 +505,21 @@ public class CanvasScript : MonoBehaviour {
                 }
             }
 
-            if(MainPlayer.Inventory[MainPlayer.CurrentItemHeld] != PrevInvSlot || SwitchItemInfo > 0f){
-                if(GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id") != GS.GetSemiClass(PrevInvSlot, "id")) SwitchItemInfo = 1f;
+            // Item side info
+            if(PrevInvSlot == null || MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID) != PrevInvSlot.GetInt(JType.ID)) {
+                SwitchItemInfo = 1f;
                 PrevInvSlot = MainPlayer.Inventory[MainPlayer.CurrentItemHeld];
-                SwitchItemInfo = Mathf.Clamp(SwitchItemInfo - 0.04f * (Time.deltaTime * 50f), 0f, 1f);
-                SetItemInfo(PrevInvSlot);
             }
+
+            if(SwitchItemInfo > 0f)
+                SwitchItemInfo = Mathf.Clamp(SwitchItemInfo - 0.04f * (Time.deltaTime * 50f), 0f, 1f);
+
+            if (PrevInvSlot != null)
+                SetItemInfo(PrevInvSlot);
             // Inventory
 
             // Crosshairs
-            string IDofitemheld = GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id");
+            int IDofitemheld = MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID);
             float CS = 0f;
             if (CSAlert[1] > 0f) {
                 CSAlert[1] -= 0.02f;
@@ -526,14 +531,16 @@ public class CanvasScript : MonoBehaviour {
             } else {
                 CSWait[0] = 0f;
             }
-            if (IDofitemheld == "14" || IDofitemheld == "15" || IDofitemheld == "16" || IDofitemheld == "27" || IDofitemheld == "28" || IDofitemheld == "29" || IDofitemheld == "31" || IDofitemheld == "32" || IDofitemheld == "34" || IDofitemheld == "35" || IDofitemheld == "36" || IDofitemheld == "38" || IDofitemheld == "40" || IDofitemheld == "41" || IDofitemheld == "42" || IDofitemheld == "993" || IDofitemheld == "55" || IDofitemheld == "56" || IDofitemheld == "57" || IDofitemheld == "58" || IDofitemheld == "59" || IDofitemheld == "60" || IDofitemheld == "61" || IDofitemheld == "62" || IDofitemheld == "65" || IDofitemheld == "67" || IDofitemheld == "68" || IDofitemheld == "69" || IDofitemheld == "996" || IDofitemheld == "108" || IDofitemheld == "109" || IDofitemheld == "111" || IDofitemheld == "112" || IDofitemheld == "113" || IDofitemheld == "114" || IDofitemheld == "115" || IDofitemheld == "132" || IDofitemheld == "134" || IDofitemheld == "135" || IDofitemheld == "136" || IDofitemheld == "137" || IDofitemheld == "138" || IDofitemheld == "139" || IDofitemheld == "152" || IDofitemheld == "153" || IDofitemheld == "154" || IDofitemheld == "155" || IDofitemheld == "156" || IDofitemheld == "157" || IDofitemheld == "159" || IDofitemheld == "160") {
-                if(RS.IsCausual) CS = Mathf.Clamp(RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id")), 0f, MainPlayer.GunSpreadPC).x, 1f, Mathf.Infinity);
-                else CS = Mathf.Clamp(RS.ReceiveGunSpred(int.Parse(GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id")), MainPlayer.GetComponent<Rigidbody>().velocity.magnitude / MainPlayer.Speed, MainPlayer.GunSpreadPC).x, 1f, Mathf.Infinity);
-                if (GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "at") == "103") {
+            if (IDofitemheld == 14 || IDofitemheld == 15 || IDofitemheld == 16 || IDofitemheld == 27 || IDofitemheld == 28 || IDofitemheld == 29 || IDofitemheld == 31 || IDofitemheld == 32 || IDofitemheld == 34 || IDofitemheld == 35 || IDofitemheld == 36 || IDofitemheld == 38 || IDofitemheld == 40 || IDofitemheld == 41 || IDofitemheld == 42 || IDofitemheld == 993 || IDofitemheld == 55 || IDofitemheld == 56 || IDofitemheld == 57 || IDofitemheld == 58 || IDofitemheld == 59 || IDofitemheld == 60 || IDofitemheld == 61 || IDofitemheld == 62 || IDofitemheld == 65 || IDofitemheld == 67 || IDofitemheld == 68 || IDofitemheld == 69 || IDofitemheld == 996 || IDofitemheld == 108 || IDofitemheld == 109 || IDofitemheld == 111 || IDofitemheld == 112 || IDofitemheld == 113 || IDofitemheld == 114 || IDofitemheld == 115 || IDofitemheld == 132 || IDofitemheld == 134 || IDofitemheld == 135 || IDofitemheld == 136 || IDofitemheld == 137 || IDofitemheld == 138 || IDofitemheld == 139 || IDofitemheld == 152 || IDofitemheld == 153 || IDofitemheld == 154 || IDofitemheld == 155 || IDofitemheld == 156 || IDofitemheld == 157 || IDofitemheld == 159 || IDofitemheld == 160) {
+                if(RS.IsCausual) 
+                    CS = Mathf.Clamp(RS.ReceiveGunSpred(MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID), 0f, MainPlayer.GunSpreadPC).x, 1f, Mathf.Infinity);
+                else 
+                    CS = Mathf.Clamp(RS.ReceiveGunSpred(MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID), MainPlayer.GetComponent<Rigidbody>().velocity.magnitude / MainPlayer.Speed, MainPlayer.GunSpreadPC).x, 1f, Mathf.Infinity);
+                
+                if (MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.Attachment) == 103)
                     CS = 0f;
-                }
             }
-            if (MainPlayer.ZoomValues[1] != MainPlayer.ZoomValues[2] || IDofitemheld == "64" || CSWait[0] > 0f) {
+            if (MainPlayer.ZoomValues[1] != MainPlayer.ZoomValues[2] || IDofitemheld == 64 || CSWait[0] > 0f) {
                 CS = 0f;
             }
             Color CSColor = new Color(1f, 1f, 1f, 0.75f);
@@ -571,13 +578,13 @@ public class CanvasScript : MonoBehaviour {
                     if (CheckInterIcon.GetComponent<Text>() != null) {
                         CheckInterIcon.GetComponent<Text>().text = inter.SetText();
                         if(i.tag == "Item"){
-                            int CHIid = int.Parse(GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id"));
-                            if(i.GetComponent<ItemScript>().CanBeFixed && GS.GetSemiClass(i.GetComponent<ItemScript>().Variables, "va") != "100" && (CHIid >= 88 & CHIid <= 90)){
-                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Repair ", "\n> Napraw ") + (int)float.Parse(GS.GetSemiClass(i.GetComponent<ItemScript>().Variables, "va"), CultureInfo.InvariantCulture);
+                            int CHIid = MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID);
+                            if(i.GetComponent<ItemScript>().CanBeFixed && i.GetComponent<ItemScript>().Variables.GetFloat(JType.VariableA) != 100 && (CHIid >= 88 & CHIid <= 90)){
+                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Repair ", "\n> Napraw ") + (int)i.GetComponent<ItemScript>().Variables.GetFloat(JType.VariableA);
                             } else if(i.GetComponent<ItemScript>().CanHaveAttachments && (CHIid >= 100 && CHIid <= 105 || CHIid == 14)){
-                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Attach ", "\n> Zamontuj ") + GS.itemCache[CHIid].getName();
+                                CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Attach ", "\n> Zamontuj ") + GS.ItemCache[CHIid].getName();
                             }
-                        } else if (inter.CanBePicklocked && GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id") == "97") {
+                        } else if (inter.CanBePicklocked && MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID) == 97) {
                             CheckInterIcon.GetComponent<Text>().text += GS.SetString("\n> Pick lock ", "\n> Otwórz wytrychem ");
                         }
                     } else if (CheckInterIcon.name == inter.Icons[inter.ThisOption]) {
@@ -668,7 +675,7 @@ public class CanvasScript : MonoBehaviour {
 
                     if(Hovered) BuffText = GS.SetString(
                         "Your blood is leaking, and you're losing health.",
-                        "Twoja krew się leje, i tracisz punkty zdrowia co sekundę.");
+                        "Twoja krew się leje, i tracisz punkty zdrowia.");
                 } else if (GetBuffA.name == "Hydration" && MainPlayer.Hydration > 0f) {
                     GetBuffA.SetActive(true);
                     GetBuffA.transform.GetChild(0).GetComponent<Text>().text = (int)MainPlayer.Hydration + " sec";
@@ -1066,27 +1073,29 @@ public class CanvasScript : MonoBehaviour {
                             } else {
                                 if (GS.GameModePrefab.x == 1 && DialogedMob.GetComponent<InteractableScript>() != null) {
                                     GS.SetText(CheckedButton.GetComponent<Text>(),
-                                    "- Get " + GS.itemCache[(int)TradeOptions.x].getName() + " for " + TradeOptions.y + "$",
-                                    "- Dostaniesz " + GS.itemCache[(int)TradeOptions.x].getName() + " za " + TradeOptions.y + "$");
+                                    "- Get " + GS.ItemCache[(int)TradeOptions.x].getName() + " for " + TradeOptions.y + "$",
+                                    "- Dostaniesz " + GS.ItemCache[(int)TradeOptions.x].getName() + " za " + TradeOptions.y + "$");
                                 } else {
                                     GS.SetText(CheckedButton.GetComponent<Text>(),
-                                    "- Get " + GS.itemCache[(int)TradeOptions.x].getName() + " for " + GS.itemCache[(int)TradeOptions.y].getName(),
-                                    "- Dostaniesz " + GS.itemCache[(int)TradeOptions.x].getName() + " za " + GS.itemCache[(int)TradeOptions.y].getName());
+                                    "- Get " + GS.ItemCache[(int)TradeOptions.x].getName() + " for " + GS.ItemCache[(int)TradeOptions.y].getName(),
+                                    "- Dostaniesz " + GS.ItemCache[(int)TradeOptions.x].getName() + " za " + GS.ItemCache[(int)TradeOptions.y].getName());
                                 }
                             }
                             int GotTradedItem = -1;
-                            for (int CheckINV = 0; CheckINV <= 9; CheckINV++) if (GS.GetSemiClass(MainPlayer.Inventory[CheckINV], "id") == TradeOptions.y.ToString()) {
-                                GotTradedItem = CheckINV;
-                                break;
-                            }
-                            if (GotTradedItem == -1) {
-                                for (int CheckINV = 0; CheckINV <= 9; CheckINV++) if (GS.GetSemiClass(MainPlayer.Inventory[CheckINV], "id") == "52") {
+                            for (int CheckINV = 0; CheckINV <= 9; CheckINV++) 
+                                if (MainPlayer.Inventory[CheckINV].GetInt(JType.ID) == TradeOptions.y) {
                                     GotTradedItem = CheckINV;
                                     break;
                                 }
+                            if (GotTradedItem == -1) {
+                                for (int CheckINV = 0; CheckINV <= 9; CheckINV++) 
+                                    if (MainPlayer.Inventory[CheckINV].GetInt(JType.ID) == 52) {
+                                        GotTradedItem = CheckINV;
+                                        break;
+                                    }
                             }
                             if (GS.GameModePrefab.x == 1 && CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GS.Money >= TradeOptions.y && Input.GetMouseButtonDown(0)) {
-                                MainPlayer.InvGet(GS.itemCache[(int)TradeOptions.x].startVariables, 0);
+                                MainPlayer.InvGet(GS.ItemCache[(int)TradeOptions.x].startVariables, 0);
                                 GS.Mess(GS.SetString("Item purchased!", "Kupiono ten przedmiot!"), "Buy");
                                 DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = -1;
                                 GS.Money -= (int)TradeOptions.y;
@@ -1101,8 +1110,8 @@ public class CanvasScript : MonoBehaviour {
                                     GS.Mess(GS.SetString("Item purchased!", "Kupiono ten przedmiot!"), "Buy");
                                     DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = -1;
                                 }
-                                MainPlayer.InvGet(GS.itemCache[(int)TradeOptions.x].startVariables, 0);
-                                MainPlayer.InvGet(GotTradedItem.ToString(), 1);//MainPlayer.Inventory[GotTradedItem] = GS.ReceiveItemVariables(TradeOptions.x);
+                                MainPlayer.InvGet(GotTradedItem, 1);//MainPlayer.Inventory[GotTradedItem] = GS.ReceiveItemVariables(TradeOptions.x);
+                                MainPlayer.InvGet(GS.ItemCache[(int)TradeOptions.x].startVariables, 0);
 
                                 GS.Score += 50;
 
@@ -1147,7 +1156,7 @@ public class CanvasScript : MonoBehaviour {
                             GS.SetText(CheckedButton.GetComponent<Text>(), "- I have some treasures for you!", "- Mam dla ciebie skarby!");
                             List<int> TreausresGot = new List<int>();
                             for (int CheckINV = 0; CheckINV <= 9; CheckINV++) {
-                                if (float.Parse(GS.GetSemiClass(MainPlayer.Inventory[CheckINV], "id")) >= 990f && float.Parse(GS.GetSemiClass(MainPlayer.Inventory[CheckINV], "id")) <= 999f) {
+                                if (MainPlayer.Inventory[CheckINV].GetInt(JType.ID) >= 990 && MainPlayer.Inventory[CheckINV].GetInt(JType.ID) <= 999) {
                                     TreausresGot.Add(CheckINV);
                                 }
                             }
@@ -1158,7 +1167,7 @@ public class CanvasScript : MonoBehaviour {
                                 {
                                     GS.Score += 10000;
                                     GS.Money += 250;
-                                    MainPlayer.InvGet(SellTreasure.ToString(), 1);//MainPlayer.Inventory[SellTreasure] = "id0;";
+                                    MainPlayer.InvGet(SellTreasure, 1);//MainPlayer.Inventory[SellTreasure] = "id0;";
                                     GS.PS.AchProg("Ach_Collectioner", "/+-1");
                                     RS.SetScore("TreasuresSold_", "/+1");
                                 }
@@ -1192,7 +1201,7 @@ public class CanvasScript : MonoBehaviour {
             // Hint
             if (ClearHint > 0f) {
                 ClearHint -= 0.02f * (Time.deltaTime * 50f);
-                if (!(Input.GetButton("Information Tab") && (float.Parse(GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id")) > 0f || float.Parse(GS.GetSemiClass(MainPlayer.Equipment[0], "id")) > 0f))) {
+                if (!(Input.GetButton("Information Tab") && MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID) > 0 || MainPlayer.Equipment[0].GetInt(JType.ID) > 0)) {
                     HintText.color = new Color32(255, 255, 255, (byte)Mathf.Clamp((128f * ClearHint), 0f, 200f));
                 } else {
                     HintText.color = new Color(1f, 1f, 1f, 0f);
@@ -1209,108 +1218,111 @@ public class CanvasScript : MonoBehaviour {
 
     }
 
-    void SetItemInfo(string ItemInfos){
+    void SetItemInfo(JClass ItemInfos){
 
         string[] Infos = {""};
         Color32[] InfoColors = {};
 
         // ReceiveInfos
-        switch(int.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture)){
+        int id = ItemInfos.GetInt(JType.ID);
+        switch(id){
             case 0: Infos = new string[]{}; break;
             case  14: case  15: case  16: case  27: case  28: case  993: case 88: case 95: case 96: case 115: case 132: case 134: case 136: case 138: case 152: case 153: case 154: case 155: case 156:
                 // Mele weapons
                 Infos = new string[]{
-                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                    GS.SetString("Durability: ", "Wytrzymałość: ") + (int)float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + "%"};
+                    GS.ItemCache[id].getName(),
+                    GS.SetString("Durability: ", "Wytrzymałość: ") + (int)ItemInfos.GetFloat(JType.VariableA) + "%"};
                 break;
             case 2: case 68: case 100: case 127: case 128: case 130: case 177: case 997:
                 // Power stuff
                 Infos = new string[]{
-                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                    GS.SetString("Power: ", "Moc: ") + (int)float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + "%"};
+                    GS.ItemCache[id].getName(),
+                    GS.SetString("Power: ", "Moc: ") + (int)ItemInfos.GetFloat(JType.VariableA) + "%"};
                 break;
             case 89: case 991:
                 Infos = new string[]{
-                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                    GS.SetString("Uses: ", "Użycia: ") + (int)(float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) / 30f) };
+                    GS.ItemCache[id].getName(),
+                    GS.SetString("Uses: ", "Użycia: ") + (int)(ItemInfos.GetFloat(JType.VariableA) / 30f) };
                 break;
             case 98: case 124: case 176: case 178:
                 Infos = new string[]{
-                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                    GS.SetString("Uses: ", "Użycia: ") + (int)(float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) / 10f) };
+                    GS.ItemCache[id].getName(),
+                    GS.SetString("Uses: ", "Użycia: ") + (int)(ItemInfos.GetFloat(JType.VariableA) / 10f) };
                 break;
             case 75: case 109: case 179:
                 // Fuel stuff
                 Infos = new string[]{
-                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                    GS.SetString("Fuel: ", "Paliwo: ") + (int)float.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + "%"};
+                    GS.ItemCache[id].getName(),
+                    GS.SetString("Fuel: ", "Paliwo: ") + (int)ItemInfos.GetFloat(JType.VariableA) + "%"};
                 break;
             case 30: case 33: case 37: case 39: case 63: case 69: case 111: case 112: case 139: case 158:
                 // Stuff that has ammo
                 Infos = new string[]{
-                    GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                    GS.SetString("Ammo: ", "Amunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"))};
+                    GS.ItemCache[id].getName(),
+                    GS.SetString("Ammo: ", "Amunicja: ") + ItemInfos.GetFloat(JType.VariableA)};
                 break;
             case 29: case 31: case 32: case 34: case 35: case 36: case 38: case 40: case 41: case 42: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 64: case 65: case 113: case 135: case 137: case 157: case 159: case 160: case 996:
                 // Guns
                 string SpareAmmo = "0";
-                if(int.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture) == 996) {
+                if(id == 996) {
                     SpareAmmo = "∞";
                 } else if(GS.GameModePrefab.x == 1 || RS.IsCausual) {
                     SpareAmmo = GS.Ammo.ToString();
                 } else {
+                    float intAmmo = 0;
                     for(int GetSA = 0; GetSA < MainPlayer.MaxInventorySlots; GetSA ++){
-                        switch(int.Parse(GS.GetSemiClass(ItemInfos, "id"), CultureInfo.InvariantCulture)){
+                        switch(id){
                             case 29: case 31: case 135:
-                                if(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "id") == "30")
-                                SpareAmmo = (int.Parse(SpareAmmo) + int.Parse(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "va"))).ToString();
+                                if(MainPlayer.Inventory[GetSA].GetInt(JType.ID) == 30)
+                                    intAmmo += MainPlayer.Inventory[GetSA].GetFloat(JType.VariableA);
                                 break;
                             case 32: case 34: case 35: case 40: case 56: case 65:
-                                if(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "id") == "33")
-                                SpareAmmo = (int.Parse(SpareAmmo) + int.Parse(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "va"))).ToString();
+                                if(MainPlayer.Inventory[GetSA].GetInt(JType.ID) == 33)
+                                    intAmmo += MainPlayer.Inventory[GetSA].GetFloat(JType.VariableA);
                                 break;
                             case 36: case 41: case 55: case 58:
-                                if(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "id") == "37")
-                                SpareAmmo = (int.Parse(SpareAmmo) + int.Parse(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "va"))).ToString();
+                                if(MainPlayer.Inventory[GetSA].GetInt(JType.ID) == 37)
+                                    intAmmo += MainPlayer.Inventory[GetSA].GetFloat(JType.VariableA);
                                 break;
                             case 38: case 42: case 57: case 59: case 60: case 137:
-                                if(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "id") == "39")
-                                SpareAmmo = (int.Parse(SpareAmmo) + int.Parse(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "va"))).ToString();
+                                if(MainPlayer.Inventory[GetSA].GetInt(JType.ID) == 39)
+                                    intAmmo += MainPlayer.Inventory[GetSA].GetFloat(JType.VariableA);
                                 break;
                             case 62: case 64:
-                                if(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "id") == "63")
-                                SpareAmmo = (int.Parse(SpareAmmo) + int.Parse(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "va"))).ToString();
+                                if(MainPlayer.Inventory[GetSA].GetInt(JType.ID) == 63)
+                                    intAmmo += MainPlayer.Inventory[GetSA].GetFloat(JType.VariableA);
                                 break;
                             case 157: case 159: case 160:
-                                if(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "id") == "158")
-                                SpareAmmo = (int.Parse(SpareAmmo) + int.Parse(GS.GetSemiClass(MainPlayer.Inventory[GetSA], "va"))).ToString();
+                                if(MainPlayer.Inventory[GetSA].GetInt(JType.ID) == 158)
+                                    intAmmo += MainPlayer.Inventory[GetSA].GetFloat(JType.VariableA);
                                 break;
                         }
                     }
+                    SpareAmmo = intAmmo.ToString();
                 }
                 
-                if(GS.ExistSemiClass(ItemInfos, "at") && GS.GetSemiClass(ItemInfos, "at") != "0") 
+                if(ItemInfos.Exists(JType.Attachment) && ItemInfos.GetInt(JType.Attachment) != 0) 
                     Infos = new string[]{
-                        GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                        GS.SetString("Ammo: ", "Amunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + " / " + SpareAmmo,
-                        GS.SetString("Attachment: ", "Dodatek: ") + GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "at"))].getName()};
+                        GS.ItemCache[id].getName(),
+                        GS.SetString("Ammo: ", "Amunicja: ") + (int)ItemInfos.GetFloat(JType.VariableA) + " / " + SpareAmmo,
+                        GS.SetString("Attachment: ", "Dodatek: ") + GS.ItemCache[ItemInfos.GetInt(JType.Attachment)].getName()};
                 else
                     Infos = new string[]{
-                        GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                        GS.SetString("Ammo: ", "Amunicja: ") + int.Parse(GS.GetSemiClass(ItemInfos, "va"), CultureInfo.InvariantCulture) + " / " + SpareAmmo};
+                        GS.ItemCache[id].getName(),
+                        GS.SetString("Ammo: ", "Amunicja: ") + ItemInfos.GetFloat(JType.VariableA) + " / " + SpareAmmo};
 
                 break;
             case 13: case 66: case 86: case 94: case 110: case 125: case 131:
                 // Has additional variables, but doesn't show them
-                Infos = new string[]{GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName()};
+                Infos = new string[]{GS.ItemCache[id].getName()};
                 break;
             default:
-                if(GS.ExistSemiClass(ItemInfos, "va") && GS.GetSemiClass(ItemInfos, "va") != "0")
+                if(ItemInfos.Exists(JType.VariableA) && ItemInfos.GetFloat(JType.VariableA) != 0)
                     Infos = new string[]{
-                        GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName(),
-                        GS.SetString("Uses: ", "Użycia: ") + GS.GetSemiClass(ItemInfos, "va")};
+                        GS.ItemCache[id].getName(),
+                        GS.SetString("Uses: ", "Użycia: ") + ItemInfos.GetFloat(JType.VariableA)};
                 else
-                    Infos = new string[]{GS.itemCache[int.Parse(GS.GetSemiClass(ItemInfos, "id"))].getName()};
+                    Infos = new string[]{GS.ItemCache[id].getName()};
                 break;
         }
 
@@ -1427,26 +1439,26 @@ public class CanvasScript : MonoBehaviour {
                 }
                 // Details
                 // Item Held
-                if (GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "id") == "0") {
+                if (MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID) == 0) {
                     ITItemHeldInfo.SetActive(false);
                 } else {
                     ITItemHeldInfo.SetActive(true);
-                    string ItemHeld = MainPlayer.Inventory[MainPlayer.CurrentItemHeld];
-                    if (float.Parse(GS.GetSemiClass(ItemHeld, "id")) > 0f) {
-                        if (ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(1) != GS.GetSemiClass(ItemHeld, "id") || ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color.a <= 0f) {
+                    JClass ItemHeld = MainPlayer.Inventory[MainPlayer.CurrentItemHeld];
+                    if (ItemHeld.GetInt(JType.ID) > 0) {
+                        if (ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().sprite.name.Substring(1) != ItemHeld.GetInt(JType.ID).ToString() || ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color.a <= 0f) {
                             foreach (Sprite GetSprite in ItemIcons) {
-                                if (GetSprite.name.Substring(1) == GS.GetSemiClass(ItemHeld, "id")) {
+                                if (GetSprite.name.Substring(1) == ItemHeld.GetInt(JType.ID).ToString()) {
                                     ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().sprite = GetSprite;
-                                    if (GS.GetSemiClass(ItemHeld, "id") == "11" || GS.GetSemiClass(ItemHeld, "id") == "12" || GS.GetSemiClass(ItemHeld, "id") == "13") {
-                                        ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(ItemHeld, "cl")) / 10f, 1f, 1f);
+                                    if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13) {
+                                        ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = Color.HSVToRGB(ItemHeld.GetFloat(JType.Color) / 10f, 1f, 1f);
                                     } else {
                                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
                                     }
                                 }
                             }
-                            if (GS.GetSemiClass(ItemHeld, "id") == "11" || GS.GetSemiClass(ItemHeld, "id") == "12" || GS.GetSemiClass(ItemHeld, "id") == "13") {
+                            if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13) {
                                 foreach (Sprite GetSubSprite in SubItemIcons) {
-                                    if (GetSubSprite.name.Substring(2) == GS.GetSemiClass(ItemHeld, "id")) {
+                                    if (GetSubSprite.name.Substring(2) == ItemHeld.GetInt(JType.ID).ToString()) {
                                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = GetSubSprite;
                                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
                                     }
@@ -1455,12 +1467,12 @@ public class CanvasScript : MonoBehaviour {
                                 ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                             }
                         }
-                    } else if (float.Parse(GS.GetSemiClass(ItemHeld, "id")) <= 0f) {
+                    } else if (ItemHeld.GetInt(JType.ID) <= 0) {
                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                     }
-                    ITItemHeldInfo.transform.GetChild(1).GetComponent<Text>().text = GS.itemCache[int.Parse(GS.GetSemiClass(ItemHeld, "id"))].getName();
-                    ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>().text = GS.itemCache[int.Parse(GS.GetSemiClass(ItemHeld, "id"))].getDesc();
+                    ITItemHeldInfo.transform.GetChild(1).GetComponent<Text>().text = GS.ItemCache[ItemHeld.GetInt(JType.ID)].getName();
+                    ITItemHeldInfo.transform.GetChild(2).GetComponent<Text>().text = GS.ItemCache[ItemHeld.GetInt(JType.ID)].getDesc();
                 }
                 // Item Held
 
@@ -1469,19 +1481,19 @@ public class CanvasScript : MonoBehaviour {
                 Equipment.transform.GetChild(0).GetComponent<Text>().text = "";
                 for (int CheckEq = 0; CheckEq < 4; CheckEq++) {
                     GameObject CheckEqObj = Equipment.transform.GetChild(CheckEq + 1).gameObject;
-                    if (float.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id")) > 0f) {
+                    if (MainPlayer.Equipment[CheckEq].GetInt(JType.ID) > 0) {
                         CheckEqObj.transform.localScale = Vector3.one;
                         CheckEqObj.GetComponent<ButtonScript>().Active = true;
 
                         foreach (Sprite GetItemImage in ItemIcons) {
-                            if (GetItemImage.name.Substring(1) == GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id")) {
+                            if (GetItemImage.name.Substring(1) == MainPlayer.Equipment[CheckEq].GetInt(JType.ID).ToString()) {
                                 CheckEqObj.transform.GetChild(0).GetComponent<Image>().sprite = GetItemImage;
                                 if (GetItemImage.name.Substring(0, 1) == "B") {
-                                    CheckEqObj.transform.GetChild(1).GetComponent<Image>().fillAmount = 1f - float.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "va"), CultureInfo.InvariantCulture) / 100f;
+                                    CheckEqObj.transform.GetChild(1).GetComponent<Image>().fillAmount = 1f - MainPlayer.Equipment[CheckEq].GetFloat(JType.VariableA) / 100f;
                                     CheckEqObj.transform.GetChild(2).GetComponent<Text>().text = "";
                                 } else if (GetItemImage.name.Substring(0, 1) == "C") {
                                     CheckEqObj.transform.GetChild(1).GetComponent<Image>().fillAmount = 0f;
-                                    CheckEqObj.transform.GetChild(2).GetComponent<Text>().text = GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "va");
+                                    CheckEqObj.transform.GetChild(2).GetComponent<Text>().text = MainPlayer.Equipment[CheckEq].GetFloat(JType.VariableA).ToString();
                                 } else {
                                     CheckEqObj.transform.GetChild(1).GetComponent<Image>().fillAmount = 0f;
                                     CheckEqObj.transform.GetChild(2).GetComponent<Text>().text = "";
@@ -1498,26 +1510,26 @@ public class CanvasScript : MonoBehaviour {
                             EqTextScroll[0] = Mathf.Clamp(EqTextScroll[0] + 0.08f * (Time.deltaTime * 50f), 0f, 1f);
                             Equipment.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = CheckEqObj.GetComponent<RectTransform>().anchoredPosition - new Vector2(80f + (EqTextScroll[0] * 32f), 0f);
                             Equipment.transform.GetChild(0).GetComponent<Text>().color = new Color(1f, 1f, 1f, EqTextScroll[0]);
-                            if (GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id") == "53") {
+                            if (MainPlayer.Equipment[CheckEq].GetInt(JType.ID) == 53) {
                                 GS.SetText(Equipment.transform.GetChild(0).GetComponent<Text>(),
-                                    GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))].getName() + "\nLMB - Unequip   RMB - Turn on/off",
-                                    GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))].getName() + "\nLPM - Zdejmij   PPM - Włącz/wyłącz");
+                                    GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLMB - Unequip   RMB - Turn on/off",
+                                    GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLPM - Zdejmij   PPM - Włącz/wyłącz");
                             } else {
                                 GS.SetText(Equipment.transform.GetChild(0).GetComponent<Text>(),
-                                    GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))].getName() + "\nLMB - Unequip",
-                                    GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))].getName() + "\nLPM - Zdejmij");
+                                    GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLMB - Unequip",
+                                    GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + "\nLPM - Zdejmij");
                             }
 
                             if (Input.GetMouseButtonDown(0)) {
-                                GS.Mess(GS.SetString(GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))].getName() + " unequipped", "Zdjęto: " + GS.itemCache[int.Parse(GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id"))]), "Unwear");
+                                GS.Mess(GS.SetString(GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)].getName() + " unequipped", "Zdjęto: " + GS.ItemCache[MainPlayer.Equipment[CheckEq].GetInt(JType.ID)]), "Unwear");
                                 MainPlayer.InvGet(MainPlayer.Equipment[CheckEq], 0);
-                                MainPlayer.Equipment[CheckEq] = "id0;";
+                                MainPlayer.Equipment[CheckEq] = new (0, JTemplate.JustID);
                             } else if (Input.GetMouseButtonDown(1)) {
-                                if (GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "id") == "53") {
-                                    if (GS.GetSemiClass(MainPlayer.Equipment[CheckEq], "tr") == "0") {
-                                        MainPlayer.Equipment[CheckEq] = GS.SetSemiClass(MainPlayer.Equipment[CheckEq], "tr", "1");// "1";
+                                if (MainPlayer.Equipment[CheckEq].GetInt(JType.ID) == 53) {
+                                    if (MainPlayer.Equipment[CheckEq].GetInt(JType.NightVision) == 0) {
+                                        MainPlayer.Equipment[CheckEq].SetInt(JType.NightVision, 1);// = GS.SetSemiClass(MainPlayer.Equipment[CheckEq], "tr", "1");// "1";
                                     } else {
-                                        MainPlayer.Equipment[CheckEq] = GS.SetSemiClass(MainPlayer.Equipment[CheckEq], "tr", "0");// "0";
+                                        MainPlayer.Equipment[CheckEq].SetInt(JType.NightVision, 0);// = GS.SetSemiClass(MainPlayer.Equipment[CheckEq], "tr", "0");// "0";
                                     }
                                 }
                             }
@@ -1831,8 +1843,8 @@ public class CanvasScript : MonoBehaviour {
                             if(!SetEnvObj.gameObject.activeInHierarchy)
                                 SetEnvObj.gameObject.SetActive(true);
                             for(int GetHazmat = 0; GetHazmat < 4; GetHazmat ++)
-                                if(GS.GetSemiClass(MainPlayer.Equipment[GetHazmat], "id") == "86") {
-                                    SetEnvObj.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f - (float.Parse(GS.GetSemiClass(MainPlayer.Equipment[GetHazmat], "va"), CultureInfo.InvariantCulture) / 100f) );
+                                if(MainPlayer.Equipment[GetHazmat].GetInt(JType.ID) == 86) {
+                                    SetEnvObj.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f - MainPlayer.Equipment[GetHazmat].GetFloat(JType.VariableA) / 100f);
                                     break;
                                 }
                             SetEnvObj.localPosition = Vector3.Lerp(SetEnvObj.localPosition, Vector3.zero, 0.1f * (Time.deltaTime * 50f));
@@ -1866,7 +1878,7 @@ public class CanvasScript : MonoBehaviour {
                         break;
                     case "SniperScope":
                         // Sniper scope
-                        if(GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "at") == "103" && MainPlayer.ZoomValues[1] <= MainPlayer.ZoomValues[0] + 1 && MainPlayer.State == 1){
+                        if(MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.Attachment) == 103 && MainPlayer.ZoomValues[1] <= MainPlayer.ZoomValues[0] + 1 && MainPlayer.State == 1){
                             if(!SetEnvObj.gameObject.activeInHierarchy)
                                 SetEnvObj.gameObject.SetActive(true);
                             SetEnvObj.transform.GetChild(0).forward = Vector3.Lerp(MainPlayer.LookDir.forward, MainPlayer.SlimEnd.transform.forward, 0.01f);
@@ -1880,7 +1892,7 @@ public class CanvasScript : MonoBehaviour {
                         break;
                     case "HoloSight":
                         // Holo sight
-                        if(GS.GetSemiClass(MainPlayer.Inventory[MainPlayer.CurrentItemHeld], "at") == "104" && MainPlayer.ZoomValues[1] <= MainPlayer.ZoomValues[0] + 1 && MainPlayer.State == 1){
+                        if(MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.Attachment) == 104 && MainPlayer.ZoomValues[1] <= MainPlayer.ZoomValues[0] + 1 && MainPlayer.State == 1){
                             if(!SetEnvObj.gameObject.activeInHierarchy)
                                 SetEnvObj.gameObject.SetActive(true);
                                 Color Visib = Color.HSVToRGB((float)GS.LaserColor / 10f, 1f, 1f);
@@ -2213,7 +2225,7 @@ public class CanvasScript : MonoBehaviour {
         if (What == "" && ClearHint <= 0f) {
 
             // Scan for hints to give
-            if (/*MainPlayer.GetComponent<PlayerScript>().Inventory[MainPlayer.GetComponent<PlayerScript>().CurrentItemHeld].x > 0f*/ float.Parse(GS.GetSemiClass(MainPlayer.GetComponent<PlayerScript>().Inventory[MainPlayer.GetComponent<PlayerScript>().CurrentItemHeld], "id")) > 0f && !HintsTold.Contains("ItemGot")) {
+            if (MainPlayer.GetComponent<PlayerScript>().Inventory[MainPlayer.GetComponent<PlayerScript>().CurrentItemHeld].GetInt(JType.ID) > 0 && !HintsTold.Contains("ItemGot")) {
                 HintsTold.Add("ItemGot");
                 HintsCooldown.Add("ItemGot");
             }
@@ -2487,10 +2499,10 @@ public class CanvasScript : MonoBehaviour {
         List<GameObject> ReceivedCOs = new List<GameObject>();
         if (MainPlayer != null) {
             for (int GetCO = 0; GetCO < CraftingTemplates.transform.childCount; GetCO ++) {
-                for (int GetRES = 0; GetRES < CraftingTemplates.transform.GetChild(GetCO).GetComponent<CraftingOption>().Resources.Length; GetRES ++) {
+                for (int GetRES = 0; GetRES < CraftingTemplates.transform.GetChild(GetCO).GetComponent<CraftingOption>().TheResources.Length; GetRES ++) {
                     bool FullBreak = false;
                     for (int GetINV = 0; GetINV < MainPlayer.GetComponent<PlayerScript>().MaxInventorySlots; GetINV ++) {
-                        if (GS.GetSemiClass(CraftingTemplates.transform.GetChild(GetCO).GetComponent<CraftingOption>().Resources[GetRES], "id") == GS.GetSemiClass(MainPlayer.GetComponent<PlayerScript>().Inventory[GetINV], "id")){ //MainPlayer.GetComponent<PlayerScript>().Inventory[GetINV].x) {
+                        if (CraftingTemplates.transform.GetChild(GetCO).GetComponent<CraftingOption>().TheResources[GetRES].GetInt(JType.ID) == MainPlayer.GetComponent<PlayerScript>().Inventory[GetINV].GetInt(JType.ID)){ //MainPlayer.GetComponent<PlayerScript>().Inventory[GetINV].x) {
                             ReceivedCOs.Add(CraftingTemplates.transform.GetChild(GetCO).gameObject);
                             FullBreak = true;
                             break;

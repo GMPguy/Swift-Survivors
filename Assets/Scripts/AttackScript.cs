@@ -999,12 +999,12 @@ public class AttackScript : MonoBehaviour {
                         if (GS.GameModePrefab.y == 1)
                             MeleeDurability /= 4f;
 
-                        Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld] = GS.SetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "va", "/+-" + MeleeDurability.ToString(CultureInfo.InvariantCulture));//Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld].y -= MeleeDurability;
+                        Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld].SetFloat(JType.VariableA, -MeleeDurability, Maths.Add);//= GS.SetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "va", "/+-" + MeleeDurability.ToString(CultureInfo.InvariantCulture));//Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld].y -= MeleeDurability;
                     }
                     if (ObjectHit.GetComponent<FootstepMaterial>() != null) {
-                        string ItemID = GS.GetSemiClass(Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld], "id");
+                        int ItemID = Attacker.GetComponent<PlayerScript>().Inventory[WchichItemWasHeld].GetInt(JType.ID);
 
-                        if (ItemID == "115") {
+                        if (ItemID == 115) {
                             int Digup = Random.Range(0, 10);
 
                             if (ObjectHit.GetComponent<FootstepMaterial>().WhatToPlay == "Grass" && GS.GameModePrefab.x == 0 && Digup <= 3) {
@@ -1012,13 +1012,13 @@ public class AttackScript : MonoBehaviour {
                                 DigupItem.transform.position = PointHit + Vector3.up / 4f;
 
                                 if(Digup == 0)
-                                    DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[(int)Random.Range(1, GameObject.Find("_RoundScript").GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables;
+                                    DigupItem.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[(int)Random.Range(1, GameObject.Find("_RoundScript").GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables);
                                 else {
                                     int[] materials = new[]{142, 145, 147, 146, 146, 146};
-                                    DigupItem.GetComponent<ItemScript>().Variables = GS.itemCache[materials[(int)Random.Range(0f, 5.9f)]].startVariables;
+                                    DigupItem.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[materials[(int)Random.Range(0f, 5.9f)]].startVariables);
                                 }
                             }
-                        } else if (ItemID == "156") {
+                        } else if (ItemID == 156) {
                             Attacker.GetComponent<PlayerScript>().Pushback_Force = Vector3.up * 3f;
                             Attacker.GetComponent<PlayerScript>().Pushback_Return = Vector2.one;
                         }

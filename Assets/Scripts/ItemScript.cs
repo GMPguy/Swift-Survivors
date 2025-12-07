@@ -8,7 +8,7 @@ using UnityEngine;
 public class ItemScript : MonoBehaviour {
 
     // Variables
-    public string Variables;
+    public JClass Variables;
     public string Name = "";
     public int State = 0; // 0 Unfrozen   1 Frozen   2 Thrown
     public Vector3 ThrownVariables;
@@ -41,7 +41,10 @@ public class ItemScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        if(Variables == "") Variables = "id1;";
+        if(Variables == null) 
+            Variables = new JClass(new JEntry[]{
+                new JInt(JType.ID, 1)
+            });
 
         if(GameObject.Find("_RoundScript")) {
             RS = GameObject.Find("_RoundScript").GetComponent<RoundScript>();
@@ -50,15 +53,15 @@ public class ItemScript : MonoBehaviour {
 
         HitDetector.transform.position = this.transform.position;
 
-        ThrownVariables = GS.itemCache[int.Parse(GS.GetSemiClass(Variables, "id"))].ThrowVariables;
+        ThrownVariables = GS.ItemCache[Variables.GetInt(JType.ID)].ThrowVariables;
 
-        if (int.Parse(GS.GetSemiClass(Variables, "id")) >= 990)
+        if (Variables.GetInt(JType.ID) >= 990)
             PickupReward = "TreasuresFound_";
 
         // Flare marker
-        if (GS.GetSemiClass(Variables, "id") == "13") {
+        if (Variables.GetInt(JType.ID) == 13) {
             MinimapMarker.transform.parent.GetComponent<MinimapMarker>().MapSize = MinimapMarker.transform.parent.GetComponent<MinimapMarker>().MinimapSize;
-            MinimapMarker.color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f);
+            MinimapMarker.color = Color.HSVToRGB(Variables.GetFloat(JType.Color) / 10f, 1f, 1f);
         }
 
         // Check if in water
@@ -88,7 +91,7 @@ public class ItemScript : MonoBehaviour {
             GameObject Swing = Instantiate(EffectPrefab) as GameObject;
             Swing.transform.position = this.transform.position;
             Swing.GetComponent<EffectScript>().EffectName = "Swing";
-            if (DroppedBy != null && GS.GetSemiClass(Variables, "id") == "54") {
+            if (DroppedBy != null && Variables.GetInt(JType.ID) == 54) {
                 Ray CheckForHack = new Ray(DroppedBy.transform.position - Vector3.up * 0.9f, Vector3.down);
                 RaycastHit CheckFoHackHIT;
                 if (Physics.Raycast(CheckForHack, out CheckFoHackHIT, 2f)) {
@@ -98,7 +101,7 @@ public class ItemScript : MonoBehaviour {
             if(ThrownVariables.z <= 0f) this.GetComponent<Rigidbody>().angularVelocity = new Vector3( Random.Range(-30f,30f), Random.Range(-30f,30f), Random.Range(-30f,30f) );
         }
 
-        string ID = GS.GetSemiClass(Variables, "id");
+        string ID = Variables.GetInt(JType.ID).ToString();
         string meshID = ID;
         if(ID == "148" || ID == "149" || ID == "150" || ID == "151") 
             meshID = "Toolbox";
@@ -131,22 +134,22 @@ public class ItemScript : MonoBehaviour {
                 if (GetMat.name == "LASER (Instance)" && DroppedBy != null && DroppedBy == GameObject.FindGameObjectWithTag("Player")) {
                     GetMat.color = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().LaserColor;
                 } else if (GetMat.name == "Glowstick2 (Instance)" || GetMat.name == "Flare2 (Instance)") {
-                    GetMat.color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f);
+                    GetMat.color = Color.HSVToRGB(Variables.GetFloat(JType.Color) / 10f, 1f, 1f);
                 }
             }
             if (meshID == "13") {
-                SelectedMesh.transform.GetChild(1).GetComponent<Light>().color = Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f);
+                SelectedMesh.transform.GetChild(1).GetComponent<Light>().color = Color.HSVToRGB(Variables.GetFloat(JType.Color) / 10f, 1f, 1f);
                 ParticleSystem.MainModule SetMesh = SelectedMesh.transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>().main;
-                SetMesh.startColor = new ParticleSystem.MinMaxGradient(Color.HSVToRGB(float.Parse(GS.GetSemiClass(Variables, "cl"), CultureInfo.InvariantCulture) / 10f, 1f, 1f));
+                SetMesh.startColor = new ParticleSystem.MinMaxGradient(Color.HSVToRGB(Variables.GetFloat(JType.Color) / 10f, 1f, 1f));
             }
         }
 
 
-        Name = GS.itemCache[int.Parse(ID)].getName();
-        if(GS.ExistSemiClass(Variables, "sq") && GS.GetSemiClass(Variables, "sq") != "1") 
-            Name += " x" + GS.GetSemiClass(Variables, "sq");
-        if(GS.ExistSemiClass(Variables, "rep")) CanBeFixed = true;
-        if(GS.ExistSemiClass(Variables, "at")) CanHaveAttachments = true;
+        Name = GS.ItemCache[int.Parse(ID)].getName();
+        if(Variables.Exists(JType.StackQuantity) && Variables.GetInt(JType.StackQuantity) != 1) 
+            Name += " x" + Variables.GetInt(JType.StackQuantity);
+        if(Variables.Exists(JType.Repairable)) CanBeFixed = true;
+        if(Variables.Exists(JType.Attachment)) CanHaveAttachments = true;
 
         if (InWater == true) {
             ThrownVariables[0] /= 2f;
@@ -158,7 +161,7 @@ public class ItemScript : MonoBehaviour {
 
         if (CanHaveAttachments == true) {
             foreach (Transform Attachment in SelectedMesh.transform.GetChild(0)) {
-                if (Attachment.name == GS.GetSemiClass(Variables, "at")) {
+                if (Attachment.name == Variables.GetInt(JType.Attachment).ToString()) {
                     Attachment.gameObject.SetActive(true);
                     if (Attachment.GetComponent<MeshRenderer>() != null) {
                         if (DroppedBy != null && DroppedBy == GameObject.FindGameObjectWithTag("Player")) {
@@ -214,34 +217,36 @@ public class ItemScript : MonoBehaviour {
             }
         }
 
-        if (GS.GetSemiClass(Variables, "id") == "13") {
+        if (Variables.GetInt(JType.ID) == 13) {
             Stagnate = false;
-            Variables = GS.SetSemiClass(Variables, "va", "/+-" + (0.01f * (Time.deltaTime * 100f)).ToString(CultureInfo.InvariantCulture) ); //Variables.y -= 0.01f * (Time.deltaTime * 100f);
-            if (float.Parse(GS.GetSemiClass(Variables, "va"), CultureInfo.InvariantCulture) <= 0f) {
+            //Variables = GS.SetSemiClass(Variables, "va", "/+-" + (0.01f * (Time.deltaTime * 100f)).ToString(CultureInfo.InvariantCulture) ); //Variables.y -= 0.01f * (Time.deltaTime * 100f);
+            Variables.SetFloat(JType.VariableA, -(0.01f * (Time.deltaTime * 100f)), Maths.Add);
+            if (Variables.GetFloat(JType.VariableA) <= 0f) {
                 Destroy(this.gameObject);
             }
             if (InWater == true) {
                 Destroy(this.gameObject);
             }
-        } else if ((GS.GetSemiClass(Variables, "id") == "66" || GS.GetSemiClass(Variables, "id") == "110" || GS.GetSemiClass(Variables, "id") == "131") && float.Parse(GS.GetSemiClass(Variables, "va"), CultureInfo.InvariantCulture) > 0f) {
+        } else if ((Variables.GetInt(JType.ID) == 66 || Variables.GetInt(JType.ID) == 110 || Variables.GetInt(JType.ID) == 131) && Variables.GetFloat(JType.VariableA) > 0f) {
             Stagnate = false;
-            Variables = GS.SetSemiClass(Variables, "va", "/+" + (0.2f * (Time.deltaTime * 100f)).ToString(CultureInfo.InvariantCulture) );//Variables.y += 0.2f * (Time.deltaTime * 100f);
-            if (float.Parse(GS.GetSemiClass(Variables, "va"), CultureInfo.InvariantCulture) > 100f) {
-                if (GS.GetSemiClass(Variables, "id") == "66" || GS.GetSemiClass(Variables, "id") == "110" || GS.GetSemiClass(Variables, "id") == "131") {
+            //Variables = GS.SetSemiClass(Variables, "va", "/+" + (0.2f * (Time.deltaTime * 100f)).ToString(CultureInfo.InvariantCulture) );//Variables.y += 0.2f * (Time.deltaTime * 100f);
+            Variables.SetFloat(JType.VariableA, 0.2f * (Time.deltaTime * 100f), Maths.Add);
+            if (Variables.GetFloat(JType.VariableA) > 100f) {
+                if (Variables.GetInt(JType.ID) == 66 || Variables.GetInt(JType.ID) == 110 || Variables.GetInt(JType.ID) == 131) {
                     GameObject Boom = Instantiate(SpecialPrefab) as GameObject;
                     Boom.transform.position = this.transform.position;
-                    if (GS.GetSemiClass(Variables, "id") == "131") {
+                    if (Variables.GetInt(JType.ID) == 131) {
                         Boom.GetComponent<SpecialScript>().TypeOfSpecial = "Flashbang";
                         Boom.GetComponent<SpecialScript>().ExplosionRange = 50f;
-                    } else if (GS.GetSemiClass(Variables, "id") != "110") {
+                    } else if (Variables.GetInt(JType.ID) != 110) {
                         Boom.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
                         Boom.GetComponent<SpecialScript>().ExplosionRange = 6f;
-                    } else if (GS.GetSemiClass(Variables, "id") == "110") {
+                    } else if (Variables.GetInt(JType.ID) == 110) {
                         Boom.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
                         Boom.GetComponent<SpecialScript>().ExplosionRange = 2f;
                     }
                     Boom.GetComponent<SpecialScript>().CausedBy = DroppedBy;
-                    if (GS.GetSemiClass(Variables, "id") == "110") {
+                    if (Variables.GetInt(JType.ID) == 110) {
                         Boom.GetComponent<SpecialScript>().ExplosionRange = 3f;
                         for (int shootFrag = 32; shootFrag > 0; shootFrag --) {
                             GameObject.Find("_RoundScript").GetComponent<RoundScript>().FragElements.Add(this.transform.position);
@@ -253,9 +258,9 @@ public class ItemScript : MonoBehaviour {
             }
         }
 
-        if (CanHaveAttachments == true && GS.GetSemiClass(Variables, "at") != "") {
+        if (CanHaveAttachments == true && Variables.GetInt(JType.Attachment) != 0) {
             foreach (Transform Attachment in SelectedMesh.transform.GetChild(0)) {
-                if (Attachment.name == GS.GetSemiClass(Variables, "at")) {
+                if (Attachment.name == Variables.GetInt(JType.Attachment).ToString()) {
                     Attachment.gameObject.SetActive(true);
                 } else {
                     Attachment.gameObject.SetActive(false);
@@ -271,7 +276,7 @@ public class ItemScript : MonoBehaviour {
 
             if (HitDetector.transform.position != this.transform.position) {
                 HitDetector.transform.LookAt(this.transform.position);
-                if (GS.GetSemiClass(Variables, "id") == "993" || GS.GetSemiClass(Variables, "id") == "134") {
+                if (Variables.GetInt(JType.ID) == 993 || Variables.GetInt(JType.ID) == 134) {
                     this.transform.right = HitDetector.transform.forward * 1000f;
                 }
                 Ray CheckObstacle = new Ray(HitDetector.transform.position, HitDetector.transform.forward);
@@ -287,7 +292,7 @@ public class ItemScript : MonoBehaviour {
 
                         if (CheckObstacleHIT.collider.gameObject.layer == 4 || CheckObstacleHIT.collider.gameObject.layer == 16) {
                             InWater = true;
-                        } else if (GS.GetSemiClass(Variables, "id") == "133") {
+                        } else if (Variables.GetInt(JType.ID) == 133) {
                             // Molotow
                             GameObject Boom = Instantiate(SpecialPrefab) as GameObject;
                             Boom.transform.position = this.transform.position;
@@ -295,7 +300,7 @@ public class ItemScript : MonoBehaviour {
                             Boom.GetComponent<SpecialScript>().ExplosionRange = 6f;
                             Boom.GetComponent<SpecialScript>().CausedBy = DroppedBy;
                             Destroy(this.gameObject);
-                        } else if (GS.GetSemiClass(Variables, "id") == "136") {
+                        } else if (Variables.GetInt(JType.ID) == 136) {
                             // Frying pan
                             GameObject DropEffect = Instantiate(EffectPrefab) as GameObject;
                             DropEffect.GetComponent<EffectScript>().EffectName = "FryingPan";
@@ -303,7 +308,7 @@ public class ItemScript : MonoBehaviour {
                         }
 
                         if (CheckObstacleHIT.collider.GetComponent<MobScript>() != null) {
-                            if (GS.GetSemiClass(Variables, "id") == "108") {
+                            if (Variables.GetInt(JType.ID) == 108) {
                                 // Plunger
                                 CheckObstacleHIT.collider.GetComponent<MobScript>().React("Blinded", 5f, this.transform.position);
                                 CheckObstacleHIT.collider.GetComponent<MobScript>().Plunged = true;
@@ -311,14 +316,14 @@ public class ItemScript : MonoBehaviour {
                                     Plunger.SetActive(true);
                                 }
                                 Destroy(this.gameObject);
-                            } else if (GS.GetSemiClass(Variables, "id") == "136"){
+                            } else if (Variables.GetInt(JType.ID) == 136){
                                 // frying pan
                                 int Chance = Random.Range(0, 100);
                                 if (Chance < 25) {
                                     CheckObstacleHIT.collider.GetComponent<MobScript>().React("Blinded", 2f, this.transform.position);
                                 }
                             } else {
-                                if (GS.GetSemiClass(Variables, "id") == "13") {
+                                if (Variables.GetInt(JType.ID) == 13) {
                                     // Flare
                                     CheckObstacleHIT.collider.GetComponent<MobScript>().Fire = 10f;
                                     if (DroppedBy != null) {
@@ -329,24 +334,24 @@ public class ItemScript : MonoBehaviour {
                             }
                         }
 
-                        if (DroppedBy != null && GS.GetSemiClass(Variables, "id") == "992") {
+                        if (DroppedBy != null && Variables.GetInt(JType.ID) == 992) {
                             DroppedBy.transform.position = this.transform.position + (Vector3.up * 1f);
                             GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(new Color32(75, 200, 75, 255), new float[]{0.5f, 0.5f});
-                        } else if (GS.GetSemiClass(Variables, "id") == "93") {
+                        } else if (Variables.GetInt(JType.ID) == 93) {
                             GameObject Ring = Instantiate(EffectPrefab) as GameObject;
                             Ring.transform.position = this.transform.position;
                             Ring.GetComponent<EffectScript>().EffectName = "Cowbell";
                         }
 
-                        if (CanHaveAttachments == true && GS.GetSemiClass(Variables, "at") != "" && GS.GetSemiClass(Variables, "at") != "0") {
+                        if (CanHaveAttachments == true && Variables.GetInt(JType.Attachment) != 0) {
                             GameObject DropEffect = Instantiate(EffectPrefab) as GameObject;
                             DropEffect.GetComponent<EffectScript>().EffectName = "Unpin";
                             DropEffect.transform.position = this.transform.position;
                             DropEffect.transform.LookAt(Vector3.up);
                             GameObject Attachment = Instantiate(GameObject.Find("_RoundScript").GetComponent<RoundScript>().ItemPrefab) as GameObject;
-                            Attachment.GetComponent<ItemScript>().Variables = GS.itemCache[int.Parse(GS.GetSemiClass(Variables, "at"))].startVariables;
+                            Attachment.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[Variables.GetInt(JType.Attachment)].startVariables);
                             Attachment.transform.position = this.transform.position;
-                            Variables = GS.SetSemiClass(Variables, "at", "0"); //Variables = new Vector3(Variables.x, Variables.y, 0f);
+                            Variables.SetInt(JType.Attachment, 0);
                             setAtt();
                         } else {
                             // Hit
@@ -357,9 +362,9 @@ public class ItemScript : MonoBehaviour {
                                 DropEffect.transform.position = this.transform.position;
                                 DropEffect.transform.LookAt(Vector3.up);
 
-                                switch (GS.GetSemiClass(Variables, "id")) {
-                                    case "111": case "139": // Grenade launcher, bazooka
-                                        int ammo = int.Parse(GS.GetSemiClass(Variables, "va"));
+                                switch (Variables.GetInt(JType.ID)) {
+                                    case 111: case 139: // Grenade launcher, bazooka
+                                        int ammo = (int)Variables.GetFloat(JType.VariableA);
 
                                         for (int dup = ammo; dup > 0; dup--) {
                                             GameObject BoomA = Instantiate(SpecialPrefab) as GameObject;
@@ -369,16 +374,16 @@ public class ItemScript : MonoBehaviour {
                                             BoomA.GetComponent<SpecialScript>().ExplosionRange = 6f;
                                         }
                                         break;
-                                    case "67": // Panzerfaust
+                                    case 67: // Panzerfaust
                                         RS.Attack(new string[]{ "Rocket" }, transform.position + Vector3.up, transform.forward, DroppedBy, gameObject);
                                         break;
-                                    case "89": // Blowtorch
+                                    case 89: // Blowtorch
                                         GameObject Boom = Instantiate(SpecialPrefab) as GameObject;
                                         Boom.transform.position = transform.position;
                                         Boom.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
                                         Boom.GetComponent<SpecialScript>().ExplosionRange = 6f;
                                         break;
-                                    case "109": // Flame thrower
+                                    case 109: // Flame thrower
                                         GameObject BoomB = Instantiate(SpecialPrefab) as GameObject;
                                         BoomB.transform.position = transform.position;
                                         BoomB.GetComponent<SpecialScript>().TypeOfSpecial = "Explosion";
@@ -390,20 +395,20 @@ public class ItemScript : MonoBehaviour {
                                         FlameUp.GetComponent<SpecialScript>().ExplosionRange = 6f;
                                         FlameUp.GetComponent<SpecialScript>().CausedBy = DroppedBy;
                                         break;
-                                    case "128": // Fire extinguisher
+                                    case 128: // Fire extinguisher
                                         for (int fe = 0; fe < 10; fe++) {
                                             Vector3 dir = new (Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
                                             RS.Attack(new string[]{ "FireExtinguisher" }, transform.position, dir, DroppedBy, gameObject);
                                         }
                                         break;
-                                    case "168": // Watermelon
+                                    case 168: // Watermelon
                                         int slice = Random.Range(2, 9);
 
                                         DropEffect.GetComponent<EffectScript>().EffectName = "Gibs";
 
                                         for (int s = 0; s < slice; s++) {
                                             GameObject item = Instantiate(GameObject.Find("_RoundScript").GetComponent<RoundScript>().ItemPrefab) as GameObject;
-                                            item.GetComponent<ItemScript>().Variables = GS.itemCache[169].startVariables;
+                                            item.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[169].startVariables);
                                             item.transform.position = this.transform.position + Vector3.up * s / 4f;
                                         }
                                         break;
@@ -423,14 +428,14 @@ public class ItemScript : MonoBehaviour {
                     
                         foreach (GameObject MobHear in GameObject.FindGameObjectsWithTag("Mob")) {
                             if (Vector3.Distance(this.transform.position, MobHear.transform.position) < ThrownVariables.x * 3f) {
-                                if ((GS.GetSemiClass(Variables, "id") == "66" || GS.GetSemiClass(Variables, "id") == "110" || GS.GetSemiClass(Variables, "id") == "131") && Vector3.Distance(this.transform.position, MobHear.transform.position) < 9f && (MobHear.GetComponent<MobScript>().ClassOfMob != "Mutant")) {
-                                    MobHear.GetComponent<MobScript>().React("Panic", ((100f - float.Parse(GS.GetSemiClass(Variables, "va"), CultureInfo.InvariantCulture)) / 20f) + 1f, this.transform.position + (MobHear.transform.position - this.transform.position) * 9f);
-                                } else if (GS.GetSemiClass(Variables, "id") != "66" && GS.GetSemiClass(Variables, "id") != "110" && GS.GetSemiClass(Variables, "id") != "131" && MobHear.GetComponent<MobScript>().Angered <= 0f) {
+                                if ((Variables.GetInt(JType.ID) == 66 || Variables.GetInt(JType.ID) == 110 || Variables.GetInt(JType.ID) == 131) && Vector3.Distance(this.transform.position, MobHear.transform.position) < 9f && (MobHear.GetComponent<MobScript>().ClassOfMob != "Mutant")) {
+                                    MobHear.GetComponent<MobScript>().React("Panic", ((100f - Variables.GetFloat(JType.VariableA)) / 20f) + 1f, this.transform.position + (MobHear.transform.position - this.transform.position) * 9f);
+                                } else if (Variables.GetInt(JType.ID) != 66 && Variables.GetInt(JType.ID) != 110 && Variables.GetInt(JType.ID) != 131 && MobHear.GetComponent<MobScript>().Angered <= 0f) {
                                     MobHear.GetComponent<MobScript>().React("Curious", 10f, this.transform.position);
                                 }
                             }
                         }
-                        if (GS.GetSemiClass(Variables, "id") == "54" && HackAt != Vector3.zero) {
+                        if (Variables.GetInt(JType.ID) == 54 && HackAt != Vector3.zero) {
                             SelectedMesh.transform.GetChild(1).GetComponent<BoxCollider>().enabled = true;
                             State = 1;
                             this.GetComponent<Rigidbody>().useGravity = false;
@@ -442,7 +447,7 @@ public class ItemScript : MonoBehaviour {
             }
             // Check For Hit
             // Grappling Hook
-            if (GS.GetSemiClass(Variables, "id") == "54" && HackAt != Vector3.zero) {
+            if (Variables.GetInt(JType.ID) == 54 && HackAt != Vector3.zero) {
                 SelectedMesh.transform.GetChild(1).LookAt(HackAt);
                 SelectedMesh.transform.GetChild(1).localScale = new Vector3(1f, 1f , Vector3.Distance(this.transform.position, HackAt));
             }
