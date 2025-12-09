@@ -98,6 +98,7 @@ public class GameScript : MonoBehaviour {
 
     // Misc
     public string WindowToBootUp = "";
+    public string NewProfileName;
     bool CanSaveSettings = true;
     public int MaxFPS = 999;
     public float[] Earpiercing = new float[] { 0f, 0f };
@@ -379,6 +380,11 @@ public class GameScript : MonoBehaviour {
             WindowToBootUp = "GameOver";
 
         } else if (WayOfChange == "BackToMenu") {
+
+            SceneManager.LoadScene("NewMenu");
+            WindowToBootUp = "MainMenu";
+
+        } else if (WayOfChange == "BootMenu") {
 
             SceneManager.LoadScene("NewMenu");
             WindowToBootUp = "MainMenu";

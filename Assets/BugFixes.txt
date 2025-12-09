@@ -9,7 +9,11 @@ MAJOR:
 - Improve achievement text
 x Item bank (for NPC holding items)
 	- attachments and whatnot
-- For main menu: boot and game over scene, improve credits
+- For main menu: 
+	- boot and game over scene
+	- improve credits
+	- Add public test warnings
+	- Add health disclaimers
 - Saves versioning system (to update old saves)
 - Add kits
 - Replace sound effects
@@ -119,3 +123,5 @@ x Adjust grass quality
 	- Fix canvas item info
 	x Find a way to add JClasses in inspector
 	- Turn options into JClasses
+	- Both flashlights don't work
+	- Ammo items don't work in Casual mode
