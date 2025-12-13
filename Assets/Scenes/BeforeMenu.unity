@@ -1427,7 +1427,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 649236120}
-  - component: {fileID: 649236119}
+  - component: {fileID: 649236121}
   - component: {fileID: 649236118}
   m_Layer: 0
   m_Name: _StartGameScript
@@ -1468,7 +1468,22 @@ MonoBehaviour:
   Kits: []
   Achievements: []
   Trophies: []
---- !u!114 &649236119
+--- !u!4 &649236120
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 649236117}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -13.534551, y: 1.2942983, z: -12.858178}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &649236121
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1480,11 +1495,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c69d42a3607b18d4f939a9057d34bde5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Version: 1.3
-  Platform: 1
+  Version: pt 0.1
+  Platform: 0
   SaveFileName: 
   FileSeed: 0
-  RoundSetting: G0?D0?P1
+  RoundSetting: G0?D2?P1
   GameModePrefab:
     x: 0
     y: 0
@@ -1501,16 +1516,14 @@ MonoBehaviour:
     Values: []
   MaxInventory: 4
   PlayerBuffs: 
-  CurrentSave: 0
+  CurrentSave: 1
   PlaythroughStats: 
-  NeueScore:
-  - Npenis;G0;D0;S250;R10;
-  - Killed_10;Damage_5
-  WhatOnStart: 0
-  GraphicsQuality: 4
-  LightingQuality: 4
-  ParticlesQuality: 4
-  GrassQuality: 4
+  NeueScore: []
+  WhatOnStart: -1
+  GraphicsQuality: 3
+  LightingQuality: 3
+  ParticlesQuality: 3
+  GrassQuality: 3
   DestructionQuality: 1
   EffectsQuality: 1
   CameraBobbing: 1
@@ -1519,7 +1532,7 @@ MonoBehaviour:
   Ragdolls: 1
   MainResolution: {x: 800, y: 600}
   UIResolution: {x: 800, y: 600}
-  SkyboxType: 0
+  SkyboxType: 2
   mainMixer: {fileID: 24100000, guid: 637a0c78a81587046a1377781fcb69e5, type: 2}
   MuteVolume: 0
   Volumes:
@@ -1529,7 +1542,7 @@ MonoBehaviour:
   - 1
   EarpiercingAllowed: 1
   MouseSensitivity: 2
-  MouseSmoothness: 1
+  MouseSmoothness: 0
   InvertedMouse: 0
   Language: English
   LaserColor: 0
@@ -1537,7 +1550,7 @@ MonoBehaviour:
   HudColorMain: Black
   HudColorHUE: 000000
   PS: {fileID: 0}
-  WindowToBootUp: MainMenu
+  WindowToBootUp: 
   NewProfileName: 
   MaxFPS: 999
   Earpiercing:
@@ -1549,24 +1562,21 @@ MonoBehaviour:
   HudCache: []
   IgnoreMaks1:
     serializedVersion: 2
-    m_Bits: 73523
+    m_Bits: 83959603
   IngoreMaskWP:
     serializedVersion: 2
-    m_Bits: 73011
+    m_Bits: 16850227
   IgnoreMaskEnemy:
     serializedVersion: 2
-    m_Bits: 98099
+    m_Bits: 16875315
   IngoreMaskAttack:
     serializedVersion: 2
-    m_Bits: 67309363
+    m_Bits: 84086579
   SaveSettingsTime: 1
   ToldHints: 
   MainPP: {fileID: 11400000, guid: b368ca9fec5312f4e83da29384008e1f, type: 2}
   GunsPP: {fileID: 11400000, guid: fae92abd2e622d34780ff76639aed63f, type: 2}
-  ContSaturTempInvi:
-  - 0
-  - 0
-  - 0
+  ContSaturTempInvi: []
   PPColor:
     serializedVersion: 2
     rgba: 0
@@ -1576,21 +1586,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
---- !u!4 &649236120
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 649236117}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.534551, y: 1.2942983, z: -12.858178}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &673923389
 GameObject:
   m_ObjectHideFlags: 0

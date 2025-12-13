@@ -21,6 +21,7 @@ public class NewMenuScript : MonoBehaviour {
     // variables
 
     // references
+    public MenuSceneScript MenuScene;
     GameObject mainAnchor;
     public Image Logo;
     float LogoAlpha = 0f;
@@ -1833,6 +1834,7 @@ public class NewMenuScript : MonoBehaviour {
             if (Input.anyKeyDown) {
                 if (CheckoutStage == 6) {
                     CurrentWindow = "Main";
+                    MenuScene.ChangeScene("Main");
                 } else if (CheckoutStage > 1 || (CheckoutStage == 1 && FadeInValue > 1f)) {
                     CheckoutStage = 5;
                 }

@@ -10,14 +10,16 @@ MAJOR:
 x Item bank (for NPC holding items)
 	- attachments and whatnot
 - For main menu: 
-	- boot and game over scene
+	x boot scene
+	x game over scene
 	- improve credits
-	- Add public test warnings
-	- Add health disclaimers
+	x Add public test warnings
+	x Add health disclaimers
 - Saves versioning system (to update old saves)
 - Add kits
 - Replace sound effects
 - Replace Semiclasses with JStructs
+- Replace music
 
 MINOR:
 x pathfinding in horde
@@ -55,11 +57,13 @@ x Navmesh sometimes isn't baked
 x Dirty punishment makes you drunk
 	x Improve buff saving
 
+- Pre nuke effects
 - Black sun
-- Change fog model
+x Change fog model
 - Changing options at runtime warning
 x Kill function
 	x Immortality glitch
+	- Death animation sometimes does not work
 x Tame hurt effects
 
 x Fix wrench
@@ -112,6 +116,11 @@ x Improve spawning
 - IsHidden
 
 x Adjust grass quality
+x Guards shouldn't go to audio sources too far
+x Window glass doesn't have a collider
+
+- Fishing rod cable
+x Skybox uv map fix
 
 - Finish JClasses
 	x Fix JClass = x to JClass.CopyFrom()
@@ -124,4 +133,9 @@ x Adjust grass quality
 	x Find a way to add JClasses in inspector
 	- Turn options into JClasses
 	- Both flashlights don't work
-	- Ammo items don't work in Casual mode
+	x Ammo items don't work in Casual mode
+
+- Fix horde mode
+    - Can jump out of a trench
+    - Interactables don't work
+    - Gui doesn't work

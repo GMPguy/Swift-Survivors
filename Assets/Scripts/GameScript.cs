@@ -941,7 +941,8 @@ public class GameScript : MonoBehaviour {
 
     // Item functions
     public void setItemData(bool isCausal){
-        JType casualAmmo = isCausal ? JType.CasualAmmo : JType.AmmoStack;
+        //JType casualAmmo = isCausal ? JType.CasualAmmo : JType.AmmoStack;
+        JEntry casualAmmo = isCausal ? new JString(JType.Cacheable, "Ammo") : new JTag(JType.AmmoStack);
 
         ItemCache = new itemClass[]{
             new(),
@@ -1116,7 +1117,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 30),
                     new JFloat (JType.VariableA, 4 * Random.Range(1, 5)),
-                    new JEntry (casualAmmo)
+                    casualAmmo
                 })
             ),
             new(this, new string[]{"Luger", "Luger"},
@@ -1142,7 +1143,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID,33),
                     new JFloat (JType.VariableA, 5 * Random.Range(1, 10)),
-                    new JEntry (casualAmmo)
+                    casualAmmo
                 })
             ),
             new(this, new string[]{"Hunting rifle", "Karabin myśliwski"},
@@ -1177,7 +1178,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 37),
                     new JFloat (JType.VariableA, 15 * Random.Range(1, 5)),
-                    new JEntry (casualAmmo)
+                    casualAmmo
                 })
             ),
             new(this, new string[]{"AK47", "AK47"},
@@ -1194,7 +1195,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 39),
                     new JFloat (JType.VariableA, 15 * Random.Range(1, 5)),
-                    new JEntry (casualAmmo)
+                    casualAmmo
                 })
             ),
             new(this, new string[]{"Shotgun", "Strzelba"},
@@ -1385,7 +1386,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 63),
                     new JFloat (JType.VariableA, 250 * Random.Range(1, 4)),
-                    new JEntry (casualAmmo)
+                    casualAmmo
                 })
             ),
             new(this, new string[]{"Minigun", "Minigun"},
@@ -1956,7 +1957,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 158),
                     new JFloat (JType.VariableA, Random.Range(1, 4) * 5),
-                    new JEntry (casualAmmo)
+                    casualAmmo
                 })
             ),
             new(this, new string[]{"Baker rifle", "Karabin Bakera"},

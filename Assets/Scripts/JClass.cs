@@ -144,7 +144,7 @@ public class JClass {
         int fetch = FetchStruct(what);
 
         if (fetch == -1)
-            Values.Add(new JEntry (what));
+            Values.Add(new JTag (what));
     }
 
     // Misc functions

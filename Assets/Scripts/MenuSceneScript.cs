@@ -24,7 +24,7 @@ public class MenuSceneScript : MonoBehaviour {
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
 
         if(GS.WindowToBootUp == "BootUp") ChangeScene("Main");
-        else if(GS.WindowToBootUp == "GameOver") ChangeScene("Main");
+        else if(GS.WindowToBootUp == "GameOver") ChangeScene("GameOver");
         else ChangeScene("Main");
     }
 
@@ -45,10 +45,17 @@ public class MenuSceneScript : MonoBehaviour {
                         GS.ContSaturTempInvi[3] = Vignette;
                         
                         if(GS.ExistSemiClass(CameraPoints[0].name, "fv_") && GS.ExistSemiClass(CameraPoints[1].name, "fv_"))
-                            cam.fieldOfView = Mathf.Lerp(float.Parse(GS.GetSemiClass(CameraPoints[0].name, "fv_")), float.Parse(GS.GetSemiClass(CameraPoints[1].name, "fv_")), TimeSincePassed/2f);
+                            cam.fieldOfView = Mathf.Lerp(
+                                float.Parse(GS.GetSemiClass(CameraPoints[0].name, "fv_")),
+                                float.Parse(GS.GetSemiClass(CameraPoints[1].name, "fv_")),
+                                TimeSincePassed/2f
+                            );
 
-                        if(GS.ExistSemiClass(CameraPoints[0].name, "sc_Black")) GS.PPColor = Color.Lerp(Color.black, setPPColor, TimeSincePassed/2f);
-                        else GS.PPColor = new Color(0f,0f,0f);
+                        if(GS.ExistSemiClass(CameraPoints[0].name, "sc_Black")) 
+                            setPPColor = Color.Lerp(Color.black, setPPColor, TimeSincePassed/2f);
+                        else 
+                            setPPColor = new Color(0f,0f,0f);
+                        GS.PPColor = setPPColor;
 
                     } else {
                         MainCamera.transform.position = CameraPoints[1].position + (CameraPoints[1].right*Cursor.x*cursorShift) + (CameraPoints[1].up*-Cursor.y*cursorShift);
@@ -62,14 +69,21 @@ public class MenuSceneScript : MonoBehaviour {
 
                 if(TimeSincePassed > 0f){
                     TimeSincePassed -= Time.unscaledDeltaTime;
-                    MainCamera.transform.position = Vector3.Lerp(CameraPoints[1].position, CameraPoints[2].position, TimeSincePassed);
-                    MainCamera.transform.rotation = Quaternion.Lerp(CameraPoints[1].rotation, CameraPoints[2].rotation, TimeSincePassed);
+                    MainCamera.transform.position = Vector3.Lerp(CameraPoints[2].position, CameraPoints[1].position, TimeSincePassed);
+                    MainCamera.transform.rotation = Quaternion.Lerp(CameraPoints[2].rotation, CameraPoints[1].rotation, TimeSincePassed);
 
                     if(GS.ExistSemiClass(CameraPoints[1].name, "fv_") && GS.ExistSemiClass(CameraPoints[2].name, "fv_"))
-                        cam.fieldOfView = Mathf.Lerp(float.Parse(GS.GetSemiClass(CameraPoints[1].name, "fv_")), float.Parse(GS.GetSemiClass(CameraPoints[2].name, "fv_")), TimeSincePassed);
+                        cam.fieldOfView = Mathf.Lerp(
+                            float.Parse(GS.GetSemiClass(CameraPoints[2].name, "fv_")),
+                            float.Parse(GS.GetSemiClass(CameraPoints[1].name, "fv_")),
+                            TimeSincePassed
+                        );
 
-                    if(GS.ExistSemiClass(CameraPoints[0].name, "sc_Black")) GS.PPColor = Color.Lerp(Color.black, setPPColor, TimeSincePassed);
-                    else GS.PPColor = new Color(0f,0f,0f);
+                    if(GS.ExistSemiClass(CameraPoints[2].name, "sc_Black")) 
+                        setPPColor = Color.Lerp(Color.black, setPPColor, TimeSincePassed);
+                    else 
+                        setPPColor = new Color(0f,0f,0f);
+                    GS.PPColor = setPPColor;
 
                 } else {
                     CurrentScene[0] = CurrentScene[1];
@@ -89,7 +103,7 @@ public class MenuSceneScript : MonoBehaviour {
                     }
                     switch(CurrentScene[0]){
                         case "Main":
-                             GS.ContSaturTempInvi = new float[]{0f,0f,0f,0.25f};
+                            GS.ContSaturTempInvi = new float[]{0f,0f,0f,0.25f};
                             cursorShift = 0f;
                             cursorRotation = 2f;
                             setPPColor = Color.white;
@@ -162,6 +176,13 @@ public class MenuSceneScript : MonoBehaviour {
                                 }
                             }
                             break;
+                        case "GameOver":
+                            GS.ContSaturTempInvi = new float[]{0f,-100f,0f,0.75f};
+                            RenderSettings.fogColor = Color.white;
+                            setPPColor = Color.white;
+                            RenderSettings.fogEndDistance = 25f;
+                            RenderSettings.ambientLight = Color.white / 10f;
+                            break;
                         default: 
                             break;
                     }
@@ -173,9 +194,14 @@ public class MenuSceneScript : MonoBehaviour {
     }
 
     public void ChangeScene(string newScene){
+        if (CurrentScene[1] == newScene)
+            return;
+
         CurrentScene[1] = newScene;
-        if(CurrentScene[0] != "") TimeSincePassed = 1f;
-        else TimeSincePassed = 0f;
+        if(CurrentScene[0] != "")
+            TimeSincePassed = 1f;
+        else 
+            TimeSincePassed = 0f;
     }
 
 }

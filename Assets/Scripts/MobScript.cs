@@ -1372,14 +1372,22 @@ public class MobScript : MonoBehaviour {
         if (State == 0) {
 
             if (How == "Curious" && Angered <= 0f && Panic <= 0f) {
-                if (Curious <= 0f && (ClassOfMob != "Mutant")) {
-                    Anim.Play(AnimationSet + "Confused", 0, 0f);
-                    float RealisationTime = Random.Range(0.5f, 2f);
-                    Anim.speed = RealisationTime;
-                    CantDoAnything = 1f / RealisationTime;
+
+                bool sure = true;
+                if (ClassOfMob == "Guard" && Vector3.Distance(Where, StartPosition) > 25f)
+                    sure = false;
+
+                if (sure) {
+                    if (Curious <= 0f && (ClassOfMob != "Mutant")) {
+                        Anim.Play(AnimationSet + "Confused", 0, 0f);
+                        float RealisationTime = Random.Range(0.5f, 2f);
+                        Anim.speed = RealisationTime;
+                        CantDoAnything = 1f / RealisationTime;
+                    }
+
+                    Curious = HowLong;
+                    AiMovePosition = Where;
                 }
-                Curious = HowLong;
-                AiMovePosition = Where;
             } else if (How == "Blinded") {
                 Blinded = HowLong;
                 Anim.Play(AnimationSet + "Blinded", 0, 0f);
