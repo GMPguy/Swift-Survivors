@@ -60,7 +60,7 @@ x Dirty punishment makes you drunk
 - Pre nuke effects
 - Black sun
 x Change fog model
-- Changing options at runtime warning
+x Changing options at runtime warning
 x Kill function
 	x Immortality glitch
 	- Death animation sometimes does not work
@@ -102,7 +102,7 @@ x Add simple/dynamic destruction effects
 	x Save these settings
 	
 x Replace footstep effects with simple audio source
-- Afterburner
+x Afterburner
 x Forest Fjords
 
 x Add landpart script

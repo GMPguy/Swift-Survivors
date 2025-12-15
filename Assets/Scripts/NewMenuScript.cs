@@ -55,6 +55,8 @@ public class NewMenuScript : MonoBehaviour {
     string[] OptionOptions;
     public ButtonScript OptionClose;
     public MenuSliderScript OptionSlider;
+    public Transform OptionWarning;
+    public Text OptionWarningText;
     // While pick game
     public Transform PickGame;
     string[] ListOfSaveFiles = new string[]{}; 
@@ -1099,6 +1101,16 @@ public class NewMenuScript : MonoBehaviour {
                 if(OptionTitle == "main") CurrentWindow = "Main";
                 else OptionTitle = "main";
 
+            // Warning
+            if (SceneManager.GetActiveScene().name == "MainGame"){
+                OptionWarning.localScale = Vector3.one;
+                OptionWarningText.text = GS.SetString(
+                    "Changing certain settings at runtime, can cause some artifacts to appear",
+                    "Zmiana niektórych ustawień w trakcie gry, może wywołać pojawienie się pewnych artefaktów"
+                );
+            } else
+                OptionWarning.localScale = Vector3.zero;
+
             // Set option options
             string[] Keybinders = {};
 
@@ -1412,6 +1424,8 @@ public class NewMenuScript : MonoBehaviour {
             OptionSlider.Active = false;
             OptionSlider.gameObject.SetActive(false);
 
+            OptionWarning.localScale = Vector3.zero;
+
         } else {
 
             Options.position = SH[1].position;
@@ -1423,6 +1437,8 @@ public class NewMenuScript : MonoBehaviour {
             OptionSlider.Active = false;
             OptionSlider.gameObject.SetActive(false);
             OptionTitle = "main";
+
+            OptionWarning.localScale = Vector3.zero;
 
         }
 

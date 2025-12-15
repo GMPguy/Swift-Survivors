@@ -3753,7 +3753,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4104614770063578
 Transform:
   m_ObjectHideFlags: 0
@@ -3790,7 +3790,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4bdfe1beeca933a49b24fcf2217587f2, type: 2}
+  - {fileID: 2100000, guid: 53cdde8037f1ed24491abe4917c08e48, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3916,7 +3916,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -4031,9 +4031,9 @@ ParticleSystem:
         m_RotationOrder: 4
     startColor:
       serializedVersion: 2
-      minMaxState: 0
-      minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      minMaxState: 2
+      minColor: {r: 1, g: 0, b: 0, a: 0}
+      maxColor: {r: 1, g: 0.7983651, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4482,7 +4482,7 @@ ParticleSystem:
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
-    m_Scale: {x: 1, y: 1, z: 1}
+    m_Scale: {x: 2, y: 1, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -4680,7 +4680,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 100
+      scalar: 50
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -4786,7 +4786,7 @@ ParticleSystem:
     m_BurstCount: 0
     m_Bursts: []
   SizeModule:
-    enabled: 1
+    enabled: 0
     curve:
       serializedVersion: 2
       minMaxState: 1
@@ -5118,8 +5118,8 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 0.48478022, b: 0, a: 1}
-        key1: {r: 1, g: 0.7540637, b: 0, a: 1}
+        key0: {r: 1, g: 1, b: 1, a: 1}
+        key1: {r: 0.47387064, g: 0.47387064, b: 0.47387064, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -5143,7 +5143,7 @@ ParticleSystem:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_ColorSpace: -1
+        m_ColorSpace: 0
         m_NumColorKeys: 3
         m_NumAlphaKeys: 2
       minGradient:
@@ -11761,6 +11761,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4142485824245952}
   - component: {fileID: 95361732616671268}
+  - component: {fileID: 2801909704753936023}
   m_Layer: 0
   m_Name: ItemShown
   m_TagString: Untagged
@@ -11807,6 +11808,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2801909704753936023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200416749127688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4fbe0bfa08329649a6a75f865e432c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReadMessage: 
 --- !u!1 &1203181140111418
 GameObject:
   m_ObjectHideFlags: 0
@@ -44790,24 +44804,24 @@ MonoBehaviour:
   SwimmingSpeed: 5
   IsCrouching: 0
   ArmType: ConscriptJacket
-  InventoryText: 
+  InvEqCache:
+    Values: []
   Inventory:
-  - id0;
-  - id0;
-  - id0;
-  - id0;
-  - id0;
-  - id0;
-  - id0;
-  - id0;
-  - id0;
-  - id0;
-  EquipmentText: 
+  - Values: []
+  - Values: []
+  - Values: []
+  - Values: []
+  - Values: []
+  - Values: []
+  - Values: []
+  - Values: []
+  - Values: []
+  - Values: []
   Equipment:
-  - id0;
-  - id0;
-  - id0;
-  - id0;
+  - Values: []
+  - Values: []
+  - Values: []
+  - Values: []
   CurrentItemHeld: 0
   MaxInventorySlots: 4
   currBuild: 
@@ -44862,6 +44876,7 @@ MonoBehaviour:
   - 0
   - 0
   GroundDetectorObj: {fileID: 1302471742342976}
+  AnimationEvent: {fileID: 2801909704753936023}
   Soundbank: {fileID: 9016441881036017067}
   SoundBankAudios:
   - {fileID: 8300000, guid: ccce300920dee2b4ead2eeb9240931f2, type: 3}
@@ -44941,9 +44956,8 @@ MonoBehaviour:
   IsFishing: 0
   FishingStatus: {x: 0, y: 0}
   ScannedInteractables: []
-  ReloadInfo:
-  - 0
-  - None
+  ReloadInfo_Amount: 0
+  ReloadInfo_Animation: 
   POV: FPP
   ReleaseCamera: 0
   ItemShakePos: {x: 0, y: 0, z: 0}
@@ -44966,6 +44980,9 @@ MonoBehaviour:
   CantSwitchItem: 0
   CantInteract: 0
   CantCraft: 0
+  references:
+    version: 2
+    RefIds: []
 --- !u!65 &65055757290975254
 BoxCollider:
   m_ObjectHideFlags: 0

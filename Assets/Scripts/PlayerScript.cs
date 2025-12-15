@@ -57,6 +57,7 @@ public class PlayerScript : MonoBehaviour {
     public float Hot = 0f;
     public float Fire = 0f;
     public GameObject FireObj;
+    float Afterburner;
     public float Campfire = 0f;
     public float Dirty = 0f;
     public bool Nicotined;
@@ -86,6 +87,7 @@ public class PlayerScript : MonoBehaviour {
     public GameObject ItemsShown;
     public float[] TempItemShown = new float[]{ 0f, 0f };
     public GameObject GroundDetectorObj;
+    public AnimationEventDetector AnimationEvent;
     public Transform Soundbank;
     public AudioClip[] SoundBankAudios;
     public AudioSource[] GeigerCounter;
@@ -146,7 +148,8 @@ public class PlayerScript : MonoBehaviour {
     public Vector2 FishingStatus;
     float CheckForInteractables = 1f;
     public List<GameObject> ScannedInteractables;
-    public string[] ReloadInfo = {"0", "None"};
+    public int ReloadInfo_Amount = 0;
+    public string ReloadInfo_Animation = "";
     // Camera position variables
     public string POV = "FPP";
     public float ReleaseCamera = 0f;
@@ -3017,7 +3020,9 @@ public class PlayerScript : MonoBehaviour {
                             int ToLoad = (int)Mathf.Clamp(ReloadVariables[0] - Inventory[CurrentItemHeld].GetFloat(JType.VariableA), 0, GS.Ammo);
                             
                             if (ToLoad > 0 || goldenGun) {
-                                ReloadInfo = new string[]{goldenGun ? "0" : ToLoad.ToString(), ReloadingAnimation[2]};
+                                //ReloadInfo = new string[]{goldenGun ? "0" : ToLoad.ToString(), ReloadingAnimation[2]};
+                                ReloadInfo_Amount = goldenGun ? 0 : ToLoad;
+                                ReloadInfo_Animation = ReloadingAnimation[2];
                                 ItemsShown.GetComponent<Animator>().Play(ReloadingAnimation[0], 0, 0f);
                                 PlaySoundBank(ReloadingAnimation[1], 1, 1f, 0f, "Override");
                                 CantUseItem = ReloadVariables[2];
@@ -3043,7 +3048,9 @@ public class PlayerScript : MonoBehaviour {
                                 }
                             }
                             if(ToLoad[1] > 0 || goldenGun){
-                                ReloadInfo = new string[]{ToLoad[1].ToString(), ReloadingAnimation[2]};
+                                //ReloadInfo = new string[]{ToLoad[1].ToString(), ReloadingAnimation[2]};
+                                ReloadInfo_Amount = ToLoad[1];
+                                ReloadInfo_Animation = ReloadingAnimation[2];
                                 ItemsShown.GetComponent<Animator>().Play(ReloadingAnimation[0], 0, 0f);
                                 PlaySoundBank(ReloadingAnimation[1], 1, 1f, 0f, "Override");
                                 CantUseItem = ReloadVariables[2];
@@ -3058,7 +3065,7 @@ public class PlayerScript : MonoBehaviour {
 
                     // Actually reload
                     if(ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(ReloadingAnimation[0])){
-                        if(ReloadInfo[1] == "FullLoad"){
+                        if(ReloadInfo_Animation == "FullLoad"){
 
                             MainCanvas.CSWait = new float[]{ ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime, 0.2f};
 
@@ -3069,9 +3076,9 @@ public class PlayerScript : MonoBehaviour {
                                         //Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "30");
                                         Inventory[CurrentItemHeld].SetFloat(JType.VariableA, 30);
                                     } else {
-                                        int ToLoad = Mathf.Clamp(int.Parse(ReloadInfo[0]), 0, GS.Ammo);
+                                        int ToLoad = Mathf.Clamp(ReloadInfo_Amount, 0, GS.Ammo);
                                         //Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+" + int.Parse(ReloadInfo[0])); //Inventory[CurrentItemHeld].y += int.Parse(ReloadInfo[0]);
-                                        Inventory[CurrentItemHeld].SetFloat(JType.VariableA, int.Parse(ReloadInfo[0]), Maths.Add);
+                                        Inventory[CurrentItemHeld].SetFloat(JType.VariableA, ReloadInfo_Amount, Maths.Add);
                                         GS.Ammo -= ToLoad;
                                     }
                                 } else {
@@ -3079,15 +3086,15 @@ public class PlayerScript : MonoBehaviour {
                                     List<Vector2> ConsumedAmmo = new List<Vector2>();
                                     for (int CheckInv = 0; CheckInv < MaxInventorySlots; CheckInv++) {
                                         if (Inventory[CheckInv].GetInt(JType.ID) == ReloadVariables[1]) {
-                                            if (Inventory[CheckInv].GetFloat(JType.VariableA) >= int.Parse(ReloadInfo[0]) - ToLoad) {
-                                                ConsumedAmmo.Add(new Vector2(CheckInv, int.Parse(ReloadInfo[0]) - ToLoad));
-                                                ToLoad += int.Parse(ReloadInfo[0]) - ToLoad;
-                                            } else if (Inventory[CheckInv].GetFloat(JType.VariableA) < int.Parse(ReloadInfo[0]) - ToLoad) {
+                                            if (Inventory[CheckInv].GetFloat(JType.VariableA) >= ReloadInfo_Amount - ToLoad) {
+                                                ConsumedAmmo.Add(new Vector2(CheckInv, ReloadInfo_Amount - ToLoad));
+                                                ToLoad += ReloadInfo_Amount - ToLoad;
+                                            } else if (Inventory[CheckInv].GetFloat(JType.VariableA) < ReloadInfo_Amount - ToLoad) {
                                                 ConsumedAmmo.Add(new Vector2(CheckInv, Inventory[CheckInv].GetFloat(JType.VariableA)));
                                                 ToLoad += (int)Inventory[CheckInv].GetFloat(JType.VariableA);
                                             }
                                         }
-                                        if (ToLoad == int.Parse(ReloadInfo[0])) break;
+                                        if (ToLoad == ReloadInfo_Amount) break;
                                     }
                                     if (ToLoad > 0 || currID == 996) {
                                         if (currID == 996) {
@@ -3104,25 +3111,27 @@ public class PlayerScript : MonoBehaviour {
                                     }
                                 }
 
-                                ReloadInfo = new string[]{"0", "None"};
+                                ReloadInfo_Amount = 0;// = new string[]{"0", "None"};
+                                ReloadInfo_Animation = "";
 
                             }
 
-                        } else if (ReloadInfo[1] == "OneByOne"){
+                        } else if (ReloadInfo_Animation == "OneByOne"){
 
-                            MainCanvas.CSWait = new float[]{ 1f - (float.Parse(ReloadInfo[0], CultureInfo.InvariantCulture) / (float)ReloadVariables[0]), 0.2f};
+                            MainCanvas.CSWait = new float[]{ 1f - (ReloadInfo_Amount / (float)ReloadVariables[0]), 0.2f};
 
-                            if(ItemsShown.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.66f){
+                            if(AnimationEvent.ReadMessage == "LoadGun"){
                                 bool Stop = false;
+                                AnimationEvent.ReadMessage = "";
 
                                 if(GS.GameModePrefab.x == 1 || IsCasual){
                                     //Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+1");//Inventory[CurrentItemHeld].y += 1;
                                     Inventory[CurrentItemHeld].SetFloat(JType.VariableA, 1, Maths.Add);
-                                    ReloadInfo[0] = (int.Parse(ReloadInfo[0]) - 1).ToString();
+                                    ReloadInfo_Amount = ReloadInfo_Amount - 1;
                                     GS.Ammo -= 1;
                                     CantUseItem = (ReloadVariables[2] / 3f) * 1.1f;
                                     IsReloading = (ReloadVariables[2] / 3f) * 1.1f;
-                                    if(ReloadInfo[0] == "0" || GS.Ammo <= 0) 
+                                    if(ReloadInfo_Amount == 0 || GS.Ammo <= 0) 
                                         Stop = true;
                                 } else {
                                     bool HasABullet = false;
@@ -3131,7 +3140,7 @@ public class PlayerScript : MonoBehaviour {
                                             if (Inventory[CheckInv].GetFloat(JType.VariableA) > 0) {
                                                 //Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+1");//Inventory[CurrentItemHeld].y += 1;
                                                 Inventory[CurrentItemHeld].SetFloat(JType.VariableA, 1, Maths.Add);
-                                                ReloadInfo[0] = (int.Parse(ReloadInfo[0]) - 1).ToString();
+                                                ReloadInfo_Amount = ReloadInfo_Amount - 1;
                                                 //Inventory[CheckInv] = GS.SetSemiClass(Inventory[CheckInv], "va", "/+-1");//Inventory[CheckInv].y -= 1;
                                                 Inventory[CheckInv].SetFloat(JType.VariableA, -1, Maths.Add);
                                                 CantUseItem = (ReloadVariables[2] / 3f) * 1.1f;
@@ -3140,14 +3149,15 @@ public class PlayerScript : MonoBehaviour {
                                             }
                                         }
                                     }
-                                    if(!HasABullet || ReloadInfo[0] == "0") Stop = true;
+                                    if(!HasABullet || ReloadInfo_Amount == 0) Stop = true;
                                 }
 
                                 if(!Stop){
                                     ItemsShown.GetComponent<Animator>().Play(ReloadingAnimation[0], 0, 0.33f);
                                     PlaySoundBank(ReloadingAnimation[1], 1, 1f, ReloadVariables[2] * 0.33f, "Override");
                                 } else {
-                                    ReloadInfo = new string[]{"0", "None"};
+                                    ReloadInfo_Amount = 0;
+                                    ReloadInfo_Animation = "";// = new string[]{"0", "None"};
                                 }
 
                             }
@@ -3967,16 +3977,18 @@ public class PlayerScript : MonoBehaviour {
 
                             EffectScript waterSplash = GameObject.Instantiate(EffectPrefab).GetComponent<EffectScript>();
                             waterSplash.EffectName = "BullethitWater";
-                            waterSplash.transform.position = checkWaterHit.point;
-
-                            //Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-10");
-                            Inventory[CurrentItemHeld].SetFloat(JType.VariableA, -10f, Maths.Add);
-                            if (Inventory[CurrentItemHeld].GetFloat(JType.VariableA) <= 0f)
-                                InvGet(CurrentItemHeld, 1);
+                            waterSplash.transform.position = checkWaterHit.point;                            
                         } else {
                             CantUseItem = .5f;
                             GS.Mess(GS.SetString("Aim at a water body!", "Celuj w zbiornik wodny!"), "Error");
                         }
+                    }
+
+                    if (AnimationEvent.ReadMessage == "WaterFilter") {
+                        AnimationEvent.ReadMessage = "";
+                        Inventory[CurrentItemHeld].SetFloat(JType.VariableA, -10f, Maths.Add);
+                        if (Inventory[CurrentItemHeld].GetFloat(JType.VariableA) <= 0f)
+                            InvGet(CurrentItemHeld, 1);
                     }
                     break;
                 default:
@@ -4436,23 +4448,32 @@ public class PlayerScript : MonoBehaviour {
                 if (FireObj.GetComponent<AudioSource>().isPlaying == false) {
                     FireObj.GetComponent<AudioSource>().Play();
                 }
+
                 Hurt(0.04f, "Fire", false, Vector3.zero);
                 LookX += Random.Range(Fire / -10f, Fire / 10f);
                 LookY += Random.Range(Fire / -10f, Fire / 10f);
-                Fire = Mathf.Clamp(Fire, 0f, 100f);
-                Fire -= 0.04f;
+                Fire = Mathf.Clamp(Fire - .04f, 0f, 100f);
+
                 if (Wet > 0f) {
                     Fire = 0f;
                 }
+
                 if (Hydration > 0f) {
                     Fire -= Hydration;
                     Hydration = 0f;
                 }
+
+                if (Afterburner < Fire)
+                    Afterburner = Fire;
+
                 TextShortcuts += "Fi_" + Fire.ToString() + ";";
             } else {
                 FireObj.GetComponent<ParticleSystem>().Stop();
                 FireObj.GetComponent<AudioSource>().Stop();
             }
+
+            if (Afterburner > 0f && (Wet > 0f || Hydration > 0f))
+                Afterburner = Mathf.Clamp(Afterburner - .04f, 0f, 100f);
 
             // Even out cold and hot
             if (Coldness > 0f && Hot > 0f) {
@@ -4763,8 +4784,8 @@ public class PlayerScript : MonoBehaviour {
         else if (ArmModel != PrevShirt) PrevShirt = ArmModel;
 
         float WetDark = 0f;
-        if(Fire > 0f){
-            WetDark = Mathf.Clamp(Fire / 10f, 0f, 10f);
+        if(Afterburner > 0f){
+            WetDark = Mathf.Clamp(Afterburner / 50f, 0f, 10f);
         } else if (Wet > 0f){
             WetDark = Mathf.Clamp(Wet / 50f, 0f, 1f);
         }
