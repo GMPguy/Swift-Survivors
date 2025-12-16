@@ -300,7 +300,11 @@ public class MobScript : MonoBehaviour {
                 this.GetComponent<Interactions>().Options = new string[] {"TalkTo"};
                 ClassOfMob = "Survivor";
                 GeneratedValue = Random.Range(0f, 1f);
-                TradeOptions = new Vector2[] { new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)), new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)), new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)), new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)) };
+                //TradeOptions = new Vector2[] { new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)), new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)), new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)), new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)) };
+                TradeOptions = new Vector2[6];
+                for (int t = 0; t < TradeOptions.Length; t++)
+                    TradeOptions[t] = new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Mathf.Lerp(5, 1000, Mathf.Pow(Random.value, 1.5f)));
+                
                 MobName = GS.SetString("Survivor", "Niedobitek");
                 MobHealth = new float[] { 100f, 100f };
                 MovementSpeed = new float[] { 5f, 10f };
@@ -1071,7 +1075,7 @@ public class MobScript : MonoBehaviour {
                 if (GS.Ragdolls == false && DroppedRagdoll >= 0f) {
                     DroppedRagdoll = 1f;
                 }
-                if (DroppedRagdoll >= 0f) {
+                if (DroppedRagdoll >= 0f && GS.Ragdolls) {
                     if (Anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= DroppedRagdoll && (AnimationSet == "Mutant" || AnimationSet == "HumanoidMelee" || AnimationSet == "HumanoidGun" || AnimationSet == "HumanoidPistol")) {
                         DroppedRagdoll = -1f;
                         Anim.enabled = false;

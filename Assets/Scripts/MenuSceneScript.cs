@@ -13,6 +13,7 @@ public class MenuSceneScript : MonoBehaviour {
     public Transform[] CameraPoints;
     public Vector2 Cursor;
     float cursorShift, cursorRotation, Vignette = 0f;
+    float fogDistance;
     Color setPPColor;
     NewMenuScript NMS;
     GameScript GS;
@@ -32,6 +33,7 @@ public class MenuSceneScript : MonoBehaviour {
 
         if(NMS.LoadingTime <= 0f){
             Camera cam = MainCamera.GetComponent<Camera>();
+            GS.SetDrawDistance(cam, fogDistance);
 
             if(CurrentScene[1] == ""){
                 if(CurrentScene[0] != ""){
@@ -101,6 +103,7 @@ public class MenuSceneScript : MonoBehaviour {
                             };
                         } else setScene.gameObject.SetActive(false);
                     }
+
                     switch(CurrentScene[0]){
                         case "Main":
                             GS.ContSaturTempInvi = new float[]{0f,0f,0f,0.25f};
@@ -144,7 +147,7 @@ public class MenuSceneScript : MonoBehaviour {
                                         else subChild.GetComponent<SpriteRenderer>().color = Color.Lerp(new Color32(55,55,100, 255), new Color32(55, 100, 155, 255), Mathf.Abs(Daytime));
                                         
                                         RenderSettings.fogColor = subChild.GetComponent<SpriteRenderer>().color;
-                                        RenderSettings.fogEndDistance = 100f;
+                                        fogDistance = 100f;
                                         break;
                                     case "MainLand":
                                         Color32[] MainGrass = new Color32[]{new Color32(160, 180, 150, 255), new Color32(190, 230, 130,255)};
@@ -180,7 +183,7 @@ public class MenuSceneScript : MonoBehaviour {
                             GS.ContSaturTempInvi = new float[]{0f,-100f,0f,0.75f};
                             RenderSettings.fogColor = Color.white;
                             setPPColor = Color.white;
-                            RenderSettings.fogEndDistance = 25f;
+                            fogDistance = 25f;
                             RenderSettings.ambientLight = Color.white / 10f;
                             break;
                         default: 

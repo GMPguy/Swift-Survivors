@@ -1071,15 +1071,15 @@ public class CanvasScript : MonoBehaviour {
                                 "SOLD",
                                 "SPRZEDANE");
                             } else {
-                                if (GS.GameModePrefab.x == 1 && DialogedMob.GetComponent<InteractableScript>() != null) {
+                                //if (GS.GameModePrefab.x == 1 && DialogedMob.GetComponent<InteractableScript>() != null) {
                                     GS.SetText(CheckedButton.GetComponent<Text>(),
                                     "- Get " + GS.ItemCache[(int)TradeOptions.x].getName() + " for " + TradeOptions.y + "$",
                                     "- Dostaniesz " + GS.ItemCache[(int)TradeOptions.x].getName() + " za " + TradeOptions.y + "$");
-                                } else {
+                                /*} else {
                                     GS.SetText(CheckedButton.GetComponent<Text>(),
                                     "- Get " + GS.ItemCache[(int)TradeOptions.x].getName() + " for " + GS.ItemCache[(int)TradeOptions.y].getName(),
                                     "- Dostaniesz " + GS.ItemCache[(int)TradeOptions.x].getName() + " za " + GS.ItemCache[(int)TradeOptions.y].getName());
-                                }
+                                }*/
                             }
                             int GotTradedItem = -1;
                             for (int CheckINV = 0; CheckINV <= 9; CheckINV++) 
@@ -1094,12 +1094,15 @@ public class CanvasScript : MonoBehaviour {
                                         break;
                                     }
                             }
-                            if (GS.GameModePrefab.x == 1 && CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GS.Money >= TradeOptions.y && Input.GetMouseButtonDown(0)) {
+                            if (/*GS.GameModePrefab.x == 1 && */CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GS.Money >= TradeOptions.y && Input.GetMouseButtonDown(0)) {
                                 MainPlayer.InvGet(GS.ItemCache[(int)TradeOptions.x].startVariables, 0);
                                 GS.Mess(GS.SetString("Item purchased!", "Kupiono ten przedmiot!"), "Buy");
-                                DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = -1;
+                                if (DialogedMob.tag == "Mob")
+                                    DialogedMob.GetComponent<MobScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1].x = -1;
+                                else
+                                    DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = -1;
                                 GS.Money -= (int)TradeOptions.y;
-                            } else if (GS.GameModePrefab.x == 0 && CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GotTradedItem != -1 && Input.GetMouseButtonDown(0)) {
+                            /*} else if (GS.GameModePrefab.x == 0 && CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GotTradedItem != -1 && Input.GetMouseButtonDown(0)) {
                                 if (DialogedMob.GetComponent<MobScript>() != null) {
                                     GS.Mess(GS.SetString("Items traded!", "Zdobyto ten przedmiot!"), "Buy");
                                     DialogSetting = "TradeGood";
@@ -1114,7 +1117,7 @@ public class CanvasScript : MonoBehaviour {
                                 MainPlayer.InvGet(GS.ItemCache[(int)TradeOptions.x].startVariables, 0);
 
                                 GS.Score += 50;
-
+                            */
                             } else if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && GotTradedItem == -1 && Input.GetMouseButtonDown(0)) {
                                 if (DialogedMob.GetComponent<MobScript>() != null) {
                                     DialogSetting = "TradeNot";

@@ -218,62 +218,62 @@ public class MainMenuScript : MonoBehaviour {
                         if (CurrentTitleScreen == "BootUp") {
                             MainCamera.GetComponent<Camera>().backgroundColor = new Color32(175, 125, 0, 255);
                             RenderSettings.fogColor = MainCamera.GetComponent<Camera>().backgroundColor;
-                            MainCamera.GetComponent<Camera>().farClipPlane = 1000f;
+                            //GS.set MainCamera.GetComponent<Camesdfsdfra>().farClipPlane = 1000f;
                             RenderSettings.fogEndDistance = 1000f;
                             RenderSettings.ambientLight = new Color32(100, 100, 100, 255);
                             SetColor = new Color32[] { new Color32(154, 188, 134, 255), new Color32(121, 178, 103, 255) };
                         } else if (CurrentTitleScreen == "GameOver") {
                             MainCamera.GetComponent<Camera>().backgroundColor = new Color32(55, 65, 105, 255);
                             RenderSettings.fogColor = MainCamera.GetComponent<Camera>().backgroundColor;
-                            MainCamera.GetComponent<Camera>().farClipPlane = 1000f;
+                            //MainCamera.GetComponent<Camsdfsdfera>().farClipPlane = 1000f;
                             RenderSettings.fogEndDistance = 1000f;
                             RenderSettings.ambientLight = new Color32(55, 55, 55, 255);
                             SetColor = new Color32[] { new Color32(154, 188, 134, 255), new Color32(121, 178, 103, 255) };
                         } else if (CurrentTitleScreen == "Normal1" || CurrentTitleScreen == "Normal7") {
                             MainCamera.GetComponent<Camera>().backgroundColor = new Color32(255, 200, 155, 255);
                             RenderSettings.fogColor = MainCamera.GetComponent<Camera>().backgroundColor;
-                            MainCamera.GetComponent<Camera>().farClipPlane = 250f;
+                            //MainCamera.GetComponent<Camsdfsdfera>().farClipPlane = 250f;
                             RenderSettings.fogEndDistance = 250f;
                             RenderSettings.ambientLight = new Color32(25, 0, 55, 255);
                             SetColor = new Color32[] { new Color32(154, 188, 134, 255), new Color32(121, 178, 103, 255) };
                         } else if (CurrentTitleScreen == "Normal2" || CurrentTitleScreen == "Normal8") {
                             MainCamera.GetComponent<Camera>().backgroundColor = new Color32(155, 180, 212, 255);
                             RenderSettings.fogColor = MainCamera.GetComponent<Camera>().backgroundColor;
-                            MainCamera.GetComponent<Camera>().farClipPlane = 1000f;
+                            //MainCamera.GetComponent<Camersdfsdfa>().farClipPlane = 1000f;
                             RenderSettings.fogEndDistance = 1000f;
                             RenderSettings.ambientLight = new Color32(55, 55, 100, 255);
                             SetColor = new Color32[] { new Color32(154, 188, 134, 255), new Color32(121, 178, 103, 255) };
                         } else if (CurrentTitleScreen == "Normal3") {
                             MainCamera.GetComponent<Camera>().backgroundColor = new Color32(67, 78, 94, 255);
                             RenderSettings.fogColor = MainCamera.GetComponent<Camera>().backgroundColor;
-                            MainCamera.GetComponent<Camera>().farClipPlane = 50f;
+                            //MainCamera.GetComponent<Camesdfra>().farClipPlane = 50f;
                             RenderSettings.fogEndDistance = 50f;
                             RenderSettings.ambientLight = new Color32(55, 55, 55, 255);
                             SetColor = new Color32[] { new Color32(154, 188, 134, 255), new Color32(121, 178, 103, 255) };
                         } else if (CurrentTitleScreen == "Normal4") {
                             MainCamera.GetComponent<Camera>().backgroundColor = new Color32(77, 84, 89, 255);
                             RenderSettings.fogColor = MainCamera.GetComponent<Camera>().backgroundColor;
-                            MainCamera.GetComponent<Camera>().farClipPlane = 50f;
+                            //MainCamera.GetComponent<Camesdfra>().farClipPlane = 50f;
                             RenderSettings.fogEndDistance = 50f;
                             RenderSettings.ambientLight = new Color32(55, 55, 55, 255);
                             SetColor = new Color32[] { new Color32(154, 188, 134, 255), new Color32(121, 178, 103, 255) };
                         } else if (CurrentTitleScreen == "Normal5") {
                             MainCamera.GetComponent<Camera>().backgroundColor = new Color32(155, 55, 75, 255);
                             RenderSettings.fogColor = MainCamera.GetComponent<Camera>().backgroundColor;
-                            MainCamera.GetComponent<Camera>().farClipPlane = 50f;
+                            //MainCamera.GetComponent<Camesdfra>().farClipPlane = 50f;
                             RenderSettings.fogEndDistance = 50f;
                             RenderSettings.ambientLight = new Color32(25, 0, 55, 255);
                             SetColor = new Color32[] { new Color32(154, 188, 134, 255), new Color32(121, 178, 103, 255) };
                         } else if (CurrentTitleScreen == "Normal6") {
                             MainCamera.GetComponent<Camera>().backgroundColor = new Color32(155, 180, 212, 255);
                             RenderSettings.fogColor = MainCamera.GetComponent<Camera>().backgroundColor;
-                            MainCamera.GetComponent<Camera>().farClipPlane = 50f;
+                            //MainCamera.GetComponent<Casdfmera>().farClipPlane = 50f;
                             RenderSettings.fogEndDistance = 25f;
                             RenderSettings.ambientLight = new Color32(55, 55, 100, 255);
                             SetColor = new Color32[] { new Color32(200, 225, 255, 255), new Color32(255, 255, 255, 255) };
                         }
                         if (QualitySettings.GetQualityLevel() == 0) {
-                            MainCamera.GetComponent<Camera>().farClipPlane = 50f;
+                            //MainCamera.GetComponent<Casdfmera>().farClipPlane = 50f;
                             RenderSettings.fogEndDistance = 50f;
                         }
                         foreach (Transform GetObject in SetScreen.transform) {

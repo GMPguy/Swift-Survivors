@@ -3731,7 +3731,7 @@ public class PlayerScript : MonoBehaviour {
                         CantUseItem = 0.5f;
                         CantSwitchItem = 0.5f;
                         //Inventory[CurrentItemHeld] = Inventory[CurrentItemHeld], "va", (Mathf.Clamp( Inventory[CurrentItemHeld].GetFloat(JType.VariableA) + 10f, 0f, 100f )).ToString(CultureInfo.InvariantCulture) );//Inventory[CurrentItemHeld].y = Mathf.Clamp(Inventory[CurrentItemHeld].y + 10f, 0f, 100f);
-                        Inventory[CurrentItemHeld].SetFloat(JType.VariableA, Mathf.Clamp( Inventory[CurrentItemHeld].GetFloat(JType.VariableA) - 10f, 0f, 100f ));
+                        Inventory[CurrentItemHeld].SetFloat(JType.VariableA, Mathf.Clamp( Inventory[CurrentItemHeld].GetFloat(JType.VariableA) + 10f, 0f, 100f ));
                         ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Pullup", 127, AnimationAddition), 0, 0.8f);
                         GameObject Ring = Instantiate(EffectPrefab) as GameObject;
                         Ring.transform.position = this.transform.position;
@@ -4549,9 +4549,9 @@ public class PlayerScript : MonoBehaviour {
 
                     float damageBias = GotDamage / Health[0];
                     if (IsCasual) {
-                        ShakeCam(damageBias / 2F, damageBias / 2F);
+                        ShakeCam(damageBias / 4f, damageBias / 4f);
                     } else {
-                        ShakeCam(damageBias / 2F, damageBias * damageBias);
+                        ShakeCam(damageBias / 2f, damageBias * damageBias / 4f);
                         RecoilCam(
                             new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), Random.Range(-15f, 15f)),
                             Mathf.Max((damageBias - .5f) * 4f, 0f),

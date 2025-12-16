@@ -311,12 +311,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &2188504819817443188
 GameObject:
   m_ObjectHideFlags: 0
@@ -469,12 +473,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &4066953282529956948
 GameObject:
   m_ObjectHideFlags: 0
@@ -543,12 +551,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &5577783271054653000
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,7 +703,11 @@ MonoBehaviour:
   - 180
   - 270
   SmoothRotation: 0
+  LandHeight: []
+  LandHeightMap: -1
+  SmoothHeight: 0
   KeepTransforms: []
+  ObjectAnchors: []
 --- !u!1 &7451444950142043826
 GameObject:
   m_ObjectHideFlags: 0
@@ -811,12 +827,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &9086188843863870844
 GameObject:
   m_ObjectHideFlags: 0
@@ -865,6 +885,9 @@ MonoBehaviour:
   Special: 
   NewStuffToSpawn:
   - id999;
+  theNewStuffToSpawn:
+  - Values:
+    - rid: 5346892412458631175
   Chance:
   - 100
   - 100
@@ -873,6 +896,14 @@ MonoBehaviour:
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 5346892412458631175
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 0
+        Value: 999
 --- !u!65 &3523603302572928066
 BoxCollider:
   m_ObjectHideFlags: 0

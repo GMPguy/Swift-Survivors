@@ -744,10 +744,7 @@ public class GameScript : MonoBehaviour {
         }
 
         // Update dynamic graphic settings
-        if (QualitySettings.GetQualityLevel() == 0) {
-            // Minimal
-            GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = 50f;
-        } else if (QualitySettings.GetQualityLevel() == 1) {
+        if (QualitySettings.GetQualityLevel() == 1) {
             // Low
             PPColorGrading.contrast.value = ContSaturTempInvi[0];
             PPColorGrading.saturation.value = ContSaturTempInvi[1];
@@ -2161,6 +2158,13 @@ public class GameScript : MonoBehaviour {
         float ToSet = Mathf.Clamp((Mathf.PerlinNoise(X, Y) * 2f) - 0.5f, 0f, 1f);
         return ToSet;
 
+    }
+
+    public void SetDrawDistance (Camera camera, float distance) {
+        distance = Mathf.Clamp(distance, 0f, GraphicsQuality == 0 ? 50 : Mathf.Infinity);
+
+        RenderSettings.fogEndDistance = distance;
+        camera.farClipPlane = distance;
     }
 
     public float ReceiveButtonPress(string ButtonName, string ButtonFunc) {

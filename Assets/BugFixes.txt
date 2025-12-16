@@ -57,19 +57,19 @@ x Navmesh sometimes isn't baked
 x Dirty punishment makes you drunk
 	x Improve buff saving
 
-- Pre nuke effects
+x Pre nuke effects
 - Black sun
 x Change fog model
 x Changing options at runtime warning
 x Kill function
 	x Immortality glitch
-	- Death animation sometimes does not work
+	x Death animation sometimes does not work
 x Tame hurt effects
 
 x Fix wrench
 x Make healing procentage based
 x Make mags ammo stacking
-- Fix 1b1 reloading
+x Fix 1b1 reloading
 x Lockpic opens opened doors
 
 x Ambient light fix
@@ -127,12 +127,12 @@ x Skybox uv map fix
 	x Fix stackable items
 	x Fix attachments
 	x Inventory and equipment does not carry over
-	- Fix spawners
+	x Fix spawners
 	x Fix crafting recipes
 	- Fix canvas item info
 	x Find a way to add JClasses in inspector
 	- Turn options into JClasses
-	- Both flashlights don't work
+	x Both flashlights don't work
 	x Ammo items don't work in Casual mode
 
 - Fix horde mode

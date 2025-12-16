@@ -1512,8 +1512,7 @@ public class RoundScript : MonoBehaviour {
         if (WhatSet == "Normal" && Default == true && IsSwimming[0] == false) {
             GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = FogColor;
             RenderSettings.fogColor = FogColor;
-            RenderSettings.fogEndDistance = DrawDistance;
-            GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = DrawDistance;
+            GS.SetDrawDistance(GameObject.Find("MainCamera").GetComponent<Camera>(), DrawDistance);
 
             float ambientBias = Mathf.Lerp(.1f, .5f, Sunnyness);
             RenderSettings.ambientSkyColor = Color.Lerp(AmbientColor, SkyColor, ambientBias);
@@ -1532,10 +1531,13 @@ public class RoundScript : MonoBehaviour {
             float LerpValue = RoundTime / 30f;
             Sunnyness = Mathf.Clamp(Sunnyness, 0f, LerpValue);
             SkyColor = Color32.Lerp(new Color32(0, 0, 0, 0), SkyColor, (LerpValue + 0.25f) / 1.25f);
-            GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = Color32.Lerp(new Color32(0, 0, 0, 0), FogColor, (LerpValue + 0.25f) / 1.25f);
-            RenderSettings.fogColor = Color32.Lerp(new Color32(0, 0, 0, 0), FogColor, (LerpValue + 0.25f) / 1.25f);
-            RenderSettings.fogEndDistance = DrawDistance;
-            GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = DrawDistance;
+            AmbientColor = Color32.Lerp(new Color32(0, 0, 0, 255), AmbientColor, (LerpValue + 0.25f) / 1.25f);
+            FogColor = Color32.Lerp(new Color32(0, 0, 0, 255), FogColor, (LerpValue + 0.25f) / 1.25f);
+            CloudColor = Color.Lerp(FogColor, CloudColor, (LerpValue + 0.25f) / 1.25f);
+
+            GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = FogColor;
+            RenderSettings.fogColor = FogColor;
+            GS.SetDrawDistance(GameObject.Find("MainCamera").GetComponent<Camera>(), DrawDistance);
 
             float ambientBias = Mathf.Lerp(.1f, .5f, Sunnyness);
             RenderSettings.ambientSkyColor = Color.Lerp(AmbientColor, SkyColor, ambientBias);
@@ -1543,8 +1545,8 @@ public class RoundScript : MonoBehaviour {
             RenderSettings.ambientGroundColor = Color.Lerp(AmbientColor, FogColor, ambientBias);
 
             GameObject.Find("Sun").transform.eulerAngles = SunRotation;
-            GameObject.Find("Sun").GetComponent<Light>().color = Color32.Lerp(new Color32(0, 0, 0, 0), SunColors[1], LerpValue);
-            GameObject.Find("Sun").GetComponent<Light>().intensity = Mathf.Lerp(0f, 1f, LerpValue);
+            GameObject.Find("Sun").GetComponent<Light>().color = Color32.Lerp(new Color32(0, 0, 0, 255), SunColors[1], (LerpValue + 0.5f) / 1.5f);
+            GameObject.Find("Sun").GetComponent<Light>().intensity = Mathf.Lerp(0f, 1f, (LerpValue + 0.5f) / 1.5f);
             GameObject.Find("Sun").GetComponent<LightControlScript>().SetLight();
             DefPPC = PostProcessingColor;
             DefCST = new float[]{PPV.x, PPV.y, PPV.z, PPV.w};
@@ -1557,7 +1559,7 @@ public class RoundScript : MonoBehaviour {
             FogColor = Color32.Lerp(Map_Horde.SkyColors[1], Map_Horde.SkyColors[0], LerpValue);
             GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = FogColor;
             RenderSettings.fogColor = FogColor;
-            RenderSettings.fogEndDistance = Mathf.Lerp(Map_Horde.FogDistances[1], Map_Horde.FogDistances[0], LerpValue);
+            GS.SetDrawDistance(GameObject.Find("MainCamera").GetComponent<Camera>(), Mathf.Lerp(Map_Horde.FogDistances[1], Map_Horde.FogDistances[0], LerpValue));
             
             float ambientBias = Mathf.Lerp(.1f, .5f, LerpValue);
             AmbientColor = Color32.Lerp(Map_Horde.AmbientColors[1], Map_Horde.AmbientColors[0], LerpValue);
@@ -1570,7 +1572,7 @@ public class RoundScript : MonoBehaviour {
             GameObject.Find("Sun").GetComponent<LightControlScript>().SetLight();
             DefPPC = Color.white;
             DefCST = new float[]{0f, 0f, 0f, 0f};
-            GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = RenderSettings.fogEndDistance;
+            
             WhichSkybox = "Plain";
             HasSet = true;
         } else if (WhatSet == "Swimming" && Default == true) {
@@ -1593,15 +1595,13 @@ public class RoundScript : MonoBehaviour {
             GameObject.Find("Sun").GetComponent<LightControlScript>().SetLight();
             DefPPC = Color32.Lerp(FogColor, new Color32(125, 200, 255, 255), SwimDepthA);
             DefCST = new float[]{Mathf.Lerp(0f, 25f, SwimDepthA), Mathf.Lerp(0f, 100f, SwimDepthA), 0f, 0.5f};
-            GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = Mathf.Lerp(DrawDistance * 0.75f, 10f, SwimDepthA);
-            RenderSettings.fogEndDistance = GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane;
+            GS.SetDrawDistance(GameObject.Find("MainCamera").GetComponent<Camera>(), Mathf.Lerp(DrawDistance * 0.75f, 10f, SwimDepthA));
             WhichSkybox = "Plain";
             HasSet = true;
         } else if (WhatSet == "TealState") {
             GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = new Color32(100, 175, 255, 255);
             RenderSettings.fogColor = GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor;
-            RenderSettings.fogEndDistance = 75f;
-            GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = 75f;
+            GS.SetDrawDistance(GameObject.Find("MainCamera").GetComponent<Camera>(), 75f);
 
             RenderSettings.ambientSkyColor = new Color32(0, 0, 55, 255);
             RenderSettings.ambientEquatorColor = new Color32(0, 0, 55, 255);
@@ -1618,8 +1618,7 @@ public class RoundScript : MonoBehaviour {
         } else if (WhatSet == "Nuked" || (WhatSet == "Normal" && RoundState == "Nuked")) {
             GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor = new Color32(125, 75, 0, 255);
             RenderSettings.fogColor = GameObject.Find("MainCamera").GetComponent<Camera>().backgroundColor;
-            RenderSettings.fogEndDistance = 250f;
-            GameObject.Find("MainCamera").GetComponent<Camera>().farClipPlane = 250f;
+            GS.SetDrawDistance(GameObject.Find("MainCamera").GetComponent<Camera>(), 250f);
             RenderSettings.ambientLight = new Color32(255, 75, 0, 255);
             //GameObject.Find("Sun").transform.eulerAngles = SunRotation;
             GameObject.Find("Sun").GetComponent<Light>().color = new Color32(255, 155, 55, 255);

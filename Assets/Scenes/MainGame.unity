@@ -229077,6 +229077,7 @@ MonoBehaviour:
   HudColorHUE: 000000
   PS: {fileID: 0}
   WindowToBootUp: 
+  NewProfileName: 
   MaxFPS: 999
   Earpiercing:
   - 0

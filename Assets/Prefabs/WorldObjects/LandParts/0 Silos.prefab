@@ -191,12 +191,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &549865597413018431
 GameObject:
   m_ObjectHideFlags: 0
@@ -265,12 +269,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1241912116878387428
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,6 +327,9 @@ MonoBehaviour:
   Special: 
   NewStuffToSpawn:
   - id990;
+  theNewStuffToSpawn:
+  - Values:
+    - rid: 5346892410901233664
   Chance:
   - 100
   - 100
@@ -327,6 +338,14 @@ MonoBehaviour:
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 5346892410901233664
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 1
+        Value: 990
 --- !u!65 &8518556962388760469
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -405,7 +424,12 @@ MonoBehaviour:
   - 90
   - 180
   - 270
+  SmoothRotation: 0
+  LandHeight: []
+  LandHeightMap: -1
+  SmoothHeight: 0
   KeepTransforms: []
+  ObjectAnchors: []
 --- !u!1 &6072538201793983491
 GameObject:
   m_ObjectHideFlags: 0
@@ -522,12 +546,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &7816406374850310592
 GameObject:
   m_ObjectHideFlags: 0
@@ -647,12 +675,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Guards
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &8703174375564549115
 GameObject:
   m_ObjectHideFlags: 0
