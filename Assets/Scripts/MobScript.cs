@@ -10,6 +10,7 @@ using UnityEngine.AI;
 public class MobScript : MonoBehaviour {
 
     // Main Variables
+    public int MobPESEL;
     public string MobName = "";
     public int[] Squad = new int[] { 0, 0 };
     public int TypeOfMob = 0;
@@ -92,7 +93,6 @@ public class MobScript : MonoBehaviour {
     float UpdateDelay = 0f;
     string ReasonOfDeath = "";
     // For dialog options
-    public float GeneratedValue = 0;
     public bool ToldPlaces = false;
     public Vector2[] TradeOptions;
     // For dialog options
@@ -119,6 +119,10 @@ public class MobScript : MonoBehaviour {
 
     bool wasStarted;
     void TheStart () {
+
+        if (MobPESEL == 0)
+            MobPESEL = Random.Range(1, int.MaxValue);
+        Random.InitState(MobPESEL);
 
         // Ground
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
@@ -299,11 +303,10 @@ public class MobScript : MonoBehaviour {
                 this.GetComponent<Interactions>().Icons = new string[] {"TalkTo"};
                 this.GetComponent<Interactions>().Options = new string[] {"TalkTo"};
                 ClassOfMob = "Survivor";
-                GeneratedValue = Random.Range(0f, 1f);
-                //TradeOptions = new Vector2[] { new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)), new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)), new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)), new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Random.Range(1f, RS.TotalItems.Length - 0.1f)) };
-                TradeOptions = new Vector2[6];
+
+                TradeOptions = new Vector2[Random.Range(2, 7)];
                 for (int t = 0; t < TradeOptions.Length; t++)
-                    TradeOptions[t] = new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Mathf.Lerp(5, 1000, Mathf.Pow(Random.value, 1.5f)));
+                    TradeOptions[t] = new Vector2((int)Random.Range(1f, RS.TotalItems.Length - 0.1f), (int)Mathf.Lerp(5, 500f, Mathf.Pow(Random.value, 3f)));
                 
                 MobName = GS.SetString("Survivor", "Niedobitek");
                 MobHealth = new float[] { 100f, 100f };

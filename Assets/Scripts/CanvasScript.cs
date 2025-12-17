@@ -67,9 +67,13 @@ public class CanvasScript : MonoBehaviour {
     public GameObject Buffs;
     public GameObject DialogedMob;
     public GameObject DialogMenu;
+    public GameObject DialogItself;
+    public Transform[] DialogAnchors;
+    float DialogHideFactor;
     public Text DialogName;
     public Text DialogDesc;
     public GameObject[] DialogOptionsButtons;
+    public Image[] DialogBG;
     public string DialogSetting = "Default";
     string[] DialogOptions;
     public Text HintText;
@@ -642,6 +646,16 @@ public class CanvasScript : MonoBehaviour {
             }
             // Mob HealthBar
 
+            // Dialog
+            if (DialogedMob) {
+                DialogedMob.TryGetComponent<MobScript>(out MobScript mob);
+                DialogedMob.TryGetComponent<InteractableScript>(out InteractableScript Int);
+
+                SetDialogInfo(DialogedMob, mob, Int);
+            } else
+                SetDialogInfo(null, null, null);
+            // Dialog
+
             // Buffs
             float OffsetA = 0f;
             float OffsetB = 0f;
@@ -914,34 +928,63 @@ public class CanvasScript : MonoBehaviour {
             }
             // Buffs
 
-            // Dialog
-            if (DialogedMob == null) {
-                DialogMenu.transform.position = HideWindow.transform.position;
-                DialogSetting = "Default";
-            } else {
-                DialogMenu.transform.position = ShowWindow.transform.position;
-
-                MainPlayer.CantMove = 0.1f;
-                MainPlayer.CantLook = 0.1f;
-                MainPlayer.CantInteract = 0.1f;
-                MainPlayer.CantUseItem = Mathf.Clamp(MainPlayer.CantUseItem, 1f, Mathf.Infinity);
-
-                if (DialogedMob.GetComponent<MobScript>() != null) {
-                    GS.GetComponent<GameScript>().SetText(DialogName, DialogedMob.GetComponent<MobScript>().MobName, DialogedMob.GetComponent<MobScript>().MobName);
-                    if (DialogedMob.GetComponent<Interactions>().Options[DialogedMob.GetComponent<Interactions>().ThisOption] != "TalkTo" || DialogedMob.GetComponent<MobScript>().MobHealth[0] <= 0f) {
-                        DialogedMob = null;
-                    }
-                } else if (DialogedMob.GetComponent<InteractableScript>() != null) {
-                    GS.GetComponent<GameScript>().SetText(DialogName, DialogedMob.GetComponent<InteractableScript>().Name, DialogedMob.GetComponent<InteractableScript>().Name);
+            // Hint
+            if (ClearHint > 0f) {
+                ClearHint -= 0.02f * (Time.deltaTime * 50f);
+                if (!(Input.GetButton("Information Tab") && MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID) > 0 || MainPlayer.Equipment[0].GetInt(JType.ID) > 0)) {
+                    HintText.color = new Color32(255, 255, 255, (byte)Mathf.Clamp((128f * ClearHint), 0f, 200f));
+                } else {
+                    HintText.color = new Color(1f, 1f, 1f, 0f);
                 }
+            } else {
+                if (HintScan > 0f) {
+                    HintScan -= 0.02f * (Time.deltaTime * 50f);
+                } else if (RoundStartInfo.GetComponent<Image>().color.a <= 0f) {
+                    ScanHint("");
+                }
+            }
 
-                // Textes
-                if (DialogSetting == "Default") {
+        }
+
+    }
+
+    void SetDialogInfo(GameObject target, MobScript targetMob, InteractableScript targetInt){
+        
+        DialogHideFactor = Mathf.MoveTowards(DialogHideFactor, target ? 0f : 1f, Time.unscaledDeltaTime * 2f);
+
+        DialogItself.transform.position = Vector3.Lerp(DialogAnchors[0].position, DialogAnchors[1].position, DialogHideFactor);
+
+        for (int c = 0; c < 2; c++)
+            DialogBG[c].color = Color.Lerp(Color.black, Color.clear, DialogHideFactor);
+
+        if (target) {
+
+            // Turn towards   
+            MainPlayer.CantMove = 0.1f;
+            MainPlayer.CantLook = 0.1f;
+            MainPlayer.CantInteract = 0.1f;
+            MainPlayer.CantUseItem = Mathf.Clamp(MainPlayer.CantUseItem, 1f, Mathf.Infinity);
+
+            Vector3 dialogPosition = target.transform.position;
+            dialogPosition.y = MainPlayer.transform.position.y;
+
+            MainPlayer.transform.rotation = Quaternion.Lerp(
+                MainPlayer.transform.rotation,
+                Quaternion.LookRotation((dialogPosition - MainPlayer.transform.position).normalized),
+                Time.deltaTime
+            );
+
+            MainPlayer.LookY = MainPlayer.transform.eulerAngles.y;
+
+            // Set text
+            switch (DialogSetting) {
+                case "Default":
                     GS.SetText(DialogDesc,
                         "Hello fellow survivor! How can I help you?",
                         "Witaj mój przyjacielu! Jak mogę ci pomóc?");
                     DialogOptions = new string[] { "TIP", "TRADE", "PLACES", "TREASURES", "EXIT", "", "", "" };
-                } else if (DialogSetting == "VendingMachine") {
+                    break;
+                case "VendingMachine":
                     if (GS.GameModePrefab.x == 1) {
                         if (RS.RoundState == "BeforeWave") {
                             GS.SetText(DialogDesc,
@@ -960,7 +1003,8 @@ public class CanvasScript : MonoBehaviour {
                         "\n\nTutaj możesz kupować przedmioty, tylko za pieniądze.");
                         DialogOptions = new string[] { "1TRADE", "2TRADE", "3TRADE", "4TRADE", "5TRADE", "6TRADE", "EXIT", "" };
                     }
-                } else if (DialogSetting == "VendingMachineDone") {
+                    break;
+                case "VendingMachineDone":
                     if (GS.GameModePrefab.x == 1) {
                         GS.SetText(DialogDesc,
                         "\n\nOut of order. Supplies will be replenished after this wave.",
@@ -972,8 +1016,13 @@ public class CanvasScript : MonoBehaviour {
                         "\n\nAutomat przestał działać. Skończyły się zasoby.");
                         DialogOptions = new string[] { "EXIT", "", "", "", "", "", "", "" };
                     }
-                } else if (DialogSetting == "Tip") {
-                    int TipToView = (int)(DialogedMob.GetComponent<MobScript>().GeneratedValue * 4.9f);
+                    break;
+                case "Tip":
+                    Random.State keepState = Random.state;
+                    Random.InitState(targetMob.MobPESEL);
+                    int TipToView = Random.Range(0, 5);
+                    Random.state = keepState;
+
                     if (TipToView == 0) {
                         GS.SetText(DialogDesc,
                             "It's obvious that maps, not only differ in layout, but also in type of biomes. The changes are usually visual, but there are few biomes that are special. These biomes are: wasteland, snowy area, and swamp. These biomes contain respectively: high amount of radiation, slowly rising coldness, and waters.",
@@ -996,225 +1045,268 @@ public class CanvasScript : MonoBehaviour {
                             "Jest wiele przedmiotów jakie możesz znaleść, jednak większość klasyfikuje się jako jedzenie, lekarstwa, albo uzbrojenie. Jednakże, istnieją także narzędzia, są to przedmioty z wyjątkowymi zastosowaniami. Nie będe mówił o wszystkich, jednak tymi wartymi wspomnienia są: śpiwory, haki mocujące, flary, ubrania, i pieniądze. Mogą one być użyte odpowiednio do: usuwania zmęczenia, tworzenia mostów liniowych, świecenia i ogrzewania, zmiany statystyk takich jak zdrowie/prędkość/ilość miejsc w inwentarzu, oraz mogą być użyte jako środka płatniczego.");
                     }
                     DialogOptions = new string[] { "BACK", "EXIT", "", "", "", "", "", "" };
-                } else if (DialogSetting == "Trade") {
+                    break;
+                case "TradeWhat":
                     GS.SetText(DialogDesc,
-                        "Here are my goods, the choice belongs to you!",
-                        "Oto moje dobra, wybierz sobie ten idealny!");
-                    DialogOptions = new string[] { "1TRADE", "2TRADE", "3TRADE", "4TRADE", "BACK", "EXIT", "", "" };
-                } else if (DialogSetting == "TradeNot") {
+                        "Sure, what's your idea?",
+                        "Jasne, a co byś chciał konkretnie?");
+                    DialogOptions = new string[] { "TRADE_BUY", "TRADE_SELL", "BACK", "EXIT", "", "", "", "" };
+                    break;
+                case "Trade_Buy":
                     GS.SetText(DialogDesc,
-                        "You can't buy that!",
-                        "Nie możesz tego kupić!");
-                    DialogOptions = new string[] { "1TRADE", "2TRADE", "3TRADE", "4TRADE", "BACK", "EXIT", "", "" };
-                } else if (DialogSetting == "TradeGood") {
+                        "Here are my goods, the choice is yours!",
+                        "Oto moje towary, wybierz sobie!");
+                    DialogOptions = new string[] { "1TRADE", "2TRADE", "3TRADE", "4TRADE", "5TRADE", "6TRADE", "BACK", "EXIT" };
+                    break;
+                case "1TradeNot": case "2TradeNot": case "3TradeNot": case "4TradeNot":
+                    DialogDesc.text = DialogSetting[0] switch {
+                        '4' => GS.SetString("Where money?", "Gdzie hajs?"),
+                        '3' => GS.SetString("Come back when you're a little bit richer.", "Wróć jak będziesz miał więcej pieniędzy."),
+                        '2' => GS.SetString("Sorry friend, I can't give credit.", "Sorry kolego, nie mogę ci tego sprzedać."),
+                        _ => GS.SetString("Can't buy that.", "Nie możesz tego kupić.")  
+                    };
+                    DialogOptions = new string[] { "1TRADE", "2TRADE", "3TRADE", "4TRADE", "5TRADE", "6TRADE", "BACK", "EXIT" };
+                    break;
+                case "1TradeGood": case "2TradeGood": case "3TradeGood": case "4TradeGood": case "5TradeGood": case "6TradeGood":
+                    DialogDesc.text = DialogSetting[0] switch {
+                        '6' => GS.SetString("It's yours my friend!", "To dla ciebie kumplu!"),
+                        '5' => GS.SetString("Finally, that was weighing me down.", "W końcu się tego pozbyłem."),
+                        '4' => GS.SetString("Wouldn't be my first choice, but you do you.", "Osobiście nie brałbym tego, ale jak wolisz."),
+                        '3' => GS.SetString("Good choice, you won't regret it!", "Dobry wybór, nie pożałujesz!"),
+                        '2' => GS.SetString("Hehehe, thank you!", "Hehehe, dzięki!"),
+                        _ => GS.SetString("Good choice", "Dobry wybór")  
+                    };
+
                     GS.SetText(DialogDesc,
                         "Good choice!",
                         "Dobry wybór!");
-                    DialogOptions = new string[] { "1TRADE", "2TRADE", "3TRADE", "4TRADE", "BACK", "EXIT", "", "" };
-                } else if (DialogSetting == "PlacesKnown") {
+                    DialogOptions = new string[] { "1TRADE", "2TRADE", "3TRADE", "4TRADE", "5TRADE", "6TRADE", "BACK", "EXIT" };
+                    break;
+                case "Trade_Sell":
+                    GS.SetText(DialogDesc,
+                        "Show me your goods then!",
+                        "No to pokaż mi swoje towary!");
+                    DialogOptions = new string[] { "1SELL", "2SELL", "3SELL", "4SELL", "5SELL", "6SELL", "BACK", "EXIT" };
+                    break;
+                case "1SellGood": case "2SellGood": case "3SellGood": case "4SellGood":
+                    DialogDesc.text = DialogSetting[0] switch {
+                        '4' => GS.SetString("Very nice!", "Bardzo ładnie!"),
+                        '3' => GS.SetString("Oh, thank you my friend!", "Oh, dziękuję ci mój przyjacielu!"),
+                        '2' => GS.SetString("Yes, this will come in useful.", "Ta, tego mi trzeba."),
+                        _ => GS.SetString("I'll have that one!", "Wezmę to!")  
+                    };
+                    DialogOptions = new string[] { "1SELL", "2SELL", "3SELL", "4SELL", "5SELL", "6SELL", "BACK", "EXIT" };
+                    break;
+                case "PlacesKnown":
                     GS.SetText(DialogDesc,
                         "Well, I guess I know some locations...",
                         "Cuż, myślę że znam kilka takich miejsc...");
                     DialogOptions = new string[] { "BACK", "EXIT", "", "", "", "", "", "" };
-                } else if (DialogSetting == "PlacesUnknown") {
+                    break;
+                case "PlacesUnknown":
                     GS.SetText(DialogDesc,
                         "You know all of them.",
                         "Znasz je wszystkie.");
                     DialogOptions = new string[] { "BACK", "EXIT", "", "", "", "", "", "" };
-                } else if (DialogSetting == "TreasureGot") {
+                    break;
+                case "TreasureGot":
                     GS.SetText(DialogDesc,
                         "Ah, brilliant things, aren't they? Here, take this score, in exchange for those!",
                         "Ah, jakie piękne błyskotki, czyż nie? Proszę, weź te punkty, za te chojne dary!");
                     DialogOptions = new string[] { "BACK", "EXIT", "", "", "", "", "", "" };
-                } else if (DialogSetting == "TreasureNot") {
+                    break;
+                case "TreasureNot":
                     GS.SetText(DialogDesc,
                         "You think I'm stupid? Find some treasures first, then we'll talk about it!",
                         "Masz mnie za idiotę? Znjadź jakieś skarby, później porozmawiamy o tym!");
                     DialogOptions = new string[] { "BACK", "EXIT", "", "", "", "", "", "" };
-                }
+                    break;
+            }
 
-                // DialogButtons
-                for (int CheckButton = 0; CheckButton < 8; CheckButton++) {
-                    if (DialogedMob != null) {
+            // Dialog buttons
+            for (int cb = 0; cb < 8; cb++) {
+                
+                GameObject CheckedButton = DialogOptionsButtons[cb];
+                CheckedButton.name = DialogOptions[cb];
 
-                        GameObject CheckedButton = DialogOptionsButtons[CheckButton];
-                        CheckedButton.name = DialogOptions[CheckButton];
-                        if (CheckedButton.name == "TIP") {
-                            CheckedButton.GetComponent<ButtonScript>().Active = true;
-                            GS.SetText(CheckedButton.GetComponent<Text>(), "- Any tips for me?", "- Jakieś wskazówki?");
-                            if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0)) {
-                                DialogSetting = "Tip";
-                            }
-                        } else if (CheckedButton.name == "TRADE") {
-                            CheckedButton.GetComponent<ButtonScript>().Active = true;
-                            GS.SetText(CheckedButton.GetComponent<Text>(), "- Let's trade!", "- Pokaż mi swoje towary!");
-                            if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0)) {
-                                DialogSetting = "Trade";
-                            }
-                        } else if (CheckedButton.name == "1TRADE" || CheckedButton.name == "2TRADE" || CheckedButton.name == "3TRADE" || CheckedButton.name == "4TRADE" || CheckedButton.name == "5TRADE" || CheckedButton.name == "6TRADE") {
-                            CheckedButton.GetComponent<ButtonScript>().Active = true;
-                            Vector2 TradeOptions = Vector2.zero;
-                            if (DialogedMob.GetComponent<MobScript>() != null) {
-                                TradeOptions = DialogedMob.GetComponent<MobScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1];
-                            } else {
-                                if (GS.GameModePrefab.x == 1) {
-                                    TradeOptions.x = DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1];
-                                    TradeOptions.y = DialogedMob.GetComponent<InteractableScript>().TradePrices[int.Parse(CheckedButton.name.Substring(0, 1)) - 1];
-                                } else {
-                                    TradeOptions.x = DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1];
-                                    TradeOptions.y = 52f;
-                                }
-                            }
+                ButtonScript CheckedButton_Button = CheckedButton.GetComponent<ButtonScript>();
+                Text CheckedButton_Text = CheckedButton.GetComponent<Text>();
 
-                            if (TradeOptions.x == -1f) {
-                                GS.SetText(CheckedButton.GetComponent<Text>(),
-                                "SOLD",
-                                "SPRZEDANE");
-                            } else {
-                                //if (GS.GameModePrefab.x == 1 && DialogedMob.GetComponent<InteractableScript>() != null) {
-                                    GS.SetText(CheckedButton.GetComponent<Text>(),
-                                    "- Get " + GS.ItemCache[(int)TradeOptions.x].getName() + " for " + TradeOptions.y + "$",
-                                    "- Dostaniesz " + GS.ItemCache[(int)TradeOptions.x].getName() + " za " + TradeOptions.y + "$");
-                                /*} else {
-                                    GS.SetText(CheckedButton.GetComponent<Text>(),
-                                    "- Get " + GS.ItemCache[(int)TradeOptions.x].getName() + " for " + GS.ItemCache[(int)TradeOptions.y].getName(),
-                                    "- Dostaniesz " + GS.ItemCache[(int)TradeOptions.x].getName() + " za " + GS.ItemCache[(int)TradeOptions.y].getName());
-                                }*/
-                            }
-                            int GotTradedItem = -1;
-                            for (int CheckINV = 0; CheckINV <= 9; CheckINV++) 
-                                if (MainPlayer.Inventory[CheckINV].GetInt(JType.ID) == TradeOptions.y) {
-                                    GotTradedItem = CheckINV;
-                                    break;
-                                }
-                            if (GotTradedItem == -1) {
-                                for (int CheckINV = 0; CheckINV <= 9; CheckINV++) 
-                                    if (MainPlayer.Inventory[CheckINV].GetInt(JType.ID) == 52) {
-                                        GotTradedItem = CheckINV;
-                                        break;
-                                    }
-                            }
-                            if (/*GS.GameModePrefab.x == 1 && */CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GS.Money >= TradeOptions.y && Input.GetMouseButtonDown(0)) {
-                                MainPlayer.InvGet(GS.ItemCache[(int)TradeOptions.x].startVariables, 0);
-                                GS.Mess(GS.SetString("Item purchased!", "Kupiono ten przedmiot!"), "Buy");
-                                if (DialogedMob.tag == "Mob")
-                                    DialogedMob.GetComponent<MobScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1].x = -1;
-                                else
-                                    DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = -1;
-                                GS.Money -= (int)TradeOptions.y;
-                            /*} else if (GS.GameModePrefab.x == 0 && CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GotTradedItem != -1 && Input.GetMouseButtonDown(0)) {
-                                if (DialogedMob.GetComponent<MobScript>() != null) {
-                                    GS.Mess(GS.SetString("Items traded!", "Zdobyto ten przedmiot!"), "Buy");
-                                    DialogSetting = "TradeGood";
-                                    DialogedMob.GetComponent<MobScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = new Vector2(-1f, 0f);
-                                    GS.PS.AchProg("Ach_Merchant", "/+-1");
-                                    RS.SetScore("Trade_", "/+1");
-                                } else {
-                                    GS.Mess(GS.SetString("Item purchased!", "Kupiono ten przedmiot!"), "Buy");
-                                    DialogedMob.GetComponent<InteractableScript>().TradeOptions[int.Parse(CheckedButton.name.Substring(0, 1)) - 1] = -1;
-                                }
-                                MainPlayer.InvGet(GotTradedItem, 1);//MainPlayer.Inventory[GotTradedItem] = GS.ReceiveItemVariables(TradeOptions.x);
-                                MainPlayer.InvGet(GS.ItemCache[(int)TradeOptions.x].startVariables, 0);
+                CheckedButton_Button.Active = true;
 
-                                GS.Score += 50;
-                            */
-                            } else if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && GotTradedItem == -1 && Input.GetMouseButtonDown(0)) {
-                                if (DialogedMob.GetComponent<MobScript>() != null) {
-                                    DialogSetting = "TradeNot";
-                                }
-                            }
-                        } else if (CheckedButton.name == "PLACES") {
-                            CheckedButton.GetComponent<ButtonScript>().Active = true;
-                            GS.SetText(CheckedButton.GetComponent<Text>(), "- Any special locations?", "- Jakieś specjalne miejsca?");
-                            if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0)) {
-                                bool SaidSomething = false;
-                                DialogedMob.GetComponent<MobScript>().ToldPlaces = true;
-                                foreach (DiscoveryScript FoundDisc in RoundScript.CachedDiscoveries) {
-                                    if (FoundDisc.Found(false))
-                                        SaidSomething = true;
-                                }
-                                /*foreach (GameObject FoundInteract in GameObject.FindGameObjectsWithTag("Interactable")) {
-                                    if (FoundInteract.GetComponent<InteractableScript>().Discovered == false && FoundInteract.GetComponent<InteractableScript>().Variables.x == 2f) {
-                                        FoundInteract.GetComponent<InteractableScript>().Discovered = true;
-                                        GS.Score += 50;
-                                        SaidSomething = true;
-                                    }
-                                }
-                                foreach (GameObject FoundLand in GameObject.FindGameObjectsWithTag("Land")) {
-                                    if (FoundLand.name.Substring(2, 1) == "M" && FoundLand.name.Substring(0, 1) == "0") {
-                                        FoundLand.name = "1" + FoundLand.name.Substring(1);
-                                        GS.Score += 50;
-                                        SaidSomething = true;
-                                    }
-                                }*/
-                                if (SaidSomething == true) {
-                                    DialogSetting = "PlacesKnown";
-                                    GS.Mess(GS.SetString("You now know of some new places", "Poznałeś kilka nowych miejsc"), "Draw");
-                                } else {
-                                    DialogSetting = "PlacesUnknown";
-                                }
-                            }
-                        } else if (CheckedButton.name == "TREASURES") {
-                            CheckedButton.GetComponent<ButtonScript>().Active = true;
-                            GS.SetText(CheckedButton.GetComponent<Text>(), "- I have some treasures for you!", "- Mam dla ciebie skarby!");
-                            List<int> TreausresGot = new List<int>();
-                            for (int CheckINV = 0; CheckINV <= 9; CheckINV++) {
-                                if (MainPlayer.Inventory[CheckINV].GetInt(JType.ID) >= 990 && MainPlayer.Inventory[CheckINV].GetInt(JType.ID) <= 999) {
-                                    TreausresGot.Add(CheckINV);
-                                }
-                            }
-                            if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TreausresGot.ToArray().Length > 0f && Input.GetMouseButtonDown(0)) {
-                                DialogSetting = "TreasureGot";
-                                GS.Mess(GS.SetString("Treasures sold!", "Skarby sprzedane!"), "Buy");
-                                foreach (int SellTreasure in TreausresGot)
-                                {
-                                    GS.Score += 10000;
-                                    GS.Money += 250;
-                                    MainPlayer.InvGet(SellTreasure, 1);//MainPlayer.Inventory[SellTreasure] = "id0;";
-                                    GS.PS.AchProg("Ach_Collectioner", "/+-1");
-                                    RS.SetScore("TreasuresSold_", "/+1");
-                                }
-                            } else if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TreausresGot.ToArray().Length <= 0f && Input.GetMouseButtonDown(0)) {
-                                DialogSetting = "TreasureNot";
-                            }
-                        } else if (CheckedButton.name == "BACK") {
-                            CheckedButton.GetComponent<ButtonScript>().Active = true;
-                            GS.SetText(CheckedButton.GetComponent<Text>(), "< Back", "< Wróć");
-                            if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0)) {
-                                DialogSetting = "Default";
-                            }
-                        } else if (CheckedButton.name == "EXIT") {
-                            CheckedButton.GetComponent<ButtonScript>().Active = true;
-                            GS.SetText(CheckedButton.GetComponent<Text>(), "X Goodbye", "X Dowidzenia");
-                            if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0)) {
-                                DialogSetting = "Default";
-                                DialogedMob = null;
-                            }
+                switch (CheckedButton.name) {
+                    case "TIP":
+                        CheckedButton_Text.text = GS.SetString("Any tips for me?", "Masz jakieś porady dla mnie?");
+                        if (CheckedButton_Button.IsSelected == true && Input.GetMouseButtonDown(0))
+                            DialogSetting = "Tip";
+                        break;
+                    case "TRADE":
+                        CheckedButton_Text.text = GS.SetString("Let us trade", "Pohandlujmy");
+                        if (CheckedButton_Button.IsSelected == true && Input.GetMouseButtonDown(0))
+                            DialogSetting = "TradeWhat";
+                        break;
+                    case "TRADE_BUY":
+                        CheckedButton_Text.text = GS.SetString("Show me your goods", "Pokaż mi swoje towary");
+                        if (CheckedButton_Button.IsSelected == true && Input.GetMouseButtonDown(0))
+                            DialogSetting = "Trade_Buy";
+                        break;
+                    case "TRADE_SELL":
+                        CheckedButton_Text.text = GS.SetString("I want to sell stuff", "Chcę ci coś sprzedać");
+                        if (CheckedButton_Button.IsSelected == true && Input.GetMouseButtonDown(0))
+                            DialogSetting = "Trade_Sell";
+                        break;
+                    case "1TRADE": case "2TRADE": case "3TRADE": case "4TRADE": case "5TRADE": case "6TRADE":
+                        Vector2 TradeOptions = Vector2.zero;
+                        int tradeID = int.Parse(CheckedButton.name.Substring(0, 1)) - 1;
+
+                        if (targetMob != null) {
+                            if (tradeID < targetMob.TradeOptions.Length)
+                                TradeOptions = targetMob.TradeOptions[tradeID];
+                            else
+                                TradeOptions = new (-2f, 0f);
                         } else {
-                            CheckedButton.GetComponent<ButtonScript>().Active = false;
-                            CheckedButton.GetComponent<Text>().text = "";
+                            TradeOptions.x = targetInt.TradeOptions[tradeID];
+                            TradeOptions.y = targetInt.TradePrices[tradeID];
                         }
 
-                    }
+                        if (TradeOptions.x == -2f)
+                            CheckedButton_Text.text = "";
+                        else if (TradeOptions.x == -1f)
+                            CheckedButton_Text.text = GS.SetString("SOLD", "SPRZEDANE");
+                        else
+                            CheckedButton_Text.text = GS.SetString(
+                                "Buy " + GS.ItemCache[(int)TradeOptions.x].getName() + " for " + TradeOptions.y,
+                                "Kup " + GS.ItemCache[(int)TradeOptions.x].getName() + " za " + TradeOptions.y
+                            );
+
+                        if (/*GS.GameModePrefab.x == 1 && */CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TradeOptions.x > -1 && GS.Money >= TradeOptions.y && Input.GetMouseButtonDown(0)) {
+                            MainPlayer.InvGet(GS.ItemCache[(int)TradeOptions.x].startVariables, 0);
+                            GS.Mess(GS.SetString("Item purchased!", "Kupiono przedmiot!"), "Buy");
+                            if (targetMob) {
+                                targetMob.TradeOptions[tradeID].x = -1;
+                                DialogSetting = Random.Range(1, 7) + "TradeGood";
+                                GS.PS.AchProg("Ach_Merchant", "/+-1");
+                                RS.SetScore("TradeBuy_", "/+1");
+                                GS.Score += 50;
+                            } else
+                                targetInt.TradeOptions[tradeID] = -1;
+                            GS.Money -= (int)TradeOptions.y;
+                        } else if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0)) {
+                            if (targetMob) {
+                                DialogSetting = Random.Range(1, 5) + "TradeNot";
+                            }
+                        }
+                        break;
+                    case "1SELL": case "2SELL": case "3SELL": case "4SELL": case "5SELL": case "6SELL":
+                        int sellID = int.Parse(CheckedButton.name.Substring(0, 1)) - 1;
+
+                        if (sellID >= MainPlayer.MaxInventorySlots || MainPlayer.Inventory[sellID].GetInt(JType.ID) <= 0) {
+                            CheckedButton_Text.text = "";
+                        } else {
+                            Random.State keepState = Random.state;
+                            Random.InitState(target.GetComponent<MobScript>().MobPESEL + MainPlayer.Inventory[sellID].GetInt(JType.ID));
+                            int price = (int)Mathf.Lerp(-50f, 500f, Mathf.Pow(Random.value, 6f));
+                            Random.state = keepState;
+
+                            string itemName = GS.ItemCache[MainPlayer.Inventory[sellID].GetInt(JType.ID)].getName();
+
+                            if (price > 0) {
+                                CheckedButton_Text.text = GS.SetString(
+                                    $"Sell {itemName} for {price}",
+                                    $"Sprzedaj {itemName} za {price}"
+                                );
+
+                                if (CheckedButton_Button.IsSelected && Input.GetMouseButtonDown(0)) {
+                                    MainPlayer.InvGet(sellID, 1);
+                                    GS.Mess(GS.SetString("Item sold!", "Sprzedano przedmiot!"), "Buy");
+                                    GS.Money += price;
+                                    RS.SetScore("TradeSell_", "/+1");
+                                    DialogSetting = Random.Range(1, 5) + "SellGood";
+                                    GS.Score += 25;
+                                }
+                            } else {
+                                CheckedButton_Text.text = GS.SetString(
+                                    $"Can't sell {itemName} - not interested",
+                                    $"Nie kupi {itemName} - brak zainteresowania"
+                                );
+                            }
+                        }
+
+                        break;
+                    case "PLACES":
+                        CheckedButton_Text.text = GS.SetString("You know any places around here?", "Znasz tutaj jakieś fajne miejsca?");
+                        
+                        if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0)) {
+                            bool SaidSomething = false;
+                            targetMob.ToldPlaces = true;
+                            foreach (DiscoveryScript FoundDisc in RoundScript.CachedDiscoveries) {
+                                if (FoundDisc.Found(false))
+                                    SaidSomething = true;
+                            }
+                            /*foreach (GameObject FoundInteract in GameObject.FindGameObjectsWithTag("Interactable")) {
+                                if (FoundInteract.GetComponent<InteractableScript>().Discovered == false && FoundInteract.GetComponent<InteractableScript>().Variables.x == 2f) {
+                                    FoundInteract.GetComponent<InteractableScript>().Discovered = true;
+                                    GS.Score += 50;
+                                    SaidSomething = true;
+                                }
+                            }
+                            foreach (GameObject FoundLand in GameObject.FindGameObjectsWithTag("Land")) {
+                                if (FoundLand.name.Substring(2, 1) == "M" && FoundLand.name.Substring(0, 1) == "0") {
+                                    FoundLand.name = "1" + FoundLand.name.Substring(1);
+                                    GS.Score += 50;
+                                    SaidSomething = true;
+                                }
+                            }*/
+                            if (SaidSomething == true) {
+                                DialogSetting = "PlacesKnown";
+                                GS.Mess(GS.SetString("You now know of some new places", "Poznałeś kilka nowych miejsc"), "Draw");
+                            } else {
+                                DialogSetting = "PlacesUnknown";
+                            }
+                        }
+                        break;
+                    case "TREASURES":
+                        CheckedButton_Text.text = GS.SetString("I have some treasures for you", "Mam dla ciebie skarby");
+                        
+                        List<int> TreausresGot = new List<int>();
+                        for (int CheckINV = 0; CheckINV <= 9; CheckINV++) {
+                            if (MainPlayer.Inventory[CheckINV].GetInt(JType.ID) >= 990 && MainPlayer.Inventory[CheckINV].GetInt(JType.ID) <= 999) {
+                                TreausresGot.Add(CheckINV);
+                            }
+                        }
+                        if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TreausresGot.ToArray().Length > 0f && Input.GetMouseButtonDown(0)) {
+                            DialogSetting = "TreasureGot";
+                            GS.Mess(GS.SetString("Treasures sold!", "Skarby sprzedane!"), "Buy");
+                            foreach (int SellTreasure in TreausresGot)
+                            {
+                                GS.Score += 10000;
+                                GS.Money += 250;
+                                MainPlayer.InvGet(SellTreasure, 1);//MainPlayer.Inventory[SellTreasure] = "id0;";
+                                GS.PS.AchProg("Ach_Collectioner", "/+-1");
+                                RS.SetScore("TreasuresSold_", "/+1");
+                            }
+                        } else if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TreausresGot.ToArray().Length <= 0f && Input.GetMouseButtonDown(0)) {
+                            DialogSetting = "TreasureNot";
+                        }
+                        break;
+                    case "BACK":
+                        CheckedButton_Text.text = GS.SetString("Go back", "Wróć");
+                        if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0))
+                            DialogSetting = "Default";         
+                        break;
+                    case "EXIT":
+                        CheckedButton_Text.text = GS.SetString("Goodbye", "Dowidzenia");
+                        if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && Input.GetMouseButtonDown(0)) {
+                            DialogSetting = "Default";
+                            DialogedMob = null;
+                        }
+                        break;
+                    default:
+                        CheckedButton_Button.Active = false;
+                        CheckedButton_Text.text = "";
+                        break;
                 }
 
-            }
-            // Dialog
-
-            // Hint
-            if (ClearHint > 0f) {
-                ClearHint -= 0.02f * (Time.deltaTime * 50f);
-                if (!(Input.GetButton("Information Tab") && MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID) > 0 || MainPlayer.Equipment[0].GetInt(JType.ID) > 0)) {
-                    HintText.color = new Color32(255, 255, 255, (byte)Mathf.Clamp((128f * ClearHint), 0f, 200f));
-                } else {
-                    HintText.color = new Color(1f, 1f, 1f, 0f);
-                }
-            } else {
-                if (HintScan > 0f) {
-                    HintScan -= 0.02f * (Time.deltaTime * 50f);
-                } else if (RoundStartInfo.GetComponent<Image>().color.a <= 0f) {
-                    ScanHint("");
-                }
             }
 
         }

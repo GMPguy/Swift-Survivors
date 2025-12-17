@@ -9,6 +9,7 @@ public class MobPH : MonoBehaviour {
     
     // Main variables
     public string spawnType;
+    public int Seed;
     public int Activation = 0; // 0 actiavte near - 1 activated by time - 2 activate near or time - 3 activated, may be unactivated - 4 activated for good - 5 activated, but also do something lol
     string ActivationBonus = "";
     public float TimeTillActivation = 0f;
@@ -38,7 +39,9 @@ public class MobPH : MonoBehaviour {
             case 2: flopin.z *= -1f; break;
             case 3: flopin.x *= -1f; flopin.z *= -1f; break;
         }
+
         this.transform.position = flopin;
+        Seed = Random.Range(int.MinValue, int.MaxValue);
 
         // read suggestion
         prevSpec = spawnType;
@@ -231,6 +234,8 @@ public class MobPH : MonoBehaviour {
     }
 
     void Activate(){
+
+        Random.InitState(Seed);
 
         List<GameObject> addSubs = new List<GameObject>();
         switch(spawnType){

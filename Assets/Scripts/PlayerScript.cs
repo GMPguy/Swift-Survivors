@@ -153,8 +153,8 @@ public class PlayerScript : MonoBehaviour {
     // Camera position variables
     public string POV = "FPP";
     public float ReleaseCamera = 0f;
-    float LookX = 0f;
-    float LookY = 0f;
+    public float LookX = 0f;
+    public float LookY = 0f;
     float CBAxis = 0f;
     float BonusZ = 0f;
     public Vector3 ItemShakePos;
@@ -857,14 +857,15 @@ public class PlayerScript : MonoBehaviour {
                 if (IsGrounded == true && IsSwimming == false) {
                     MainCamera.localPosition = Vector3.Lerp(MainCamera.localPosition, new Vector3(CBAxis / 3f, Mathf.Abs(CBAxis) / 4f, 0f), 0.1f * (Time.deltaTime * 50f));
                     ItemsShown.transform.localPosition = Vector3.Lerp(ItemsShown.transform.localPosition + (ItemShakePos * ZoomShakeScaler), (new Vector3(CBAxis / -40f, Mathf.Abs(CBAxis) / 80f, 0f) * ZoomShakeScaler) + PosChange, LerpSpeed * (Time.deltaTime * 50f));
-                    if (this.GetComponent<Rigidbody>().velocity.magnitude > 0f) {
+                    if (this.GetComponent<Rigidbody>().velocity.magnitude > 0.1f) {
                         CBAxis += ((this.GetComponent<Rigidbody>().velocity.magnitude / Speed) / 15f * CBDir) * (Time.deltaTime * 50f) * GS.CameraBobbing;
-                        CBAxis = Mathf.Lerp(0f, CBAxis, this.GetComponent<Rigidbody>().velocity.magnitude * (Speed * 3f));
                         if (CBAxis > EnableCB) {
                             CBDir = -1;
                         } else if (CBAxis < -EnableCB) {
                             CBDir = 1;
                         }
+                    } else {
+                        CBAxis = Mathf.Lerp(0f, CBAxis, Time.deltaTime);
                     }
                 } else {
                     float YshakeScaler = 0f;
@@ -3969,11 +3970,6 @@ public class PlayerScript : MonoBehaviour {
                             CantUseItem = 2f;
                             CantSwitchItem = 2f;
                             ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Filter", 176, AnimationAddition), 0, 0f);
-                            InvGet(new JClass(new JEntry[]{
-                                new JInt(JType.ID, 17),
-                                new JInt(JType.StackQuantity, 1)
-                            }), 0);
-                            GS.Mess(GS.SetString("Bottle of water acquired", "Nabyto butelkę wody"), "Good");
 
                             EffectScript waterSplash = GameObject.Instantiate(EffectPrefab).GetComponent<EffectScript>();
                             waterSplash.EffectName = "BullethitWater";
@@ -3987,6 +3983,13 @@ public class PlayerScript : MonoBehaviour {
                     if (AnimationEvent.ReadMessage == "WaterFilter") {
                         AnimationEvent.ReadMessage = "";
                         Inventory[CurrentItemHeld].SetFloat(JType.VariableA, -10f, Maths.Add);
+
+                        InvGet(new JClass(new JEntry[]{
+                            new JInt(JType.ID, 17),
+                            new JInt(JType.StackQuantity, 1)
+                        }), 0);
+                        GS.Mess(GS.SetString("Bottle of water acquired", "Nabyto butelkę wody"), "Good");
+
                         if (Inventory[CurrentItemHeld].GetFloat(JType.VariableA) <= 0f)
                             InvGet(CurrentItemHeld, 1);
                     }

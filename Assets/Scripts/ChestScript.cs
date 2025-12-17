@@ -130,8 +130,6 @@ public class ChestScript : MonoBehaviour {
                         Quaternion.Euler(currDoor.ClosedPosition),
                         openingCurve[pickCurve].Evaluate(doorOpening.x % 1f)
                     );
-
-                    currDoor.transform.gameObject.layer = 13;
                 }
                 break;
         }

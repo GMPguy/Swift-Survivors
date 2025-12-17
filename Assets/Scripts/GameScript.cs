@@ -2443,8 +2443,11 @@ public class GameScript : MonoBehaviour {
                 case "TreasuresSold":
                     Result = SetString("Treasures sold: ", "Sprzedane skarby: ") + TypeScore[1];
                     break;
-                case "Trade":
-                    Result = SetString("Trades: ", "Handle: ") + TypeScore[1];
+                case "TradeBuy":
+                    Result = SetString("Trades (items bought): ", "Handle (kupiono): ") + TypeScore[1];
+                    break;
+                case "TradeSell":
+                    Result = SetString("Trades (items sold): ", "Handle (sprzedano): ") + TypeScore[1];
                     break;
                 case "":
                     Result = "";
