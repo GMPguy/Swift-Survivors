@@ -864,6 +864,10 @@ MonoBehaviour:
   DisclaimerImage: {fileID: 681331671}
   DisclaimerText: {fileID: 1054005526}
   DisclaimerContinue: {fileID: 101228472}
+  DisclaimerImages:
+  - {fileID: 21300000, guid: da3ed970169a72a4eb01b88f1621ba77, type: 3}
+  - {fileID: 21300000, guid: caa5ced6f41cbcf448b493cf9fe3467b, type: 3}
+  - {fileID: 21300000, guid: 47f535e9bbc7a7345bfe1928744eec7a, type: 3}
   SetupWindow: {fileID: 1678157985}
   SetupTexts:
   - {fileID: 673923391}
@@ -1526,6 +1530,7 @@ MonoBehaviour:
   GrassQuality: 3
   DestructionQuality: 1
   EffectsQuality: 1
+  FPScap: 60
   CameraBobbing: 1
   CameraShifting: 1
   FOV: 90
@@ -1552,7 +1557,6 @@ MonoBehaviour:
   PS: {fileID: 0}
   WindowToBootUp: 
   NewProfileName: 
-  MaxFPS: 999
   Earpiercing:
   - 0
   - 0

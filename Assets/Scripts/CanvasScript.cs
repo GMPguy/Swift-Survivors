@@ -957,7 +957,24 @@ public class CanvasScript : MonoBehaviour {
         for (int c = 0; c < 2; c++)
             DialogBG[c].color = Color.Lerp(Color.black, Color.clear, DialogHideFactor);
 
+        // check if still can dialogue
         if (target) {
+            if (Vector3.Distance(MainPlayer.transform.position, target.transform.position) > 10f)
+                DialogedMob = target = null;
+            
+            if (targetMob && (targetMob.Angered > 0f || targetMob.Curious > 0f || targetMob.MobColor.r > 0f))
+                DialogedMob = target = null;
+        }
+
+        if (target) {
+
+            int QuickRandom (int offset, int min, int max) {
+                Random.State keepState = Random.state;
+                Random.InitState(targetMob.MobPESEL);
+                int TipToView = Random.Range(min, max);
+                Random.state = keepState;
+                return TipToView;
+            }
 
             // Turn towards   
             MainPlayer.CantMove = 0.1f;
@@ -976,13 +993,61 @@ public class CanvasScript : MonoBehaviour {
 
             MainPlayer.LookY = MainPlayer.transform.eulerAngles.y;
 
+            // Set title
+            if (targetInt)
+                DialogName.text = targetInt.Name;
+            else
+                DialogName.text = targetMob.MobName;
+
             // Set text
             switch (DialogSetting) {
                 case "Default":
-                    GS.SetText(DialogDesc,
-                        "Hello fellow survivor! How can I help you?",
-                        "Witaj mój przyjacielu! Jak mogę ci pomóc?");
-                    DialogOptions = new string[] { "TIP", "TRADE", "PLACES", "TREASURES", "EXIT", "", "", "" };
+                    float stink = QuickRandom(targetMob.MobPESEL, 25, 75);//QuickRandom(25f, 75f, targetMob.MobPESEL % 10f);
+
+                    if (MainPlayer.Dirty > stink) {
+                        DialogDesc.text = ((stink - 25) / 10) switch {
+                            5 => GS.SetString(
+                                "You smell like a corpse, beat it!",
+                                "Śmierdzisz truchłem, odwal się ode mnie!"),
+                            4 => GS.SetString(
+                                "You smell like shit.",
+                                "Śmierdzisz gównem."),
+                            3 => GS.SetString(
+                                "Good grief! Go wash yourself before talking to people like that!",
+                                "Do ciężkiej anielki! Weź się umyj zanim zaczniesz z kimś rozmawiać!"),
+                            2 => GS.SetString(
+                                "Hello felloh my goodness you smell awful!",
+                                "Witaj móoh mój Boże śmierdzisz niemiłosiernie!"),
+                            1 => GS.SetString(
+                                "You don't smell too good. You should really use a soap or something.",
+                                "Nie pachniesz za ładnie. Powinieneś użyć mydła ot co."),
+                            _ => GS.SetString(
+                                "You don't look too good. Have you onsidered using a soap?",
+                                "Nie wyglądasz najlepiej. Zastanawiałeś się nad skorzystaniem z mydła?")  
+                        };
+                        DialogOptions = new string[] { "EXIT", "", "", "", "", "", "", "" };
+                    } else {
+                        int Greeting = QuickRandom(targetMob.MobPESEL + 3, 0, 5);
+                        DialogDesc.text = Greeting switch {
+                            4 => GS.SetString(
+                                "Praise be.",
+                                "Pochwalony."),
+                            3 => GS.SetString(
+                                "Hey there buddy. How's your day?",
+                                "Cześć kolego. Jak tam mija ci dzień?"),
+                            2 => GS.SetString(
+                                "Oh look! Finally something that doesn't wanna kill me... I hope.",
+                                "No patrzcie! W końcu coś co niechce mnie zabić... taką mam nadzieję."),
+                            1 => GS.SetString(
+                                "Hi how are ya?",
+                                "Cześć jak się masz?"),
+                            _ => GS.SetString(
+                                "Hello fellow survivor! How can I help you?",
+                                "Witaj mój przyjacielu! Jak mogę ci pomóc?")
+                        };
+                        DialogOptions = new string[] { "TIP", "TRADE", "PLACES", "TREASURES", "EXIT", "", "", "" };  
+                    }
+                    
                     break;
                 case "VendingMachine":
                     if (GS.GameModePrefab.x == 1) {
@@ -1018,10 +1083,7 @@ public class CanvasScript : MonoBehaviour {
                     }
                     break;
                 case "Tip":
-                    Random.State keepState = Random.state;
-                    Random.InitState(targetMob.MobPESEL);
-                    int TipToView = Random.Range(0, 5);
-                    Random.state = keepState;
+                    int TipToView = QuickRandom(targetMob.MobPESEL + 2, 0, 5);
 
                     if (TipToView == 0) {
                         GS.SetText(DialogDesc,

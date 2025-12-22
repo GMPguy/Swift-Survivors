@@ -11887,6 +11887,7 @@ MonoBehaviour:
   - {fileID: 2478129370181741921}
   - {fileID: 3008405397473868627}
   - {fileID: 6937961829815302581}
+  - {fileID: 8597192900172169317}
   ProfileTab: 
   ProfileTabs: {fileID: 3603085122198060623}
   ProfileSlider: {fileID: 5525037559681187777}
@@ -11949,6 +11950,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 2c110b76e83316a4990aa890f4b2dedb, type: 3}
   - {fileID: 21300000, guid: e451f5fc216c87749851fd9ca320b0c2, type: 3}
   - {fileID: 21300000, guid: 0bfddf658f4833a46a77fd2e08b1f3a3, type: 3}
+  WhatTab: {fileID: 0}
   WhatTabs: {fileID: 971734194707436951}
   PVbox: {fileID: 4637177114525572006}
   PVmodel: {fileID: 6686022242733480690}
@@ -21473,6 +21475,7 @@ GameObject:
   - component: {fileID: 2004721609518834339}
   - component: {fileID: 2290909876626179081}
   - component: {fileID: 5874190125016937747}
+  - component: {fileID: 8597192900172169317}
   m_Layer: 5
   m_Name: WhatTab
   m_TagString: Untagged
@@ -21559,6 +21562,25 @@ MonoBehaviour:
     rgba: 0
   BlendForce: 0
   Alpha: 1
+--- !u!114 &8597192900172169317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6995937388230310071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4f7df21caa19154b87abc0d72e66a74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Effect: 
+  Active: 1
+  IsSelected: 0
+  IsHovering: 0
+  SelectScale: 1
+  SelectSound: {fileID: 0}
+  ClickSound: {fileID: 0}
 --- !u!1 &7048801326918169655
 GameObject:
   m_ObjectHideFlags: 0

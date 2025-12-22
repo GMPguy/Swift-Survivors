@@ -50987,7 +50987,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &397135110
 Transform:
   m_ObjectHideFlags: 0
@@ -229398,6 +229398,7 @@ MonoBehaviour:
   GrassQuality: 3
   DestructionQuality: 1
   EffectsQuality: 1
+  FPScap: 60
   CameraBobbing: 1
   CameraShifting: 1
   FOV: 90
@@ -229424,7 +229425,6 @@ MonoBehaviour:
   PS: {fileID: 0}
   WindowToBootUp: 
   NewProfileName: 
-  MaxFPS: 999
   Earpiercing:
   - 0
   - 0
@@ -237102,19 +237102,6 @@ MonoBehaviour:
   - {fileID: 1399517568}
   - {fileID: 1216331016}
   - {fileID: 1235616483}
-  Musics:
-  - {fileID: 567219155}
-  - {fileID: 31668833}
-  - {fileID: 1223230876}
-  - {fileID: 171641651}
-  - {fileID: 736198059}
-  - {fileID: 522958695}
-  - {fileID: 700432047}
-  - {fileID: 2015131980}
-  - {fileID: 624306942}
-  - {fileID: 1775276023}
-  - {fileID: 788760926}
-  - {fileID: 1753855953}
   NukeAlarm: {fileID: 56540150}
   DrawDistance: 1
   NukeObj: {fileID: 1108640330}

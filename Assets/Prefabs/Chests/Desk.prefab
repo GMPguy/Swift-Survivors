@@ -178,12 +178,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: IndustrialStuff
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 1
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &8302997185732011354
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,7 +707,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name:
   - Desk
-  - "Bi\xF3rko"
+  - Biurko
   Opening:
     x: 0
     y: 0

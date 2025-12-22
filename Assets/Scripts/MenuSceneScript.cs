@@ -33,7 +33,8 @@ public class MenuSceneScript : MonoBehaviour {
 
         if(NMS.LoadingTime <= 0f){
             Camera cam = MainCamera.GetComponent<Camera>();
-            GS.SetDrawDistance(cam, fogDistance);
+            //GS.SetDrawDistance(cam, fogDistance);
+            RenderSettings.fogEndDistance = fogDistance;
 
             if(CurrentScene[1] == ""){
                 if(CurrentScene[0] != ""){

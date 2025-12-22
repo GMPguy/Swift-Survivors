@@ -8,7 +8,6 @@ using System.Globalization;
 using Unity.Mathematics;
 using Random=UnityEngine.Random;
 using UnityEngine.Audio;
-using UnityEngine.Purchasing.MiniJSON;
 
 public class GameScript : MonoBehaviour {
 
@@ -52,9 +51,10 @@ public class GameScript : MonoBehaviour {
 
     public int DestructionQuality = 1; // Disabled, Standard, High
     public int EffectsQuality = 1; // Disabled, Standard, High
+    public int FPScap = 60;
 
     public float CameraBobbing = 1f;
-    public float CameraShifting = 1f;
+    public float CameraShifting = .5f;
     public float FOV = 50f;
     public bool Ragdolls = true;
     public Vector2 MainResolution = new Vector2(800f, 600f);
@@ -100,7 +100,7 @@ public class GameScript : MonoBehaviour {
     public string WindowToBootUp = "";
     public string NewProfileName;
     bool CanSaveSettings = true;
-    public int MaxFPS = 999;
+    List<KeyCode> TempDevCommand;
     public float[] Earpiercing = new float[] { 0f, 0f };
 
     public List<SoundControlScript> SoundCache;
@@ -236,6 +236,33 @@ public class GameScript : MonoBehaviour {
     void Update() {
 
         SettingsInAction();
+
+        // Temp dev comand
+        if (Input.GetKey(KeyCode.C)) {
+            if (TempDevCommand == null)
+                TempDevCommand = new ();
+
+            if (TempDevCommand.Count < 10)
+                foreach(KeyCode kcode in System.Enum.GetValues(typeof(KeyCode)))
+                    if (Input.GetKeyDown(kcode) && kcode != KeyCode.C)
+                        TempDevCommand.Add(kcode);
+        } else if (TempDevCommand != null) {
+
+            string readValue = "";
+            for (int c = 0; c < TempDevCommand.Count; c++)
+                readValue += TempDevCommand[c].ToString();
+            
+            switch (readValue) {
+                case "DELETEALL":
+                    CanSaveSettings = false;
+                    PlayerPrefs.DeleteAll();
+                    Mess("Please exit the game");
+                    Mess("All data has been wiped - new data will not be saved");
+                    break;
+            }
+
+            TempDevCommand = null;
+        }
 
         if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.E) && Input.GetKey(KeyCode.L)) {
             CanSaveSettings = false;
@@ -648,7 +675,7 @@ public class GameScript : MonoBehaviour {
 
     void SettingsInAction(){
 
-        Application.targetFrameRate = MaxFPS;
+        Application.targetFrameRate = FPScap > 0 ? FPScap : 999;
         bool trimS = false; bool trimP = false; bool trimL = false;
 
         // Volumes
@@ -859,7 +886,7 @@ public class GameScript : MonoBehaviour {
                 ";FoliQ_" + GrassQuality.ToString(CultureInfo.InvariantCulture) +
                 ";PartQ_" + ParticlesQuality.ToString(CultureInfo.InvariantCulture) +
                 ";LiteQ_" + LightingQuality.ToString(CultureInfo.InvariantCulture) +
-                ";GrapQ_" + GraphicsQuality.ToString(CultureInfo.InvariantCulture) +
+                ";FPScap_" + FPScap.ToString(CultureInfo.InvariantCulture) +
                 ";DestQ_" + DestructionQuality.ToString(CultureInfo.InvariantCulture) +
                 ";EffeQ_" + EffectsQuality.ToString(CultureInfo.InvariantCulture) +
                 ";Hints_" + ToldHints + //CHUJ
@@ -902,6 +929,7 @@ public class GameScript : MonoBehaviour {
                     GrassQuality = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "FoliQ_" ), CultureInfo.InvariantCulture);
                     ParticlesQuality = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "PartQ_" ), CultureInfo.InvariantCulture);
                     LightingQuality = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "LiteQ_" ), CultureInfo.InvariantCulture);
+                    FPScap = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "FPScap_" ), CultureInfo.InvariantCulture);
                     DestructionQuality = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "DestQ_" ), CultureInfo.InvariantCulture);
                     EffectsQuality = int.Parse( GetSemiClass(PlayerPrefs.GetString("Options"), "EffeQ_" ), CultureInfo.InvariantCulture);
                     ToldHints = GetSemiClass(PlayerPrefs.GetString("Options"), "Hints_" );
@@ -1074,7 +1102,7 @@ public class GameScript : MonoBehaviour {
                 new JClass (24, JTemplate.BasicItemStackable)
             ),
             new(this, new string[]{"Lugol's solution", "Płyn lugola"},
-                new string[]{"Drinking this cures radiation sickness, and makes you invulnerable to it for 30 seconds.", "Wypicie leczy chorobę popromienną, i chroni przed jej nabyciem przez 30 sekund."},
+                new string[]{"Drinking this cures radiation sickness, and makes you invulnerable to it for 60 seconds.", "Wypicie leczy chorobę popromienną, i chroni przed jej ponownym nabyciem przez 60 sekund."},
                 new JClass (25, JTemplate.BasicItemStackable),
                 new (10f, 50f, 0f)
             ),
@@ -1223,7 +1251,7 @@ public class GameScript : MonoBehaviour {
                 new (5f, 25f, 2f)
             ),
             new(this, new string[]{"Heat pack", "Ogrzewacz"},
-                new string[]{"Upon using it, it'll instantly warm you, and you will gain 15 seconds of immunity over coldness.", "Po użyciu tego przedmiotu, natychmiastowo cię ociepli, oraz zdobędziesz odporność na zimno na 15 sekund."},
+                new string[]{"Upon using it, it'll instantly warm you, and you will gain 60 seconds of immunity over coldness.", "Po użyciu tego przedmiotu, natychmiastowo cię ociepli, oraz zdobędziesz odporność na zimno na 60 sekund."},
                 new JClass (43, JTemplate.BasicItemStackable)
             ),
             new(this, new string[]{"Adrenaline", "Adrenalina"},

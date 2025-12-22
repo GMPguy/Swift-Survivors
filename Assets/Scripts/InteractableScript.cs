@@ -177,21 +177,28 @@ public class InteractableScript : MonoBehaviour {
                 Variables.SetInt(JType.InteractableType, (int)Random.Range(0f, 3.9f));
                 Color32[] MachineColors = new Color32[] { Color.white, Color.white };
                 TradeOptions = new int[] { 0, 0, 0, 0, 0, 0 };
+                TradePrices = new int[] { 0, 0, 0, 0, 0, 0 };
+
                 if (Variables.GetInt(JType.InteractableType) == 0) {
-                    Name = GS.SetString("Vending Machine", "Automat z Jedzeniem");
+                    Name = GS.SetString("Vending Machine", "Automat z jedzeniem");
                     MachineColors = new Color32[] { new Color32(75, 155, 75, 255), new Color32(55, 100, 55, 255) };
+
                     for (int AddTradeOptions = 5; AddTradeOptions >= 0; AddTradeOptions--) {
                         TradeOptions[AddTradeOptions] = RS.FoodItems[(int)Random.Range(0f, RS.FoodItems.Length - 0.1f)];
+                        TradePrices[AddTradeOptions] = (int)Mathf.Lerp(1, 100, Mathf.Pow(Random.value, 2f));
                     }
                 } else if (Variables.GetInt(JType.InteractableType) == 1) {
-                    Name = GS.SetString("Vending Machine", "Automat ze Sprzętem");
+                    Name = GS.SetString("Vending Machine", "Automat ze sprzętem");
                     MachineColors = new Color32[] { new Color32(0, 125, 255, 255), new Color32(0, 0, 255, 255) };
+
                     for (int AddTradeOptions = 5; AddTradeOptions >= 0; AddTradeOptions--) {
                         TradeOptions[AddTradeOptions] = RS.Utilities[(int)Random.Range(0f, RS.Utilities.Length - 0.1f)];
+                        TradePrices[AddTradeOptions] = (int)Mathf.Lerp(10, 300, Mathf.Pow(Random.value, 2f));
                     }
                 } else if (Variables.GetInt(JType.InteractableType) == 2) {
-                    Name = GS.SetString("Vending Machine", "Automat z Uzbrojeniem");
+                    Name = GS.SetString("Vending Machine", "Automat z uzbrojeniem");
                     MachineColors = new Color32[] { new Color32(200, 0, 0, 255), new Color32(100, 0, 0, 255) };
+
                     for (int AddTradeOptions = 5; AddTradeOptions >= 0; AddTradeOptions--) {
                         int Mag = Random.Range(0, 6);
                         if (Mag == 0) {
@@ -201,13 +208,15 @@ public class InteractableScript : MonoBehaviour {
                         } else {
                             TradeOptions[AddTradeOptions] = RS.Weapons[(int)Random.Range(0f, RS.Weapons.Length - 0.1f)];
                         }
+                        TradePrices[AddTradeOptions] = (int)Mathf.Lerp(10, 1000, Mathf.Pow(Random.value, 2f));
                     }
                 } else if (Variables.GetInt(JType.InteractableType) == 3) {
-                    Name = GS.SetString("Vending Machine", "Automat z Jedzeniem");
+                    Name = GS.SetString("Vending Machine", "Automat z lekarstwami");
                     MachineColors = new Color32[] { new Color32(200, 0, 125, 255), new Color32(255, 255, 255, 255) };
-                    for (int AddTradeOptions = 5; AddTradeOptions >= 0; AddTradeOptions--)
-                    {
+
+                    for (int AddTradeOptions = 5; AddTradeOptions >= 0; AddTradeOptions--) {
                         TradeOptions[AddTradeOptions] = RS.HealingItems[(int)Random.Range(0f, RS.HealingItems.Length - 0.1f)];
+                        TradePrices[AddTradeOptions] = (int)Mathf.Lerp(1, 100, Mathf.Pow(Random.value, 2f));
                     }
                 }
                 foreach (Material BarrelMat in SelectedModel.GetComponent<MeshRenderer>().materials) {

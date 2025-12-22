@@ -83,7 +83,6 @@ public class RoundScript : MonoBehaviour {
     public List<BuildingScript> ActiveBuildings;
     // Ambiences
     public GameObject[] Ambients;
-    public GameObject[] Musics;
     public GameObject NukeAlarm;
     public float DrawDistance = 0f;
     // Ambiences
@@ -647,7 +646,8 @@ public class RoundScript : MonoBehaviour {
                 // Music
                 int TimeOfDay = GS.Round * 6;
                 TimeOfDay -= (TimeOfDay / 24) * 24;
-                float MusicObscure = Mathf.Clamp(1f - (SwimDepth * 2f), 0f, 1f);
+
+                /*float MusicObscure = Mathf.Clamp(1f - (SwimDepth * 2f), 0f, 1f);
                 if (GameObject.Find("MainCanvas").GetComponent<CanvasScript>().DialogedMob != null) {
                     foreach (GameObject Music in Musics) {
                         if (Music.name == "M_Bossa Antigua" && MainPlayer.State == 1) {
@@ -673,7 +673,7 @@ public class RoundScript : MonoBehaviour {
                             }
                         }
                     }
-                }
+                }*/
 
 
 
@@ -713,7 +713,7 @@ public class RoundScript : MonoBehaviour {
                 }
 
                 // Music
-                foreach (GameObject Music in Musics) {
+                /*foreach (GameObject Music in Musics) {
                     if (Music.name == "Corruption" && MainPlayer.State == 1) {
                         if (Music.GetComponent<AudioSource>().isPlaying == false) {
                             Music.GetComponent<AudioSource>().Play();
@@ -723,11 +723,11 @@ public class RoundScript : MonoBehaviour {
                             Music.GetComponent<AudioSource>().Stop();
                         }
                     }
-                }
+                }*/
 
             } else if (RoundState == "TealState") {
 
-                foreach (GameObject Music in Musics) {
+                /*foreach (GameObject Music in Musics) {
                     if (Music.name == "Almost New" && MainPlayer.State == 1) {
                         if (Music.GetComponent<AudioSource>().isPlaying == false) {
                             Music.GetComponent<AudioSource>().Play();
@@ -737,7 +737,7 @@ public class RoundScript : MonoBehaviour {
                             Music.GetComponent<AudioSource>().Stop();
                         }
                     }
-                }
+                }*/
 
             } else if (RoundState == "BeforeWave") {
 
@@ -847,7 +847,7 @@ public class RoundScript : MonoBehaviour {
                 }
 
                 // Music
-                foreach (GameObject Music in Musics) {
+                /*foreach (GameObject Music in Musics) {
                     if (Music.name == Map_Horde.Music && MainPlayer.State == 1) {
                         if (Music.GetComponent<AudioSource>().volume > 0f) {
                             Music.GetComponent<AudioSource>().volume -= Time.deltaTime/10f;
@@ -855,7 +855,7 @@ public class RoundScript : MonoBehaviour {
                     } else {
                         Music.GetComponent<AudioSource>().Stop();
                     }
-                }
+                }*/
 
             } else if (RoundState == "HordeWave") {
 
@@ -912,7 +912,7 @@ public class RoundScript : MonoBehaviour {
                 }
 
                 // Music
-                foreach (GameObject Music in Musics) {
+                /*foreach (GameObject Music in Musics) {
                     if (Music.name == Map_Horde.Music && MainPlayer.State == 1) {
                         if (Music.GetComponent<AudioSource>().isPlaying == false || Music.GetComponent<AudioSource>().volume <= 0f) {
                             Music.GetComponent<AudioSource>().Play();
@@ -923,7 +923,7 @@ public class RoundScript : MonoBehaviour {
                             Music.GetComponent<AudioSource>().Stop();
                         }
                     }
-                }
+                }*/
 
             }
 

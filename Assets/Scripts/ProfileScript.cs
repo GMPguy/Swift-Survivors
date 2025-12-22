@@ -85,7 +85,7 @@ public class ProfileScript : MonoBehaviour{
             if (Exp[1] >= Exp[2]){
 
                 // Rewards
-                int nItems = (int)Random.Range(0f, 2.9f);
+                int nItems = 0;//(int)Random.Range(0f, 2.9f);
                 string nRewards = GS.SetString("\n\nRewards:", "\n\nNagrody:");
                 if(nItems > 0) nRewards += "\n- " + nItems + GS.SetString(" new items in inventory", " nowe przedmioty w ekwipunku");
                 if(nItems <= 0) nRewards = "";
@@ -96,7 +96,7 @@ public class ProfileScript : MonoBehaviour{
                 GameObject.Find("_NewMenu").GetComponent<NewMenuScript>().PopupQueue.Add("type_LevelUp;level_" + Exp[0]);
                 profMessage(GS.SetString("Level " + Exp[0], "Poziom " + Exp[0]), GS.SetString(
                     "Congratulations on achieving level " + Exp[0] + "! Good luck acquiring " + Exp[2] + " experience points for the next level.", 
-                    "Gratulujemy zdobycia poziomu" + Exp[0] + "! Powodzenia w zdobywaniu " + Exp[2] + " punktów doświadczenia na następny.") + nRewards, 
+                    "Gratulujemy zdobycia poziomu " + Exp[0] + "! Powodzenia w zdobywaniu " + Exp[2] + " punktów doświadczenia na następny.") + nRewards, 
                     1, "PMpromoted");
                 if(Exp[0] == 10) AchProg("Ach_10level", "0");
             } else {

@@ -21,6 +21,18 @@ x Item bank (for NPC holding items)
 - Replace Semiclasses with JStructs
 - Replace music
 
+FOR PT:
+- Disable saving
+x Disable rewards from leveling
+x Disable horde mode
+- Fix dialogs a bit
+	x Vending machines don't work in classic and casual mode
+- Ragdolls dissapear too quickly
+- Disable music, add music to new menu
+- Improve credits and you died message
+- Add loading screen photos 0/5
+- Add apartment and hut building
+
 MINOR:
 x pathfinding in horde
 x map in horde

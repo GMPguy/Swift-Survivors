@@ -716,7 +716,7 @@ public class PlayerScript : MonoBehaviour {
             POV = "FPP";
         }
 
-        float mouseDelta = Time.timeScale * Time.unscaledDeltaTime * 50f;
+        float mouseDelta = Time.timeScale;
 
         // Rotation and zoom stuff specific for FPP camera and maybe third person camera
         if (POV == "FPP"){
@@ -1007,9 +1007,9 @@ public class PlayerScript : MonoBehaviour {
             int moved = 0;
             int SlowDown = 0; // 0 Normal   1 Can't sprint   2 Slow Movement   3 Can't jump
 
-            if ((InWater == true && Inventory[CurrentItemHeld].GetInt(JType.ID) != 87) || BrokenBone == 1 || IsCrouching > 0f || Inventory[CurrentItemHeld].GetInt(JType.ID) == 998 || IsOpeningChest > 0f) {
+            if ((InWater == true && Inventory[CurrentItemHeld].GetInt(JType.ID) != 87) || IsCrouching > 0f || Inventory[CurrentItemHeld].GetInt(JType.ID) == 998 || IsOpeningChest > 0f) {
                 SlowDown = 3;
-            } else if (ZoomValues[1] != ZoomValues[2]) {
+            } else if (ZoomValues[1] != ZoomValues[2] || BrokenBone == 1) {
                 SlowDown = 2;
             } else if (IsHS == true || RS.RoundState == "TealState") {
                 SlowDown = 1;
@@ -1946,9 +1946,11 @@ public class PlayerScript : MonoBehaviour {
                             FoodName = GS.SetString("Lugol's Solution", "Płyn Lugola");
                             ConsumeAnimation = "Drink";
                             DrinkOrWhat = 1;
-                            RadioactivityToAdd = -Radioactivity - 30f;
+                            RadioactivityToAdd = -Radioactivity - 60f;
                             FoodColor = new Color32(181, 97, 124, 255);
                             FlashColor = new Color32(0, 255, 0, 155);
+                            if (Radioactivity <= 0f)
+                                CanUse = false;
                             LeftOver = new JClass (new JEntry [] {
                                 new JInt(JType.ID, 173),
                                 new JFloat(JType.VariableA, 0f),
@@ -3176,7 +3178,7 @@ public class PlayerScript : MonoBehaviour {
                     break;
                 case 43:
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && Coldness > 0f) {
-                        Coldness = -15f;
+                        Coldness = -60f;
                         GameObject Matches = Instantiate(EffectPrefab) as GameObject;
                         Matches.transform.position = this.transform.position;
                         Matches.GetComponent<EffectScript>().EffectName = "Matches";
@@ -3648,7 +3650,7 @@ public class PlayerScript : MonoBehaviour {
                     break;
                 case 30: case 33: case 37: case 39: case 63:
                             
-                        int[] LoadVariables = new int[] { 0, 0 };
+                        /*int[] LoadVariables = new int[] { 0, 0 };
                         if (Inventory[CurrentItemHeld].GetInt(JType.ID) == 30) {
                             LoadVariables = new int[] { 4, 16 };
                         } else if (Inventory[CurrentItemHeld].GetInt(JType.ID) == 37 || Inventory[CurrentItemHeld].GetInt(JType.ID) == 39) {
@@ -3700,7 +3702,7 @@ public class PlayerScript : MonoBehaviour {
                                 PlaySoundBank("GunEmpty", 1);
                                 BulletLoad -= 1;
                             }
-                        }
+                        }*/
 
                     break;
                 case 124:

@@ -115,6 +115,7 @@ public class ChestScript : MonoBehaviour {
                 doorOpening.x -= doorOpening.z * Time.deltaTime;
 
                 if (doorOpening.x > 0) {
+
                     if (prevDoor != Mathf.FloorToInt(doorOpening.x)) {
                         prevDoor = Mathf.FloorToInt(doorOpening.x);
                         pickCurve = Random.Range(0, openingCurve.Length);
@@ -130,6 +131,8 @@ public class ChestScript : MonoBehaviour {
                         Quaternion.Euler(currDoor.ClosedPosition),
                         openingCurve[pickCurve].Evaluate(doorOpening.x % 1f)
                     );
+
+                    GetPart(currDoor.transform).ToTrigger(true);
                 }
                 break;
         }
@@ -280,6 +283,7 @@ public class ChestScript : MonoBehaviour {
 
         if (ripOff) {
             part.ArmorGrade = 3;
+            part.ToTrigger(false);
 
             if (part.BreakSound != null && part.BreakSound.Length > 0) {
                 AudioSource breakSound = part.transform.GetComponent<AudioSource>();
@@ -335,6 +339,17 @@ public class ChestScript : MonoBehaviour {
         public AudioClip[] BreakSound;
         public int ArmorGrade = 0;
         public bool IsAlsoDoor;
+
+        public void ToTrigger (bool toTrigger) {
+            if (toTrigger == isTrigger)
+                return;
+
+            if (transform.TryGetComponent<Collider>(out Collider col)) {
+                col.isTrigger = toTrigger;
+                isTrigger = toTrigger;
+            }
+        }
+        bool isTrigger = false;
     }
 
     [System.Serializable]

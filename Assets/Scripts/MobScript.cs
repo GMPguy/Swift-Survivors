@@ -1197,7 +1197,7 @@ public class MobScript : MonoBehaviour {
                             Alerted.GetComponent<MobScript>().AiTarget = Aggresor;
                             Alerted.GetComponent<MobScript>().AiMovePosition = transform.position;
                             if (TypeOfMob == 3f && Aggresor.tag == "Player") {
-                                Alerted.GetComponent<MobScript>().MobColor = new Color32(255, 0, 0, 255);
+                                Alerted.GetComponent<MobScript>().ChangeMobColor(new Color32(255, 0, 0, 255));
                             }
                         } else if (Alerted.GetComponent<MobScript>().TypeOfMob == TypeOfMob && Alerted != this.gameObject && Vector3.Distance(Alerted.transform.position, this.transform.position) < 25f && Aggresor != null && Alerted.GetComponent<MobScript>().Panic <= 0f) {
                             Alerted.GetComponent<MobScript>().Angered = 10f;
@@ -1205,7 +1205,7 @@ public class MobScript : MonoBehaviour {
                             Alerted.GetComponent<MobScript>().AiTarget = Aggresor;
                             Alerted.GetComponent<MobScript>().AiMovePosition = transform.position;
                             if (TypeOfMob == 3f && Aggresor.tag == "Player") {
-                                Alerted.GetComponent<MobScript>().MobColor = new Color32(255, 0, 0, 255);
+                                Alerted.GetComponent<MobScript>().ChangeMobColor(new Color32(255, 0, 0, 255));
                             }
                         }
                     }

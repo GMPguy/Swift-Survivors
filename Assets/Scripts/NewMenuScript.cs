@@ -109,7 +109,7 @@ public class NewMenuScript : MonoBehaviour {
     public GameObject improvNMPMbutton;
     public string[] PMslots = {};
     public Sprite[] NMPMicons;
-    public Text WhatTabs;
+    public Text WhatTab, WhatTabs;
     // Player viewer
     public ButtonScript PVbox;
     public GameObject PVmodel;
@@ -639,8 +639,8 @@ public class NewMenuScript : MonoBehaviour {
                             "Default",
                             GS.SetString("ERROR", "BŁĄD"),
                             GS.SetString("You cannot delete a profile, if it's the only one you have!", "Nie możesz usunąć profilu, jeżeli jest jedynym jakiego posiadasz."),
-                            "OK",
-                            ""};
+                            "",
+                            "OK"};
                     }
                     break;
                 case "ExitGame":
@@ -709,8 +709,16 @@ public class NewMenuScript : MonoBehaviour {
                         "Default",
                         GS.GetSemiClass(Warning[1], "ti_"),
                         GS.GetSemiClass(Warning[1], "de_"),
-                        "OK",
-                        ""};
+                        "",
+                        "OK"};
+                    break;
+                case "NoHorde":
+                    WarningAddData = new string[]{
+                        "Default",
+                        GS.SetString("MODE NOT AVAILABLE", "TRYB NIE DOSTĘPNY"),
+                        GS.SetString("The Horde mode is not available for the public test - it is still being worked on", "Tryb Hordy jest nie dostępny w teście publicznym - jest w trakcie prac"),
+                        "",
+                        "OK"};
                     break;
             }
 
@@ -1128,7 +1136,7 @@ public class NewMenuScript : MonoBehaviour {
                     OptionInfos[0].text = GS.SetString("SOUNDS", "UDŹWIĘKOWIENIE"); 
                     break;
                 case "misc": 
-                    OptionOptions = new string[]{"LG", "LC", "HS", "", "goresettings", "RD" }; 
+                    OptionOptions = new string[]{"LG", "LC", "FC", "", "goresettings", "RD" }; 
                     OptionInfos[0].text = GS.SetString("MISC", "INNE"); 
                     break;
                 case "camera": 
@@ -1355,6 +1363,9 @@ public class NewMenuScript : MonoBehaviour {
                     case "RD": 
                         objVARS = new string[]{ GS.SetString("Ragdolls: ", "Ragdolle: "), GS.Ragdolls.ToString(), "" };
                         if(Clicked != 0) GS.Ragdolls = !GS.Ragdolls; break;
+                    case "FC": 
+                        objVARS = new string[]{GS.SetString("FPS cap: ", "Limit FPS: "), GS.FPScap == 0 ? GS.SetString("Uncapped", "Bez limitu") : GS.FPScap.ToString(), "" };
+                        if(Clicked != 0) GS.FPScap = (190 + (GS.FPScap + Clicked * 10))%190; break;
                     // misc
                     // controls
                     case "MS":
@@ -1512,10 +1523,9 @@ public class NewMenuScript : MonoBehaviour {
                         string[] GameModes = {GS.SetString("Classic", "Klasyczny"), GS.SetString("Horde", "Horda"), GS.SetString("Casual", "Swobodny")};
                         string[] DiffLevels = {GS.SetString("Easy", "Łatwy"), GS.SetString("Normal", "Normalny"), GS.SetString("Hard", "Trudny"), GS.SetString("Very hard", "Bardzo trudny"), GS.SetString("HARDCORE", "HARDKOROWY")};
                         int[] MD = {int.Parse(GS.GetSemiClass(GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "rs", "®"), "G", "?")), int.Parse(GS.GetSemiClass(GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "rs", "®"), "D", "?"))};
-                        PGdesc.text = GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "sn", "®") + GS.SetString("\nGame mode: ", "\nTryb gry:") + GameModes[MD[0]] + GS.SetString("\nDifficulty level: ", "\nPoziom trudności:") + DiffLevels[MD[1]-1];
+                        PGdesc.text = GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "sn", "®") + GS.SetString("\nGame mode: ", "\nTryb gry: ") + GameModes[MD[0]] + GS.SetString("\nDifficulty level: ", "\nPoziom trudności: ") + DiffLevels[MD[1]-1];
                     } else {
-                        //PGdesc.text = GS.SetString("Start a new game, or continue a saved one.", "Rozpocznij nową grę, albo kontynuuj którąś z zapisanych.");
-                        PGdesc.text = "Save file registry: " + PlayerPrefs.GetString("Saves");
+                        PGdesc.text = GS.SetString("Start a new game, or continue a saved one.", "Rozpocznij nową grę, albo kontynuuj którąś z zapisanych.");
                         PGdescButts[1].localScale = PGdescButts[2].localScale = Vector3.zero;
                         PGdescButts[0].localScale = Vector3.one;
                         PGdescButts[0].GetChild(0).GetComponent<Text>().text = GS.SetString("Back", "Wróć");
@@ -1644,25 +1654,31 @@ public class NewMenuScript : MonoBehaviour {
                     PGdescButts[2].GetChild(0).GetComponent<Text>().text = GS.SetString("START", "START");
                     if (PGdescButts[2].GetComponent<ButtonScript>().IsSelected && Input.GetMouseButtonDown(0)) {
                     
-                    
-                        // STARTING THE GAME, PREPARE THE VALUES
-                        GS.CurrentSave = Random.Range(10000, 99999);
-                        string RoundSetters = "" 
-                        + "G" + GMintegers[0].ToString() // Gamemode
-                        + "?D" + (GMintegers[1]+1).ToString() // Difflevel
-                        ;
+                        if (GMintegers[0] != 1) {
 
-                        if (GMintegers[2] == 0) RoundSetters += "?P" + PS.ProfileID.ToString();
-                        else RoundSetters += "?P1";
+                            // STARTING THE GAME, PREPARE THE VALUES
+                            GS.CurrentSave = Random.Range(10000, 99999);
+                            string RoundSetters = "" 
+                            + "G" + GMintegers[0].ToString() // Gamemode
+                            + "?D" + (GMintegers[1]+1).ToString() // Difflevel
+                            ;
 
-                        if(GMintegers[0] == 1) RoundSetters += "?H" + GMintegers[3].ToString(); // Horde map
-                        
-                        GS.SaveFileName = GMstringers[0];
-                        GS.FileSeed = GMintegers[4];
-                        GS.RoundSetting = RoundSetters;
+                            if (GMintegers[2] == 0) RoundSetters += "?P" + PS.ProfileID.ToString();
+                            else RoundSetters += "?P1";
 
-                        LoadingTime = Random.Range(1f, 3f);
-                        AfterLoading = "f_StartGame";
+                            if(GMintegers[0] == 1) RoundSetters += "?H" + GMintegers[3].ToString(); // Horde map
+                            
+                            GS.SaveFileName = GMstringers[0];
+                            GS.FileSeed = GMintegers[4];
+                            GS.RoundSetting = RoundSetters;
+
+                            LoadingTime = Random.Range(1f, 3f);
+                            AfterLoading = "f_StartGame";
+
+                        } else {
+                            // TODO: horde mode temp disabled
+                            Warning = new [] {"NoHorde", ""};
+                        }
                     
                     }
                     break;

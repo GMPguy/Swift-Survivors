@@ -19,6 +19,7 @@ public class BeforeMenuScript : MonoBehaviour {
     public Image DisclaimerImage;
     public Text DisclaimerText;
     public Text DisclaimerContinue;
+    public Sprite[] DisclaimerImages;
 
     // While setup up
     public Transform SetupWindow;
@@ -102,6 +103,19 @@ public class BeforeMenuScript : MonoBehaviour {
 
             DisclaimerWindow.position = Vector3.Lerp(ShowHideAnchors[1].position, ShowHideAnchors[0].position, TimeSinceChange * 2f);
             DisclaimerText.color = DisclaimerImage.color = new (1f, 1f, 1f, Mathf.Lerp(-3f, 1f, TimeSinceChange * 2f));
+
+            string findDisclaimerImage = State switch {
+                0 => GS.Language + "-Warning",
+                2 => "PlayTestWarning",
+                _ => ""
+            };
+
+            if (DisclaimerImage.sprite == null || DisclaimerImage.sprite.name != findDisclaimerImage)
+                for (int i = 0; i < DisclaimerImages.Length; i++)
+                    if (DisclaimerImages[i].name == findDisclaimerImage) {
+                        DisclaimerImage.sprite = DisclaimerImages[i];
+                        break;
+                    }
 
             DisclaimerText.text = State switch {
                 0 => GS.SetString(
