@@ -174,9 +174,9 @@ public class MobPH : MonoBehaviour {
                             Transform subtran = SubOrdinates[killfa].transform;
                             subsalive = true;
                             if (Random.Range(0f, 1f) >= 0.8f) {
-                                RS.Attack(new string[]{"MosinNagant"}, subtran.position + Vector3.up*1.5f, Vector3.down);
+                                RS.Attack(new string[]{"MosinNagant", "IsSilenced"}, subtran.position + Vector3.up*1.5f, Vector3.down);
                             } else {
-                                RS.Attack(new string[]{"SaphireSpear"}, subtran.position + Vector3.up*1.5f, Vector3.down);
+                                RS.Attack(new string[]{"SaphireSpear", "IsSilenced"}, subtran.position + Vector3.up*1.5f, Vector3.down);
                             }
                         }
                         if (!subsalive) Destroy(this.gameObject);

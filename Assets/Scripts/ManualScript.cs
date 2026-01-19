@@ -130,7 +130,7 @@ public class ManualScript : MonoBehaviour
                 else return "";
             case "Intro":
                 if(What == 0) return GS.SetString("Introduction", "Wprowadzenie"); 
-                else if (What == 1) return GS.SetString("Welcome to the ''Survival Manual'' - this booklet contains all the information you'll need, in order to not die as fast.\n\nThis booklet will be automatically opened, should you press ESC button, when a hint appears.", "Witamy w ''Podręczniku Przetrwania'' - ta książeczka posiada wszystkie informacje, które pozwolą ci przeżyć trochę dłużej.\n\nTa książeczka automatycznie się otworzy, jak naciśniesz ESC, podczas pojawienia się podpowiedzi."); 
+                else if (What == 1) return GS.SetString("Welcome to the ''Survival Manual'' - this booklet contains all the information you'll need, in order to not die as fast.\n\nEDIT: After two years since it's implementation, I think all the text inside needs to be rewritten. Visuals will probably also be slightly improved", "Witamy w ''Podręczniku Przetrwania'' - ta książeczka posiada wszystkie informacje, które pozwolą ci przeżyć trochę dłużej.\n\nEDIT: Wydaje mi się, że cały tekst powinien zostać napisany jeszcze raz. Wizualia pewnie też powinny zostać lekko podrasowane"); 
                 else return "";
             case "Mechanics":
                 if(What == 0) return GS.SetString("Mechanics", "Mechaniki"); 

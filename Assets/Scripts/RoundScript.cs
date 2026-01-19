@@ -288,11 +288,11 @@ public class RoundScript : MonoBehaviour {
                     currentMobPHscan = (currentMobPHscan+1) % MobPHeses.Length;
                 }
             }
-            if(Input.GetKey(KeyCode.T)){
+            /*if(Input.GetKey(KeyCode.T)){
                 TimeOfDay[1] += 1;
                 if(TimeOfDay[1] > 1440) TimeOfDay[1] = 0; 
                 if(GS.SkyboxType == 2) AmbientSet("Normal");
-            }
+            }*/
 
             if (RoundState == "Prepeare" && DonePrepare != -1) {
 
@@ -1715,11 +1715,32 @@ public class RoundScript : MonoBehaviour {
 
     }
 
-    public GameObject GetItemModel (string ItemID) {
+    public GameObject GetItemModel (string ItemID, JClass additionalData = default) {
         
         for (int gi = 0; gi < ItemBank.childCount; gi++)
             if (ItemBank.GetChild(gi).name == ItemID) {
                 GameObject newObject = GameObject.Instantiate(ItemBank.GetChild(gi).gameObject);
+
+                if (additionalData != default) {
+                    if (additionalData.Exists(JType.Attachment)) {
+                        int attachment = additionalData.GetInt(JType.Attachment);
+                        foreach (Transform Attachment in newObject.transform.GetChild(0)) {
+                            if (Attachment.name == attachment.ToString()) {
+                                Attachment.gameObject.SetActive(true);
+                                if (Attachment.GetComponent<MeshRenderer>() != null) {
+                                    foreach (Material GetMat in Attachment.GetComponent<MeshRenderer>().materials) {
+                                        if (GetMat.name == "LASER (Instance)") {
+                                            GetMat.color = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().LaserColor;
+                                        }
+                                    }
+                                }
+                            } else {
+                                Attachment.gameObject.SetActive(false);
+                            }
+                        }
+                    }
+                }
+
                 return newObject;
             }
         

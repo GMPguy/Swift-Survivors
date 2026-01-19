@@ -902,7 +902,7 @@ MonoBehaviour:
     - rid: 5346892412458631175
       type: {class: JInt, ns: , asm: Assembly-CSharp}
       data:
-        Name: 0
+        Name: 1
         Value: 999
 --- !u!65 &3523603302572928066
 BoxCollider:

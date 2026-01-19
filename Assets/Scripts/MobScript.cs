@@ -21,7 +21,7 @@ public class MobScript : MonoBehaviour {
     public float AttackRange = 1f;
     public float AttackCooldown = 1f;
     public string AttackType = "";
-    public string ItemHeld = "";
+    public JClass ItemHeld;
     public float[] DetectionRange;
     public float[] MovementSpeed;
     public GameObject MoveDir;
@@ -230,7 +230,7 @@ public class MobScript : MonoBehaviour {
                     case 1: case 8:
                         AttackRange = 1.5f;
                         AttackType = "Machete";
-                        ItemHeld = "27";
+                        ItemHeld = GS.ItemCache[27].startVariables;
                         WeaponToDrop = 27;
                         AttackCooldown = 0.5f;
                         AnimationSet = "HumanoidMelee";
@@ -238,7 +238,7 @@ public class MobScript : MonoBehaviour {
                     case 2:
                         AttackRange = 1.5f;
                         AttackType = "BaseballBat";
-                        ItemHeld = "28";
+                        ItemHeld = GS.ItemCache[28].startVariables;
                         WeaponToDrop = 28;
                         AttackCooldown = 0.75f;
                         AnimationSet = "HumanoidMelee";
@@ -246,7 +246,7 @@ public class MobScript : MonoBehaviour {
                     case 3:
                         AttackRange = 25f;
                         AttackType = "Luger";
-                        ItemHeld = "31";
+                        ItemHeld = GS.ItemCache[31].startVariables;
                         WeaponToDrop = 31;
                         AttackCooldown = 0.25f;
                         Ammo = new int[] { 8, 8 };
@@ -255,7 +255,7 @@ public class MobScript : MonoBehaviour {
                     case 4:
                         AttackRange = 15f;
                         AttackType = "DBShotgun";
-                        ItemHeld = "35";
+                        ItemHeld = GS.ItemCache[35].startVariables;
                         WeaponToDrop = 35;
                         AttackCooldown = 1f;
                         Ammo = new int[] { 2, 2 };
@@ -265,7 +265,7 @@ public class MobScript : MonoBehaviour {
                     case 5:
                         AttackRange = 25f;
                         AttackType = "Sten";
-                        ItemHeld = "55";
+                        ItemHeld = GS.ItemCache[55].startVariables;
                         WeaponToDrop = 55;
                         AttackCooldown = 0.075f;
                         Ammo = new int[] { 32, 32 };
@@ -275,7 +275,7 @@ public class MobScript : MonoBehaviour {
                     case 6:
                         AttackRange = 25f;
                         AttackType = "AK-47";
-                        ItemHeld = "38";
+                        ItemHeld = GS.ItemCache[38].startVariables;
                         WeaponToDrop = 38;
                         AttackCooldown = 0.1f;
                         Ammo = new int[] { 30, 30 };
@@ -285,7 +285,7 @@ public class MobScript : MonoBehaviour {
                     case 7:
                         AttackRange = 100f;
                         AttackType = "HunterRifle";
-                        ItemHeld = "34";
+                        ItemHeld = GS.ItemCache[34].startVariables;
                         WeaponToDrop = 34;
                         AttackCooldown = 1f;
                         Ammo = new int[] { 5, 5 };
@@ -318,7 +318,7 @@ public class MobScript : MonoBehaviour {
                     case 1: case 9:
                         AttackRange = 1.5f;
                         AttackType = "Knife";
-                        ItemHeld = "14";
+                        ItemHeld = GS.ItemCache[14].startVariables;
                         WeaponToDrop = 14;
                         AttackCooldown = 0.5f;
                         AnimationSet = "HumanoidMelee";
@@ -326,7 +326,7 @@ public class MobScript : MonoBehaviour {
                     case 2:
                         AttackRange = 25f;
                         AttackType = "Colt";
-                        ItemHeld = "29";
+                        ItemHeld = GS.ItemCache[29].startVariables;
                         WeaponToDrop = 29;
                         AttackCooldown = 0.25f;
                         Ammo = new int[] { 7, 7 };
@@ -335,7 +335,7 @@ public class MobScript : MonoBehaviour {
                     case 3:
                         AttackRange = 15f;
                         AttackType = "Thompson";
-                        ItemHeld = "36";
+                        ItemHeld = GS.ItemCache[36].startVariables;
                         WeaponToDrop = 36;
                         AttackCooldown = 0.075f;
                         Ammo = new int[] { 30, 30 };
@@ -345,7 +345,7 @@ public class MobScript : MonoBehaviour {
                     case 4:
                         AttackRange = 100f;
                         AttackType = "HunterRifle";
-                        ItemHeld = "34";
+                        ItemHeld = GS.ItemCache[34].startVariables;
                         WeaponToDrop = 34;
                         AttackCooldown = 1f;
                         Ammo = new int[] { 5, 5 };
@@ -354,7 +354,7 @@ public class MobScript : MonoBehaviour {
                     case 5:
                         AttackRange = 100f;
                         AttackType = "Garand";
-                        ItemHeld = "56";
+                        ItemHeld = GS.ItemCache[56].startVariables;
                         WeaponToDrop = 56;
                         AttackCooldown = 0.25f;
                         Ammo = new int[] { 8, 8 };
@@ -363,7 +363,7 @@ public class MobScript : MonoBehaviour {
                     case 6:
                         AttackRange = 15f;
                         AttackType = "Uzi";
-                        ItemHeld = "58";
+                        ItemHeld = GS.ItemCache[58].startVariables;
                         WeaponToDrop = 58;
                         AttackCooldown = 0.075f;
                         Ammo = new int[] { 30, 30 };
@@ -373,7 +373,7 @@ public class MobScript : MonoBehaviour {
                     case 7:
                         AttackRange = 25f;
                         AttackType = "G3";
-                        ItemHeld = "59";
+                        ItemHeld = GS.ItemCache[59].startVariables;
                         WeaponToDrop = 59;
                         AttackCooldown = 0.1f;
                         Ammo = new int[] { 20, 20 };
@@ -382,7 +382,7 @@ public class MobScript : MonoBehaviour {
                     case 8:
                         AttackRange = 10f;
                         AttackType = "Arrow";
-                        ItemHeld = "69";
+                        ItemHeld = GS.ItemCache[69].startVariables;
                         WeaponToDrop = 69;
                         AttackCooldown = 1f;
                         AnimationSet = "HumanoidMelee";
@@ -507,7 +507,7 @@ public class MobScript : MonoBehaviour {
                     case 1: case 7:
                         AttackRange = 25f;
                         AttackType = "Revolver";
-                        ItemHeld = "32";
+                        ItemHeld = GS.ItemCache[32].startVariables;
                         WeaponToDrop = 32;
                         AttackCooldown = 1f;
                         Ammo = new int[] { 6, 6 };
@@ -516,7 +516,7 @@ public class MobScript : MonoBehaviour {
                     case 2:
                         AttackRange = 25f;
                         AttackType = "Shotgun";
-                        ItemHeld = "40";
+                        ItemHeld = GS.ItemCache[40].startVariables;
                         WeaponToDrop = 40;
                         AttackCooldown = 1.5f;
                         Ammo = new int[] { 6, 6 };
@@ -526,7 +526,7 @@ public class MobScript : MonoBehaviour {
                     case 3:
                         AttackRange = 12f;
                         AttackType = "MP5";
-                        ItemHeld = "41";
+                        ItemHeld = GS.ItemCache[41].startVariables;
                         WeaponToDrop = 41;
                         AttackCooldown = 0.05f;
                         Ammo = new int[] { 30, 30 };
@@ -536,7 +536,7 @@ public class MobScript : MonoBehaviour {
                     case 4:
                         AttackRange = 15f;
                         AttackType = "M4";
-                        ItemHeld = "42";
+                        ItemHeld = GS.ItemCache[42].startVariables;
                         WeaponToDrop = 42;
                         AttackCooldown = 0.1f;
                         Ammo = new int[] { 30, 30 };
@@ -546,7 +546,7 @@ public class MobScript : MonoBehaviour {
                     case 5:
                         AttackRange = 25f;
                         AttackType = "Famas";
-                        ItemHeld = "57";
+                        ItemHeld = GS.ItemCache[57].startVariables;
                         WeaponToDrop = 57;
                         AttackCooldown = 0.1f;
                         Ammo = new int[] { 25, 25 };
@@ -556,7 +556,7 @@ public class MobScript : MonoBehaviour {
                     case 6:
                         AttackRange = 25f;
                         AttackType = "Scar";
-                        ItemHeld = "60";
+                        ItemHeld = GS.ItemCache[60].startVariables;
                         WeaponToDrop = 60;
                         AttackCooldown = 0.1f;
                         Ammo = new int[] { 25, 25 };
@@ -681,7 +681,7 @@ public class MobScript : MonoBehaviour {
                     case 1: case 5:
                         AttackRange = 1.5f;
                         AttackType = "FireAxe";
-                        ItemHeld = "16";
+                        ItemHeld = GS.ItemCache[16].startVariables;
                         WeaponToDrop = 16;
                         AttackCooldown = 0.75f;
                         AnimationSet = "Mutant";
@@ -689,7 +689,7 @@ public class MobScript : MonoBehaviour {
                     case 2:
                         AttackRange = 1.5f;
                         AttackType = "Knife";
-                        ItemHeld = "14";
+                        ItemHeld = GS.ItemCache[14].startVariables;
                         WeaponToDrop = 14;
                         AttackCooldown = 0.5f;
                         AnimationSet = "Mutant";
@@ -697,7 +697,7 @@ public class MobScript : MonoBehaviour {
                     case 3:
                         AttackRange = 10f;
                         AttackType = "Arrow";
-                        ItemHeld = "69";
+                        ItemHeld = GS.ItemCache[69].startVariables;
                         WeaponToDrop = 69;
                         AttackCooldown = 1f;
                         AnimationSet = "Mutant";
@@ -705,7 +705,7 @@ public class MobScript : MonoBehaviour {
                     case 4:
                         AttackRange = 25f;
                         AttackType = "Colt";
-                        ItemHeld = "29";
+                        ItemHeld = GS.ItemCache[29].startVariables;
                         WeaponToDrop = 29;
                         AttackCooldown = 0.5f;
                         Ammo = new int[] { 7, 7 };
@@ -765,8 +765,8 @@ public class MobScript : MonoBehaviour {
                                     GetHat.gameObject.SetActive(false);
                                 }
                             }
-                        } else if (FoundBodyPart.name == "Tools" && ItemHeld != "") {
-                            Transform newItem = RS.GetItemModel(ItemHeld).transform;
+                        } else if (FoundBodyPart.name == "Tools" && ItemHeld != null && ItemHeld.GetInt(JType.ID) > 0) {
+                            Transform newItem = RS.GetItemModel(ItemHeld.GetInt(JType.ID).ToString(), ItemHeld).transform;
                             newItem.SetParent(FoundBodyPart);
                             newItem.localPosition = Vector3.zero;
                             newItem.localEulerAngles = newItem.eulerAngles;

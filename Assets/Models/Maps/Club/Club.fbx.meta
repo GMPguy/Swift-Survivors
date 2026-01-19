@@ -1,39 +1,95 @@
 fileFormatVersion: 2
 guid: a58c9da3cf35ddf4595b0e59cbd5c993
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
-    2100000: Club4
-    2100002: Club5
-    2100004: Club7
-    2100006: Club6
-    2100008: Club13
-    2100010: Club8
-    2100012: Club9
-    2100014: DiscoLights1
-    2100016: Club18
-    2100018: Club14
-    2100020: Club3
-    2100022: Club12
-    2100024: Club1
-    2100026: Club2
-    2100028: Club10
-    2100030: Club11
-    2100032: DiscoLights4
-    2100034: DiscoLights3
-    2100036: DiscoLights2
-    2100038: Club20
-    2100040: Club15
-    2100042: Club16
-    2100044: Club17
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Club
+  serializedVersion: 22200
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      21: 2100000
+    second: Club4
+  - first:
+      21: 2100002
+    second: Club5
+  - first:
+      21: 2100004
+    second: Club7
+  - first:
+      21: 2100006
+    second: Club6
+  - first:
+      21: 2100008
+    second: Club13
+  - first:
+      21: 2100010
+    second: Club8
+  - first:
+      21: 2100012
+    second: Club9
+  - first:
+      21: 2100014
+    second: DiscoLights1
+  - first:
+      21: 2100016
+    second: Club18
+  - first:
+      21: 2100018
+    second: Club14
+  - first:
+      21: 2100020
+    second: Club3
+  - first:
+      21: 2100022
+    second: Club12
+  - first:
+      21: 2100024
+    second: Club1
+  - first:
+      21: 2100026
+    second: Club2
+  - first:
+      21: 2100028
+    second: Club10
+  - first:
+      21: 2100030
+    second: Club11
+  - first:
+      21: 2100032
+    second: DiscoLights4
+  - first:
+      21: 2100034
+    second: DiscoLights3
+  - first:
+      21: 2100036
+    second: DiscoLights2
+  - first:
+      21: 2100038
+    second: Club20
+  - first:
+      21: 2100040
+    second: Club15
+  - first:
+      21: 2100042
+    second: Club16
+  - first:
+      21: 2100044
+    second: Club17
+  - first:
+      23: 2300000
+    second: //RootNode
+  - first:
+      33: 3300000
+    second: //RootNode
+  - first:
+      43: 4300000
+    second: Club
   externalObjects: {}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 1
     materialSearch: 1
     materialLocation: 0
@@ -42,6 +98,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -65,34 +122,49 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 0
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -102,13 +174,19 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 0
   humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

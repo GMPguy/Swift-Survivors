@@ -247,7 +247,6 @@ public class LandScript : MonoBehaviour {
                     NavmeshBake = true;
                 } else {
                     Generated = true;
-                    Debug.Log("The world has been activated");
                 }
 
             } else {
@@ -710,20 +709,12 @@ public class LandScript : MonoBehaviour {
                 for (int c = 0; c < Norms.Length; c++)
                     normal += Norms[c];
                 normal = normal.normalized;
-
-                for (int dl = 0; dl < 4; dl++)
-                    Debug.DrawLine(Verts[dl], point, Color.cyan, 9999f);
-                
-                Debug.DrawRay(point, normal * 1f, Color.cyan, 9999f);
                 break;
             case 3:
                 Vector3 diff =  Verts[0] - Verts[1];
 
                 normal = -Vector3.Cross(diff, Vector3.right + Vector3.back);
                 point = Vector3.Lerp(Verts[0], Verts[1], .5f);
-
-                Debug.DrawLine(Verts[0], Verts[1], Color.magenta, 9999f);
-                Debug.DrawRay(point, normal * 1f, Color.magenta, 9999f);
                 break;
         }
 

@@ -16,16 +16,24 @@ public class ButtonScript : MonoBehaviour {
     public AudioSource ClickSound;
     Vector3 originalScale;
     Image TheImage;
+    Text TheText;
     Color OrgColor;
     Outline TheOut;
     // Variables
 
     void Start() {
         originalScale = this.transform.localScale;
+
         if(this.GetComponent<Image>()) {
             TheImage = this.GetComponent<Image>();
             OrgColor = TheImage.color;
         }
+
+        if(this.GetComponent<Text>()) {
+            TheText = this.GetComponent<Text>();
+            OrgColor = TheText.color;
+        }
+
         if(this.GetComponent<Outline>()) TheOut = this.GetComponent<Outline>();
         if(Effect == "NMPM-B") TheOut = this.transform.GetComponent<Outline>();
         else if(Effect == "NMPM") TheOut = this.transform.GetChild(0).GetComponent<Outline>();
@@ -52,6 +60,7 @@ public class ButtonScript : MonoBehaviour {
             switch(Effect){
                 case "Alpha": TheImage.color = new Color(TheImage.color.r, TheImage.color.g, TheImage.color.b, Mathf.Lerp(0.5f, 1f, SelectedLerp[0])); break;
                 case "Highlight": case "NMPM": case "NMPM-B": TheOut.effectColor = Color.Lerp(OrgColor, Color.white*0.8f, SelectedLerp[0]); break;
+                case "CreditButton": TheText.color = Color.Lerp(Color.white, Color.yellow, SelectedLerp[0]); break;
                 default: this.transform.localScale = Vector3.Lerp(originalScale, originalScale*SelectScale, SelectedLerp[0]); break;
             }
         }

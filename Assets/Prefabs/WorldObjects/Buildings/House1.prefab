@@ -48,12 +48,16 @@ MonoBehaviour:
   Special: HouseStuff
   NewStuffToSpawn:
   - 
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!65 &7078552233990063036
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -121,12 +125,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Doors
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1290440283570394, guid: 2289d9dd8a0faa744b238b8a61146ddf,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &6924064754600613404
 GameObject:
   m_ObjectHideFlags: 0
@@ -209,12 +217,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Chests_BigKitchen
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1823309744821960283, guid: c7d0af915eaf9484f8ae62d6fd497e35,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &8711391832432403074
 GameObject:
   m_ObjectHideFlags: 0
@@ -261,12 +273,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Special: Chests_BigLivingroom
   NewStuffToSpawn: []
+  theNewStuffToSpawn: []
   Chance: []
   Freeze: 0
   GS: {fileID: 0}
   ObjectToSpawn: {fileID: 1823309744821960283, guid: c7d0af915eaf9484f8ae62d6fd497e35,
     type: 3}
   RS: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &4544042946862361706
 PrefabInstance:
   m_ObjectHideFlags: 0

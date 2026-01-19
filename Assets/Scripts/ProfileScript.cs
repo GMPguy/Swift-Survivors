@@ -74,8 +74,8 @@ public class ProfileScript : MonoBehaviour{
     }
 
     void Update(){
-        if(Time.timeSinceLevelLoad > 3600f && !hasAch("Ach_Hour")) AchProg("Ach_Hour", "0");
-        if(Input.GetKeyDown(KeyCode.L)) GitExp(Exp[2]-Exp[1]);
+        if(Time.timeSinceLevelLoad > 3600f && !hasAch("Ach_Hour")) 
+            AchProg("Ach_Hour", "0");
     }
 
     public void GitExp(int HowMuch){
@@ -154,11 +154,11 @@ public class ProfileScript : MonoBehaviour{
             default: // Load or delete profile of ID
                 if(What < 0){
 
-                    print("Removing profile of id " + What.ToString());
                     string RemainingData = "";
                     for (int AddOld = 0; AddOld < PrevProfs.Length; AddOld++) 
                         if (GS.GetSemiClass(PrevProfs[AddOld], "ID_", "®") != Mathf.Abs(What).ToString()) 
                             RemainingData += PrevProfs[AddOld] + "©";
+
                     PlayerPrefs.SetString("ProfileSaves", RemainingData);
 
                 } else {

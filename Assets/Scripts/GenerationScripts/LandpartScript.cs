@@ -55,7 +55,6 @@ public class LandpartScript : MonoBehaviour {
                 int first = (int)randome;
                 int second = (first + 1) % LandHeight.Length;
                 this.transform.position += Vector3.up * Mathf.Lerp(LandHeight[first], LandHeight[second], randome % 1f);
-                Debug.Log($"Randome {randome}, first {first} second {second}, mod {randome % 1f}");
             }
 
         // Set rotations

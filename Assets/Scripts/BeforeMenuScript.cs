@@ -82,7 +82,7 @@ public class BeforeMenuScript : MonoBehaviour {
             case 4:
                 if (PlayerPrefs.HasKey("FirstLogin")) {
                     NewMenuScript.LoadingAdditionalInfo = "";
-                    GS.ChangeLevel("BackToMenu");
+                    GS.ChangeLevel("BootMenu");
                 }
                 
                 WhileDisclaimer();
@@ -119,12 +119,12 @@ public class BeforeMenuScript : MonoBehaviour {
 
             DisclaimerText.text = State switch {
                 0 => GS.SetString(
-                    "Epilepsy – the game contains a small amount of flashing lights, which might cause seizures to some people with certain health problems\n\nImitation – this game is not realistic at all; attempting to imitate in-game behaviors in real life, might cause injuries or even death\n\nMaturity – the game should not be played by kids under 16, as it contains cartoonish violence, crude language, and use of light drugs\n\nViewer discretion is advised",
-                    "Epilepsja – gra posiada małą ilość błyskotliwych świateł, które mogą wywoływać padaczki u osób, z pewnymi problemami zdrowotnymi\n\nImitacja – gra nie jest w żadnym stopniu realistyczna; próba naśladowania zachowań z gry w życiu prawdziwym, może zagrażać życiu lub zdrowiu\n\nWiek – osoby poniżej 16 roku życia nie powinny grać w tę grę, gdyż posiada przemoc, wulgarny język, oraz wykorzystanie lekkich używek\n\nGrasz na własną odpowiedzialność"
+                    "<b>Epilepsy</b> – the game contains a small amount of flashing lights, which might cause seizures to some people with certain health problems\n\n<b>Imitation</b> – this game is not realistic at all; attempting to imitate in-game behaviors in real life, might cause injuries or even death\n\n<b>Maturity</b> – the game should not be played by kids under 16, as it contains cartoonish violence, crude language, and use of light drugs\n\nViewer discretion is advised",
+                    "<b>Epilepsja</b> – gra posiada małą ilość błyskotliwych świateł, które mogą wywoływać padaczki u osób, z pewnymi problemami zdrowotnymi\n\n<b>Imitacja</b> – gra nie jest w żadnym stopniu realistyczna; próba naśladowania zachowań z gry w życiu prawdziwym, może zagrażać życiu lub zdrowiu\n\n<b>Wiek</b> – osoby poniżej 16 roku życia nie powinny grać w tę grę, gdyż posiada przemoc, wulgarny język, oraz wykorzystanie lekkich używek\n\nGrasz na własną odpowiedzialność"
                 ),
                 2 => GS.SetString(
-                    "You are about to participate in a public test, of the upcoming Update 1.4. The key word being, TEST, so be fully conscious of following points:\n\n- It’s still a work in progress, and it doesn’t have all of the planned content yet\n- There is still a lot of bugs, unfinished systems, and glitches\n- Your data will NOT be saved\n\nPlease report any of the encountered bugs here [TODO: INSERT DEVLOG LINK HERE]\nAdditional ideas and suggestions are welcome too!",
-                    "Zaraz weźmiesz udział w publicznym teście nadchodzącego Update 1.4. Słowo klucz, TEŚCIE, więc bądź świadom poniższych uwag:\n\n- W dalszym ciągu jest to work in progress, więc nie ma jeszcze całej planowanej zawartości\n- Jest jeszcze sporo bugów, niedokończonych systemów, oraz gliczy\n- Dane I postęp z gry NIE ZOSTANĄ zapisane\n\nProszę zgłaszać wszelkie napotkane usterki tutaj [TODO: INSERT DEVLOG LINK HERE]\nDodatkowe pomysły I sugestje również będą mile widziane!"
+                    "You are about to participate in a public test, of the upcoming Update 1.4. The key word being, TEST, so be fully conscious of following points:\n\n<b>WIP</b> - it’s still a work in progress, and it doesn’t have all of the planned content yet\n\n<b>Bugs</b> - there is still a lot of bugs, unfinished systems, poorly writen text, and glitches\n\n<b>Data</b> - your data will NOT be saved\n\nPlease report any of the encountered bugs on the game's main page, UNDER THE PUBLIC TEST ANNOUNCEMENT POST. Additional ideas and suggestions are welcome too!\n\nNew versions of the public test might appear within the following months.",
+                    "Zaraz weźmiesz udział w publicznym teście nadchodzącego Update 1.4. Słowo klucz, TEŚCIE, więc bądź świadom poniższych uwag:\n\n<b>WIP</b> - w dalszym ciągu jest to work in progress, więc nie ma jeszcze całej planowanej zawartości\n\n<b>Bugi</b> - jest jeszcze sporo bugów, niedokończonych systemów, kiepsko napisanego tekstu, oraz gliczy\n\n<b>Dane</b> - dane i postęp z gry NIE ZOSTANĄ zapisane\n\nProszę zgłaszać wszelkie napotkane usterki, NA STRONIE Z ZAPOWIEDZIĄ PUBLICZNEGO TESTU. Dodatkowe pomysły I sugestje również będą mile widziane!\n\nNowe wersje publicznego testu mogą się pojawić w ciągu kolejnych miesięcy."
                 ),
                 _ => ""  
             };
@@ -194,7 +194,9 @@ public class BeforeMenuScript : MonoBehaviour {
                 
                 if (SetupContinueButton.IsSelected) {
                     State = 3;
+
                     PlayerPrefs.SetString("FirstLogin", "yes");
+
                     GS.PS.Profilename = SetupProfileNameButton.text;
 
                     switch (GraphicsSettings) {

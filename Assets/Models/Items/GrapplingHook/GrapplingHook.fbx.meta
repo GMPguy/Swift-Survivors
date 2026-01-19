@@ -1,23 +1,53 @@
 fileFormatVersion: 2
 guid: 937a67c97b5b4454d8a84ed9e878b5dc
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: Hook
-    100004: Rope
-    400000: //RootNode
-    400002: Hook
-    400004: Rope
-    2100000: GrapplingHook3
-    2100002: GrapplingHook1
-    2100004: GrapplingHook2
-    2300000: Hook
-    2300002: Rope
-    3300000: Hook
-    3300002: Rope
-    4300000: Rope
-    4300002: Hook
+  serializedVersion: 22200
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: Hook
+  - first:
+      1: 100004
+    second: Rope
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: Hook
+  - first:
+      4: 400004
+    second: Rope
+  - first:
+      21: 2100000
+    second: GrapplingHook3
+  - first:
+      21: 2100002
+    second: GrapplingHook1
+  - first:
+      21: 2100004
+    second: GrapplingHook2
+  - first:
+      23: 2300000
+    second: Hook
+  - first:
+      23: 2300002
+    second: Rope
+  - first:
+      33: 3300000
+    second: Hook
+  - first:
+      33: 3300002
+    second: Rope
+  - first:
+      43: 4300000
+    second: Rope
+  - first:
+      43: 4300002
+    second: Hook
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -35,7 +65,7 @@ ModelImporter:
       name: GrapplingHook3
     second: {fileID: 2100000, guid: 4ab3cb2a04bdd0e4eb2b4044d2199767, type: 2}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 1
     materialSearch: 1
     materialLocation: 0
@@ -44,6 +74,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -67,34 +98,49 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 0
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -104,13 +150,19 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 0
   humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

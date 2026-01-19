@@ -1499,8 +1499,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c69d42a3607b18d4f939a9057d34bde5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Version: pt 0.1
-  Platform: 0
+  Version: PT 1.0
+  Platform: 1
   SaveFileName: 
   FileSeed: 0
   RoundSetting: G0?D2?P1
@@ -1557,6 +1557,7 @@ MonoBehaviour:
   PS: {fileID: 0}
   WindowToBootUp: 
   NewProfileName: 
+  CanSaveStuff: 1
   Earpiercing:
   - 0
   - 0

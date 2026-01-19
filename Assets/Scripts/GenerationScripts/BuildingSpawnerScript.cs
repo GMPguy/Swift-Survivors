@@ -12,6 +12,10 @@ public class BuildingSpawnerScript : MonoBehaviour {
     
     public void SpawnBuilding (float diff, Transform parent, Transform foward) {
 
+        // Disable gizmo
+        if (TryGetComponent<MeshRenderer>(out MeshRenderer mesh))
+            mesh.enabled = false;
+
         if (Random.value > ChanceOfResignation.Evaluate(diff)) {
 
             GameObject newBuilding;
@@ -31,6 +35,7 @@ public class BuildingSpawnerScript : MonoBehaviour {
             );
             newBuilding.transform.SetParent(parent);
             newBuilding.name = "OVER HERE";
+            newBuilding.transform.localScale = Vector3.one;
             
             // Set up material colors            
             WallColor = GenerateColor(WallColors);

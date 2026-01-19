@@ -106,7 +106,7 @@ public class ItemScript : MonoBehaviour {
         if(ID == "148" || ID == "149" || ID == "150" || ID == "151") 
             meshID = "Toolbox";
 
-        SelectedMesh = RS.GetItemModel(meshID);
+        SelectedMesh = RS.GetItemModel(meshID, Variables);
         SelectedMesh.transform.SetParent(this.transform);
 
         if(SelectedMesh.GetComponent<MeshFilter>() && State != 1){
@@ -157,25 +157,6 @@ public class ItemScript : MonoBehaviour {
 
         if (State == 2){
             this.GetComponent<Rigidbody>().velocity = ThrownDirection * ThrownVariables.x;
-        }
-
-        if (CanHaveAttachments == true) {
-            foreach (Transform Attachment in SelectedMesh.transform.GetChild(0)) {
-                if (Attachment.name == Variables.GetInt(JType.Attachment).ToString()) {
-                    Attachment.gameObject.SetActive(true);
-                    if (Attachment.GetComponent<MeshRenderer>() != null) {
-                        if (DroppedBy != null && DroppedBy == GameObject.FindGameObjectWithTag("Player")) {
-                            foreach (Material GetMat in Attachment.GetComponent<MeshRenderer>().materials) {
-                                if (GetMat.name == "LASER (Instance)") {
-                                    GetMat.color = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().LaserColor;
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    Attachment.gameObject.SetActive(false);
-                }
-            }
         }
 
     }

@@ -7,16 +7,18 @@ using Random=UnityEngine.Random;
 public class MenuSceneScript : MonoBehaviour {
     
     public string[] CurrentScene = {"Normal", ""}; // Current - to switch
+    string DelayedMusic;
     public float TimeSincePassed = 0f;
     public GameObject selectedScene;
+    public AudioSource[] Musics;
     public Transform MainCamera;
     public Transform[] CameraPoints;
     public Vector2 Cursor;
     float cursorShift, cursorRotation, Vignette = 0f;
     float fogDistance;
-    Color setPPColor;
     NewMenuScript NMS;
     GameScript GS;
+    bool flash;
 
     public Texture[] Skyboxes;
 
@@ -24,9 +26,17 @@ public class MenuSceneScript : MonoBehaviour {
         NMS = GameObject.FindObjectOfType<NewMenuScript>();
         GS = GameObject.Find("_GameScript").GetComponent<GameScript>();
 
-        if(GS.WindowToBootUp == "BootUp") ChangeScene("Main");
-        else if(GS.WindowToBootUp == "GameOver") ChangeScene("GameOver");
-        else ChangeScene("Main");
+        ChangeScene(GS.WindowToBootUp switch {
+            "BootUp" => "Main",
+            "GameOver" => "GameOver",
+            _ => "Main"
+        });
+
+        DelayedMusic = GS.WindowToBootUp switch {
+            "BootUp" => "MenuLooped",
+            "GameOver" => "GameOver",
+            _ => "MenuLooped"
+        };
     }
 
     void Update() {
@@ -35,6 +45,11 @@ public class MenuSceneScript : MonoBehaviour {
             Camera cam = MainCamera.GetComponent<Camera>();
             //GS.SetDrawDistance(cam, fogDistance);
             RenderSettings.fogEndDistance = fogDistance;
+
+            if (DelayedMusic != "") {
+                ChangeMusic(DelayedMusic);
+                DelayedMusic = "";
+            }
 
             if(CurrentScene[1] == ""){
                 if(CurrentScene[0] != ""){
@@ -54,11 +69,14 @@ public class MenuSceneScript : MonoBehaviour {
                                 TimeSincePassed/2f
                             );
 
-                        if(GS.ExistSemiClass(CameraPoints[0].name, "sc_Black")) 
-                            setPPColor = Color.Lerp(Color.black, setPPColor, TimeSincePassed/2f);
-                        else 
-                            setPPColor = new Color(0f,0f,0f);
-                        GS.PPColor = setPPColor;
+                        if(GS.ExistSemiClass(CameraPoints[0].name, "sc_Black"))
+                            if (!flash) {
+                                NMS.Flash(
+                                    new []{Color.black, Color.clear},
+                                    new []{2f, 2f}
+                                );
+                                flash = true;
+                            }
 
                     } else {
                         MainCamera.transform.position = CameraPoints[1].position + (CameraPoints[1].right*Cursor.x*cursorShift) + (CameraPoints[1].up*-Cursor.y*cursorShift);
@@ -83,14 +101,18 @@ public class MenuSceneScript : MonoBehaviour {
                         );
 
                     if(GS.ExistSemiClass(CameraPoints[2].name, "sc_Black")) 
-                        setPPColor = Color.Lerp(Color.black, setPPColor, TimeSincePassed);
-                    else 
-                        setPPColor = new Color(0f,0f,0f);
-                    GS.PPColor = setPPColor;
+                        if (!flash) {
+                            NMS.Flash(
+                                new []{Color.clear, Color.black},
+                                new []{1f, 1f}
+                            );
+                            flash = true;
+                        }
 
                 } else {
                     CurrentScene[0] = CurrentScene[1];
                     CurrentScene[1] = "";
+                    flash = false;
 
                     // Here's the code that sets up scene
                     foreach(Transform setScene in this.transform){
@@ -102,7 +124,8 @@ public class MenuSceneScript : MonoBehaviour {
                                 selectedScene.transform.GetChild(0).GetChild(1),
                                 selectedScene.transform.GetChild(0).GetChild(2)
                             };
-                        } else setScene.gameObject.SetActive(false);
+                        } else if (setScene.name != "MusicBox")
+                            setScene.gameObject.SetActive(false);
                     }
 
                     switch(CurrentScene[0]){
@@ -110,11 +133,11 @@ public class MenuSceneScript : MonoBehaviour {
                             GS.ContSaturTempInvi = new float[]{0f,0f,0f,0.25f};
                             cursorShift = 0f;
                             cursorRotation = 2f;
-                            setPPColor = Color.white;
+                            GS.PPColor = Color.white;
                             string[] types = new string[]{"Plains", "Forest", "Village", "Snow", "Sand", "Sea"};
-                            string MainSubType = types[(int)Random.Range(0f, 5.9f)];
+                            string MainSubType = "Snow";//types[(int)Random.Range(0f, 5.9f)];
 
-                            float Daytime = Mathf.Clamp(Random.Range(-1f, 2f), -1f, 1f);
+                            float Daytime = Random.Range(-1f, 1f);//Mathf.Clamp(Random.Range(-1f, 2f), -1f, 1f);
                             if(MainSubType == "Sand") {
                                 cam.backgroundColor = RenderSettings.ambientLight = new Color32(100, 100, 100, 255);
                                 Daytime = 0f;
@@ -183,7 +206,7 @@ public class MenuSceneScript : MonoBehaviour {
                         case "GameOver":
                             GS.ContSaturTempInvi = new float[]{0f,-100f,0f,0.75f};
                             RenderSettings.fogColor = Color.white;
-                            setPPColor = Color.white;
+                            GS.PPColor = Color.white;
                             fogDistance = 25f;
                             RenderSettings.ambientLight = Color.white / 10f;
                             break;
@@ -201,11 +224,21 @@ public class MenuSceneScript : MonoBehaviour {
         if (CurrentScene[1] == newScene)
             return;
 
+        flash = false;
         CurrentScene[1] = newScene;
+
         if(CurrentScene[0] != "")
             TimeSincePassed = 1f;
         else 
             TimeSincePassed = 0f;
+    }
+
+    public void ChangeMusic (string newMusic) {
+        foreach (AudioSource music in Musics)
+            if (music.name == newMusic && !music.isPlaying)
+                music.Play();
+            else if (music.name != newMusic && music.isPlaying)
+                music.Stop();
     }
 
 }

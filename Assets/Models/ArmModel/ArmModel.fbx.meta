@@ -1,47 +1,119 @@
 fileFormatVersion: 2
 guid: e45692c845eceb149bfc2c17cc9f2317
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: Arm
-    100002: //RootNode
-    100004: HandGrab
-    100006: HandHold
-    100008: HandOpen
-    100010: HandPoint
-    100012: HandSalute
-    400000: Arm
-    400002: //RootNode
-    400004: HandGrab
-    400006: HandHold
-    400008: HandOpen
-    400010: HandPoint
-    400012: HandSalute
-    2100000: Arm1
-    2100002: Arm2
-    2100004: Hand2
-    2100006: Hand1
-    2300000: Arm
-    2300002: HandGrab
-    2300004: HandHold
-    2300006: HandOpen
-    2300008: HandPoint
-    2300010: HandSalute
-    3300000: Arm
-    3300002: HandGrab
-    3300004: HandHold
-    3300006: HandOpen
-    3300008: HandPoint
-    3300010: HandSalute
-    4300000: Arm
-    4300002: HandPoint
-    4300004: HandGrab
-    4300006: HandOpen
-    4300008: HandHold
-    4300010: HandSalute
+  serializedVersion: 22200
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Arm
+  - first:
+      1: 100002
+    second: //RootNode
+  - first:
+      1: 100004
+    second: HandGrab
+  - first:
+      1: 100006
+    second: HandHold
+  - first:
+      1: 100008
+    second: HandOpen
+  - first:
+      1: 100010
+    second: HandPoint
+  - first:
+      1: 100012
+    second: HandSalute
+  - first:
+      4: 400000
+    second: Arm
+  - first:
+      4: 400002
+    second: //RootNode
+  - first:
+      4: 400004
+    second: HandGrab
+  - first:
+      4: 400006
+    second: HandHold
+  - first:
+      4: 400008
+    second: HandOpen
+  - first:
+      4: 400010
+    second: HandPoint
+  - first:
+      4: 400012
+    second: HandSalute
+  - first:
+      21: 2100000
+    second: Arm1
+  - first:
+      21: 2100002
+    second: Arm2
+  - first:
+      21: 2100004
+    second: Hand2
+  - first:
+      21: 2100006
+    second: Hand1
+  - first:
+      23: 2300000
+    second: Arm
+  - first:
+      23: 2300002
+    second: HandGrab
+  - first:
+      23: 2300004
+    second: HandHold
+  - first:
+      23: 2300006
+    second: HandOpen
+  - first:
+      23: 2300008
+    second: HandPoint
+  - first:
+      23: 2300010
+    second: HandSalute
+  - first:
+      33: 3300000
+    second: Arm
+  - first:
+      33: 3300002
+    second: HandGrab
+  - first:
+      33: 3300004
+    second: HandHold
+  - first:
+      33: 3300006
+    second: HandOpen
+  - first:
+      33: 3300008
+    second: HandPoint
+  - first:
+      33: 3300010
+    second: HandSalute
+  - first:
+      43: 4300000
+    second: Arm
+  - first:
+      43: 4300002
+    second: HandPoint
+  - first:
+      43: 4300004
+    second: HandGrab
+  - first:
+      43: 4300006
+    second: HandOpen
+  - first:
+      43: 4300008
+    second: HandHold
+  - first:
+      43: 4300010
+    second: HandSalute
   externalObjects: {}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 1
     materialSearch: 1
     materialLocation: 0
@@ -50,6 +122,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -73,34 +146,49 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 0
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -110,13 +198,19 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 0
   humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

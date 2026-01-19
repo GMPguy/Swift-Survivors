@@ -267,21 +267,39 @@ public class PlayerScript : MonoBehaviour {
         // Prepare buildings
 
         // Get spawn position
-        float nearest = 0f;
-        Vector3 theSP = new Vector3(
-            Random.Range(-15f, 15f), 0f, Random.Range(-15f, 15f)
-        );
+        for (int gp = 0; gp < 10; gp++) {
+            bool finalTry = gp == 9;
+            if (finalTry)
+                Debug.Log("Couldn't find a fair spawn point");
 
-        if (GS.GameModePrefab.x == 0) {
-            if (RS.SpawnPoints != null && RS.SpawnPoints.Count > 0)
-                foreach (Vector3 findSP in RS.SpawnPoints)
-                    if (Vector3.Distance(Vector3.zero, findSP) < nearest) {
-                        nearest = Vector3.Distance(Vector3.zero, findSP);
-                        theSP = findSP;
+            float nearest = 0f;
+            Vector3 theSP = new Vector3(
+                Random.Range(-15f, 15f), 0f, Random.Range(-15f, 15f)
+            );
+
+            if (GS.GameModePrefab.x == 0) {
+                if (RS.SpawnPoints != null && RS.SpawnPoints.Count > 0)
+                    foreach (Vector3 findSP in RS.SpawnPoints) {
+                        Vector3 frac = Vector3.up / 10f;
+                        bool colCheck = Physics.CheckCapsule(findSP + frac, findSP + (Vector3.up * 2f) - frac, .5f);
+
+                        if (Vector3.Distance(Vector3.zero, findSP) < nearest) {
+                            nearest = Vector3.Distance(Vector3.zero, findSP);
+                            theSP = findSP;
+                            break;
+                        }
                     }
-                
-            if (Physics.Raycast(theSP + (Vector3.up * 1000f), Vector3.down, out RaycastHit hit))
-                this.transform.position = hit.point + (Vector3.up / 10f);
+                    
+                if (Physics.Raycast(theSP + (Vector3.up * 1000f), Vector3.down, out RaycastHit hit)) {
+                    Vector3 frac = Vector3.up / 10f;
+                    bool colCheck = Physics.CheckCapsule(hit.point + frac, hit.point + (Vector3.up * 2f) - frac, .5f);
+
+                    if (finalTry || (Vector3.Angle(hit.normal, Vector3.up) < 15f && colCheck)) {
+                        this.transform.position = hit.point + (Vector3.up / 10f);
+                        break;
+                    }
+                }
+            }
         }
 
         // Get rewards and punishments
@@ -1009,10 +1027,12 @@ public class PlayerScript : MonoBehaviour {
 
             if ((InWater == true && Inventory[CurrentItemHeld].GetInt(JType.ID) != 87) || IsCrouching > 0f || Inventory[CurrentItemHeld].GetInt(JType.ID) == 998 || IsOpeningChest > 0f) {
                 SlowDown = 3;
-            } else if (ZoomValues[1] != ZoomValues[2] || BrokenBone == 1) {
+            } else if (ZoomValues[1] != ZoomValues[2]) {
                 SlowDown = 2;
             } else if (IsHS == true || RS.RoundState == "TealState") {
                 SlowDown = 1;
+            } else if (BrokenBone == 1) {
+                SlowDown = 4;
             } else {
                 SlowDown = 0;
             }
@@ -1030,7 +1050,6 @@ public class PlayerScript : MonoBehaviour {
                 // Prevent surfing
                 if (this.GetComponent<Rigidbody>().velocity.y > Jump.x) {
                     normalizeMidAir = new (1f, this.GetComponent<Rigidbody>().velocity.y);
-                    Debug.Log("Halt");
                     MoveDirNorm = -MoveDirNorm;
                 } else if (normalizeMidAir.x <= 0f) {
                     // Midair
@@ -1079,7 +1098,7 @@ public class PlayerScript : MonoBehaviour {
                 // Walking
 
                 // Jumping
-                if ((IsGrounded || this.GetComponent<Rigidbody>().velocity.magnitude <= 0f) && GS.ReceiveButtonPress("Jump", "Hold") > 0f && CheckStamina(25f, 1) && JumpCooldown <= 0f && SlowDown != 3) {
+                if ((IsGrounded || this.GetComponent<Rigidbody>().velocity.magnitude <= 0f) && GS.ReceiveButtonPress("Jump", "Hold") > 0f && CheckStamina(25f, 1) && JumpCooldown <= 0f && SlowDown is not 3 or 4) {
                     JumpCooldown = 1f;
                     StaminaDrain(25f);
                     this.transform.position += Vector3.up * 0.25f;
@@ -4228,8 +4247,6 @@ public class PlayerScript : MonoBehaviour {
     public void Buffs(string BuffsToSet){
     
         if (BuffsToSet != "") {
-
-            Debug.Log("Loaded - " + BuffsToSet);
 
                 string bleeding = GS.GetSemiClass(BuffsToSet, "Bl_");
                 if (bleeding != "")

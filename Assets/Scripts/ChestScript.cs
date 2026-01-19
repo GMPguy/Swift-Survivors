@@ -132,7 +132,8 @@ public class ChestScript : MonoBehaviour {
                         openingCurve[pickCurve].Evaluate(doorOpening.x % 1f)
                     );
 
-                    GetPart(currDoor.transform).ToTrigger(true);
+                    if (TryGetPart(currDoor.transform, out Part thePart))
+                        thePart.ToTrigger(true);
                 }
                 break;
         }
@@ -310,6 +311,11 @@ public class ChestScript : MonoBehaviour {
                     ), ForceMode.VelocityChange);
                 }
         }
+    }
+
+    bool TryGetPart (Transform target, out Part thePart) {
+        thePart = GetPart(target);
+        return thePart != null;
     }
 
     Part GetPart (Transform target) {

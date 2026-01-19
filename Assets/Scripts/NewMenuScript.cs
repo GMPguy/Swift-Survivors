@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System;
 using Random=UnityEngine.Random;
-using Unity.Mathematics;
+using System;
 
 public class NewMenuScript : MonoBehaviour {
 
@@ -25,6 +24,10 @@ public class NewMenuScript : MonoBehaviour {
     GameObject mainAnchor;
     public Image Logo;
     float LogoAlpha = 0f;
+    public Image FlashImage;
+    public Text VersionText;
+    Color[] FlashColors;
+    float[] FlashTimes = new []{0f, 1f};
     // Whiles
     // Loading
     public static string LoadingAdditionalInfo;
@@ -33,6 +36,9 @@ public class NewMenuScript : MonoBehaviour {
     public Transform LoadingWindow;
     public Text[] LoadingTextes;
     public Transform[] Clockthingys;
+    public Image LoadingBG;
+    public Sprite[] LoadingImages;
+    bool gug = false;
     float Spin = 1f;
     // Loading
     // While main
@@ -144,6 +150,7 @@ public class NewMenuScript : MonoBehaviour {
     public Image[] CreditBars;
     public Text CreditAnyKey;
     public Transform CreditsRoll;
+    bool setCredits = false;
     // while manual
     public Transform ManualWindow;
     public Transform ManualMain;
@@ -254,6 +261,12 @@ public class NewMenuScript : MonoBehaviour {
             PrevWindow[1] = PrevWindow[0];
             PrevWindow[0] = CurrentWindow;
             Swatched = true;
+        }
+
+        // Flash control
+        if (FlashTimes[0] > 0f) {
+            FlashTimes[0] -= Time.unscaledDeltaTime;
+            FlashImage.color = Color.Lerp(FlashColors[1], FlashColors[0], FlashTimes[0] / FlashTimes[1]);
         }
 
         // Displaying
@@ -441,6 +454,11 @@ public class NewMenuScript : MonoBehaviour {
 
         if(Show){
 
+            if (!gug) {
+                LoadingBG.sprite = LoadingImages[Random.Range(0, LoadingImages.Length)];
+                gug = true;
+            }
+
             LoadingWindow.position = SH[0].position;
 
             Clockthingys[0].eulerAngles = new Vector3(0f, 0f, Mathf.Sin(Time.timeSinceLevelLoad)*3f);
@@ -510,9 +528,10 @@ public class NewMenuScript : MonoBehaviour {
                         CurrentWindow = AfterLoading;
                         AfterLoading = "";
                         break;
-                    case "BootUp":
+                    case "BootMenu":
                         CurrentWindow = "Main";
                         AfterLoading = "";
+                        Warning = new []{"PTwarning", ""};
                         break;
                     default: AfterLoading = ""; break;
                 }
@@ -525,6 +544,8 @@ public class NewMenuScript : MonoBehaviour {
 
             Spin = 1f;
             LoadingWindow.position = SH[1].position;
+
+            gug = false;
 
         }
 
@@ -720,6 +741,14 @@ public class NewMenuScript : MonoBehaviour {
                         "",
                         "OK"};
                     break;
+                case "PTwarning":
+                    WarningAddData = new string[]{
+                        "Default",
+                        GS.SetString("WELCOME TO THE PUBLIC TEST!", "WITAMY W TEŚCIE PUBLICZNYM!"),
+                        GS.SetString("Hope you’ve read the warning at the beginning. If you have any feedback, feel free to post in on game’s main page.\n\nIf it’s your first time playing, you might want to use the ‘Survival Manual’. It was written a long time ago, and I was visibly tired when making it – but the information still might be of some use (note: I will rewrite the entirety of it, just not now).\n\nI think that’s all, enjoy the preview!", "Mam nadzieję że przeczytaliście ostrzeżenie. Jeżeli macie jakiś feedback, możecie go wysłać na stronie z grą.\n\nJeśli jest to wasz pierwszy raz, możecie użyć ‘Poradnika Przetrwania’. Został napisany szmat czasu temu, i widocznie byłem zmęczony w trakcie pracy – jednak informacje mogą się wciąż przydać (notka: napiszę całość od początku, tylko nie teraz).\n\nTo chyba wszystko, miłej zabawy!"),
+                        "",
+                        "OK"};
+                    break;
             }
 
             // Displaying warnings
@@ -887,6 +916,9 @@ public class NewMenuScript : MonoBehaviour {
     void WhileMain(bool Show = false){
 
         if(Show){
+            string[] platform = {"", " Desktop", " WebGL"};
+            VersionText.text = GS.Version + platform[GS.Platform];
+
             Main.position = Vector3.Lerp(Main.position, SH[0].position, 0.1f);
 
             LogoAlpha = Mathf.Clamp(LogoAlpha + 0.02f * (Time.unscaledDeltaTime*50f), 0f, 1f);
@@ -1079,9 +1111,11 @@ public class NewMenuScript : MonoBehaviour {
             }
 
         } else if (!Show && PrevWindow[1] == "Main") {
+            VersionText.text = "";
             Main.position = Vector3.Lerp(Main.position, SH[2].position, 0.025f);
             MessagesTray.localScale = Vector3.zero;
         } else {
+            VersionText.text = "";
             Main.position = SH[2].position;
             MessagesTray.localScale = Vector3.zero;
         }
@@ -2020,7 +2054,7 @@ public class NewMenuScript : MonoBehaviour {
                     if(n == "TotalScore" || n == "TotalRounds" || n == "TotalCasualScore" || n == "TotalCasualRounds" || n == "HighestScore" || n == "TotalWaves" || n == "MostWaves"|| n == "MostRounds" || n == "MostCasualRounds" || n == "LongestSurvivedTime" || n == "SurvivedTime") 
                         Main.Add(GS.GetStatName(ReadProfileStats[ps]));
                     else if (n == "MapDiscovered" && GS.ExistSemiClass(PS.Statistics, "TotalRounds_")) 
-                        Misc.Add(GS.SetString("Average map discovery: ", "Przeciętne zbadanie mapy: ") + (int.Parse(GS.GetStatName(ReadProfileStats[ps], 2)) / Mathf.Clamp(int.Parse(GS.GetSemiClass(PS.Statistics, "TotalRounds_")), 0, 9999) ).ToString() + "%" );
+                        Misc.Add(GS.SetString("Average map discovery: ", "Przeciętne zbadanie mapy: ") + (int.Parse(GS.GetStatName(ReadProfileStats[ps], 2)) / Mathf.Clamp(int.Parse(GS.GetSemiClass(PS.Statistics, "TotalRounds_")), 1, 9999) ).ToString() + "%" );
                     else 
                         Misc.Add(GS.GetStatName(ReadProfileStats[ps]));
                 }
@@ -2372,7 +2406,6 @@ public class NewMenuScript : MonoBehaviour {
                         if(Input.GetMouseButtonDown(0)){
                             Warning[0] = "NMPM_Achievement";
                             Warning[1] = ButtonData;
-                            print(Warning[0]);
                         }
                         break;
                     default: break;
@@ -2485,28 +2518,55 @@ public class NewMenuScript : MonoBehaviour {
         }
     }
 
+    public void Flash (Color[] newColor, float[] times) {
+        FlashTimes = times;
+        FlashColors = newColor;
+    }
+
     void WhileCredits (bool Showit = false) {
         if(Showit){
             CreditsWindow.position = SH[0].position;
+            bool buttonHeld = false;
 
-            if(CreditsRoll.GetChild(1).GetComponent<Text>().text == ""){
-                CreditAnyKey.text = GS.SetString("Press any key to return to menu", "Naciśnij dowolny przycisk by powrócić do menu");
-                CreditsRoll.GetChild(1).GetComponent<Text>().text = GS.SetString(
-                    "CREDITS\n\n\n\n\nCREATED BY\nGMPguy\n\n\nTOOLS USED\nUnity 2022\nAudacity\nGIMP\nBlender\n\n\n\nInitially created for Game Off 2019 game jam.\n\nIt was then later worked on and improved over the span of 3 years, into the version that you are now playing\n\n\n\nI know, it's kinda hard to notice.\n\nDon't do the same thing, and don't work that long on a niche passion project (of which your passion ran out a long time ago).\n\nThe final effect, as satisfying as it is, was not worth it.",
-                    "LISTA PŁAC\n\n\n\n\nSTWORZONE PRZEZ\nGMPguy\n\n\nUŻYTE NARZĘDZIA\nUnity 2022\nAudacity\nGIMP\nBlender\n\n\n\nGra początkowo stworzona na potrzeby Game Off 2019.\n\nPóźniej była ulepszana, w przeciągu 3 lat, do wersji w którą teraz grasz.\n\n\n\nWiem, trudno to zauważyć\n\nNie róbcie tego co ja, i nie pracujcie tyle czasu nad niszowym projektem pasji jak ta gra (zresztą pasję do tego straciłem lata temu).\n\nEfekt końcowy, o ile satysfakcjonujący, nie był tego wart."
-                );
+            CreditAnyKey.text = GS.SetString("Hold SPACE to fast forward\nPress any other key to return", "Przytrzymaj SPACJĘ by przyśpieszyć\nNaciśnij dowolny inny przycisk by powrócić do menu");
+
+            foreach (Transform getChild in CreditsRoll.transform) {
+                if (!setCredits && getChild.TryGetComponent<Text>(out Text text))
+                    text.text = getChild.name switch {
+                        "GameBy" => GS.SetString("<b>Game created by:</b>\nGMPguy", "<b>Gra stworzona przez:</b>\nGMPguy"),
+                        "ToolsUsed" => GS.SetString("<b>Tools used:</b>\nUnity\nGIMP\nBlender\nAudacity", "<b>Użyte narzędzia:</b>\nUnity\nGIMP\nBlender\nAudacity"),
+                        "MusicBy" => GS.SetString("<b>Music used:</b>", "<b>Użyta muzyka:</b>"),
+                        "SoundBy" => GS.SetString("<b>Additional sound effects:</b>", "<b>Dodatkowe efekty dźwiękowe:</b>"),
+                        "SendOff" => GS.SetString("Originally created for Game Off 2019", "Oryginalnie stworzone na potrzeby Game Off 2019"),
+                        _ => text.text
+                    };
+                    
+                if (getChild.TryGetComponent<ButtonScript>(out ButtonScript button)) {
+                    if (button.IsSelected) {
+                        buttonHeld = true;
+                        if (Input.GetMouseButtonDown(0))
+                            Application.OpenURL(getChild.name);
+                    }
+                }
             }
+
+            setCredits = true;
 
             if(FromStart < 1f) CreditsRoll.GetChild(0).localScale = Vector3.zero; else CreditsRoll.GetChild(0).localScale = Vector3.one;
             CreditBars[0].color = CreditBars[1].color = CreditBars[2].color = Color.Lerp(CreditBars[0].color, Color.black, FromStart);
-            CreditsRoll.GetComponent<RectTransform>().anchoredPosition += new Vector2(0f, Time.unscaledDeltaTime*20f);
-            if (CreditsRoll.GetComponent<RectTransform>().anchoredPosition.y < -800 - CreditsRoll.GetComponent<RectTransform>().sizeDelta.y) CreditsRoll.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-            if(Input.anyKeyDown) CurrentWindow = "Main";
+            CreditsRoll.GetComponent<RectTransform>().anchoredPosition += new Vector2(0f, Time.unscaledDeltaTime*32f);
+            if (CreditsRoll.GetComponent<RectTransform>().anchoredPosition.y > 1024 + CreditsRoll.GetComponent<RectTransform>().sizeDelta.y) 
+                CreditsRoll.GetComponent<RectTransform>().anchoredPosition = new (0f, 150f);
+            
+            if (Input.GetKey(KeyCode.Space))
+                CreditsRoll.GetComponent<RectTransform>().anchoredPosition += new Vector2(0f, Time.unscaledDeltaTime*256f);
+            else if(!buttonHeld && Input.anyKeyDown) 
+                CurrentWindow = "Main";
         } else {
             CreditsWindow.position = SH[1].position;
             CreditBars[0].color = CreditBars[1].color = CreditBars[2].color = new Color(0f,0f,0f,0f);
-            CreditsRoll.GetChild(1).GetComponent<Text>().text = "";
-            CreditsRoll.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            setCredits = false;
+            CreditsRoll.GetComponent<RectTransform>().anchoredPosition = new (0f, 150f);
         }
     }
 

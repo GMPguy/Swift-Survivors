@@ -28,10 +28,10 @@ x Disable horde mode
 - Fix dialogs a bit
 	x Vending machines don't work in classic and casual mode
 - Ragdolls dissapear too quickly
-- Disable music, add music to new menu
-- Improve credits and you died message
-- Add loading screen photos 0/5
-- Add apartment and hut building
+x Disable music, add music to new menu
+x Improve credits and you died message
+x Add loading screen photos 0/5
+x Add apartment and hut building
 
 MINOR:
 x pathfinding in horde
@@ -39,6 +39,10 @@ x map in horde
 x improve waypoint finding
 x Reduce setdestination
 - Figure out navmesh memory cleanup
+
+x Huts on sea are flipped
+x Spawn normal
+- Fix grass spawning method
 
 x disable updates for mobs and interactable updates - when the game is paused
 x Move updates for mobs and interactables to a different loop
@@ -62,6 +66,7 @@ x Fix attacking position for mobs
 x Treasure error
 	x Star variables
 	x Golden AK
+		- Golden AK reload with money
 x Golden ak dont work in casual
 x Underwater treasure - state 1
 

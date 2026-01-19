@@ -1073,7 +1073,6 @@ public class MainMenuScript : MonoBehaviour {
 
             string GOTtoset = "";
             string RoundOrWaves = "";
-            print(GotGOVariables[2]);
             if (GotGOVariables[2] == 1) {
                 if (GotGOVariables[1] <= 0) {
                     RoundOrWaves = GS.GetComponent<GameScript>().SetString("round", "rundy");

@@ -99,7 +99,7 @@ public class GameScript : MonoBehaviour {
     // Misc
     public string WindowToBootUp = "";
     public string NewProfileName;
-    bool CanSaveSettings = true;
+    public bool CanSaveStuff = false;
     List<KeyCode> TempDevCommand;
     public float[] Earpiercing = new float[] { 0f, 0f };
 
@@ -216,6 +216,11 @@ public class GameScript : MonoBehaviour {
                 new KeyBind("CraftingTab", KeyCode.B)
             };
 
+            if (Application.systemLanguage == SystemLanguage.Polish)
+                Language = "Polski";
+            else
+                Language = "English";
+
             if (PlayerPrefs.HasKey("Options")) {
                 SaveSettings(1);
             }
@@ -254,7 +259,7 @@ public class GameScript : MonoBehaviour {
             
             switch (readValue) {
                 case "DELETEALL":
-                    CanSaveSettings = false;
+                    CanSaveStuff = false;
                     PlayerPrefs.DeleteAll();
                     Mess("Please exit the game");
                     Mess("All data has been wiped - new data will not be saved");
@@ -264,23 +269,11 @@ public class GameScript : MonoBehaviour {
             TempDevCommand = null;
         }
 
-        if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.E) && Input.GetKey(KeyCode.L)) {
-            CanSaveSettings = false;
-            PlayerPrefs.DeleteAll();
-            print("AutoDestructionIniciated");
-        }
-
-        if(Input.GetKey(KeyCode.P) && Input.GetKey(KeyCode.O) && Input.GetKey(KeyCode.L)){
-            Debug.LogError("Profile logs: " + PlayerPrefs.GetString("ProfileSaves"));
-        }
-
         if (SaveSettingsTime > 0f) {
             SaveSettingsTime -= Time.unscaledDeltaTime;
         } else {
             SaveSettingsTime = 60f;
-            if (CanSaveSettings == true) {
-                SaveSettings(0);
-            }
+            SaveSettings(0);
         }
 
     }
@@ -382,6 +375,7 @@ public class GameScript : MonoBehaviour {
             WhatOnStart = 1;
 
             SceneManager.LoadScene("MainGame");
+            WindowToBootUp = "MainMenu";
 
         } else if (WayOfChange == "NewGame") {
 
@@ -391,15 +385,16 @@ public class GameScript : MonoBehaviour {
             WhatOnStart = 0;
 
             SceneManager.LoadScene("MainGame");
+            WindowToBootUp = "MainMenu";
 
         } else if (WayOfChange == "LoadGame") {
 
             //Saves(CurrentSave, 1);
             SaveManipulation(CurrentSave, 1);
-            print("Loading a file of " + CurrentSave.ToString() + ". That file data is " + SaveManipulation(CurrentSave, 3));
             WhatOnStart = 1;
 
             SceneManager.LoadScene("MainGame");
+            WindowToBootUp = "MainMenu";
 
         } else if (WayOfChange == "GameOver") {
 
@@ -414,93 +409,17 @@ public class GameScript : MonoBehaviour {
         } else if (WayOfChange == "BootMenu") {
 
             SceneManager.LoadScene("NewMenu");
-            WindowToBootUp = "MainMenu";
+            WindowToBootUp = "BootMenu";
 
         }
 
     }
 
-    /*public void Saves(int CurrentSave, int WhatToDo){
-
-        if (WhatToDo == 0) {
-
-            PlayerPrefs.SetString("S" + CurrentSave + "RoundSettings", RoundSetting);
-            PlayerPrefs.SetInt("S" + CurrentSave + "Round", Round);
-            PlayerPrefs.SetInt("S" + CurrentSave + "Score", Score);
-            PlayerPrefs.SetInt("S" + CurrentSave + "Biome", Biome);
-            PlayerPrefs.SetInt("S" + CurrentSave + "Money", Money);
-
-            PlayerPrefs.SetFloat("S" + CurrentSave + "LandSeed-0", LandSeed.x);
-            PlayerPrefs.SetFloat("S" + CurrentSave + "LandSeed-1", LandSeed.y);
-
-            PlayerPrefs.SetFloat("S" + CurrentSave + "Health-0", HealthSave.x);
-            PlayerPrefs.SetFloat("S" + CurrentSave + "Health-1", HealthSave.y);
-
-            PlayerPrefs.SetFloat("S" + CurrentSave + "Hunger-0", HungerSave.x);
-            PlayerPrefs.SetFloat("S" + CurrentSave + "Hunger-1", HungerSave.y);
-
-            PlayerPrefs.SetFloat("S" + CurrentSave + "PlayerSpeed", PlayerSpeed);
-            PlayerPrefs.SetString("S" + CurrentSave + "PlayerInventory", PlayerInventory);
-            PlayerPrefs.SetString("S" + CurrentSave + "PlayerEquipment", PlayerEquipment);
-            PlayerPrefs.SetInt("S" + CurrentSave + "MaxInventory", MaxInventory);
-            PlayerPrefs.SetString("S" + CurrentSave + "Buffs", PlayerBuffs);
-
-        } else if (WhatToDo == 1) {
-
-            RoundSetting = PlayerPrefs.GetString("S" + CurrentSave + "RoundSettings");
-            Round = PlayerPrefs.GetInt("S" + CurrentSave + "Round");
-            Score = PlayerPrefs.GetInt("S" + CurrentSave + "Score");
-            Biome = PlayerPrefs.GetInt("S" + CurrentSave + "Biome");
-            Money = PlayerPrefs.GetInt("S" + CurrentSave + "Money");
-
-            LandSeed.x = PlayerPrefs.GetFloat("S" + CurrentSave + "LandSeed-0");
-            LandSeed.y = PlayerPrefs.GetFloat("S" + CurrentSave + "LandSeed-1");
-
-            HealthSave.x = PlayerPrefs.GetFloat("S" + CurrentSave + "Health-0");
-            HealthSave.y = PlayerPrefs.GetFloat("S" + CurrentSave + "Health-1");
-
-            HungerSave.x = PlayerPrefs.GetFloat("S" + CurrentSave + "Hunger-0");
-            HungerSave.y = PlayerPrefs.GetFloat("S" + CurrentSave + "Hunger-1");
-
-            PlayerSpeed = PlayerPrefs.GetFloat("S" + CurrentSave + "PlayerSpeed");
-            PlayerInventory = PlayerPrefs.GetString("S" + CurrentSave + "PlayerInventory");
-            PlayerEquipment = PlayerPrefs.GetString("S" + CurrentSave + "PlayerEquipment");
-            MaxInventory = PlayerPrefs.GetInt("S" + CurrentSave + "MaxInventory");
-            PlayerBuffs = PlayerPrefs.GetString("S" + CurrentSave + "Buffs");
-
-        } else if (WhatToDo == 2) {
-            
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "DifficultyLevel");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "Round");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "Score");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "Biome");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "Money");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "ReserveAmmo");
-
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "LandSeed-0");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "LandSeed-1");
-
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "Health-0");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "Health-1");
-
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "Hunger-0");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "Hunger-1");
-
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "PlayerSpeed");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "PlayerInventory");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "PlayerEquipment");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "MaxInventory");
-            PlayerPrefs.DeleteKey("S" + CurrentSave + "Buffs");
-
-        }
-
-    }*/
-
     public string SaveManipulation(int SaveID, int WhatToDo){
 
         switch (WhatToDo){
             case 0: // Save
-
+                
                 // Create injection of file
                 string Filer = "id" + SaveID.ToString() + "®sn" + SaveFileName
                 + "®rs" + RoundSetting
@@ -1027,8 +946,7 @@ public class GameScript : MonoBehaviour {
             new(this, new string[]{"Flare", "Flara"},
                 new string[]{"It shines a bright light, and warms you. When thrown, it can set foes on fire.", "Flara będzie świecić jasnym światłem, i będzie cię ocieplać. Gdy rzucisz nią w kogoś, ten ktoś zostanie podpalony."},
                 new JClass(new JEntry[]{
-                    new JInt (JType.ID, 2),
-                    new JFloat (JType.VariableA, 0f),
+                    new JInt (JType.ID, 12),
                     new JFloat (JType.Color, Random.Range(0, 10))
                 }),
                 new (20f, 0f, 0f)
@@ -2515,8 +2433,10 @@ public class GameScript : MonoBehaviour {
     }
 
     void OnApplicationQuit(){
-        if(CanSaveSettings)
+        if(CanSaveStuff)
             SaveSettings(0);
+        else
+            PlayerPrefs.DeleteAll();
     }
 
 }
