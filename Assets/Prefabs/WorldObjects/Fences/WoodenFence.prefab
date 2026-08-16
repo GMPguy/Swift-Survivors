@@ -1,0 +1,188 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &5709967188642882234
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_Name
+      value: WoodenFence
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1846028173324101943}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5687296301527482020}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7116294055710567363}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cfafc82c2e5a296419155075d1c67e00,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3700666477860782267}
+  m_SourcePrefab: {fileID: 100100000, guid: cfafc82c2e5a296419155075d1c67e00, type: 3}
+--- !u!1 &4898941360267911147 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: cfafc82c2e5a296419155075d1c67e00,
+    type: 3}
+  m_PrefabInstance: {fileID: 5709967188642882234}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1846028173324101943
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4898941360267911147}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.29559308, y: 0.7, z: 2.114389}
+  m_Center: {x: 0.000000044703484, y: 0.33, z: 0.99734265}
+--- !u!114 &5687296301527482020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4898941360267911147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88b819b682bdf194bb65cd5f0918260a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WhatToPlay: Wood
+  IsTerrain: 0
+--- !u!114 &7116294055710567363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4898941360267911147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b753c5351f111ce4f8f74613b0f46d26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Health: 5
+  mainType: Construction
+  subType: 
+  penType: 
+  State: 
+  KeepState: 0
+--- !u!114 &3700666477860782267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4898941360267911147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75eb38ee2f34e9149a805cfaa6bea656, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Meshes:
+  - {fileID: 6412128913322114622}
+  Length: 2
+  FenceColors:
+  - MaterialName: Fence1 (Instance)
+    Colors:
+    - serializedVersion: 2
+      rgba: 4279113085
+    - serializedVersion: 2
+      rgba: 4282602870
+    - serializedVersion: 2
+      rgba: 4294967295
+    - serializedVersion: 2
+      rgba: 4282730896
+    - serializedVersion: 2
+      rgba: 4281225368
+    - serializedVersion: 2
+      rgba: 4283729588
+    LerpColors: 0
+    RandomBus: 0
+--- !u!23 &6412128913322114622 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: cfafc82c2e5a296419155075d1c67e00,
+    type: 3}
+  m_PrefabInstance: {fileID: 5709967188642882234}
+  m_PrefabAsset: {fileID: 0}

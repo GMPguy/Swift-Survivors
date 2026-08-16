@@ -30,6 +30,7 @@ Items
             13. AUG (bi grip)
             14. MG 42 (bi bipod)
             15. M16 (bi grenade launcher or ubs)
+            16. Ray gun (replaces trapdoor musket)
         3. Attachments 0/5
             1. Laser scope
             2. Extended magazine
@@ -53,7 +54,7 @@ Items
         8. x Melon
         9. x Melon slice
         10. x Carrot
-    3. Utility items 5/12
+    3. Utility items 5/13
         1. Bike
         2. Kayak
         3. Parachutes
@@ -66,6 +67,7 @@ Items
         10. x Moon shoes
         11. Ghillie suit
         12. x Torch
+        13. Rubber duck
     4. Buildings 4/10
         1. x Metal wall
         2. x Barbed wire
@@ -91,7 +93,7 @@ Items
         11. x Empty bottle
         12. x Empty can
         13. x Sulfur
-    6. Flora 0/11
+    6. Flora 0/12
         1. Pile of rocks
         2. Nettle
         3. Toadstool
@@ -103,6 +105,7 @@ Items
         9. Wild potato
         10. Berries
         11. Roses
+        12. Mint
 Chests 10/20
     1. In houses and mansions
         1. x Closet
@@ -155,3 +158,12 @@ Buildings 8/35
         4. x Hedgerow
         5. x Metal fence
         6. x Wooden fence
+
+Kits 0/10
+    1. Starter kit
+    2. Survival kit
+    3. Hunting kit
+    4. Athlete's kit
+    5. Explosive kit
+    6. Exploration kit
+    7. Military kit

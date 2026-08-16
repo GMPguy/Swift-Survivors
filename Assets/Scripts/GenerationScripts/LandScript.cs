@@ -329,6 +329,8 @@ public class LandScript : MonoBehaviour {
                 TreeChunks.Add(LandInLand);
             } else if (LandInLand.name == "Building") {
                 LandInLand.GetComponent<BuildingSpawnerScript>().SpawnBuilding(RS.DifficultySliderB, Land.transform, LandInLand.transform);
+            } else if (LandInLand.name == "Fence") {
+                LandInLand.GetComponent<FenceSpawner>().SpawnFence(RS.DifficultySliderB, LandInLand.transform);
             } else if (LandInLand.TryGetComponent<MeshRenderer>(out MeshRenderer mesh)) {
                 MeshColor(mesh, LandInLand.transform.position.x, LandInLand.transform.position.z);
             } else if (LandInLand.GetComponent<LODGroup>() || LandInLand.GetComponent<InstantLODScript>()) {

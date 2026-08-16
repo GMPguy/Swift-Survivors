@@ -80,7 +80,6 @@ public class DestructionScript : MonoBehaviour {
                             ), ForceMode.VelocityChange);
                         }
                     } else if (!this.GetComponent<Rigidbody>()) {
-                        this.gameObject.AddComponent<Rigidbody>();
                         Rigidbody rig = this.gameObject.AddComponent<Rigidbody>();
                         rig.mass = State == "Bashed" ? 1f : 10f;
 

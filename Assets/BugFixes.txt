@@ -34,6 +34,11 @@ x Add loading screen photos 0/5
 x Add apartment and hut building
 
 MINOR:
+- Improve sea biome
+	- Fix huts
+- Add plants
+x Add new fences
+
 x pathfinding in horde
 x map in horde
 x improve waypoint finding
