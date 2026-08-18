@@ -43,7 +43,7 @@ Items
             3. Mortar
             4. Blowpipe
             5. Pepper spray
-    2. Food items 10/10
+    2. Food items 10/11
         1. x Fish fillet
         2. x Frozen pizza
         3. x Pizza slice
@@ -54,6 +54,7 @@ Items
         8. x Melon
         9. x Melon slice
         10. x Carrot
+        11. Tea
     3. Utility items 5/13
         1. Bike
         2. Kayak
@@ -93,19 +94,20 @@ Items
         11. x Empty bottle
         12. x Empty can
         13. x Sulfur
-    6. Flora 0/12
-        1. Pile of rocks
-        2. Nettle
-        3. Toadstool
-        4. Boletus
-        5. Wheat
-        6. Schrub
-        7. Sage
-        8. Wild carrot
-        9. Wild potato
-        10. Berries
-        11. Roses
-        12. Mint
+    6. Flora 13/13
+        1. x Pile of rocks
+        2. x Nettle
+        3. x Toadstool
+        4. x Boletus
+        5. x Wheat
+        6. x Schrub
+        7. x Sage
+        8. x Wild carrot
+        9. x Wild potato
+        10. x Berries
+        11. x Roses
+        12. x Mint
+        13. x Old log
 Chests 10/20
     1. In houses and mansions
         1. x Closet
@@ -167,3 +169,4 @@ Kits 0/10
     5. Explosive kit
     6. Exploration kit
     7. Military kit
+    8. Thief's kit

@@ -1195,6 +1195,13 @@ public class PlayerScript : MonoBehaviour {
                     IsOpeningChest = Mathf.Max(IsOpeningChest, .1f);
                     ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("Pullup", Inventory[CurrentItemHeld].GetInt(JType.ID), ""), 0, 0f);
                 }
+            } else if (InteractedGameobject.transform.parent != null && InteractedGameobject.transform.parent.tag == "Plant" && GS.ReceiveButtonPress("Interaction", "Hold") > 0f && CantInteract <= 0f) {
+                if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "Harvest") {
+                    InteractedGameobject.transform.parent.GetComponent<PlantScript>().Harvest();
+                    CantUseItem = Mathf.Max(CantUseItem, .1f);
+                    CantSwitchItem = Mathf.Max(CantSwitchItem, .1f);
+                    IsOpeningChest = Mathf.Max(IsOpeningChest, .1f);
+                }
             } else if (InteractedGameobject.tag == "Mob" && GS.ReceiveButtonPress("Interaction", "Hold") > 0f) {
                 if (InteractedGameobject.GetComponent<Interactions>().Options[InteractedGameobject.GetComponent<Interactions>().ThisOption] == "TalkTo" && CantInteract <= 0f) {
                     MainCanvas.DialogedMob = InteractedGameobject;
@@ -1627,6 +1634,8 @@ public class PlayerScript : MonoBehaviour {
                         } else if (GetChild.name == "Glowstick") {
                             GetChild.GetComponent<MeshRenderer>().materials[1].color = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Color) / 10f, 1f, 1f);
                             GetChild.GetComponent<Light>().color = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Color) / 10f, 1f, 1f);
+                        } else if (GetChild.name == "Berries") {
+                            GetChild.GetComponent<MeshRenderer>().materials[0].color = PlantScript.GetBerryColor(Inventory[CurrentItemHeld].GetFloat(JType.VariableA));
                         } else if (GetChild.name == "Flare") {
                             GetChild.GetComponent<MeshRenderer>().materials[0].color = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Color) / 10f, 1f, 1f);
                             if (GetChild.GetComponent<Light>() != null) {
@@ -1768,7 +1777,17 @@ public class PlayerScript : MonoBehaviour {
             currBuild = "";
             int currID = Inventory[CurrentItemHeld].GetInt(JType.ID);
             switch(currID) {
-                case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 19: case 20: case 21: case 22: case 23: case 24: case 25: case 26: case 70: case 71: case 72: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 80: case 81: case 82: case 83: case 84: case 106: case 116: case 117: case 118: case 119: case 120: case 121: case 122: case 123: case 161: case 163: case 164: case 165: case 166: case 167: case 169: case 170:
+                case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 19: case 20: case 21: case 22: case 23: case 24: case 25: case 26: case 70: case 71: case 72: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 80: case 81: case 82: case 83: case 84: case 106: case 116: case 117: case 118: case 119: case 120: case 121: case 122: case 123: case 161: case 163: case 164: case 165: case 166: case 167: case 169: case 170: case 181: case 182: case 184: case 187:
+                    // Check if using
+                    int use = 0;
+
+                    if (GS.ReceiveButtonPress("Action", "Hold") > 0f)
+                        use = 0;
+                    else if (GS.ReceiveButtonPress("Action", "Hold") > 0f)
+                        use = 1;
+                    else
+                        break;
+                    
                     // Get Food info
                     int DrinkOrWhat = 0; // 0 Eat   1 Drink   2 Other
                     float HungerToAddSub = 0f;
@@ -1982,6 +2001,7 @@ public class PlayerScript : MonoBehaviour {
                             ConsumeAnimation = "Bandage";
                             DrinkOrWhat = 2;
                             HealthToAddSub = 50f;
+                            Bleeding = 0f;
                             FoodColor = new Color32(181, 97, 124, 0);
                             FlashColor = new Color32(0, 255, 0, 155);
                             break;
@@ -2115,6 +2135,7 @@ public class PlayerScript : MonoBehaviour {
                             ConsumeAnimation = "Bandage";
                             DrinkOrWhat = 2;
                             HealthToAddSub = 75f;
+                            Bleeding = 0f;
                             Infection = Mathf.Clamp(Random.Range(0f, 50f), 0f, Infection);
                             Radioactivity = Mathf.Clamp(Random.Range(0f, 50f), 0f, Radioactivity);
                             FoodColor = new Color32(181, 97, 124, 0);
@@ -2255,9 +2276,84 @@ public class PlayerScript : MonoBehaviour {
                             FoodColor = new Color32(200, 114, 56, 255);
                             FlashColor = new Color32(128, 255, 0, 155);
                             break;
+                        case 181:
+                            if (use == 0) {
+                                FoodName = GS.SetString("Nettle", "Pokrzywę");
+                                DrinkOrWhat = 0;
+                                HungerToAddSub = 10f;
+                                FoodColor = new Color32(63, 111, 74, 255);
+                                FlashColor = new Color32(128, 255, 0, 155);
+                            } else {
+                                FoodName = GS.SetString("Nettle", "Pokrzywy");
+                                ConsumeAnimation = "Bandage";
+                                DrinkOrWhat = 2;
+                                HealthToAddSub = 10f;
+                                InfectionToAdd = -10f;
+                                Bleeding = Mathf.Max(Bleeding - 10f, 0f);
+                                FoodColor = new Color32(181, 97, 124, 0);
+                                FlashColor = new Color32(0, 255, 0, 155);
+                            }
+                            break;
+                        case 182:
+                            FoodName = GS.SetString("Mint", "Miętę");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 5f;
+                            StaminaToAdd = Energy[1] - Energy[0];
+                            FoodColor = new Color32(96, 147, 132, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 184:
+                            FoodName = GS.SetString("Boletus", "Borowika");
+                            DrinkOrWhat = 0;
+                            HungerToAddSub = 300f;
+                            FoodColor = new Color32(200, 114, 56, 255);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
+                        case 187:
+                            FoodName = GS.SetString("Berries", "Jagody");
+                            ConsumeAnimation = "Chips";
+                            DrinkOrWhat = 0;
+
+                            float safety = Inventory[CurrentItemHeld].GetFloat(JType.VariableA);
+
+                            if (safety > .95f) {
+                                // Olive - emerald
+                                if (Random.value < .9f) {
+                                    HealthToAddSub = -Health[1];
+                                    HealthDamage = "LiverFailure";
+                                } else {
+                                    HungerToAddSub = 300;
+                                    HydrationToAdd = 60;
+                                }
+                            } else if (safety > .75f) {
+                                // Yellow - white
+                                HungerToAddSub = 10f;
+
+                                HealthToAddSub = Mathf.Lerp(-50f, Health[1] + 1f, (safety - .75f) / .1f);
+                                HealthDamage = "LiverFailure";
+                            } else if (safety > .5f) {
+                                // Red - yellow
+                                HungerToAddSub = Mathf.Lerp(50f, 10f, safety - .5f / .25f);
+                                if (Random.Range(.5f, .75f) < safety) {
+                                    HealthToAddSub = Mathf.Lerp(-10f, -50f, (safety - .5f) / .25f);
+                                    HealthDamage = "LiverFailure";
+                                }
+                            } else if (safety > .25f) {
+                                // Blue - red
+                                HungerToAddSub = Mathf.Lerp(50f, 25f, (safety - .25f) / .25f);
+                            } else {
+                                // Black - Blue
+                                HungerToAddSub = Mathf.Lerp(100f, 50f, safety / .25f);
+                                HydrationToAdd = Mathf.Lerp(30f, 0f, safety / .25f);
+                            }
+
+                            FoodColor = PlantScript.GetBerryColor(safety);
+                            FlashColor = new Color32(128, 255, 0, 155);
+                            break;
                     }
+
                     // Get Food info
-                    if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f && CanUse == true) {
+                    if (CantUseItem <= 0f && CanUse == true) {
                         CantUseItem = 1f;
                         CantSwitchItem = CantUseItem;
 
@@ -2287,9 +2383,7 @@ public class PlayerScript : MonoBehaviour {
                         else
                             Hurt(HealthToAddSub * (Health[1] / -100f), HealthDamage, false, Vector3.zero);
 
-                        if (currID == 22) {
-                            Bleeding = 0f;
-                        } else if (currID == 83) {
+                        if (currID == 83) {
                             int UnbrokeBone = Random.Range(0, 4);
                             if (UnbrokeBone == 0) {
                                 BrokenBone = 0;
@@ -4599,19 +4693,19 @@ public class PlayerScript : MonoBehaviour {
                 Gib = false;
                 
                 if (DamageType == "Nuke") {
-                    KilledBy = GS.SetString("You've been obliterated by a nuke.", "Zostałeś rozszarpany przez bombę atomową.");
+                    KilledBy = GS.SetString("You've been obliterated by a nuke.", "Zostałeś zdezintegrowany przez bombę atomową.");
                 } else if (DamageType == "Starvation") {
                     KilledBy = GS.SetString("You've starved to death.", "Umarłeś z głodu.");
                 } else if (DamageType == "Canibalism") {
-                    KilledBy = GS.SetString("You ate yourself", "Zagryzłeś się na śmierć");
+                    KilledBy = GS.SetString("You ate yourself.", "Zagryzłeś się na śmierć.");
                 } else if (DamageType == "Bleeding") {
                     KilledBy = GS.SetString("You've bled to death.", "Wykrwawiłeś się.");
                 } else if (DamageType == "Radioactivity") {
-                    KilledBy = GS.SetString("You died due to radioactivity.", "Radioaktywność cię wykończyła.");
+                    KilledBy = GS.SetString("You died due to radiation sickness.", "Zmarłeś na chorobę popromienną.");
                 } else if (DamageType == "Cold") {
                     KilledBy = GS.SetString("You died due to hypothermia.", "Zmarłeś na hipotermię.");
                 } else if (DamageType == "Hot") {
-                    KilledBy = GS.SetString("You died due to overheating.", "Zmarłeś na udar.");
+                    KilledBy = GS.SetString("You died due to heat stroke.", "Dostałeś udaru cieplnego.");
                 } else if (DamageType == "Fire") {
                     KilledBy = GS.SetString("You've burnt down.", "Spaliłeś się.");
                 } else if (DamageType == "Overdose") {
@@ -4619,7 +4713,7 @@ public class PlayerScript : MonoBehaviour {
                 } else if (DamageType == "Drowning") {
                     KilledBy = GS.SetString("You've suffocated.", "Udusiłeś się.");
                 } else if (DamageType == "Falling") {
-                    KilledBy = GS.SetString("You fell to your death.", "Spadłeś i umarłeś.");
+                    KilledBy = GS.SetString("You've fallen to your death.", "Spadłeś i umarłeś.");
                     HardcoreInstaKill = true;
                     Gib = true;
                     int BoneBreakChance = Random.Range(0, 4);
@@ -4636,7 +4730,7 @@ public class PlayerScript : MonoBehaviour {
                     Health[0] = 0f;
                     Gib = true;
                 } else if (DamageType == "MutantBite") {
-                    KilledBy = GS.SetString("You've been eaten by mutants.", "Zostałeś pożarty przez mutantów.");
+                    KilledBy = GS.SetString("You were eaten by mutants.", "Zostałeś pożarty przez mutantów.");
                     HardcoreInstaKill = true;
                     CasualEase = 2;
                     int InfectionChance = Random.Range(0, 5);
@@ -4654,7 +4748,7 @@ public class PlayerScript : MonoBehaviour {
                         Infection += Random.Range(10f, 25f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
                     }
                 } else if (DamageType == "Melee") {
-                    KilledBy = GS.SetString("You died in a melee fight.", "Umarłeś zabity z broni białej.");
+                    KilledBy = GS.SetString("You died in a melee fight.", "Zostałeś zabity bronią białą.");
                     HardcoreInstaKill = true;
                     CasualEase = 2;
                     int InfectionChance = Random.Range(0, 10);
@@ -4687,6 +4781,8 @@ public class PlayerScript : MonoBehaviour {
                     KilledBy = GS.SetString("You died due to food poisoning.", "Umarłeś w wyniku zatrucia pokarmowego.");
                 } else if (DamageType == "Smoking") {
                     KilledBy = GS.SetString("You died due to nicotine poisoning.", "Umarłeś w wyniku zatrucia nikotyną.");
+                } else if (DamageType == "LiverFailure") {
+                    KilledBy = GS.SetString("You were poisoned.", "Otrułeś się.");
                 } else {
                     KilledBy = GS.SetString("You died.", "Umarłeś.");
                 }
@@ -4879,10 +4975,10 @@ public class PlayerScript : MonoBehaviour {
         } else {
             int ItemIDint = ItemID;
             switch (ItemIDint) {
-            case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 20: case 21: case 23: case 25: case 26: case 45: case 991: case 992: case 53: case 63: case 70: case 71: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 82: case 83: case 84: case 88: case 89: case 99: case 94: case 98: case 102: case 103: case 104: case 107: case 117: case 119: case 120: case 121: case 141: case 142: case 143: case 144: case 145: case 147: case 158: case 161: case 163: case 165: case 169: case 171: case 173: case 174: case 176: case 178:
+            case 1: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 17: case 18: case 20: case 21: case 23: case 25: case 26: case 45: case 991: case 992: case 53: case 63: case 70: case 71: case 73: case 74: case 75: case 76: case 77: case 78: case 79: case 82: case 83: case 84: case 88: case 89: case 99: case 94: case 98: case 102: case 103: case 104: case 107: case 117: case 119: case 120: case 121: case 141: case 142: case 143: case 144: case 145: case 147: case 158: case 161: case 163: case 165: case 169: case 171: case 173: case 174: case 176: case 178: case 181: case 182: case 183: case 184: case 185: case 186:
                 PlayThis = "Hold-" + WhatAnim;
                 break;
-            case 12: case 19: case 22: case 30: case 33: case 37: case 39: case 43: case 52: case 54: case 72: case 80: case 81: case 85: case 90: case 97: case 100: case 101: case 105: case 114: case 116: case 123: case 124: case 166: case 170:
+            case 12: case 19: case 22: case 30: case 33: case 37: case 39: case 43: case 52: case 54: case 72: case 80: case 81: case 85: case 90: case 97: case 100: case 101: case 105: case 114: case 116: case 123: case 124: case 166: case 170: case 188:
                 PlayThis = "Grab-" + WhatAnim;
                 break;
             case 50: case 118: case 125: case 140:
@@ -5023,8 +5119,10 @@ public class PlayerScript : MonoBehaviour {
                     }
                 }
                 break;
-            case 995: case 146: case 162: case 164: case 175:
+            case 995: case 146: case 162: case 164: case 175: case 187:
                 PlayThis = "Spark-" + WhatAnim;
+                if (WhatAnim == "Chips")
+                    PlayThis = "Hold-Chips";
                 break;
             case 66: case 110: case 131: case 133:
                 PlayThis = "Grenade-" + WhatAnim;

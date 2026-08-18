@@ -459,18 +459,19 @@ public class CanvasScript : MonoBehaviour {
                                     Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite = GetSprite;
                                     if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13) {
                                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color = Color.HSVToRGB(ItemHeld.GetFloat(JType.Color) / 10f, 1f, 1f);
+                                    } else if (ItemHeld.GetInt(JType.ID) == 187) {
+                                        Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color = PlantScript.GetBerryColor(ItemHeld.GetFloat(JType.VariableA));
                                     } else {
                                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
                                     }
                                 }
                             }
-                            if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13) {
-                                foreach (Sprite GetSubSprite in SubItemIcons) {
+                            if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13 || ItemHeld.GetInt(JType.ID) == 187) {
+                                foreach (Sprite GetSubSprite in SubItemIcons)
                                     if (GetSubSprite.name.Substring(2) == ItemHeld.GetInt(JType.ID).ToString()) {
                                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = GetSubSprite;
                                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
                                     }
-                                }
                             } else {
                                 Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
                             }
@@ -1469,7 +1470,7 @@ public class CanvasScript : MonoBehaviour {
                         GS.SetString("Ammo: ", "Amunicja: ") + ItemInfos.GetFloat(JType.VariableA) + " / " + SpareAmmo};
 
                 break;
-            case 13: case 66: case 86: case 94: case 110: case 125: case 131:
+            case 13: case 66: case 86: case 94: case 110: case 125: case 131: case 187:
                 // Has additional variables, but doesn't show them
                 Infos = new string[]{GS.ItemCache[id].getName()};
                 break;
@@ -1608,12 +1609,14 @@ public class CanvasScript : MonoBehaviour {
                                     ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().sprite = GetSprite;
                                     if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13) {
                                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = Color.HSVToRGB(ItemHeld.GetFloat(JType.Color) / 10f, 1f, 1f);
+                                    } else if (ItemHeld.GetInt(JType.ID) == 187) {
+                                        ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = PlantScript.GetBerryColor(ItemHeld.GetFloat(JType.VariableA));
                                     } else {
                                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
                                     }
                                 }
                             }
-                            if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13) {
+                            if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13 || ItemHeld.GetInt(JType.ID) == 187) {
                                 foreach (Sprite GetSubSprite in SubItemIcons) {
                                     if (GetSubSprite.name.Substring(2) == ItemHeld.GetInt(JType.ID).ToString()) {
                                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = GetSubSprite;

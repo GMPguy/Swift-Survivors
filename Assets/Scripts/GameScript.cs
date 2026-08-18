@@ -1890,7 +1890,7 @@ public class GameScript : MonoBehaviour {
                 new string[]{"A single shot blackpowder pistol. It's not very accurate, and takes long to reload, but deals a lot of damage.", "Jednostrzałowy pistolet czarnoprochowy. Jest niedokładny, i długo się go przeładowuje, ale zadaje duże obrażenia."},
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 157),
-                    new JFloat (JType.VariableA, 100f),
+                    new JFloat (JType.VariableA, 1f),
                     new JInt (JType.Attachment, 0)
                 }),
                 new (10f, 25f, 5f)
@@ -2024,6 +2024,41 @@ public class GameScript : MonoBehaviour {
                     new JFloat (JType.VariableA, 0f),
                     new JInt(JType.ClothingCategory, 3)
                 })
+            ),
+            new(this, new string[]{"Nettle", "Pokrzywa"},
+                new string[]{"Can be eaten, or used as a makeshift bandage.", "Można to zjeść, albo użyć jako prowizorycznego bandaża."},
+                new JClass (181, JTemplate.BasicItemStackable)
+            ),
+            new(this, new string[]{"Mint", "Mięta"},
+                new string[]{"Can be eaten, to boost your stamina. Will work better when made into tea", "Można to zjeść, by zregenerować wytrzymałość. Lepiej jednak działa jako herbata."},
+                new JClass (182, JTemplate.BasicItemStackable)
+            ),
+            new(this, new string[]{"Toadstool", "Muchomor"},
+                new string[]{"It's extremely toxic. Can be used when making poisons.", "Jest ekstremalnie toksyczny. Można go użyć w tworzeniu trucizn."},
+                new JClass (183, JTemplate.BasicItemStackable)
+            ),
+            new(this, new string[]{"Boletus", "Borowik"},
+                new string[]{"A very tasty mushroom.", "Bardzo smaczny grzyb."},
+                new JClass (184, JTemplate.BasicItemStackable)
+            ),
+            new(this, new string[]{"Wheat", "Zboże"},
+                new string[]{"Seeds can be used in baking, straw can be used in crafting.", "Ziarna można użyć w pieczeniu, a słomę w tworzeniu."},
+                new JClass (185, JTemplate.BasicItemStackable)
+            ),
+            new(this, new string[]{"Sage", "Szałwia"},
+                new string[]{"Can be boiled, to make a sage tea.", "Można to ugotować, i pozyskać herbatkę szałwiową."},
+                new JClass (186, JTemplate.BasicItemStackable)
+            ),
+            new(this, new string[]{"Berries", "Jagody"},
+                new string[]{"White and yellow, kill a fellow. Purple and blue, good for you. Red could be good, could be dead.", "Zjedz żółtego lub białego, umrzesz szybko kolego. Niebieskie i fioletowe, są dla ciebie dobre. Czerwone mogą być pyszne, lub mogą być zgubne."},
+                new JClass(new JEntry[]{
+                    new JInt (JType.ID, 187),
+                    new JFloat (JType.VariableA, Random.value)
+                })
+            ),
+            new(this, new string[]{"Tulip", "Tulipan"},
+                new string[]{"A pretty flower, could make a beautiful bouquet.", "Ładny kwiatek, idealny do pięknego bukietu."},
+                new JClass (188, JTemplate.BasicItemStackable)
             )
         };
 

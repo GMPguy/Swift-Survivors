@@ -32,6 +32,7 @@ public class RoundScript : MonoBehaviour {
     public int[] AttachmentItems;
     public int[] CraftingItems;
     public int[] BuildingItems;
+    public int[] PlantItems;
     public GameObject InteractablePrefab;
     public GameObject MobPrefab;
     public GameObject MobPHprefab;
@@ -115,6 +116,7 @@ public class RoundScript : MonoBehaviour {
     int DonePrepare = 0;
 
     public static List<InteractableScript> CachedInteractables;
+    public static List<PlantScript> CachedPlants;
     public static List<ChestScript> CachedChest;
     public static List<MobScript> CachedMobs;
     public static List<Spawner> CachedSpawner;
@@ -154,6 +156,7 @@ public class RoundScript : MonoBehaviour {
         CachedChest = new List<ChestScript>();
         CachedMobs = new List<MobScript>();
         CachedDiscoveries = new List<DiscoveryScript>();
+        CachedPlants = new List<PlantScript>();
 
         ActiveDestructs = new List<DestructionScript>();
         ActiveBuildings = new List<BuildingScript>();
@@ -545,6 +548,12 @@ public class RoundScript : MonoBehaviour {
                             CachedChest.RemoveAt(ci);
                         else
                             CachedChest[ci].TheStart();
+                    
+                    for (int ci = CachedPlants.Count - 1; ci >= 0; ci--)
+                        if (!CachedPlants[ci])
+                            CachedPlants.RemoveAt(ci);
+                        else
+                            CachedPlants[ci].TheStart();
                     // Enable cached objects
 
                     NewMenuScript.LoadingAdditionalInfo = "";
@@ -1240,6 +1249,7 @@ public class RoundScript : MonoBehaviour {
         AttachmentItems = new int[] { 100, 101, 102, 103, 104, 105 };
         CraftingItems = new int[] { 140, 141, 142, 143, 144, 145, 146, 147, 171, 172, 173, 174, 175 };
         BuildingItems = new int[] { 148, 149, 150, 151 };
+        PlantItems = new int[] { 181, 182, 183, 184, 185, 186, 187, 188};
 
         List<int> SetTotal = new List<int>();
         foreach (int GiveF in FoodItems) {

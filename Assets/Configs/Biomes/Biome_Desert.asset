@@ -46,6 +46,11 @@ MonoBehaviour:
     FlipLongitude: 1
     FlipLatitude: 1
     Rotations: 00000000
+  AmountOfPlants: 0500000000000000
+  PlantTypes:
+  - Rocks
+  - Shrub
+  - Stump
   MobPHsuggestion: Urban
   AmountOfMobs: 0200000005000000
   AmountOfMutants:

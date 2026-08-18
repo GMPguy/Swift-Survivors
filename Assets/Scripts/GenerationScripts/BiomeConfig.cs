@@ -18,6 +18,9 @@ public class BiomeConfig : ScriptableObject {
     public Color32[] GrassColor;
     public NoiseMap[] Noises;
 
+    public int[] AmountOfPlants;
+    public string[] PlantTypes;
+
     public string MobPHsuggestion = "Default";
     public int[] AmountOfMobs;
 

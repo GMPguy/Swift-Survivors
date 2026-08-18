@@ -51,6 +51,17 @@ MonoBehaviour:
     FlipLongitude: 1
     FlipLatitude: 1
     Rotations: 00000000
+  AmountOfPlants: 1900000019000000
+  PlantTypes:
+  - Rocks
+  - Nettle
+  - Wheat
+  - Shrub
+  - Sage
+  - WildTubers
+  - Berries
+  - Mint
+  - Stump
   MobPHsuggestion: Default
   AmountOfMobs: 0000000000000000
   AmountOfMutants:

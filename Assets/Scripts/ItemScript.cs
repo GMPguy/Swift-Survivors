@@ -135,7 +135,8 @@ public class ItemScript : MonoBehaviour {
                     GetMat.color = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().LaserColor;
                 } else if (GetMat.name == "Glowstick2 (Instance)" || GetMat.name == "Flare2 (Instance)") {
                     GetMat.color = Color.HSVToRGB(Variables.GetFloat(JType.Color) / 10f, 1f, 1f);
-                }
+                } else if (GetMat.name == "BerriesColor (Instance)")
+                    GetMat.color = PlantScript.GetBerryColor(Variables.GetFloat(JType.VariableA));
             }
             if (meshID == "13") {
                 SelectedMesh.transform.GetChild(1).GetComponent<Light>().color = Color.HSVToRGB(Variables.GetFloat(JType.Color) / 10f, 1f, 1f);

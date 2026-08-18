@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using Unity.AI.Navigation;
+﻿using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -13,6 +10,7 @@ public class LandScript : MonoBehaviour {
     //public GameObject LandPrefab;
     public Tilemap TerrainTilemap;
     public GameObject TreesPrefab;
+    public GameObject PlantsPrefab;
     public GameObject InteractablePrefab;
     public GameObject LandpartHide;
     public GameObject RadioactivityZone;
@@ -201,7 +199,9 @@ public class LandScript : MonoBehaviour {
                 NewTunnel.transform.eulerAngles = new Vector3(0f, 0f, 0f);
             }
         }
-        // Set Escape Roots
+
+        // Set plants
+        SetPlants(difficulty);
 
         ObjectsToSpawn = TreeChunks.Count;
         orgObjectsToSpawn = ObjectsToSpawn;
@@ -401,6 +401,32 @@ public class LandScript : MonoBehaviour {
             }
         }
 
+    }
+
+    public void SetPlants(float diff) {
+        int maxPlants = (int) Mathf.Lerp(Biome.AmountOfPlants[0], Biome.AmountOfPlants[1], diff);
+
+        for (int p = 0; p < maxPlants; p++) {
+            for (int a = 100; a > 0; a--) {
+                Vector3 plantCheck = new Vector3(
+                    Random.Range(-Biome.WorldSize.x / 2f, Biome.WorldSize.x / 2f),
+                    100f,
+                    Random.Range(-Biome.WorldSize.y / 2f, Biome.WorldSize.y / 2f)
+                );
+
+                if (Physics.Raycast(plantCheck, Vector3.down, out RaycastHit hit, Mathf.Infinity))
+                    if (hit.collider.TryGetComponent<FootstepMaterial>(out FootstepMaterial ground))
+                        if (ground.IsTerrain) {
+                            PlantScript newPlant = GameObject.Instantiate(PlantsPrefab).GetComponent<PlantScript>();
+                            newPlant.transform.position = hit.point;
+                            newPlant.transform.Rotate(Vector3.up * Random.Range(0f, 360f));
+
+                            string plantType = Biome.PlantTypes[Random.Range(0, Biome.PlantTypes.Length)];
+                            newPlant.PlantType = plantType;
+                            break;
+                        }
+            }
+        }
     }
 
     public void Growatree(Vector3 here, Transform within, string treetype = default){

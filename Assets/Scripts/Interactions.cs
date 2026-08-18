@@ -89,6 +89,8 @@ public class Interactions : MonoBehaviour {
                 "Przeszukaj " + this.transform.parent.GetComponent<ChestScript>().Name[1]);
         } else if (Options[ThisOption] == "Locked") {
             ReturnThis = GS.GetComponent<GameScript>().SetString("Locked...", "Zamknięte...");
+        } else if (Options[ThisOption] == "Harvest") {
+            ReturnThis = GS.GetComponent<GameScript>().SetString("Harvest ", "Zbierz ") + this.transform.parent.GetComponent<PlantScript>().ReturnName();
         }
 
         return ReturnThis;
