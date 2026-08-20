@@ -116,7 +116,7 @@ public class MapInfo : MonoBehaviour {
             }
         }
 
-        if (GS.GetSemiClass(GS.RoundSetting, "H", "?") == "4") {
+        if (GS.RoundSetting.GetInt(JType.RoundSettings_HordeMap) == 4) {
             if (GameObject.FindGameObjectWithTag("Player").transform.position.y < -18f) {
                 GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().Hurt(9999f, "Falling", true, Vector3.zero);
             }
@@ -125,7 +125,7 @@ public class MapInfo : MonoBehaviour {
                     KillFallen.GetComponent<MobScript>().Hurt(9999f, null, true, Vector3.zero, "Explosion");
                 }
             }
-        } else if (GS.GetSemiClass(GS.RoundSetting, "H", "?") == "5") {
+        } else if (GS.RoundSetting.GetInt(JType.RoundSettings_HordeMap) == 5) {
             foreach (GameObject KillFallen in GameObject.FindGameObjectsWithTag("Mob")) {
                 if (KillFallen.transform.position.y < -10f) {
                     KillFallen.GetComponent<MobScript>().Hurt(9999f, null, true, Vector3.zero, "");

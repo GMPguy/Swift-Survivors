@@ -637,13 +637,26 @@ public class PlayerScript : MonoBehaviour {
                 if (Health[0] <= 0f) {
                     State = 2;
                     GS.Mess(KilledBy);
-                    if(GS.Round > 1) GS.PS.AchProg("Ach_TheCycleBegins", "0");
-                    if(GS.Round == 19 && GS.GameModePrefab.x == 0) GS.PS.AchProg("Ach_AWholeWeek", "0");
+
+                    if(GS.Round > 1) 
+                        GS.PS.AchProg("Ach_TheCycleBegins", "0");
+                    if(GS.Round == 19 && GS.GameModePrefab.x == 0) 
+                        GS.PS.AchProg("Ach_AWholeWeek", "0");
+
                     Debug.LogError("Here, add a new game over screen!");
-                    GS.NeueScore = new string[]{
-                        "S" + GS.Score.ToString() + ";R" + GS.Round.ToString() + ";G" + GS.GetSemiClass(GS.RoundSetting, "G", "?") + ";D" + GS.GetSemiClass(GS.RoundSetting, "D", "?") + ";N" + GS.SaveFileName + ";P" + GS.GetSemiClass(GS.RoundSetting, "P", "?"),
-                        GS.PlaythroughStats
+
+                    GS.NeueScore = new JClass[]{
+                        new (new JEntry[] {
+                            new JInt (JType.RoundSettings_Score, GS.Score),
+                            new JInt (JType.RoundSettings_Round, GS.Round),
+                            new JInt (JType.RoundSettings_GameMode, GS.RoundSetting.GetInt(JType.RoundSettings_GameMode)),
+                            new JInt (JType.RoundSettings_Difficulty, GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty)),
+                            new JString (JType.RoundSettings_FileName, GS.RoundSetting.GetString(JType.RoundSettings_FileName)),
+                            new JInt (JType.RoundSettings_ProfileDependance, GS.RoundSetting.GetInt(JType.RoundSettings_ProfileDependance)),
+                        }),
+                        new (GS.PlaythroughStats)
                     };
+
                     GS.SaveManipulation(GS.CurrentSave, 2);
                 }
 
@@ -4735,7 +4748,7 @@ public class PlayerScript : MonoBehaviour {
                     CasualEase = 2;
                     int InfectionChance = Random.Range(0, 5);
                     if (InfectionChance == 0) {
-                        Infection += Random.Range(5f, 10f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
+                        Infection += Random.Range(5f, 10f) * GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty);
                     }
                 } else if (DamageType == "MutantSpit") {
                     KilledBy = GS.SetString("You were melted by an acid mutant.", "Zostałeś zabity przez trującego mutanta.");
@@ -4745,7 +4758,7 @@ public class PlayerScript : MonoBehaviour {
                     CasualEase = 2;
                     int InfectionChance = Random.Range(0, 2);
                     if (InfectionChance == 0) {
-                        Infection += Random.Range(10f, 25f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
+                        Infection += Random.Range(10f, 25f) * GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty);
                     }
                 } else if (DamageType == "Melee") {
                     KilledBy = GS.SetString("You died in a melee fight.", "Zostałeś zabity bronią białą.");
@@ -4753,7 +4766,7 @@ public class PlayerScript : MonoBehaviour {
                     CasualEase = 2;
                     int InfectionChance = Random.Range(0, 10);
                     if (InfectionChance == 0) {
-                        Bleeding += Random.Range(5f, 20f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
+                        Bleeding += Random.Range(5f, 20f) * GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty);
                     }
                 } else if (DamageType == "Gun" || DamageType == "Arrow") {
                     KilledBy = GS.SetString("You were shot.", "Zostałeś zastrzelony.");
@@ -4761,7 +4774,7 @@ public class PlayerScript : MonoBehaviour {
                     CasualEase = 4;
                     int InfectionChance = Random.Range(0, 10);
                     if (InfectionChance == 0) {
-                        Bleeding += Random.Range(5f, 20f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
+                        Bleeding += Random.Range(5f, 20f) * GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty);
                     }
                 } else if (DamageType == "Explosion") {
                     KilledBy = GS.SetString("You blew up.", "Zostałeś wysadzony w powietrze.");
@@ -4770,13 +4783,13 @@ public class PlayerScript : MonoBehaviour {
                     Gib = true;
                     int InfectionChance = Random.Range(0, 2);
                     if (InfectionChance == 0) {
-                        Bleeding += Random.Range(1f, 5f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
+                        Bleeding += Random.Range(1f, 5f) * GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty);
                     }
                 } else if (DamageType == "BarbedWire") {
                     KilledBy = GS.SetString("You were caught in barbed wire.", "Utknąłeś w drucie kolczastym.");
                     HardcoreInstaKill = true;
                     CantMove = Mathf.Clamp(5f, CantMove, Mathf.Infinity);
-                    Bleeding += Random.Range(5f, 20f) * int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
+                    Bleeding += Random.Range(5f, 20f) * GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty);
                 } else if (DamageType == "FoodPoisoning") {
                     KilledBy = GS.SetString("You died due to food poisoning.", "Umarłeś w wyniku zatrucia pokarmowego.");
                 } else if (DamageType == "Smoking") {
@@ -4795,17 +4808,17 @@ public class PlayerScript : MonoBehaviour {
                 if(DamageType == "Canibalism"){
                     Health[0] -= GotDamage;
                     if(Health[0] <= 0f) GS.PS.AchProg("Ach_StarveDeath", "0");
-                } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
+                } else if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 1) { 
                     Health[0] -= GotDamage * 0.5f;
-                } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "2") {
+                } else if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 2) {
                     Health[0] -= GotDamage;
-                } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "3") {
+                } else if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 3) {
                     Health[0] -= GotDamage * 2f;
                 } else {
                     Health[0] -= GotDamage * 4f;
                 }
 
-                if (HardcoreInstaKill == true && GS.GetSemiClass(GS.RoundSetting, "D", "?") == "5") {
+                if (HardcoreInstaKill == true && GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 5) {
                     Health[0] = 0f;
                 }
 

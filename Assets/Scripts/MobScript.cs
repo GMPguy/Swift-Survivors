@@ -904,9 +904,9 @@ public class MobScript : MonoBehaviour {
         }
 
         
-        if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
+        if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 1) {
             GunSpread[0] = Mathf.Clamp(GunSpread[0], 0f, 0f);
-        } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "4" || GS.GetSemiClass(GS.RoundSetting, "D", "?") == "5") {
+        } else if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 4 || GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 5) {
             GunSpread[0] = Mathf.Clamp(GunSpread[0], 0.5f, 1f);
         } else {
             GunSpread[0] = Mathf.Clamp(GunSpread[0], 0f, 1f);
@@ -1307,7 +1307,7 @@ public class MobScript : MonoBehaviour {
         } else if (ClassOfMob == "Mutant") {
             int SpawnChance = (int)Random.Range(-10f, 1.9f);
             if (GS.GameModePrefab.x == 1) {
-                SpawnChance = (int)Random.Range(Mathf.Lerp(-1f, -3f, float.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) / 5f), 1.9f);
+                SpawnChance = (int)Random.Range(Mathf.Lerp(-1f, -3f, GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) / 5f), 1.9f);
             } else {
                 if (BasicMutantJob == "Police" || BasicMutantJob == "Builder" || BasicMutantJob == "Doctor" || BasicMutantJob == "Cook") {
                     SpawnChance = (int)Random.Range(0.5f, 2.5f);

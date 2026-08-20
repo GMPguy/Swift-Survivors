@@ -19,7 +19,7 @@ public class GameScript : MonoBehaviour {
     // Game Variables
     public string SaveFileName = "";
     public int FileSeed = 0;
-    public string RoundSetting = "G0?D0?P1";
+    public JClass RoundSetting;//"G0?D0?P1";
     public int2 GameModePrefab = new (0, 0);
     public int Round = 0;
     public int Biome = 0;
@@ -35,8 +35,8 @@ public class GameScript : MonoBehaviour {
     public string PlayerBuffs = "";
 
     public int CurrentSave = 0;
-    public string PlaythroughStats = "";
-    public string[] NeueScore;
+    public JClass PlaythroughStats;
+    public JClass[] NeueScore;
     public int WhatOnStart = 0; // 0 New 1 Load
     // Game Variables
 
@@ -314,16 +314,16 @@ public class GameScript : MonoBehaviour {
     public void AddToScore(int ScoreToAdd){
         Score += ScoreToAdd;
 
-        float multiplier = GetSemiClass(RoundSetting, "G") switch {
-            "0" => .25f,
+        float multiplier = RoundSetting.GetInt(JType.RoundSettings_GameMode) switch {
+            0 => .25f,
             _ => 1f
         };
 
-        multiplier *= GetSemiClass(RoundSetting, "D") switch {
-            "0" => .5f,
-            "2" => 1.5f,
-            "3" => 2f,
-            "4" => 4f,
+        multiplier *= RoundSetting.GetInt(JType.RoundSettings_Difficulty) switch {
+            0 => .5f,
+            2 => 1.5f,
+            3 => 2f,
+            4 => 4f,
             _ => 1f
         };
 

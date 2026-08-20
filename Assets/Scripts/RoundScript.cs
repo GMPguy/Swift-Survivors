@@ -180,35 +180,6 @@ public class RoundScript : MonoBehaviour {
 
         SetItemArrays();
         GS.setItemData(IsCausual);
-
-        // Update BiomeInfo to BiomeConfig
-        /*for (int b = 0; b < BiomeObj.childCount; b++) {
-            BiomeInfo old = BiomeObj.GetChild(b).GetComponent<BiomeInfo>();
-            BiomeConfig New = ListOfBiomes[b];
-
-            New.BiomeName = old.BiomeName;
-            New.AvailableTerrainTypes = old.AvailableTerrainTypes;
-            New.Grasses = old.Grasses;
-            New.Sponges = old.Sponges;
-
-            New.MobPHsuggestion = old.MobPHsuggestion;
-            New.AmountOfMobs = old.AmountOfMobs;
-
-            New.AmountOfMutants = old.AmountOfMutants;
-            New.AmountOfBandits = old.AmountOfBandits;
-            New.Radioactivity = old.Radioactivity;
-
-            New.FloraType = old.FloraType;
-            New.Barrier = old.Barrier;
-            New.Monument = old.Monument;
-            New.Ambience = old.Ambience;
-            New.Music = old.Music;
-
-            New.GrassColor = old.GrassColor;
-
-            EditorUtility.SetDirty(New);
-            AssetDatabase.SaveAssets();
-        }*/
     }
 	
 	// Update is called once per frame
@@ -291,11 +262,6 @@ public class RoundScript : MonoBehaviour {
                     currentMobPHscan = (currentMobPHscan+1) % MobPHeses.Length;
                 }
             }
-            /*if(Input.GetKey(KeyCode.T)){
-                TimeOfDay[1] += 1;
-                if(TimeOfDay[1] > 1440) TimeOfDay[1] = 0; 
-                if(GS.SkyboxType == 2) AmbientSet("Normal");
-            }*/
 
             if (RoundState == "Prepeare" && DonePrepare != -1) {
 
@@ -828,12 +794,12 @@ public class RoundScript : MonoBehaviour {
                                         AvailableOffers.Add(80);
                                         AvailableOffers.Add(81);
                                     }
-                                    float PickBargain = Random.value;// GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.x + GS.Round + AddTradeOptions, GetInt.transform.position.y + GS.Round + AddTradeOptions);
-                                    float PickPrice = Random.value;//GS.SeedPerlin2D(GS.RoundSeed, GetInt.transform.position.y + GS.Round + AddTradeOptions, GetInt.transform.position.x + GS.Round + AddTradeOptions);
+                                    
+                                    float PickBargain = Random.value;
+                                    float PickPrice = Random.value;
+
                                     GetInt.GetComponent<InteractableScript>().TradeOptions[AddTradeOptions] = AvailableOffers.ToArray()[(int)(PickBargain * AvailableOffers.ToArray().Length - 0.1f)];
                                     GetInt.GetComponent<InteractableScript>().TradePrices[AddTradeOptions] = (int)(Mathf.Lerp(5f, 100f, DifficultySliderA) + (PickPrice * Mathf.Lerp(20f, 750f, DifficultySliderA)));
-                                    //GetInt.GetComponent<InteractableScript>().TradeOptions[AddTradeOptions] = AvailableOffers.ToArray()[(int)(Mathf.PerlinNoise(GS.GetComponent<GameScript>().LandSeed.x + GetInt.transform.position.x + GS.GetComponent<GameScript>().Round + AddTradeOptions, GS.GetComponent<GameScript>().LandSeed.y + GetInt.transform.position.y + GS.GetComponent<GameScript>().Round + AddTradeOptions) * AvailableOffers.ToArray().Length - 0.1f)];
-                                    //GetInt.GetComponent<InteractableScript>().TradePrices[AddTradeOptions] = (int)(Mathf.PerlinNoise(GS.GetComponent<GameScript>().LandSeed.x + GetInt.transform.position.x + GS.GetComponent<GameScript>().Round + AddTradeOptions, GS.GetComponent<GameScript>().LandSeed.y + GetInt.transform.position.y + GS.GetComponent<GameScript>().Round + AddTradeOptions) * Mathf.Lerp(20f, 750f, DifficultySlider));
                                 }
                             }
                         }

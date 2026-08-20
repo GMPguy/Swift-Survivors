@@ -256,11 +256,9 @@ public class Spawner : MonoBehaviour {
             } else if (ObjectToSpawn.tag == "Interactable") {
                 GameObject SpawnItem = Instantiate(ObjectToSpawn) as GameObject;
                 SpawnItem.transform.position = this.transform.position;
-                //print(NewStuffToSpawn.Length);
                 JClass pickitem = theNewStuffToSpawn[Random.Range(0, theNewStuffToSpawn.Length)];
-                //print(pickitem);
-                //print(GS.GetSemiClass(pickitem, "x") + ";" + GS.GetSemiClass(pickitem, "y") + ";" + GS.GetSemiClass(pickitem, "z") + ";");
-                SpawnItem.GetComponent<InteractableScript>().Variables.CopyFrom( pickitem );//new Vector3(float.Parse(GS.GetSemiClass(pickitem, "x")), float.Parse(GS.GetSemiClass(pickitem, "y")), float.Parse(GS.GetSemiClass(pickitem, "z")));
+
+                SpawnItem.GetComponent<InteractableScript>().Variables.CopyFrom( pickitem );
                 if (SpawnItem.GetComponent<InteractableScript>().Variables.GetInt(JType.ID) is 3 or 4) {
                     SpawnItem.transform.rotation = this.transform.rotation;
                 }

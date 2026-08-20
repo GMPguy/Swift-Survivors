@@ -274,7 +274,14 @@ public enum JType {
     InteractableType,
     SpawnStuffString,
     InvEqCache_Inventory,
-    InvEqCache_Equipment
+    InvEqCache_Equipment,
+    RoundSettings_GameMode,
+    RoundSettings_Difficulty,
+    RoundSettings_ProfileDependance,
+    RoundSettings_HordeMap,
+    RoundSettings_Score,
+    RoundSettings_Round,
+    RoundSettings_FileName
 }
 
 public enum JTemplate {

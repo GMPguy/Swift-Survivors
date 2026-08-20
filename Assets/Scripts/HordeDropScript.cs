@@ -114,7 +114,7 @@ public class HordeDropScript : MonoBehaviour {
         ParticleSystem.MainModule SetSparkles = Sparkles.main;
         SetSparkles.startColor = new ParticleSystem.MinMaxGradient(SetColor);
 
-        Lifetime = Mathf.Lerp(30f, 10f, float.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) / 5f);
+        Lifetime = Mathf.Lerp(30f, 10f, GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) / 5f);
 
     }
 

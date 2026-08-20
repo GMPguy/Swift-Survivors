@@ -36,7 +36,7 @@ x Add apartment and hut building
 MINOR:
 - Improve sea biome
 	- Fix huts
-- Add plants
+x Add plants
 x Add new fences
 
 x pathfinding in horde
