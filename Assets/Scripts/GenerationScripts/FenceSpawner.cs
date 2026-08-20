@@ -66,7 +66,6 @@ public class FenceSpawner : MonoBehaviour {
             Vector3 forward = transform.forward * roundedLength.y / 2f;
             Vector3 right = transform.right * roundedLength.x / 2f;
 
-            // TODO - kurwa do naprawy ja pierdole
             Vector3[] offs = new Vector3[] {
                 -forward - right,
                 -forward - right,

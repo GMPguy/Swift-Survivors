@@ -1796,7 +1796,7 @@ public class PlayerScript : MonoBehaviour {
 
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f)
                         use = 0;
-                    else if (GS.ReceiveButtonPress("Action", "Hold") > 0f)
+                    else if (GS.ReceiveButtonPress("AltAction", "Hold") > 0f)
                         use = 1;
                     else
                         break;
@@ -2342,7 +2342,7 @@ public class PlayerScript : MonoBehaviour {
                                 // Yellow - white
                                 HungerToAddSub = 10f;
 
-                                HealthToAddSub = Mathf.Lerp(-50f, Health[1] + 1f, (safety - .75f) / .1f);
+                                HealthToAddSub = Mathf.Lerp(-50f, -Health[1] - 1f, (safety - .75f) / .1f);
                                 HealthDamage = "LiverFailure";
                             } else if (safety > .5f) {
                                 // Red - yellow

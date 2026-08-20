@@ -65,7 +65,7 @@ public class NewMenuScript : MonoBehaviour {
     public Text OptionWarningText;
     // While pick game
     public Transform PickGame;
-    string[] ListOfSaveFiles = new string[]{}; 
+    JClass[] ListOfSaveFiles = new JClass[]{}; 
     public Transform[] PGbuttons;
     public Text PGdesc;
     public Transform[] PGdescButts;
@@ -629,9 +629,9 @@ public class NewMenuScript : MonoBehaviour {
             switch(Warning[0]){
                 case "EraseSave":
                     string[] TheFile = {"", ""};
-                    foreach(string CheckName in GS.ListSemiClass(PlayerPrefs.GetString("Saves"), "©")) if(GS.GetSemiClass(CheckName, "id", "®") == Warning[1]) {
-                        TheFile[0] = GS.GetSemiClass(CheckName, "sn", "®");
-                        TheFile[1] = GS.GetSemiClass(GS.GetSemiClass(CheckName, "rs", "®"), "P", "?");
+                    foreach(JClass CheckName in GS.ListSaveFiles()) if(CheckName.GetInt(JType.Save_ID).ToString() == Warning[1]) {
+                        TheFile[0] = CheckName.GetString(JType.Save_Name);
+                        TheFile[1] = CheckName.GetClass(JType.Save_RoundSettings).GetInt(JType.RoundSettings_ProfileDependance).ToString();
                     }
 
                     WarningAddData = new string[]{
@@ -1504,8 +1504,8 @@ public class NewMenuScript : MonoBehaviour {
 
                     // Choosing files
                     if(PlayerPrefs.HasKey("Saves") && ListOfSaveFiles.Length <= 0 ) {
-                        List<string> AvaSaves = new List<string>();
-                        foreach(string chick in GS.ListSemiClass(PlayerPrefs.GetString("Saves"), "©")) if (GS.GetSemiClass(GS.GetSemiClass(chick, "rs", "®"), "P", "?") == PS.ProfileID.ToString() || GS.GetSemiClass(GS.GetSemiClass(chick, "rs", "®"), "P", "?") == "1")
+                        List<JClass> AvaSaves = new List<JClass>();
+                        foreach(JClass chick in GS.ListSaveFiles()) if (chick.GetClass(JType.Save_RoundSettings).GetInt(JType.RoundSettings_ProfileDependance) == PS.ProfileID || chick.GetClass(JType.Save_RoundSettings).GetInt(JType.RoundSettings_ProfileDependance) == 1)
                             AvaSaves.Add(chick);
                         ListOfSaveFiles = AvaSaves.ToArray();
                     }
@@ -1516,10 +1516,10 @@ public class NewMenuScript : MonoBehaviour {
                         Text PGtext = PGbuttons[sb].GetComponent<Text>();
 
                         if (sb < ListOfSaveFiles.Length){
-                            string SaveInfo = ListOfSaveFiles[sb];
+                            JClass SaveInfo = ListOfSaveFiles[sb];
 
-                            if(GS.GetSemiClass(GS.GetSemiClass(SaveInfo, "rs", "®"), "P", "?") == "1") PGtext.text = "> " + GS.GetSemiClass(SaveInfo, "sn", "®") + GS.SetString(" - Independent", " - Niezależne");
-                            else PGtext.text = "> " + GS.GetSemiClass(SaveInfo, "sn", "®");
+                            if(SaveInfo.GetClass(JType.Save_RoundSettings).GetInt(JType.RoundSettings_ProfileDependance) == 1) PGtext.text = "> " + SaveInfo.GetString(JType.Save_Name) + GS.SetString(" - Independent", " - Niezależne");
+                            else PGtext.text = "> " + SaveInfo.GetString(JType.Save_Name);
 
                             if(PGbuttons[sb].GetComponent<ButtonScript>().IsSelected && Input.GetMouseButtonDown(0)){
                                 SelectedFile = sb;
@@ -1544,10 +1544,10 @@ public class NewMenuScript : MonoBehaviour {
                         PGdescButts[2].GetChild(0).GetComponent<Text>().text = GS.SetString("PLAY", "ZAGRAJ");
                         if (Input.GetMouseButtonDown(0))
                             if (PGdescButts[0].GetComponent<ButtonScript>().IsSelected) CurrentWindow = "Main";
-                            else if (PGdescButts[1].GetComponent<ButtonScript>().IsSelected) Warning = new string[]{"EraseSave", GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "id", "®")};
+                            else if (PGdescButts[1].GetComponent<ButtonScript>().IsSelected) Warning = new string[]{"EraseSave", ListOfSaveFiles[SelectedFile].GetInt(JType.Save_ID).ToString()};
                             else if (PGdescButts[2].GetComponent<ButtonScript>().IsSelected) {
                             
-                                GS.CurrentSave = int.Parse(GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "id", "®"));
+                                GS.CurrentSave = ListOfSaveFiles[SelectedFile].GetInt(JType.Save_ID);
                                 LoadingTime = Random.Range(1f, 3f);
                                 AfterLoading = "f_LoadGame";
 
@@ -1556,8 +1556,9 @@ public class NewMenuScript : MonoBehaviour {
 
                         string[] GameModes = {GS.SetString("Classic", "Klasyczny"), GS.SetString("Horde", "Horda"), GS.SetString("Casual", "Swobodny")};
                         string[] DiffLevels = {GS.SetString("Easy", "Łatwy"), GS.SetString("Normal", "Normalny"), GS.SetString("Hard", "Trudny"), GS.SetString("Very hard", "Bardzo trudny"), GS.SetString("HARDCORE", "HARDKOROWY")};
-                        int[] MD = {int.Parse(GS.GetSemiClass(GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "rs", "®"), "G", "?")), int.Parse(GS.GetSemiClass(GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "rs", "®"), "D", "?"))};
-                        PGdesc.text = GS.GetSemiClass(ListOfSaveFiles[SelectedFile], "sn", "®") + GS.SetString("\nGame mode: ", "\nTryb gry: ") + GameModes[MD[0]] + GS.SetString("\nDifficulty level: ", "\nPoziom trudności: ") + DiffLevels[MD[1]-1];
+                        JClass SaveSettings = ListOfSaveFiles[SelectedFile].GetClass(JType.Save_RoundSettings);
+                        int[] MD = {SaveSettings.GetInt(JType.RoundSettings_GameMode), SaveSettings.GetInt(JType.RoundSettings_Difficulty)};
+                        PGdesc.text = ListOfSaveFiles[SelectedFile].GetString(JType.Save_Name) + GS.SetString("\nGame mode: ", "\nTryb gry: ") + GameModes[MD[0]] + GS.SetString("\nDifficulty level: ", "\nPoziom trudności: ") + DiffLevels[MD[1]-1];
                     } else {
                         PGdesc.text = GS.SetString("Start a new game, or continue a saved one.", "Rozpocznij nową grę, albo kontynuuj którąś z zapisanych.");
                         PGdescButts[1].localScale = PGdescButts[2].localScale = Vector3.zero;
@@ -1568,7 +1569,7 @@ public class NewMenuScript : MonoBehaviour {
 
                     break;
                 case "NewGame":
-                    ListOfSaveFiles = new string[0];
+                    ListOfSaveFiles = new JClass[0];
                     SelectedFile = -1;
                     PGbuttons[0].parent.localScale = Vector3.zero;
                     GMimage.transform.parent.localScale = Vector3.one;
@@ -1727,7 +1728,7 @@ public class NewMenuScript : MonoBehaviour {
             PickGame.position = SH[1].position;
             PickGame.localScale = Vector3.zero;
             SelectedFile = -1;
-            ListOfSaveFiles = new string[0];
+            ListOfSaveFiles = new JClass[0];
 
         }
 
@@ -1849,16 +1850,16 @@ public class NewMenuScript : MonoBehaviour {
                         FadeInValue -= 0.02f * (Time.unscaledDeltaTime*50f);
                     } else if (ToCheckout < RStempstats.Count){
                         FadeInValue = 0.5f;
-                        string statText = RStempstats[ToCheckout].Name + ": " + (RStempstats[ToCheckout] is JInt statValue ? statValue.Value.ToString() : "");
-                        if (RStempstats[ToCheckout].Name != JType.RoundScore_Hunger && RStempstats[ToCheckout].Name != JType.RoundPunishment_ItemLost && RStempstats[ToCheckout].Name != JType.RoundPunishment_Tired && RStempstats[ToCheckout].Name != JType.RoundPunishment_Wet && RStempstats[ToCheckout].Name != JType.RoundPunishment_Damaged && RStempstats[ToCheckout].Name != JType.RoundPunishment_NoAmmo && RStempstats[ToCheckout].Name != JType.RoundPunishment_Dirty && RStempstats[ToCheckout].Name != JType.RoundReward_Item && RStempstats[ToCheckout].Name != JType.RoundReward_Healed && RStempstats[ToCheckout].Name != JType.RoundReward_Adrenaline && RStempstats[ToCheckout].Name != JType.RoundReward_Treasure && RStempstats[ToCheckout].Name != JType.RoundReward_Drunk && RStempstats[ToCheckout].Name != JType.RoundReward_Money){
-                            if (RStempstats.Count < 29){
-                                ResultTextes[0].text += statText + "\n";
-                            } else if (ToCheckout <= 29) {
-                                ResultTextes[1].text += statText + "\n";
-                            } else {
-                                ResultTextes[2].text += statText + "\n";
-                            }
+                        string statText = GS.GetStatName(RStempstats[ToCheckout]);
+
+                        if (RStempstats.Count < 29){
+                            ResultTextes[0].text += statText + "\n";
+                        } else if (ToCheckout <= 29) {
+                            ResultTextes[1].text += statText + "\n";
+                        } else {
+                            ResultTextes[2].text += statText + "\n";
                         }
+
                         ToCheckout ++;
                     } else {
                         CheckoutStage = 5;
@@ -1885,15 +1886,14 @@ public class NewMenuScript : MonoBehaviour {
 
                     ResultTextes[0].text = ResultTextes[1].text = ResultTextes[2].text = "";
                     for (int pts = 0; pts < RStempstats.Count; pts++) {
-                        string statText = RStempstats[pts].Name + ": " + (RStempstats[pts] is JInt statValue ? statValue.Value.ToString() : "");
-                        if (RStempstats[pts].Name != JType.RoundScore_Hunger && RStempstats[pts].Name != JType.RoundPunishment_ItemLost && RStempstats[pts].Name != JType.RoundPunishment_Tired && RStempstats[pts].Name != JType.RoundPunishment_Wet && RStempstats[pts].Name != JType.RoundPunishment_Damaged && RStempstats[pts].Name != JType.RoundPunishment_NoAmmo && RStempstats[pts].Name != JType.RoundPunishment_Dirty && RStempstats[pts].Name != JType.RoundReward_Item && RStempstats[pts].Name != JType.RoundReward_Healed && RStempstats[pts].Name != JType.RoundReward_Adrenaline && RStempstats[pts].Name != JType.RoundReward_Treasure && RStempstats[pts].Name != JType.RoundReward_Drunk && RStempstats[pts].Name != JType.RoundReward_Money){
-                            if (RStempstats.Count < 29){
-                                ResultTextes[0].text += statText + "\n";
-                            } else if (pts <= 29) {
-                                ResultTextes[1].text += statText + "\n";
-                            } else {
-                                ResultTextes[2].text += statText + "\n";
-                            }
+                        string statText = GS.GetStatName(RStempstats[pts]);
+
+                        if (RStempstats.Count < 29){
+                            ResultTextes[0].text += statText + "\n";
+                        } else if (pts <= 29) {
+                            ResultTextes[1].text += statText + "\n";
+                        } else {
+                            ResultTextes[2].text += statText + "\n";
                         }
                     }
 
@@ -2057,21 +2057,28 @@ public class NewMenuScript : MonoBehaviour {
             // Read stats
             if(PMstats.Length <= 9999){
                 List<string> toPMstats = new List<string>();
+
                 List<string> Main = new List<string>();
                 List<string> Misc = new List<string>();
-                foreach(JEntry stat in PS.Statistics.Values){
+
+                foreach(JEntry stat in PS.Statistics.Values)
                     if(stat is JInt value)
                         Main.Add(stat.Name + ": " + value.Value);
-                }
+                
                 for(int adder = 0; adder < Main.ToArray().Length + Misc.ToArray().Length; adder++){
                     if(adder < Main.ToArray().Length) {
-                        if(adder == 0) {toPMstats.Add(GS.SetString("MAIN SCORE", "GŁÓWNE WYNIKI"));}
+                        if(adder == 0)
+                            toPMstats.Add(GS.SetString("MAIN SCORE", "GŁÓWNE WYNIKI"));
+
                         toPMstats.Add(Main.ToArray()[adder]);
                     } else {
-                        if(adder == Main.ToArray().Length) {toPMstats.Add(""); toPMstats.Add(GS.SetString("MISCELLANEOUS STATS", "GŁOWNE STATYSTYKI"));}
+                        if(adder == Main.ToArray().Length) 
+                            toPMstats.Add(""); toPMstats.Add(GS.SetString("MISCELLANEOUS STATS", "GŁOWNE STATYSTYKI"));
+
                         toPMstats.Add(Misc.ToArray()[adder-Main.ToArray().Length]);
                     }
                 }
+
                 PMstats = toPMstats.ToArray();
             }
 
@@ -2670,7 +2677,7 @@ public class NewMenuScript : MonoBehaviour {
             
             List<string> ParseNames = new List<string>();
             if(PlayerPrefs.HasKey("Saves") && WhichArray == 0)
-                foreach(string GitSave in GS.ListSemiClass(PlayerPrefs.GetString("Saves"), "©")) ParseNames.Add(GS.GetSemiClass(GitSave, "sn", "®"));
+                foreach(JClass GitSave in GS.ListSaveFiles()) ParseNames.Add(GitSave.GetString(JType.Save_Name));
             else if(PlayerPrefs.HasKey("ProfileSaves") && WhichArray == 1)
                 foreach(string GitSave in GS.ListSemiClass(PlayerPrefs.GetString("ProfileSaves"), "©")) ParseNames.Add(GS.GetSemiClass(GitSave, "PN_", "®"));
 

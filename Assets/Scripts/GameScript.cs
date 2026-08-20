@@ -520,6 +520,42 @@ public class GameScript : MonoBehaviour {
 
     }
 
+    public JClass[] ListSaveFiles() {
+        string[] serializedFiles = ListSemiClass(PlayerPrefs.GetString("Saves"), "©");
+        List<JClass> saveFiles = new List<JClass>();
+
+        foreach (string serializedFile in serializedFiles) {
+            if (serializedFile != "")
+                saveFiles.Add(GetSaveFile(serializedFile));
+        }
+
+        return saveFiles.ToArray();
+    }
+
+    public JClass GetSaveFile(string serializedFile) {
+        JClass saveFile = new JClass();
+        saveFile.SetInt(JType.Save_ID, int.Parse(GetSemiClass(serializedFile, "id", "®")));
+        saveFile.SetString(JType.Save_Name, GetSemiClass(serializedFile, "sn", "®"));
+        saveFile.SetInt(JType.Save_Round, int.Parse(GetSemiClass(serializedFile, "ro", "®")));
+        saveFile.SetInt(JType.Save_Score, int.Parse(GetSemiClass(serializedFile, "so", "®")));
+        saveFile.SetInt(JType.Save_Biome, int.Parse(GetSemiClass(serializedFile, "bo", "®")));
+        saveFile.SetInt(JType.Save_Money, int.Parse(GetSemiClass(serializedFile, "mo", "®")));
+        saveFile.SetInt(JType.Save_Ammo, int.Parse(GetSemiClass(serializedFile, "am", "®")));
+        saveFile.SetInt(JType.Save_FileSeed, int.Parse(GetSemiClass(serializedFile, "fs", "®")));
+        saveFile.SetInt(JType.Save_RoundsSeed, int.Parse(GetSemiClass(serializedFile, "sr", "®")));
+        saveFile.SetFloat(JType.Save_HealthCurrent, float.Parse(GetSemiClass(serializedFile, "l0", "®"), CultureInfo.InvariantCulture));
+        saveFile.SetFloat(JType.Save_HealthMaximum, float.Parse(GetSemiClass(serializedFile, "l1", "®"), CultureInfo.InvariantCulture));
+        saveFile.SetFloat(JType.Save_HungerCurrent, float.Parse(GetSemiClass(serializedFile, "h0", "®"), CultureInfo.InvariantCulture));
+        saveFile.SetFloat(JType.Save_HungerMaximum, float.Parse(GetSemiClass(serializedFile, "h1", "®"), CultureInfo.InvariantCulture));
+        saveFile.SetFloat(JType.Save_PlayerSpeed, float.Parse(GetSemiClass(serializedFile, "ps", "®"), CultureInfo.InvariantCulture));
+        saveFile.SetInt(JType.Save_MaxInventory, int.Parse(GetSemiClass(serializedFile, "mi", "®")));
+        saveFile.SetString(JType.Save_Buffs, GetSemiClass(serializedFile, "bs", "®"));
+        saveFile.SetClass(JType.Save_Inventory, JsonUtility.FromJson<JClass>(GetSemiClass(serializedFile, "pi", "®")));
+        saveFile.SetClass(JType.Save_RoundSettings, JsonUtility.FromJson<JClass>(GetSemiClass(serializedFile, "rs", "®")));
+        saveFile.SetClass(JType.Save_PlaythroughStats, JsonUtility.FromJson<JClass>(GetSemiClass(serializedFile, "pts", "®")));
+        return saveFile;
+    }
+
     public void UpdateRecord(){
 
         int rounds = Mathf.Max(NeueScore[0].GetInt(JType.RoundSettings_Round) - 1, 0);
@@ -2137,7 +2173,6 @@ public class GameScript : MonoBehaviour {
     }
 
     // The Semi-Class functions
-
     public string GetSemiClass(string From, string What, string Separator = ";"){
 
         string Result = "null";
@@ -2304,8 +2339,7 @@ public class GameScript : MonoBehaviour {
 
         string Result = "null";
 
-        //string[] TypeScore = {"", "?"}; // Key / Value
-                        
+        // TODO: Stat importance          
         switch(stat.Name){
             case JType.RoundScore_Stats_ItemsFound:
                 Result = SetString("Items found: ", "Znalezione przedmioty: ") + ((JInt) stat).Value;
@@ -2398,12 +2432,6 @@ public class GameScript : MonoBehaviour {
                 Debug.LogError("Uknown stat type: " + stat);
                 break;
         }
-
-        /*if(what == 2) 
-            return TypeScore[1];
-        else if(what == 1) 
-            return TypeScore[0];
-        else*/
         
         return Result;
 

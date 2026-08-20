@@ -131,6 +131,13 @@ public class JClass {
         return Values[fetch] is JList getList ? getList : null;
     }
 
+    public JClass GetClass(JType what) {
+        int fetch = FetchStruct(what);
+        if (fetch == -1) return null;
+
+        return Values[fetch] is JClassEntry getClass ? getClass.Value : null;
+    }
+
     public void SetList(JType what, List<JClass> value) {
         int fetch = FetchStruct(what);
 
@@ -142,6 +149,15 @@ public class JClass {
             else
                 Values[fetch] = new JList(what, value);
         }
+    }
+
+    public void SetClass(JType what, JClass value) {
+        int fetch = FetchStruct(what);
+
+        if (fetch == -1)
+            Values.Add(new JClassEntry(what, value));
+        else
+            Values[fetch] = new JClassEntry(what, value);
     }
 
     // Default
@@ -189,6 +205,10 @@ public class JClass {
                 case JString:
                     JString getString = (JString)where.Values[c];
                     SetString(entryType, getString.Value);
+                    break;
+                case JClassEntry:
+                    JClassEntry getClass = (JClassEntry)where.Values[c];
+                    SetClass(entryType, getClass.Value);
                     break;
                 default:
                     SetEntry(entryType);
@@ -258,6 +278,15 @@ public class JList : JEntry {
     public JList (JType type, List<JClass> value) : base (type) {
         Name = type;
         Value = new List<JClass>(value);
+    }
+}
+
+[Serializable]
+public class JClassEntry : JEntry {
+    public JClass Value;
+    public JClassEntry (JType type, JClass value) : base(type) {
+        Name = type;
+        Value = value;
     }
 }
 
@@ -386,47 +415,66 @@ public enum JType {
     AchievementGarbage,
     VictoryImage,
     AchievementNpc,
-    AchievementCompleted
-    ,RoundPunishment_ItemLost
-    ,RoundPunishment_Tired
-    ,RoundPunishment_Wet
-    ,RoundPunishment_Damaged
-    ,RoundPunishment_NoAmmo
-    ,RoundPunishment_Dirty
-    ,RoundReward_Item
-    ,RoundReward_Healed
-    ,RoundReward_Adrenaline
-    ,RoundReward_Treasure
-    ,RoundReward_Drunk
-    ,RoundReward_Money
-    ,RoundScore_Hunger
-    ,RoundScore_Stats_SurvivedTime
-    ,RoundScore_Stats_TradeBuy
-    ,RoundScore_Stats_TradeSell
-    ,RoundScore_Stats_TreasuresSold
-    ,RoundScore_Stats_ChestsOpened
-    ,RoundScore_Stats_ChestsDestroyed
-    ,RoundScore_Stats_ObjectsDestroyed
-    ,RoundScore_Stats_MapDiscovered
-    ,RoundScore_Stats_Damage
-    ,RoundScore_Stats_Killed
-    ,RoundScore_Stats_KillMutant
-    ,RoundScore_Stats_KillBandit
-    ,RoundScore_Stats_KillSurvivor
-    ,RoundScore_Stats_KillGuard
-    ,RoundScore_Stats_PickedLocks
-    ,RoundScore_Stats_ItemsFound
-    ,RoundScore_Stats_TreasuresFound
-    ,RoundScore_Stats_ItemsUnderwaterFound
-    ,Stats_TotalRounds
-    ,Stats_TotalCasualRounds
-    ,Stats_TotalWaves
-    ,Stats_TotalScore
-    ,Stats_HighestScore
-    ,Stats_MostRounds
-    ,Stats_MostCasualRounds
-    ,Stats_MostWaves
-    ,Stats_LongestSurvivedTime
+    AchievementCompleted,
+    Save_ID,
+    Save_Name,
+    Save_Round,
+    Save_Score,
+    Save_Biome,
+    Save_Money,
+    Save_Ammo,
+    Save_FileSeed,
+    Save_RoundsSeed,
+    Save_HealthCurrent,
+    Save_HealthMaximum,
+    Save_HungerCurrent,
+    Save_HungerMaximum,
+    Save_PlayerSpeed,
+    Save_Inventory,
+    Save_MaxInventory,
+    Save_Buffs,
+    Save_RoundSettings,
+    Save_PlaythroughStats,
+    RoundPunishment_ItemLost,
+    RoundPunishment_Tired,
+    RoundPunishment_Wet,
+    RoundPunishment_Damaged,
+    RoundPunishment_NoAmmo,
+    RoundPunishment_Dirty,
+    RoundReward_Item,
+    RoundReward_Healed,
+    RoundReward_Adrenaline,
+    RoundReward_Treasure,
+    RoundReward_Drunk,
+    RoundReward_Money,
+    RoundScore_Hunger,
+    RoundScore_Stats_SurvivedTime,
+    RoundScore_Stats_TradeBuy,
+    RoundScore_Stats_TradeSell,
+    RoundScore_Stats_TreasuresSold,
+    RoundScore_Stats_ChestsOpened,
+    RoundScore_Stats_ChestsDestroyed,
+    RoundScore_Stats_ObjectsDestroyed,
+    RoundScore_Stats_MapDiscovered,
+    RoundScore_Stats_Damage,
+    RoundScore_Stats_Killed,
+    RoundScore_Stats_KillMutant,
+    RoundScore_Stats_KillBandit,
+    RoundScore_Stats_KillSurvivor,
+    RoundScore_Stats_KillGuard,
+    RoundScore_Stats_PickedLocks,
+    RoundScore_Stats_ItemsFound,
+    RoundScore_Stats_TreasuresFound,
+    RoundScore_Stats_ItemsUnderwaterFound,
+    Stats_TotalRounds,
+    Stats_TotalCasualRounds,
+    Stats_TotalWaves,
+    Stats_TotalScore,
+    Stats_HighestScore,
+    Stats_MostRounds,
+    Stats_MostCasualRounds,
+    Stats_MostWaves,
+    Stats_LongestSurvivedTime
 }
 
 public enum JTemplate {

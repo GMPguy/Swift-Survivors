@@ -1954,7 +1954,8 @@ public class CanvasScript : MonoBehaviour {
 
                 // Stats
                 if(RS.TempStats.Values.Count > 0)
-                    EscapedTextes[3].text += GS.SetString("Additional score\n", "Dodatkowy wynik\n");
+                    for (int s = 0; s < RS.TempStats.Values.Count; s++)
+                        EscapedTextes[3].text += "\n" + GS.GetStatName(RS.TempStats.Values[s]);
 
             }
             

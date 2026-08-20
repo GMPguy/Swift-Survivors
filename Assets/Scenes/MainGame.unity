@@ -229775,7 +229775,11 @@ MonoBehaviour:
   Platform: 0
   SaveFileName: 
   FileSeed: 4
-  RoundSetting: G0?D2?P1
+  RoundSetting:
+    Values:
+    - rid: 6040983435689852980
+    - rid: 6040983435689852981
+    - rid: 6040983435689852982
   GameModePrefab:
     x: 0
     y: 0
@@ -229793,7 +229797,8 @@ MonoBehaviour:
   MaxInventory: 4
   PlayerBuffs: 
   CurrentSave: 1
-  PlaythroughStats: 
+  PlaythroughStats:
+    Values: []
   NeueScore: []
   WhatOnStart: -1
   GraphicsQuality: 3
@@ -229862,7 +229867,22 @@ MonoBehaviour:
   Messages: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 6040983435689852980
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 19
+        Value: 0
+    - rid: 6040983435689852981
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 20
+        Value: 1
+    - rid: 6040983435689852982
+      type: {class: JInt, ns: , asm: Assembly-CSharp}
+      data:
+        Name: 21
+        Value: 1
 --- !u!4 &1368751314
 Transform:
   m_ObjectHideFlags: 0
@@ -229893,9 +229913,10 @@ MonoBehaviour:
   ProfileID: 100000
   Profilename: 
   Exp: 010000000000000000000000
-  Statistics: 
+  Statistics:
+    Values: []
   RecordDate: 0
-  Records: 
+  Records: []
   cl_Clothes: ClassicClothes
   cl_Hat: Null
   cl_Misc: Null
@@ -229910,6 +229931,9 @@ MonoBehaviour:
   Kits: []
   Achievements: []
   Trophies: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &1368970026
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -237382,7 +237406,8 @@ MonoBehaviour:
   HordeVariables: 08000000020000000000000000000000
   HordeAmount: 0
   IsCausual: 0
-  TempStats: 
+  TempStats:
+    Values: []
   PlayerPrefab: {fileID: 1613222313705214, guid: b8297cb1f1d68cc45b036a223ada19c3,
     type: 3}
   ItemPrefab: {fileID: 1191867786219568, guid: 7941e8ca98a2ee94182c6c4576ff2398, type: 3}
@@ -237398,6 +237423,7 @@ MonoBehaviour:
   AttachmentItems: 
   CraftingItems: 
   BuildingItems: 
+  PlantItems: 
   InteractablePrefab: {fileID: 1290440283570394, guid: 2289d9dd8a0faa744b238b8a61146ddf,
     type: 3}
   MobPrefab: {fileID: 1206562742427922, guid: 16b60c1116d3a3b40be80645b73ec1d6, type: 3}
@@ -237539,6 +237565,9 @@ MonoBehaviour:
   IsSwimming: 0000
   ResetHeight: -100
   SunHidden: 0
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &1453724026
 PrefabInstance:
   m_ObjectHideFlags: 0

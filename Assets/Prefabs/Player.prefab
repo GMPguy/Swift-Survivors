@@ -98184,6 +98184,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Boletus
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f73c51f2594066240ac286bcb2e2f239,
+        type: 3}
+      propertyPath: m_Layer
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
