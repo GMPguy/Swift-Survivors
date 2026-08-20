@@ -267,7 +267,7 @@ public class LandScript : MonoBehaviour {
                 if (LandUrStandingOn != null) {
                     if (LandUrStandingOn.name.Substring(0, 1) == "0") {
                         LandUrStandingOn.name = "1" + LandUrStandingOn.name.Substring(1);
-                        RS.GetComponent<RoundScript>().SetScore("MapDiscovered_", "/+1");
+                        RS.GetComponent<RoundScript>().SetScore(JType.RoundScore_Stats_MapDiscovered, "/+1");
                     }
 
                     LandUrStandingOn.transform.GetChild(0).GetComponent<MinimapMarker>().MapSize = 0f;

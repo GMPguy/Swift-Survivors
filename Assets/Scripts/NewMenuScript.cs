@@ -91,11 +91,11 @@ public class NewMenuScript : MonoBehaviour {
     public int RSdifflevel = 0;
     public int RSscore = 0;
     public int RSrounds = 0;
-    public string[] RStempstats;
+    public List<JEntry> RStempstats;
     // While records
     public Transform RecordsWindow;
     public Text[] RecordTitles;
-    public string[] RecordList;
+    public List<JClass> RecordList;
     public string RecordSort;
     public Image RecordClose;
     public Text RecordRefresh;
@@ -1692,15 +1692,19 @@ public class NewMenuScript : MonoBehaviour {
 
                             // STARTING THE GAME, PREPARE THE VALUES
                             GS.CurrentSave = Random.Range(10000, 99999);
-                            string RoundSetters = "" 
-                            + "G" + GMintegers[0].ToString() // Gamemode
-                            + "?D" + (GMintegers[1]+1).ToString() // Difflevel
-                            ;
 
-                            if (GMintegers[2] == 0) RoundSetters += "?P" + PS.ProfileID.ToString();
-                            else RoundSetters += "?P1";
+                            JClass RoundSetters = new JClass(new JEntry[] {
+                                new JInt(JType.RoundSettings_GameMode, GMintegers[0]),
+                                new JInt(JType.RoundSettings_Difficulty, GMintegers[1] + 1)
+                            });
 
-                            if(GMintegers[0] == 1) RoundSetters += "?H" + GMintegers[3].ToString(); // Horde map
+                            if (GMintegers[2] == 0)
+                                RoundSetters.SetInt(JType.RoundSettings_ProfileDependance, PS.ProfileID);//+= "?P" + PS.ProfileID.ToString();
+                            else 
+                                RoundSetters.SetInt(JType.RoundSettings_ProfileDependance, 1);//+= "?P1";
+
+                            if(GMintegers[0] == 1)
+                                RoundSetters.SetInt(JType.RoundSettings_HordeMap, GMintegers[3]);//+= "?H" + GMintegers[3].ToString(); // Horde map
                             
                             GS.SaveFileName = GMstringers[0];
                             GS.FileSeed = GMintegers[4];
@@ -1745,12 +1749,14 @@ public class NewMenuScript : MonoBehaviour {
                     // Preparations
                     GS.UpdateRecord();
 
-                    RSfilename = GS.GetSemiClass(GS.NeueScore[0], "N");
-                    RSgamemode = int.Parse(GS.GetSemiClass(GS.NeueScore[0], "G"));
-                    RSdifflevel = int.Parse(GS.GetSemiClass(GS.NeueScore[0], "D"));
-                    RSscore = int.Parse(GS.GetSemiClass(GS.NeueScore[0], "S"));
-                    RSrounds = int.Parse(GS.GetSemiClass(GS.NeueScore[0], "R"));
-                    RStempstats = GS.ListSemiClass(GS.NeueScore[1]);
+                    RSfilename = GS.NeueScore[0].GetString(JType.RoundSettings_FileName);
+                    RSgamemode = GS.NeueScore[0].GetInt(JType.RoundSettings_GameMode);
+                    RSdifflevel = GS.NeueScore[0].GetInt(JType.RoundSettings_Difficulty);
+                    RSscore = GS.NeueScore[0].GetInt(JType.RoundSettings_Score);
+                    RSrounds = GS.NeueScore[0].GetInt(JType.RoundSettings_Round);
+
+                    // TODO: is it deep or shallow?
+                    RStempstats = new (GS.NeueScore[1].Values);// GS.NeueScore[1].GetList();
 
                     foreach(Transform GetLogo in ResultsMenu.GetChild(0)){
                         if(Ending == "GameOver" && GetLogo.name == GS.Language + "-Dead") {
@@ -1830,23 +1836,27 @@ public class NewMenuScript : MonoBehaviour {
                 case 4:
                     // Aditional stats
                     if(ToCheckout == 1337){
-                        if(RStempstats.Length > 0) ScoreRoundText.text += "\n\n" + GS.SetString("Aditional statistics:", "Dodatkowe statystyki:");
-                        else if (RSscore > 0 || RSrounds > 0) ScoreRoundText.text += "\n\n" + GS.SetString("No aditional statistics", "Brak dodatkowych statystyki");
-                        else ScoreRoundText.text += "\n\n" + GS.SetString("That's pathetic...", "Żałosna robota...");
+                        if(RStempstats.Count > 0) 
+                            ScoreRoundText.text += "\n\n" + GS.SetString("Aditional statistics:", "Dodatkowe statystyki:");
+                        else if (RSscore > 0 || RSrounds > 0) 
+                            ScoreRoundText.text += "\n\n" + GS.SetString("No aditional statistics", "Brak dodatkowych statystyki");
+                        else 
+                            ScoreRoundText.text += "\n\n" + GS.SetString("That's pathetic...", "Żałosna robota...");
                         ToCheckout = 0;
                     }
 
                     if(FadeInValue > 0f){
                         FadeInValue -= 0.02f * (Time.unscaledDeltaTime*50f);
-                    } else if (ToCheckout < RStempstats.Length){
+                    } else if (ToCheckout < RStempstats.Count){
                         FadeInValue = 0.5f;
-                        if(GS.GetStatName(RStempstats[ToCheckout], 1) != "misc."){
-                            if (RStempstats.Length < 29){
-                                ResultTextes[0].text += GS.GetStatName(RStempstats[ToCheckout]) + "\n";
+                        string statText = RStempstats[ToCheckout].Name + ": " + (RStempstats[ToCheckout] is JInt statValue ? statValue.Value.ToString() : "");
+                        if (RStempstats[ToCheckout].Name != JType.RoundScore_Hunger && RStempstats[ToCheckout].Name != JType.RoundPunishment_ItemLost && RStempstats[ToCheckout].Name != JType.RoundPunishment_Tired && RStempstats[ToCheckout].Name != JType.RoundPunishment_Wet && RStempstats[ToCheckout].Name != JType.RoundPunishment_Damaged && RStempstats[ToCheckout].Name != JType.RoundPunishment_NoAmmo && RStempstats[ToCheckout].Name != JType.RoundPunishment_Dirty && RStempstats[ToCheckout].Name != JType.RoundReward_Item && RStempstats[ToCheckout].Name != JType.RoundReward_Healed && RStempstats[ToCheckout].Name != JType.RoundReward_Adrenaline && RStempstats[ToCheckout].Name != JType.RoundReward_Treasure && RStempstats[ToCheckout].Name != JType.RoundReward_Drunk && RStempstats[ToCheckout].Name != JType.RoundReward_Money){
+                            if (RStempstats.Count < 29){
+                                ResultTextes[0].text += statText + "\n";
                             } else if (ToCheckout <= 29) {
-                                ResultTextes[1].text += GS.GetStatName(RStempstats[ToCheckout]) + "\n";
+                                ResultTextes[1].text += statText + "\n";
                             } else {
-                                ResultTextes[2].text += GS.GetStatName(RStempstats[ToCheckout]) + "\n";
+                                ResultTextes[2].text += statText + "\n";
                             }
                         }
                         ToCheckout ++;
@@ -1869,19 +1879,20 @@ public class NewMenuScript : MonoBehaviour {
                     if(RSscore <= 0) ScoreRoundText.text += GS.SetString("nor have you gained any score ", "i nie zdobyłeś żadnego wyniku ")+ "\n\n";
                     else ScoreRoundText.text += GS.SetString("Score gained ", "Zdobyty wynik ") + RSscore.ToString() + "\n\n";
 
-                    if(RStempstats.Length > 0) ScoreRoundText.text += GS.SetString("Aditional statistics:", "Dodatkowe statystyki:");
+                    if(RStempstats.Count > 0) ScoreRoundText.text += GS.SetString("Aditional statistics:", "Dodatkowe statystyki:");
                     else if (RSscore > 0 || RSrounds > 0) ScoreRoundText.text += GS.SetString("No aditional statistics", "Brak dodatkowych statystyki");
                     else ScoreRoundText.text += GS.SetString("That's pathetic...", "Żałosna robota...");
 
                     ResultTextes[0].text = ResultTextes[1].text = ResultTextes[2].text = "";
-                    for (int pts = 0; pts < RStempstats.Length; pts++) {
-                        if(GS.GetStatName(RStempstats[pts], 1) != "misc."){
-                            if (RStempstats.Length < 29){
-                                ResultTextes[0].text += GS.GetStatName(RStempstats[pts]) + "\n";
+                    for (int pts = 0; pts < RStempstats.Count; pts++) {
+                        string statText = RStempstats[pts].Name + ": " + (RStempstats[pts] is JInt statValue ? statValue.Value.ToString() : "");
+                        if (RStempstats[pts].Name != JType.RoundScore_Hunger && RStempstats[pts].Name != JType.RoundPunishment_ItemLost && RStempstats[pts].Name != JType.RoundPunishment_Tired && RStempstats[pts].Name != JType.RoundPunishment_Wet && RStempstats[pts].Name != JType.RoundPunishment_Damaged && RStempstats[pts].Name != JType.RoundPunishment_NoAmmo && RStempstats[pts].Name != JType.RoundPunishment_Dirty && RStempstats[pts].Name != JType.RoundReward_Item && RStempstats[pts].Name != JType.RoundReward_Healed && RStempstats[pts].Name != JType.RoundReward_Adrenaline && RStempstats[pts].Name != JType.RoundReward_Treasure && RStempstats[pts].Name != JType.RoundReward_Drunk && RStempstats[pts].Name != JType.RoundReward_Money){
+                            if (RStempstats.Count < 29){
+                                ResultTextes[0].text += statText + "\n";
                             } else if (pts <= 29) {
-                                ResultTextes[1].text += GS.GetStatName(RStempstats[pts]) + "\n";
+                                ResultTextes[1].text += statText + "\n";
                             } else {
-                                ResultTextes[2].text += GS.GetStatName(RStempstats[pts]) + "\n";
+                                ResultTextes[2].text += statText + "\n";
                             }
                         }
                     }
@@ -2006,8 +2017,8 @@ public class NewMenuScript : MonoBehaviour {
             for(int SR = 0; SR < 30; SR++){
                 string DisplayText = "";
                 Color DisplayColor = new Color(0f, 0f, 0f, 0f);
-                if (SR < RecordList.Length) {
-                    DisplayText = GS.GetSemiClass(RecordList[SR], "N") + " - <color=#e8ffceff>" + GS.SetString("rounds: ", "rundy: ") + GS.GetSemiClass(RecordList[SR], "R") + "</color>" + GS.SetString(" / score: ", " / wynik: ") + GS.GetSemiClass(RecordList[SR], "S") + " - " + gmdl[int.Parse(GS.GetSemiClass(RecordList[SR], "D"))-1] + " " + gmrec[int.Parse(GS.GetSemiClass(RecordList[SR], "G"))];
+                if (SR < RecordList.Count) {
+                    DisplayText = RecordList[SR].GetString(JType.RoundSettings_FileName) + " - <color=#e8ffceff>" + GS.SetString("rounds: ", "rundy: ") + RecordList[SR].GetInt(JType.RoundSettings_Round) + "</color>" + GS.SetString(" / score: ", " / wynik: ") + RecordList[SR].GetInt(JType.RoundSettings_Score) + " - " + gmdl[RecordList[SR].GetInt(JType.RoundSettings_Difficulty)-1] + " " + gmrec[RecordList[SR].GetInt(JType.RoundSettings_GameMode)];
                     DisplayColor = Color.white;
                 }
                 RecordOptions[SR].GetComponent<Text>().text = DisplayText;
@@ -2021,14 +2032,14 @@ public class NewMenuScript : MonoBehaviour {
             RecordsWindow.GetChild(0).GetComponent<HudColorControl>().Alpha = Mathf.MoveTowards(RecordsWindow.GetChild(0).GetComponent<HudColorControl>().Alpha, 0f, 0.1f * (Time.unscaledDeltaTime*50f));
             RecordsWindow.GetChild(0).GetComponent<HudColorControl>().SetColor("");
 
-            RecordList = new string[]{};
+                RecordList = new List<JClass>();
 
         } else {
 
             RecordsWindow.position = SH[1].position;
             RecordsWindow.localScale = Vector3.zero;
 
-            RecordList = new string[]{};
+                RecordList = new List<JClass>();
 
         }
 
@@ -2045,18 +2056,12 @@ public class NewMenuScript : MonoBehaviour {
 
             // Read stats
             if(PMstats.Length <= 9999){
-                string[] ReadProfileStats = GS.ListSemiClass(PS.Statistics);
                 List<string> toPMstats = new List<string>();
                 List<string> Main = new List<string>();
                 List<string> Misc = new List<string>();
-                for(int ps = 0; ps < ReadProfileStats.Length; ps++){
-                    string n = GS.GetStatName(ReadProfileStats[ps], 1);
-                    if(n == "TotalScore" || n == "TotalRounds" || n == "TotalCasualScore" || n == "TotalCasualRounds" || n == "HighestScore" || n == "TotalWaves" || n == "MostWaves"|| n == "MostRounds" || n == "MostCasualRounds" || n == "LongestSurvivedTime" || n == "SurvivedTime") 
-                        Main.Add(GS.GetStatName(ReadProfileStats[ps]));
-                    else if (n == "MapDiscovered" && GS.ExistSemiClass(PS.Statistics, "TotalRounds_")) 
-                        Misc.Add(GS.SetString("Average map discovery: ", "Przeciętne zbadanie mapy: ") + (int.Parse(GS.GetStatName(ReadProfileStats[ps], 2)) / Mathf.Clamp(int.Parse(GS.GetSemiClass(PS.Statistics, "TotalRounds_")), 1, 9999) ).ToString() + "%" );
-                    else 
-                        Misc.Add(GS.GetStatName(ReadProfileStats[ps]));
+                foreach(JEntry stat in PS.Statistics.Values){
+                    if(stat is JInt value)
+                        Main.Add(stat.Name + ": " + value.Value);
                 }
                 for(int adder = 0; adder < Main.ToArray().Length + Misc.ToArray().Length; adder++){
                     if(adder < Main.ToArray().Length) {
@@ -2702,75 +2707,18 @@ public class NewMenuScript : MonoBehaviour {
     }
 
     void SortRecords(){
+        RecordList = new List<JClass>();
+        foreach(JClass record in PS.Records)
+            if((RecordFilters[0] < 0 || record.GetInt(JType.RoundSettings_GameMode) == RecordFilters[0]) && (RecordFilters[1] < 0 || record.GetInt(JType.RoundSettings_Difficulty) == RecordFilters[1]))
+                RecordList.Add(record);
 
-        string[] RawRecords = GS.ListSemiClass(PS.Records, "/");
-        List<string> FilteredRecords = new List<string>();
-        foreach(string RawRecord in RawRecords){
-            bool GoodToGo = true;
-            if((RecordFilters[0] >= 0 && GS.GetSemiClass(RawRecord, "G") != RecordFilters[0].ToString()) || (RecordFilters[1] >= 0 && GS.GetSemiClass(RawRecord, "D") != RecordFilters[1].ToString()))
-                GoodToGo = false;
-            if (GoodToGo)
-                FilteredRecords.Add(RawRecord);
-        }
-
-        string[] bubbles = FilteredRecords.ToArray();
-        bool RepeatBubble = false;
-
-        if(bubbles.Length > 1)
-        for(int bubcek = 1; bubcek <= bubbles.Length; bubcek++){
-            if(bubcek < bubbles.Length){
-                string[] samples = {bubbles[bubcek-1], bubbles[bubcek], "", ""};
-                bool Rev = false;
-                switch(RecordSort){
-                    case "SH":
-                        samples[2] = GS.GetSemiClass(samples[0], "S");
-                        samples[3] = GS.GetSemiClass(samples[1], "S");
-                        break;
-                    case "SL":
-                        samples[2] = GS.GetSemiClass(samples[0], "S");
-                        samples[3] = GS.GetSemiClass(samples[1], "S");
-                        Rev = true;
-                        break;
-                    case "AZ":
-                        samples[2] = GS.GetSemiClass(samples[0], "N");
-                        samples[3] = GS.GetSemiClass(samples[1], "N");
-                        break;
-                    case "ZA":
-                        samples[2] = GS.GetSemiClass(samples[0], "N");
-                        samples[3] = GS.GetSemiClass(samples[1], "N");
-                        Rev = true;
-                        break;
-                    case "OL":
-                        samples[2] = GS.GetSemiClass(samples[0], "T");
-                        samples[3] = GS.GetSemiClass(samples[1], "T");
-                        break;
-                    case "NE":
-                        samples[2] = GS.GetSemiClass(samples[0], "T");
-                        samples[3] = GS.GetSemiClass(samples[1], "T");
-                        Rev = true;
-                        break;
-                }
-
-                if (RecordSort == "AZ" || RecordSort == "ZA") {
-                    if( (!Rev && samples[2].CompareTo(samples[3]) > 0) || (Rev && samples[2].CompareTo(samples[3]) < 0) ){
-                        string moveAss = bubbles[bubcek];
-                        bubbles[bubcek] = bubbles[bubcek-1];
-                        bubbles[bubcek-1] = moveAss;
-                        RepeatBubble = true;
-                    }
-                } else if(  (!Rev && int.Parse(samples[2]) < int.Parse(samples[3])) || (Rev && int.Parse(samples[2]) > int.Parse(samples[3])) ){
-                    string moveAss = bubbles[bubcek];
-                    bubbles[bubcek] = bubbles[bubcek-1];
-                    bubbles[bubcek-1] = moveAss;
-                    RepeatBubble = true;
-                }
-            } else if (RepeatBubble) {
-                RepeatBubble = false;
-                bubcek = 0;
-            }
-        }
-
-        RecordList = bubbles;
+        bool ascending = RecordSort == "SL" || RecordSort == "ZA" || RecordSort == "NE";
+        RecordList.Sort((left, right) => {
+            int result = RecordSort == "AZ" || RecordSort == "ZA"
+                ? left.GetString(JType.RoundSettings_FileName).CompareTo(right.GetString(JType.RoundSettings_FileName))
+                : left.GetInt(JType.RoundSettings_Score).CompareTo(right.GetInt(JType.RoundSettings_Score));
+            return ascending ? result : -result;
+        });
 
     }
 

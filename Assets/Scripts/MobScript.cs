@@ -1159,7 +1159,7 @@ public class MobScript : MonoBehaviour {
                     
                     if(MobHealth[1] == MobHealth[0]) Ach_Headshot += 1;
 
-                    if(Aggresor && Aggresor.tag == "Player") RS.SetScore("Damage_", "/+" + ((int)Mathf.Clamp(Damage, 1, MobHealth[0])).ToString());
+                    if(Aggresor && Aggresor.tag == "Player") RS.SetScore(JType.RoundScore_Stats_Damage, "/+" + ((int)Mathf.Clamp(Damage, 1, MobHealth[0])).ToString());
                     MobHealth[0] -= Damage;
                     if(MobHealth[0] <= 0) Ach_Headshot += 1;
 
@@ -1220,8 +1220,15 @@ public class MobScript : MonoBehaviour {
                     if (leadAggresor != null) {
                         if(Ach_Flare) GS.PS.AchProg("Ach_EmergencyFlare", "0");
                         if(leadAggresor.tag == "Player"){
-                            RS.SetScore("Kill" + ClassOfMob + "_", "/+1");
-                            RS.SetScore("Killed_", "/+1");
+                            JType killType = ClassOfMob switch {
+                                "Mutant" => JType.RoundScore_Stats_KillMutant,
+                                "Bandit" => JType.RoundScore_Stats_KillBandit,
+                                "Survivor" => JType.RoundScore_Stats_KillSurvivor,
+                                "Guard" => JType.RoundScore_Stats_KillGuard,
+                                _ => JType.RoundScore_Stats_Killed
+                            };
+                            RS.SetScore(killType, "/+1");
+                            RS.SetScore(JType.RoundScore_Stats_Killed, "/+1");
                             if(ClassOfMob == "Mutant" && GS.GameModePrefab.x == 0)
                                 GS.PS.AchProg("Ach_Liquidator", "/+-1");
                             if(ClassOfMob != "Mutant")

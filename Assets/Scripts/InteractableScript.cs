@@ -55,14 +55,14 @@ public class InteractableScript : MonoBehaviour {
         if (Variables.GetInt(JType.ID) == 1) {
             // Barrels
             if (Random.Range(0, 100) < 10)
-                Variables.SetInt(JType.InteractableType, (int)Random.Range(-4, -1));
+                Variables.SetInt(JType.Interactable_Type, (int)Random.Range(-4, -1));
             else
-                Variables.SetInt(JType.InteractableType, (int)Mathf.Clamp(Random.Range(3f, 5.9f) * RS.GetComponent<RoundScript>().DifficultySliderB, 1f, 5f));
+                Variables.SetInt(JType.Interactable_Type, (int)Mathf.Clamp(Random.Range(3f, 5.9f) * RS.GetComponent<RoundScript>().DifficultySliderB, 1f, 5f));
             
             Color32 BarrelColor = new Color32(0, 0, 0, 0);
             string label = "";
 
-            switch (Variables.GetInt(JType.InteractableType)) {
+            switch (Variables.GetInt(JType.Interactable_Type)) {
                 case -4:
                     Variables.SetFloat(JType.VariableA, 20f);
                     Name = GS.SetString("Explosive Barrel", "Wybuchowa Beczka");
@@ -109,7 +109,7 @@ public class InteractableScript : MonoBehaviour {
                     break;
                 default:
                     Variables.SetFloat(JType.VariableA, 20f);
-                    Variables.SetInt(JType.InteractableType, 1);
+                    Variables.SetInt(JType.Interactable_Type, 1);
                     Name = GS.SetString("Rusty Barrel", "Zardzewiała Beczka");
                     BarrelColor = new Color32(175, 125, 75, 255);
                     break;
@@ -139,28 +139,28 @@ public class InteractableScript : MonoBehaviour {
             float LockChance = RS.IsCausual ? 2 : Random.Range(0f, 1.5f);
             Variables.SetFloat(JType.VariableA, 200f);
             if (LockChance < RS.DifficultySliderB) {
-                Variables.SetInt(JType.InteractableType, 2);
+                Variables.SetInt(JType.Interactable_Type, 2);
             } else {
-                Variables.SetInt(JType.InteractableType, 0);
+                Variables.SetInt(JType.Interactable_Type, 0);
             }
         } else if (Variables.GetInt(JType.ID) == 4f) {
             // VendingMachine
 
             if (GS.GameModePrefab.x == 1) {
 
-                Variables.SetInt(JType.InteractableType, (int)GS.FixedPerlinNoise(this.transform.position.x, this.transform.position.z));
+                Variables.SetInt(JType.Interactable_Type, (int)GS.FixedPerlinNoise(this.transform.position.x, this.transform.position.z));
                 Color32[] MachineColors = new Color32[] { Color.white, Color.white };
                 TradeOptions = new int[] { 0, 0, 0, 0, 0, 0 };
                 TradePrices = new int[] { 0, 0, 0, 0, 0, 0 };
                 Name = GS.SetString("Vending Machine", "Automat");
 
-                if (Variables.GetInt(JType.InteractableType) >= 0f && Variables.GetInt(JType.InteractableType) < 0.25f) {
+                if (Variables.GetInt(JType.Interactable_Type) >= 0f && Variables.GetInt(JType.Interactable_Type) < 0.25f) {
                     MachineColors = new Color32[] { new Color32(200, 0, 0, 255), new Color32(100, 0, 0, 255) };
-                } else if (Variables.GetInt(JType.InteractableType) >= 0.25f && Variables.GetInt(JType.InteractableType) < 0.5f) {
+                } else if (Variables.GetInt(JType.Interactable_Type) >= 0.25f && Variables.GetInt(JType.Interactable_Type) < 0.5f) {
                     MachineColors = new Color32[] { new Color32(0, 125, 255, 255), new Color32(0, 0, 255, 255) };
-                } else if (Variables.GetInt(JType.InteractableType) >= 0.5f && Variables.GetInt(JType.InteractableType) < 0.75f) {
+                } else if (Variables.GetInt(JType.Interactable_Type) >= 0.5f && Variables.GetInt(JType.Interactable_Type) < 0.75f) {
                     MachineColors = new Color32[] { new Color32(75, 155, 75, 255), new Color32(55, 100, 55, 255) };
-                } else if (Variables.GetInt(JType.InteractableType) >= 0.75f && Variables.GetInt(JType.InteractableType) < 1f) {
+                } else if (Variables.GetInt(JType.Interactable_Type) >= 0.75f && Variables.GetInt(JType.Interactable_Type) < 1f) {
                     MachineColors = new Color32[] { new Color32(75, 155, 75, 255), new Color32(55, 100, 55, 255) };
                 }
 
@@ -174,12 +174,12 @@ public class InteractableScript : MonoBehaviour {
 
             } else {
 
-                Variables.SetInt(JType.InteractableType, (int)Random.Range(0f, 3.9f));
+                Variables.SetInt(JType.Interactable_Type, (int)Random.Range(0f, 3.9f));
                 Color32[] MachineColors = new Color32[] { Color.white, Color.white };
                 TradeOptions = new int[] { 0, 0, 0, 0, 0, 0 };
                 TradePrices = new int[] { 0, 0, 0, 0, 0, 0 };
 
-                if (Variables.GetInt(JType.InteractableType) == 0) {
+                if (Variables.GetInt(JType.Interactable_Type) == 0) {
                     Name = GS.SetString("Vending Machine", "Automat z jedzeniem");
                     MachineColors = new Color32[] { new Color32(75, 155, 75, 255), new Color32(55, 100, 55, 255) };
 
@@ -187,7 +187,7 @@ public class InteractableScript : MonoBehaviour {
                         TradeOptions[AddTradeOptions] = RS.FoodItems[(int)Random.Range(0f, RS.FoodItems.Length - 0.1f)];
                         TradePrices[AddTradeOptions] = (int)Mathf.Lerp(1, 100, Mathf.Pow(Random.value, 2f));
                     }
-                } else if (Variables.GetInt(JType.InteractableType) == 1) {
+                } else if (Variables.GetInt(JType.Interactable_Type) == 1) {
                     Name = GS.SetString("Vending Machine", "Automat ze sprzętem");
                     MachineColors = new Color32[] { new Color32(0, 125, 255, 255), new Color32(0, 0, 255, 255) };
 
@@ -195,7 +195,7 @@ public class InteractableScript : MonoBehaviour {
                         TradeOptions[AddTradeOptions] = RS.Utilities[(int)Random.Range(0f, RS.Utilities.Length - 0.1f)];
                         TradePrices[AddTradeOptions] = (int)Mathf.Lerp(10, 300, Mathf.Pow(Random.value, 2f));
                     }
-                } else if (Variables.GetInt(JType.InteractableType) == 2) {
+                } else if (Variables.GetInt(JType.Interactable_Type) == 2) {
                     Name = GS.SetString("Vending Machine", "Automat z uzbrojeniem");
                     MachineColors = new Color32[] { new Color32(200, 0, 0, 255), new Color32(100, 0, 0, 255) };
 
@@ -210,7 +210,7 @@ public class InteractableScript : MonoBehaviour {
                         }
                         TradePrices[AddTradeOptions] = (int)Mathf.Lerp(10, 1000, Mathf.Pow(Random.value, 2f));
                     }
-                } else if (Variables.GetInt(JType.InteractableType) == 3) {
+                } else if (Variables.GetInt(JType.Interactable_Type) == 3) {
                     Name = GS.SetString("Vending Machine", "Automat z lekarstwami");
                     MachineColors = new Color32[] { new Color32(200, 0, 125, 255), new Color32(255, 255, 255, 255) };
 
@@ -277,13 +277,13 @@ public class InteractableScript : MonoBehaviour {
                 SelectedModel.transform.GetChild(0).gameObject.SetActive(false);
             }
         } else if (Variables.GetInt(JType.ID) == 3) {
-            if (Variables.GetInt(JType.InteractableType) == 0f && SelectedModel.transform.localEulerAngles.y < 90f) {
+            if (Variables.GetInt(JType.Interactable_Type) == 0f && SelectedModel.transform.localEulerAngles.y < 90f) {
                 // closed
                 SelectedModel.transform.localRotation = Quaternion.RotateTowards(SelectedModel.transform.localRotation, Quaternion.Euler(new Vector3(-90f, 0f, 90f)), 3f * (Time.deltaTime * 100f));
-            } else if (Variables.GetInt(JType.InteractableType) == 1f && SelectedModel.transform.localEulerAngles.y > 0f) {
+            } else if (Variables.GetInt(JType.Interactable_Type) == 1f && SelectedModel.transform.localEulerAngles.y > 0f) {
                 // opened
                 SelectedModel.transform.localRotation = Quaternion.RotateTowards(SelectedModel.transform.localRotation, Quaternion.Euler(new Vector3(-90f, 0f, 0f)), 3f * (Time.deltaTime * 100f));
-            } else if (Variables.GetInt(JType.InteractableType) == 2f && SelectedModel.transform.localEulerAngles.y < 90f) {
+            } else if (Variables.GetInt(JType.Interactable_Type) == 2f && SelectedModel.transform.localEulerAngles.y < 90f) {
                 // locked
                 SelectedModel.transform.localRotation = Quaternion.RotateTowards(SelectedModel.transform.localRotation, Quaternion.Euler(new Vector3(-90f, 0f, 90f)), 3f * (Time.deltaTime * 100f));
             } else if (SelectedModel.GetComponent<BoxCollider>().enabled == false) {
@@ -358,14 +358,14 @@ public class InteractableScript : MonoBehaviour {
                 this.transform.Rotate(new Vector3(Random.Range(-30f, 30f), Random.Range(-30f, 30f), 0f));
 
                 // Funny barrels
-                if (Variables.GetInt(JType.InteractableType) < 0) {
+                if (Variables.GetInt(JType.Interactable_Type) < 0) {
                     for (int a = 0; a < Mathf.Max(Mathf.RoundToInt(VariableBonus), 1); a++)
                         if (Random.Range(1, 20) == 1) {
 
-                            SpecialScript danger = GameObject.Instantiate(Variables.GetInt(JType.InteractableType) == -3 ? RadioactivityPrefab : SpecialPrefab).GetComponent<SpecialScript>();
+                            SpecialScript danger = GameObject.Instantiate(Variables.GetInt(JType.Interactable_Type) == -3 ? RadioactivityPrefab : SpecialPrefab).GetComponent<SpecialScript>();
 
                             danger.transform.position = this.transform.position;
-                            switch (Variables.GetInt(JType.InteractableType)) {
+                            switch (Variables.GetInt(JType.Interactable_Type)) {
                                 case -4:
                                     Variables.SetFloat(JType.VariableA, 0f);
                                     danger.TypeOfSpecial = "Explosion";
@@ -415,28 +415,28 @@ public class InteractableScript : MonoBehaviour {
 
                     Random.InitState(RandomID);
 
-                    if (Variables.GetInt(JType.InteractableType) == 1) {
+                    if (Variables.GetInt(JType.Interactable_Type) == 1) {
                         int[] crapItems = new int[] {2, 3, 14, 11, 19, 17, 18};
                         AmountToSpawn = Random.Range(1, 3);
                         for (int a = 0; a < AmountToSpawn; a++)
                             ItemsToSpawn.Add(
                                 new (GS.ItemCache[crapItems[Random.Range(0, crapItems.Length)]].startVariables)
                             );
-                    } else if (Variables.GetInt(JType.InteractableType) == 2) {
+                    } else if (Variables.GetInt(JType.Interactable_Type) == 2) {
                         //ItemsToSpawn = new Vector3[] { new Vector3(2f, 100f, 0f), new Vector3(3f, 0f, 0f), new Vector3(14f, 100f, 0f), new Vector3(17f, 0f, 0f), new Vector3(18f, 0f, 0f), new Vector3(6f, 0f, 0f), new Vector3(22f, 0f, 0f), new Vector3(23f, 0f, 0f), new Vector3(15f, 100f, 0f) };
                         AmountToSpawn = Random.Range(2, 5);
                         for (int a = 0; a < AmountToSpawn; a++)
                             ItemsToSpawn.Add(
                                 new (GS.ItemCache[(int)Random.Range(1f, 20f)].startVariables)
                             );
-                    } else if (Variables.GetInt(JType.InteractableType) == 3) {
+                    } else if (Variables.GetInt(JType.Interactable_Type) == 3) {
                         //ItemsToSpawn = new Vector3[] { new Vector3(15f, 100f, 0f), new Vector3(4f, 0f, 0f), new Vector3(27f, 100f, 0f), new Vector3(22f, 0f, 0f), new Vector3(23f, 0f, 0f), new Vector3(29f, 0f, 0f), new Vector3(18f, 0f, 0f), new Vector3(16f, 100f, 0f) };
                         AmountToSpawn = Random.Range(2, 5);
                         for (int a = 0; a < AmountToSpawn; a++)
                             ItemsToSpawn.Add(
                                 new (GS.ItemCache[(int)Random.Range(1f, RS.GetComponent<RoundScript>().TotalItems.Length - 0.1f)].startVariables)
                             );
-                    } else if (Variables.GetInt(JType.InteractableType) == 4) {
+                    } else if (Variables.GetInt(JType.Interactable_Type) == 4) {
                         AmountToSpawn = Random.Range(1, 2);
                         for (int a = 0; a < AmountToSpawn; a++)
                             ItemsToSpawn.Add( new (Random.Range(0, 3) switch {
@@ -444,7 +444,7 @@ public class InteractableScript : MonoBehaviour {
                                 1 => GS.ItemCache[RS.GetComponent<RoundScript>().AmmoItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AmmoItems.Length - .1f)]].startVariables,
                                 _ => GS.ItemCache[RS.GetComponent<RoundScript>().AttachmentItems[(int)Random.Range(0f, RS.GetComponent<RoundScript>().AttachmentItems.Length - .1f)]].startVariables
                             }));
-                    } else if (Variables.GetInt(JType.InteractableType) == 5) {
+                    } else if (Variables.GetInt(JType.Interactable_Type) == 5) {
                         AmountToSpawn = Random.Range(5, 10);
                         for (int a = 0; a < AmountToSpawn; a++)
                             ItemsToSpawn.Add( new (Random.Range(0, 3) switch {
@@ -489,13 +489,13 @@ public class InteractableScript : MonoBehaviour {
         } else if (WhatToDo == "Door") {
 
             SelectedModel.GetComponent<BoxCollider>().enabled = false;
-            if (Variables.GetInt(JType.InteractableType) == 0) {
-                Variables.SetInt(JType.InteractableType, 1);
+            if (Variables.GetInt(JType.Interactable_Type) == 0) {
+                Variables.SetInt(JType.Interactable_Type, 1);
                 SelectedModel.transform.GetChild(1).GetComponent<AudioSource>().Play();
-            } else if (Variables.GetInt(JType.InteractableType) == 1) {
-                Variables.SetInt(JType.InteractableType, 0);
+            } else if (Variables.GetInt(JType.Interactable_Type) == 1) {
+                Variables.SetInt(JType.Interactable_Type, 0);
                 SelectedModel.transform.GetChild(2).GetComponent<AudioSource>().Play();
-            } else if (Variables.GetInt(JType.InteractableType) == 2) {
+            } else if (Variables.GetInt(JType.Interactable_Type) == 2) {
                 SelectedModel.transform.GetChild(3).GetComponent<AudioSource>().Play();
                 SelectedModel.GetComponent<Interactions>().CanBePicklocked = true;
             }

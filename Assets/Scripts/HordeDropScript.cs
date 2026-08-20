@@ -190,7 +190,7 @@ public class HordeDropScript : MonoBehaviour {
 
                 if(SpecificValue != -1){
                     SpecificValue = AvailableAttachments[(int)Random.Range(0f, AvailableAttachments.Length - 0.1f)];
-                    other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].SetInt(JType.Attachment, SpecificValue);//= GS.SetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "at", SpecificValue.ToString());//other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].z = SpecificValue;
+                    other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].SetInt(JType.Item_Attachment, SpecificValue);//= GS.SetSemiClass(other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld], "at", SpecificValue.ToString());//other.GetComponent<PlayerScript>().Inventory[other.GetComponent<PlayerScript>().CurrentItemHeld].z = SpecificValue;
                     GameObject.Find("MainCanvas").GetComponent<CanvasScript>().Flash(SetColor, new float[]{0.5f, 0.5f});
                     GS.Mess(GS.SetString("New attachement: " + GS.ItemCache[SpecificValue].getName(), "Nowy dodatek: " + GS.ItemCache[SpecificValue].getName()), SoundWhenFlash);
                 }

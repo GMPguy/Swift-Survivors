@@ -202,7 +202,7 @@ public class ChestScript : MonoBehaviour {
             ps.CantInteract = .5f;
 
             if (ps)
-                RS.SetScore("ChestsOpened_", "/+1");
+                RS.SetScore(JType.RoundScore_Stats_ChestsOpened, "/+1");
 
             Random.InitState(Seed);
             if (State != 2)
@@ -261,7 +261,7 @@ public class ChestScript : MonoBehaviour {
                     DamagePart(AllParts[dp], true);
             
             if (killer && killer.tag == "Player")
-                RS.SetScore("ChestsDestroyed_", "/+1");
+                RS.SetScore(JType.RoundScore_Stats_ChestsDestroyed, "/+1");
 
             Activate(GS.DestructionQuality == 2 ? 300f : 10f);
         }

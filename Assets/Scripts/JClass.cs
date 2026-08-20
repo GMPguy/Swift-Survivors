@@ -37,7 +37,7 @@ public class JClass {
                 break;
             case JTemplate.BasicItemStackable:
                 SetFloat(JType.VariableA, 0f);
-                SetInt(JType.StackQuantity, 1);
+                SetInt(JType.Item_StackQuantity, 1);
                 break;
         }
     }
@@ -55,8 +55,7 @@ public class JClass {
         int fetch = FetchStruct(what);
         if (fetch == -1) return 0;
 
-        JInt getInt = (JInt)Values[fetch];
-        return getInt.Value;
+        return Values[fetch] is JInt getInt ? getInt.Value : 0;
     }
 
     public void SetInt(JType what, int value, Maths operation = Maths.Set) {
@@ -65,7 +64,10 @@ public class JClass {
         if (fetch == -1)
             Values.Add(new JInt (what, value));
         else {
-            JInt getInt = (JInt)Values[fetch];
+            if (Values[fetch] is not JInt getInt) {
+                Values[fetch] = new JInt(what, value);
+                return;
+            }
             getInt.Value = operation switch{
                 Maths.Add => getInt.Value + value,
                 Maths.Multiply => getInt.Value * value,
@@ -79,8 +81,7 @@ public class JClass {
         int fetch = FetchStruct(what);
         if (fetch == -1) return 0;
 
-        JFloat getFloat = (JFloat)Values[fetch];
-        return getFloat.Value;
+        return Values[fetch] is JFloat getFloat ? getFloat.Value : 0f;
     }
 
     public void SetFloat(JType what, float value, Maths operation = Maths.Set) {
@@ -89,7 +90,10 @@ public class JClass {
         if (fetch == -1)
             Values.Add(new JFloat (what, value));
         else {
-            JFloat getFloat = (JFloat)Values[fetch];
+            if (Values[fetch] is not JFloat getFloat) {
+                Values[fetch] = new JFloat(what, value);
+                return;
+            }
             getFloat.Value = operation switch{
                 Maths.Add => getFloat.Value + value,
                 Maths.Multiply => getFloat.Value * value,
@@ -103,8 +107,7 @@ public class JClass {
         int fetch = FetchStruct(what);
         if (fetch == -1) return "";
 
-        JString getString = (JString)Values[fetch];
-        return getString.Value;
+        return Values[fetch] is JString getString ? getString.Value : "";
     }
 
     public void SetString(JType what, string value) {
@@ -113,8 +116,10 @@ public class JClass {
         if (fetch == -1)
             Values.Add(new JString (what, value));
         else {
-            JString getString = (JString)Values[fetch];
-            getString.Value = value;
+            if (Values[fetch] is JString getString)
+                getString.Value = value;
+            else
+                Values[fetch] = new JString(what, value);
         }
     }
 
@@ -123,8 +128,7 @@ public class JClass {
         int fetch = FetchStruct(what);
         if (fetch == -1) return null;
 
-        JList getList = (JList)Values[fetch];
-        return getList;
+        return Values[fetch] is JList getList ? getList : null;
     }
 
     public void SetList(JType what, List<JClass> value) {
@@ -133,8 +137,10 @@ public class JClass {
         if (fetch == -1)
             Values.Add(new JList (what, value));
         else {
-            JList getString = (JList)Values[fetch];
-            getString.Value = new List<JClass>(value);
+            if (Values[fetch] is JList getList)
+                getList.Value = new List<JClass>(value);
+            else
+                Values[fetch] = new JList(what, value);
         }
     }
 
@@ -259,20 +265,20 @@ public enum JType {
     none,
     ID,
     VariableA,
-    Attachment,
-    Cacheable,
-    StackQuantity,
-    Color,
-    ClothingCategory,
-    ScanOption,
-    NightVision,
-    AmmoStack,
+    Item_Attachment,
+    Item_Cacheable,
+    Item_StackQuantity,
+    Item_Color,
+    Item_ClothingCategory,
+    Item_ScanOption,
+    Item_NightVision,
+    Item_AmmoStack,
     StraightToInvID,
-    Repairable,
-    CasualAmmo,
-    CraftingFunction,
-    InteractableType,
-    SpawnStuffString,
+    Item_Repairable,
+    Item_CasualAmmo,
+    Item_CraftingFunction,
+    Interactable_Type,
+    Spawn_String,
     InvEqCache_Inventory,
     InvEqCache_Equipment,
     RoundSettings_GameMode,
@@ -281,7 +287,146 @@ public enum JType {
     RoundSettings_HordeMap,
     RoundSettings_Score,
     RoundSettings_Round,
-    RoundSettings_FileName
+    RoundSettings_FileName,
+    Achievement_Data,
+    Achievement_Name,
+    SaveAmmo,
+    Amount,
+    Biome,
+    Buffs,
+    Options_CameraBobbing,
+    Options_CameraShifting,
+    Clothes,
+    ClothingBody,
+    ClothingHair,
+    ClothingHat,
+    ClothingSkin,
+    Description,
+    Options_DestructionQuality,
+    Options_EarPiercing,
+    Options_EffectsQuality,
+    Experience,
+    Options_KeybindFunction,
+    Options_FoliageQuality,
+    Options_FieldOfView,
+    Options_FrameRateCap,
+    FileSeed,
+    Options_CameraFieldOfView,
+    Options_GraphicsQuality,
+    AttackGunSpread,
+    HungerCurrent,
+    HungerMaximum,
+    HighestScore,
+    Hints,
+    Options_HoloSight,
+    Options_HudColor,
+    Options_Hue,
+    Hunger,
+    Identifier,
+    ImageMode,
+    InventoryClothes,
+    AttackInventory,
+    InventoryInUse,
+    InventoryKits,
+    InventoryMisc,
+    HealthCurrent,
+    HealthMaximum,
+    Options_Language,
+    Options_LaserColor,
+    Level,
+    Options_LightingQuality,
+    LongestSurvivedTime,
+    Options_MasterVolume,
+    MeleeDurability,
+    MaxInventory,
+    Options_InvertedMouse,
+    Money,
+    MostCasualRounds,
+    MostRounds,
+    MostWaves,
+    ItemRemoval,
+    Options_MouseSensitivity,
+    Options_MouseSmoothness,
+    Options_MusicVolume,
+    RecordName,
+    Options_ParticlesQuality,
+    PlayerInventory,
+    ProfileName,
+    AttackPower,
+    PlayerSpeed,
+    RoundPunishment,
+    PlaythroughStats,
+    PlayerWet,
+    RoundReward,
+    Options_Ragdolls,
+    RecordDate,
+    Records,
+    RoundNumber,
+    RoundSettings,
+    ScoreSave,
+    BlackSceneColor,
+    SkyboxType,
+    SaveName,
+    SaveScore,
+    SoundVolume,
+    PopupSource,
+    RoundsSeed,
+    Statistics,
+    RecordTime,
+    Title,
+    TotalCasualRounds,
+    TotalRounds,
+    TotalScore,
+    TotalWaves,
+    PopupType,
+    UiResolutionX,
+    UiResolutionY,
+    VariableAStat,
+    AchievementCarp,
+    AchievementGarbage,
+    VictoryImage,
+    AchievementNpc,
+    AchievementCompleted
+    ,RoundPunishment_ItemLost
+    ,RoundPunishment_Tired
+    ,RoundPunishment_Wet
+    ,RoundPunishment_Damaged
+    ,RoundPunishment_NoAmmo
+    ,RoundPunishment_Dirty
+    ,RoundReward_Item
+    ,RoundReward_Healed
+    ,RoundReward_Adrenaline
+    ,RoundReward_Treasure
+    ,RoundReward_Drunk
+    ,RoundReward_Money
+    ,RoundScore_Hunger
+    ,RoundScore_Stats_SurvivedTime
+    ,RoundScore_Stats_TradeBuy
+    ,RoundScore_Stats_TradeSell
+    ,RoundScore_Stats_TreasuresSold
+    ,RoundScore_Stats_ChestsOpened
+    ,RoundScore_Stats_ChestsDestroyed
+    ,RoundScore_Stats_ObjectsDestroyed
+    ,RoundScore_Stats_MapDiscovered
+    ,RoundScore_Stats_Damage
+    ,RoundScore_Stats_Killed
+    ,RoundScore_Stats_KillMutant
+    ,RoundScore_Stats_KillBandit
+    ,RoundScore_Stats_KillSurvivor
+    ,RoundScore_Stats_KillGuard
+    ,RoundScore_Stats_PickedLocks
+    ,RoundScore_Stats_ItemsFound
+    ,RoundScore_Stats_TreasuresFound
+    ,RoundScore_Stats_ItemsUnderwaterFound
+    ,Stats_TotalRounds
+    ,Stats_TotalCasualRounds
+    ,Stats_TotalWaves
+    ,Stats_TotalScore
+    ,Stats_HighestScore
+    ,Stats_MostRounds
+    ,Stats_MostCasualRounds
+    ,Stats_MostWaves
+    ,Stats_LongestSurvivedTime
 }
 
 public enum JTemplate {

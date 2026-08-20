@@ -458,7 +458,7 @@ public class CanvasScript : MonoBehaviour {
                                 if (GetSprite.name.Substring(1) == ItemHeld.GetInt(JType.ID).ToString()) {
                                     Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().sprite = GetSprite;
                                     if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13) {
-                                        Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color = Color.HSVToRGB(ItemHeld.GetFloat(JType.Color) / 10f, 1f, 1f);
+                                        Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color = Color.HSVToRGB(ItemHeld.GetFloat(JType.Item_Color) / 10f, 1f, 1f);
                                     } else if (ItemHeld.GetInt(JType.ID) == 187) {
                                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color = PlantScript.GetBerryColor(ItemHeld.GetFloat(JType.VariableA));
                                     } else {
@@ -491,8 +491,8 @@ public class CanvasScript : MonoBehaviour {
                             Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text = ItemHeld.GetFloat(JType.VariableA).ToString();
                         }
 
-                        if (ItemHeld.Exists(JType.StackQuantity) && ItemHeld.GetInt(JType.StackQuantity) > 1) 
-                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text += " x" + ItemHeld.GetInt(JType.StackQuantity);
+                        if (ItemHeld.Exists(JType.Item_StackQuantity) && ItemHeld.GetInt(JType.Item_StackQuantity) > 1) 
+                            Inventory.transform.GetChild(InventoryCheck).transform.GetChild(2).GetComponent<Text>().text += " x" + ItemHeld.GetInt(JType.Item_StackQuantity);
 
                     } else if (ItemHeld.GetInt(JType.ID) <= 0f) {
                         Inventory.transform.GetChild(InventoryCheck).transform.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
@@ -542,7 +542,7 @@ public class CanvasScript : MonoBehaviour {
                 else 
                     CS = Mathf.Clamp(RS.ReceiveGunSpred(MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.ID), MainPlayer.GetComponent<Rigidbody>().velocity.magnitude / MainPlayer.Speed, MainPlayer.GunSpreadPC).x, 1f, Mathf.Infinity);
                 
-                if (MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.Attachment) == 103)
+                if (MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.Item_Attachment) == 103)
                     CS = 0f;
             }
             if (MainPlayer.ZoomValues[1] != MainPlayer.ZoomValues[2] || IDofitemheld == 64 || CSWait[0] > 0f) {
@@ -1249,7 +1249,7 @@ public class CanvasScript : MonoBehaviour {
                                 targetMob.TradeOptions[tradeID].x = -1;
                                 DialogSetting = Random.Range(1, 7) + "TradeGood";
                                 GS.PS.AchProg("Ach_Merchant", "/+-1");
-                                RS.SetScore("TradeBuy_", "/+1");
+                                RS.SetScore(JType.RoundScore_Stats_TradeBuy, "/+1");
                                 GS.Score += 50;
                             } else
                                 targetInt.TradeOptions[tradeID] = -1;
@@ -1283,7 +1283,7 @@ public class CanvasScript : MonoBehaviour {
                                     MainPlayer.InvGet(sellID, 1);
                                     GS.Mess(GS.SetString("Item sold!", "Sprzedano przedmiot!"), "Buy");
                                     GS.Money += price;
-                                    RS.SetScore("TradeSell_", "/+1");
+                                    RS.SetScore(JType.RoundScore_Stats_TradeSell, "/+1");
                                     DialogSetting = Random.Range(1, 5) + "SellGood";
                                     GS.Score += 25;
                                 }
@@ -1346,7 +1346,7 @@ public class CanvasScript : MonoBehaviour {
                                 GS.Money += 250;
                                 MainPlayer.InvGet(SellTreasure, 1);//MainPlayer.Inventory[SellTreasure] = "id0;";
                                 GS.PS.AchProg("Ach_Collectioner", "/+-1");
-                                RS.SetScore("TreasuresSold_", "/+1");
+                                RS.SetScore(JType.RoundScore_Stats_TreasuresSold, "/+1");
                             }
                         } else if (CheckedButton.GetComponent<ButtonScript>().IsSelected == true && TreausresGot.ToArray().Length <= 0f && Input.GetMouseButtonDown(0)) {
                             DialogSetting = "TreasureNot";
@@ -1459,11 +1459,11 @@ public class CanvasScript : MonoBehaviour {
                     SpareAmmo = intAmmo.ToString();
                 }
                 
-                if(ItemInfos.Exists(JType.Attachment) && ItemInfos.GetInt(JType.Attachment) != 0) 
+                if(ItemInfos.Exists(JType.Item_Attachment) && ItemInfos.GetInt(JType.Item_Attachment) != 0) 
                     Infos = new string[]{
                         GS.ItemCache[id].getName(),
                         GS.SetString("Ammo: ", "Amunicja: ") + (int)ItemInfos.GetFloat(JType.VariableA) + " / " + SpareAmmo,
-                        GS.SetString("Attachment: ", "Dodatek: ") + GS.ItemCache[ItemInfos.GetInt(JType.Attachment)].getName()};
+                        GS.SetString("Attachment: ", "Dodatek: ") + GS.ItemCache[ItemInfos.GetInt(JType.Item_Attachment)].getName()};
                 else
                     Infos = new string[]{
                         GS.ItemCache[id].getName(),
@@ -1608,7 +1608,7 @@ public class CanvasScript : MonoBehaviour {
                                 if (GetSprite.name.Substring(1) == ItemHeld.GetInt(JType.ID).ToString()) {
                                     ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().sprite = GetSprite;
                                     if (ItemHeld.GetInt(JType.ID) == 11 || ItemHeld.GetInt(JType.ID) == 12 || ItemHeld.GetInt(JType.ID) == 13) {
-                                        ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = Color.HSVToRGB(ItemHeld.GetFloat(JType.Color) / 10f, 1f, 1f);
+                                        ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = Color.HSVToRGB(ItemHeld.GetFloat(JType.Item_Color) / 10f, 1f, 1f);
                                     } else if (ItemHeld.GetInt(JType.ID) == 187) {
                                         ITItemHeldInfo.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().color = PlantScript.GetBerryColor(ItemHeld.GetFloat(JType.VariableA));
                                     } else {
@@ -1686,10 +1686,10 @@ public class CanvasScript : MonoBehaviour {
                                 MainPlayer.Equipment[CheckEq] = new (0, JTemplate.JustID);
                             } else if (Input.GetMouseButtonDown(1)) {
                                 if (MainPlayer.Equipment[CheckEq].GetInt(JType.ID) == 53) {
-                                    if (MainPlayer.Equipment[CheckEq].GetInt(JType.NightVision) == 0) {
-                                        MainPlayer.Equipment[CheckEq].SetInt(JType.NightVision, 1);// = GS.SetSemiClass(MainPlayer.Equipment[CheckEq], "tr", "1");// "1";
+                                    if (MainPlayer.Equipment[CheckEq].GetInt(JType.Item_NightVision) == 0) {
+                                        MainPlayer.Equipment[CheckEq].SetInt(JType.Item_NightVision, 1);// = GS.SetSemiClass(MainPlayer.Equipment[CheckEq], "tr", "1");// "1";
                                     } else {
-                                        MainPlayer.Equipment[CheckEq].SetInt(JType.NightVision, 0);// = GS.SetSemiClass(MainPlayer.Equipment[CheckEq], "tr", "0");// "0";
+                                        MainPlayer.Equipment[CheckEq].SetInt(JType.Item_NightVision, 0);// = GS.SetSemiClass(MainPlayer.Equipment[CheckEq], "tr", "0");// "0";
                                     }
                                 }
                             }
@@ -1887,44 +1887,44 @@ public class CanvasScript : MonoBehaviour {
 
                 // Hunger stats
                 if (!RS.IsCausual && !MainPlayer.Nicotined){
-                    if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "0"){
+                    if(RS.TempStats.GetInt(JType.RoundScore_Hunger) == 0){
                         EscapedTextes[2].text = GS.SetString("You were hungry, and therefore: ", "Byłeś głodny, przez co:") + "\n";
                         EscapedTextes[2].color = new Color(1f, 0.75f, 0.75f, 1f);
-                    } else if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "1"){
+                    } else if(RS.TempStats.GetInt(JType.RoundScore_Hunger) == 1){
                         EscapedTextes[2].text = GS.SetString("Your food was at normal level.", "Twoje zaspokojenie głodu było na normalnym poziomie.") + "\n";
                         EscapedTextes[2].color = new Color(1f, 1f, 0.75f, 1f);
-                    } else if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "2"){
+                    } else if(RS.TempStats.GetInt(JType.RoundScore_Hunger) == 2){
                         EscapedTextes[2].text = GS.SetString("You were well fed, and therefore: ", "Byłeś najedzony, przez co:") + "\n";
                         EscapedTextes[2].color = new Color(0.75f, 1f, 0.5f, 1f);
-                    } else if(GS.GetSemiClass(RS.TempStats, "Hunger_") == "3"){
+                    } else if(RS.TempStats.GetInt(JType.RoundScore_Hunger) == 3){
                         EscapedTextes[2].text = GS.SetString("You've managed to eat to your fullest, and therefore: ", "Najadłeś się do pełna, przez co:") + "\n";
                         EscapedTextes[2].color = new Color(0f, 1f, 0f, 1f);
                     }
 
-                    if(GS.ExistSemiClass(RS.TempStats, "PItemLost_"))
-                        EscapedTextes[2].text += GS.SetString("- You lost ", "- Straciłeś ") + GS.GetSemiClass(RS.TempStats, "PItemLost_") + GS.SetString(" random item/s", " losowych przedmiot/ów") + "\n";
-                    if(GS.ExistSemiClass(RS.TempStats, "PTired_"))
-                        EscapedTextes[2].text += GS.SetString("- You got tired by ", "- Zmęczyłeś się o ") + GS.GetSemiClass(RS.TempStats, "PTired_") + "%\n";
-                    if(GS.ExistSemiClass(RS.TempStats, "PWet_"))
+                    if(RS.TempStats.Exists(JType.RoundPunishment_ItemLost))
+                        EscapedTextes[2].text += GS.SetString("- You lost ", "- Straciłeś ") + RS.TempStats.GetInt(JType.RoundPunishment_ItemLost) + GS.SetString(" random item/s", " losowych przedmiot/ów") + "\n";
+                    if(RS.TempStats.Exists(JType.RoundPunishment_Tired))
+                        EscapedTextes[2].text += GS.SetString("- You got tired by ", "- Zmęczyłeś się o ") + RS.TempStats.GetInt(JType.RoundPunishment_Tired) + "%\n";
+                    if(RS.TempStats.Exists(JType.RoundPunishment_Wet))
                         EscapedTextes[2].text += GS.SetString("- You got yourself completely wet", "- Całkowicie się zmoczyłeś") + "\n";
-                    if(GS.ExistSemiClass(RS.TempStats, "PDamaged_"))
-                        EscapedTextes[2].text += GS.SetString("- You lost ", "- Straciłeś ") + GS.GetSemiClass(RS.TempStats, "PDamaged_") + GS.SetString(" points of health", " punktów życia") + "\n";
-                    if(GS.ExistSemiClass(RS.TempStats, "PNoAmmo_"))
+                    if(RS.TempStats.Exists(JType.RoundPunishment_Damaged))
+                        EscapedTextes[2].text += GS.SetString("- You lost ", "- Straciłeś ") + RS.TempStats.GetInt(JType.RoundPunishment_Damaged) + GS.SetString(" points of health", " punktów życia") + "\n";
+                    if(RS.TempStats.Exists(JType.RoundPunishment_NoAmmo))
                         EscapedTextes[2].text += GS.SetString("- All variables of your items, have been set to zero", "- Wszystkie zmienne twoich przedmiotów, spadły do zera") + "\n";
-                    if(GS.ExistSemiClass(RS.TempStats, "PDirty_"))
-                        EscapedTextes[2].text +=  GS.SetString("- You got dirty by ", "- Pobrudziłeś się o ") + GS.GetSemiClass(RS.TempStats, "PDirty_") + "%\n";
-                    if(GS.ExistSemiClass(RS.TempStats, "RItemGot_"))
-                        EscapedTextes[2].text += GS.SetString("+ You were given ", "+ Otrzymałeś ") + GS.GetSemiClass(RS.TempStats, "RItemGot_") + GS.SetString(" random item/s", " losowych przedmiot/ów") + "\n";
-                    if(GS.ExistSemiClass(RS.TempStats, "RHealed_"))
+                    if(RS.TempStats.Exists(JType.RoundPunishment_Dirty))
+                        EscapedTextes[2].text +=  GS.SetString("- You got dirty by ", "- Pobrudziłeś się o ") + RS.TempStats.GetInt(JType.RoundPunishment_Dirty) + "%\n";
+                    if(RS.TempStats.Exists(JType.RoundReward_Item))
+                        EscapedTextes[2].text += GS.SetString("+ You were given ", "+ Otrzymałeś ") + RS.TempStats.GetInt(JType.RoundReward_Item) + GS.SetString(" random item/s", " losowych przedmiot/ów") + "\n";
+                    if(RS.TempStats.Exists(JType.RoundReward_Healed))
                         EscapedTextes[2].text += GS.SetString("+ Your health went back to 100%", "+ Twoje zdrowie zostało zregenerowane do 100%") + "\n";
-                    if(GS.ExistSemiClass(RS.TempStats, "RAdrenalined_"))
+                    if(RS.TempStats.Exists(JType.RoundReward_Adrenaline))
                         EscapedTextes[2].text += GS.SetString("+ You were given a full shot of adrenaline, without taking damage", "+ Otrzymałeś pełen zastrzyk adrenaliny, bez utraty zdrowia") + "\n";
-                    if(GS.ExistSemiClass(RS.TempStats, "RTreasure_"))
+                    if(RS.TempStats.Exists(JType.RoundReward_Treasure))
                         EscapedTextes[2].text += GS.SetString("+ You were given a treasure, usually found in monuments", "+ Otrzymałeś skarb, znajdywalny w monumentach") + "\n";
-                    if(GS.ExistSemiClass(RS.TempStats, "RDrunk_"))
-                        EscapedTextes[2].text += GS.SetString("+ You drank a little, and you've gained ", "+ Wypiłeś trochę, i otrzymałeś ") + GS.GetSemiClass(RS.TempStats, "RDrunk_") + GS.SetString("% of drunkeness", "% pijaństwa") + "\n";
-                    if(GS.ExistSemiClass(RS.TempStats, "RMoney_"))
-                        EscapedTextes[2].text += GS.SetString("+ You got ", "+ Dostałeś ") + GS.GetSemiClass(RS.TempStats, "RMoney_") + GS.SetString(" money", " pieniędzy") + "\n";
+                    if(RS.TempStats.Exists(JType.RoundReward_Drunk))
+                        EscapedTextes[2].text += GS.SetString("+ You drank a little, and you've gained ", "+ Wypiłeś trochę, i otrzymałeś ") + RS.TempStats.GetInt(JType.RoundReward_Drunk) + GS.SetString("% of drunkeness", "% pijaństwa") + "\n";
+                    if(RS.TempStats.Exists(JType.RoundReward_Money))
+                        EscapedTextes[2].text += GS.SetString("+ You got ", "+ Dostałeś ") + RS.TempStats.GetInt(JType.RoundReward_Money) + GS.SetString(" money", " pieniędzy") + "\n";
                     if(MainPlayer.Food[0] > MainPlayer.Food[1])
                         EscapedTextes[2].text += GS.SetString("+ The excess ", "+ Nadmiar jedzenia w wysokości ") + (MainPlayer.Food[1] - MainPlayer.Food[0]) + GS.SetString(" food, will be carried over to next round", " pójdzie do następnej rundy");
                 } else {
@@ -1953,9 +1953,8 @@ public class CanvasScript : MonoBehaviour {
                 }
 
                 // Stats
-                foreach(string PushData in GS.ListSemiClass(RS.TempStats)){
-                    if(GS.GetStatName(PushData, 1) != "misc.") EscapedTextes[3].text += GS.GetStatName(PushData) + "\n";
-                }
+                if(RS.TempStats.Values.Count > 0)
+                    EscapedTextes[3].text += GS.SetString("Additional score\n", "Dodatkowy wynik\n");
 
             }
             
@@ -2038,7 +2037,7 @@ public class CanvasScript : MonoBehaviour {
                         break;
                     case "SniperScope":
                         // Sniper scope
-                        if(MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.Attachment) == 103 && MainPlayer.ZoomValues[1] <= MainPlayer.ZoomValues[0] + 1 && MainPlayer.State == 1){
+                        if(MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.Item_Attachment) == 103 && MainPlayer.ZoomValues[1] <= MainPlayer.ZoomValues[0] + 1 && MainPlayer.State == 1){
                             if(!SetEnvObj.gameObject.activeInHierarchy)
                                 SetEnvObj.gameObject.SetActive(true);
                             SetEnvObj.transform.GetChild(0).forward = Vector3.Lerp(MainPlayer.LookDir.forward, MainPlayer.SlimEnd.transform.forward, 0.01f);
@@ -2052,7 +2051,7 @@ public class CanvasScript : MonoBehaviour {
                         break;
                     case "HoloSight":
                         // Holo sight
-                        if(MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.Attachment) == 104 && MainPlayer.ZoomValues[1] <= MainPlayer.ZoomValues[0] + 1 && MainPlayer.State == 1){
+                        if(MainPlayer.Inventory[MainPlayer.CurrentItemHeld].GetInt(JType.Item_Attachment) == 104 && MainPlayer.ZoomValues[1] <= MainPlayer.ZoomValues[0] + 1 && MainPlayer.State == 1){
                             if(!SetEnvObj.gameObject.activeInHierarchy)
                                 SetEnvObj.gameObject.SetActive(true);
                                 Color Visib = Color.HSVToRGB((float)GS.LaserColor / 10f, 1f, 1f);
@@ -2581,7 +2580,7 @@ public class CanvasScript : MonoBehaviour {
                     GS.GetComponent<GameScript>().SetText(HintText,
                         "HINT\nYou're running low on health! Try to find bandages or health kits to patch yourself up. Eating when you're full, will also heal you.",
                         "PORADA\nKończy ci się zdrowie! Spróbuj znaleźć bandaże albo apteczki, żeby się uleczyć. Jedzenie, będąc najedzonym, też cię uleczy.");
-                    if (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) > 3) {
+                    if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) > 3) {
                         GS.GetComponent<GameScript>().SetText(HintText,
                         "HINT\nYou're running low on health! Try to find bandages or health kits to patch yourself up.",
                         "PORADA\nKończy ci się zdrowie! Spróbuj znaleźć bandaże albo apteczki, żeby się uleczyć.");

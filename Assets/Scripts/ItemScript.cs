@@ -16,7 +16,7 @@ public class ItemScript : MonoBehaviour {
     public bool CanBeFixed = false;
     public bool CanHaveAttachments = false;
     public bool InWater = false;
-    public string PickupReward = "ItemsFound_";
+    public JType PickupReward = JType.RoundScore_Stats_ItemsFound;
     // Variables
 
     // References
@@ -56,12 +56,12 @@ public class ItemScript : MonoBehaviour {
         ThrownVariables = GS.ItemCache[Variables.GetInt(JType.ID)].ThrowVariables;
 
         if (Variables.GetInt(JType.ID) >= 990)
-            PickupReward = "TreasuresFound_";
+            PickupReward = JType.RoundScore_Stats_TreasuresFound;
 
         // Flare marker
         if (Variables.GetInt(JType.ID) == 13) {
             MinimapMarker.transform.parent.GetComponent<MinimapMarker>().MapSize = MinimapMarker.transform.parent.GetComponent<MinimapMarker>().MinimapSize;
-            MinimapMarker.color = Color.HSVToRGB(Variables.GetFloat(JType.Color) / 10f, 1f, 1f);
+            MinimapMarker.color = Color.HSVToRGB(Variables.GetFloat(JType.Item_Color) / 10f, 1f, 1f);
         }
 
         // Check if in water
@@ -70,7 +70,7 @@ public class ItemScript : MonoBehaviour {
             if (CheckWaterUPHIT.collider.gameObject.layer == 4 || CheckWaterUPHIT.collider.gameObject.layer == 16) {
                 InWater = true;
                 MinimapMarker.color = new (0f, .5f, 1f, Random.Range(0f, .25f));
-                PickupReward = "ItemsUnderwaterFound_";
+                PickupReward = JType.RoundScore_Stats_ItemsUnderwaterFound;
             }
         }
 
@@ -134,23 +134,23 @@ public class ItemScript : MonoBehaviour {
                 if (GetMat.name == "LASER (Instance)" && DroppedBy != null && DroppedBy == GameObject.FindGameObjectWithTag("Player")) {
                     GetMat.color = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>().LaserColor;
                 } else if (GetMat.name == "Glowstick2 (Instance)" || GetMat.name == "Flare2 (Instance)") {
-                    GetMat.color = Color.HSVToRGB(Variables.GetFloat(JType.Color) / 10f, 1f, 1f);
+                    GetMat.color = Color.HSVToRGB(Variables.GetFloat(JType.Item_Color) / 10f, 1f, 1f);
                 } else if (GetMat.name == "BerriesColor (Instance)")
                     GetMat.color = PlantScript.GetBerryColor(Variables.GetFloat(JType.VariableA));
             }
             if (meshID == "13") {
-                SelectedMesh.transform.GetChild(1).GetComponent<Light>().color = Color.HSVToRGB(Variables.GetFloat(JType.Color) / 10f, 1f, 1f);
+                SelectedMesh.transform.GetChild(1).GetComponent<Light>().color = Color.HSVToRGB(Variables.GetFloat(JType.Item_Color) / 10f, 1f, 1f);
                 ParticleSystem.MainModule SetMesh = SelectedMesh.transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>().main;
-                SetMesh.startColor = new ParticleSystem.MinMaxGradient(Color.HSVToRGB(Variables.GetFloat(JType.Color) / 10f, 1f, 1f));
+                SetMesh.startColor = new ParticleSystem.MinMaxGradient(Color.HSVToRGB(Variables.GetFloat(JType.Item_Color) / 10f, 1f, 1f));
             }
         }
 
 
         Name = GS.ItemCache[int.Parse(ID)].getName();
-        if(Variables.Exists(JType.StackQuantity) && Variables.GetInt(JType.StackQuantity) != 1) 
-            Name += " x" + Variables.GetInt(JType.StackQuantity);
-        if(Variables.Exists(JType.Repairable)) CanBeFixed = true;
-        if(Variables.Exists(JType.Attachment)) CanHaveAttachments = true;
+        if(Variables.Exists(JType.Item_StackQuantity) && Variables.GetInt(JType.Item_StackQuantity) != 1) 
+            Name += " x" + Variables.GetInt(JType.Item_StackQuantity);
+        if(Variables.Exists(JType.Item_Repairable)) CanBeFixed = true;
+        if(Variables.Exists(JType.Item_Attachment)) CanHaveAttachments = true;
 
         if (InWater == true) {
             ThrownVariables[0] /= 2f;
@@ -240,9 +240,9 @@ public class ItemScript : MonoBehaviour {
             }
         }
 
-        if (CanHaveAttachments == true && Variables.GetInt(JType.Attachment) != 0) {
+        if (CanHaveAttachments == true && Variables.GetInt(JType.Item_Attachment) != 0) {
             foreach (Transform Attachment in SelectedMesh.transform.GetChild(0)) {
-                if (Attachment.name == Variables.GetInt(JType.Attachment).ToString()) {
+                if (Attachment.name == Variables.GetInt(JType.Item_Attachment).ToString()) {
                     Attachment.gameObject.SetActive(true);
                 } else {
                     Attachment.gameObject.SetActive(false);
@@ -325,15 +325,15 @@ public class ItemScript : MonoBehaviour {
                             Ring.GetComponent<EffectScript>().EffectName = "Cowbell";
                         }
 
-                        if (CanHaveAttachments == true && Variables.GetInt(JType.Attachment) != 0) {
+                        if (CanHaveAttachments == true && Variables.GetInt(JType.Item_Attachment) != 0) {
                             GameObject DropEffect = Instantiate(EffectPrefab) as GameObject;
                             DropEffect.GetComponent<EffectScript>().EffectName = "Unpin";
                             DropEffect.transform.position = this.transform.position;
                             DropEffect.transform.LookAt(Vector3.up);
                             GameObject Attachment = Instantiate(GameObject.Find("_RoundScript").GetComponent<RoundScript>().ItemPrefab) as GameObject;
-                            Attachment.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[Variables.GetInt(JType.Attachment)].startVariables);
+                            Attachment.GetComponent<ItemScript>().Variables.CopyFrom(GS.ItemCache[Variables.GetInt(JType.Item_Attachment)].startVariables);
                             Attachment.transform.position = this.transform.position;
-                            Variables.SetInt(JType.Attachment, 0);
+                            Variables.SetInt(JType.Item_Attachment, 0);
                             setAtt();
                         } else {
                             // Hit

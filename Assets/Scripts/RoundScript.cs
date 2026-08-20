@@ -17,7 +17,7 @@ public class RoundScript : MonoBehaviour {
     public int[] HordeVariables = new int[] { 8, 2, 0, 0 };   // Total Amount - At Once - Power - Special Mutant Chance
     public int HordeAmount = 0;
     public bool IsCausual = false;
-    public string TempStats = "";
+    public JClass TempStats = new JClass();
     // References
     public GameObject PlayerPrefab;
     public GameObject ItemPrefab;
@@ -165,7 +165,7 @@ public class RoundScript : MonoBehaviour {
 
         SpawnPoints = new List<Vector3>();
 
-        switch (GS.GetSemiClass(GS.RoundSetting, "G", "?")) {
+        switch (GS.RoundSetting.GetInt(JType.RoundSettings_GameMode).ToString()) {
             case "0": 
                 GS.GameModePrefab = new (0, 0);
                 break;
@@ -243,7 +243,7 @@ public class RoundScript : MonoBehaviour {
                     CountSecond -= Time.deltaTime;
                 else {
                     CountSecond = 1f;
-                    SetScore("SurvivedTime_", "/+1");
+                    SetScore(JType.RoundScore_Stats_SurvivedTime, "/+1");
                 }
 
                 TimeSinceRoundStart += Time.deltaTime;
@@ -268,7 +268,7 @@ public class RoundScript : MonoBehaviour {
                 bool playerPermission = false;
                 Random.InitState(GS.RoundsSeed);
 
-                DifficultySliderA = Mathf.Clamp(GS.Round / (30f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 5f)), 0f, 1f);
+                DifficultySliderA = Mathf.Clamp(GS.Round / (30f - (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) * 5f)), 0f, 1f);
                 if (IsCausual)
                     DifficultySliderB = GS.Round > 1 ? Mathf.Lerp(Random.Range(0f, .75f), Random.Range(.75f, 1f), DifficultySliderA * .66f) : .1f;
                 else
@@ -291,15 +291,15 @@ public class RoundScript : MonoBehaviour {
 
                             Map_Horde = null;
 
-                            if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
+                            if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 1) {
                                 RoundTime = 300f;
-                            } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "2") {
+                            } else if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 2) {
                                 RoundTime = Mathf.Clamp(300f - (DifficultySliderA * 180f), 120f, 300f);
-                            } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "3") {
+                            } else if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 3) {
                                 RoundTime = Mathf.Clamp(240f - (DifficultySliderA * 120f), 120f, 240f);
-                            } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "4") {
+                            } else if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 4) {
                                 RoundTime = Mathf.Clamp(180f - (DifficultySliderA * 60f), 120f, 240f);
-                            } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "5") {
+                            } else if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 5) {
                                 RoundTime = 120f;
                             }
 
@@ -422,7 +422,7 @@ public class RoundScript : MonoBehaviour {
                     switch (DonePrepare) {
                         case 0:
                             foreach (Transform SetMap in HordeMapList.transform) {
-                                if (int.Parse(SetMap.name.Substring(0, 2)) == int.Parse(GS.GetSemiClass(GS.RoundSetting, "H", "?"))) {
+                                if (int.Parse(SetMap.name.Substring(0, 2)) == GS.RoundSetting.GetInt(JType.RoundSettings_HordeMap)) {
                                     SetMap.gameObject.SetActive(true);
                                     Map_Horde = SetMap.gameObject.GetComponent<MapInfo>();
                                     Map_Biome = null;
@@ -452,7 +452,7 @@ public class RoundScript : MonoBehaviour {
                     GameObject NewPlayer = Instantiate(PlayerPrefab) as GameObject;
                     NewPlayer.transform.position = new Vector3(1f, 3f, 1f);
                     MainPlayer = NewPlayer.GetComponent<PlayerScript>();
-                    switch(GS.GetSemiClass(GS.RoundSetting, "D", "?")){
+                    switch(GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty).ToString()){
                         case "1": MainPlayer.FoodLimits = new float[]{0.25f, 0.5f}; break;
                         case "2": MainPlayer.FoodLimits = new float[]{0.33f, 0.66f}; break;
                         case "3": MainPlayer.FoodLimits = new float[]{0.5f, 0.75f}; break;
@@ -742,18 +742,18 @@ public class RoundScript : MonoBehaviour {
                         }
 
                         if (GS.GetComponent<GameScript>().Round > 1) {
-                            DifficultySliderA = Mathf.Clamp(GS.Round / (55f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 5f)), 0f, 1f);
+                            DifficultySliderA = Mathf.Clamp(GS.Round / (55f - (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) * 5f)), 0f, 1f);
                         } else {
                             DifficultySliderA = 0;
                         }
                         float DifficultyDifference = 1f;
-                        if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "1") {
+                        if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 1) {
                             DifficultyDifference = 0.5f;
-                        } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "2") {
+                        } else if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 2) {
                             DifficultyDifference = 1f;
-                        } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "3") {
+                        } else if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 3) {
                             DifficultyDifference = 2f;
-                        } else if (GS.GetSemiClass(GS.RoundSetting, "D", "?") == "4" || GS.GetSemiClass(GS.RoundSetting, "D", "?") == "5") {
+                        } else if (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 4 || GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) == 5) {
                             DifficultyDifference = 3f;
                         }
                         HordeVariables = new int[] {
@@ -794,7 +794,7 @@ public class RoundScript : MonoBehaviour {
                                         AvailableOffers.Add(80);
                                         AvailableOffers.Add(81);
                                     }
-                                    
+
                                     float PickBargain = Random.value;
                                     float PickPrice = Random.value;
 
@@ -805,7 +805,7 @@ public class RoundScript : MonoBehaviour {
                         }
                     }
                 } else {
-                    DifficultySliderA = Mathf.Clamp(GS.Round / (25f - (int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?")) * 2f)), 0f, 1f);
+                    DifficultySliderA = Mathf.Clamp(GS.Round / (25f - (GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty) * 2f)), 0f, 1f);
                     HordeAmount = HordeVariables[0];
                     Odds = 2;
                     RoundState = "HordeWave";
@@ -859,7 +859,7 @@ public class RoundScript : MonoBehaviour {
                         Odds -= 1;
                         
                     }
-                    HordeSpawnCooldown = 5.5f - int.Parse(GS.GetSemiClass(GS.RoundSetting, "D", "?"));
+                    HordeSpawnCooldown = 5.5f - GS.RoundSetting.GetInt(JType.RoundSettings_Difficulty);
                 }
 
                 if (HordeAmount <= 0f && BAmountOfHorde <= 0f) {
@@ -1069,18 +1069,18 @@ public class RoundScript : MonoBehaviour {
 
                     if(MainPlayer.Food[0] < MainPlayer.FoodLimits[0]){
                         // Hungry
-                        SetScore("Hunger_", "0");
+                        SetScore(JType.RoundScore_Hunger, "0");
                         Punishments[0] = "1";
                     } else if(MainPlayer.Food[0] < MainPlayer.FoodLimits[1]){
                         // Normal
-                        SetScore("Hunger_", "1");
+                        SetScore(JType.RoundScore_Hunger, "1");
                     } else if(MainPlayer.Food[0] < MainPlayer.Food[1]){
                         // Well fed
-                        SetScore("Hunger_", "2");
+                        SetScore(JType.RoundScore_Hunger, "2");
                         Rewards[0] = "1";
                     } else {
                         // Full
-                        SetScore("Hunger_", "3");
+                        SetScore(JType.RoundScore_Hunger, "3");
                         Rewards[0] = "2";
                     }
 
@@ -1092,7 +1092,7 @@ public class RoundScript : MonoBehaviour {
                         switch(Punishments[1].Substring(ReceivedPunish, 1)){
                             case "0":
                                 // Lose items
-                                SetScore("PItemLost_", "1");
+                                SetScore(JType.RoundPunishment_ItemLost, "1");
                                 int CheckThisOne = Random.Range(0, MainPlayer.MaxInventorySlots);
                                 for(int Unlucky = MainPlayer.MaxInventorySlots; Unlucky > 0; Unlucky --){
                                     int offset = CheckThisOne + Unlucky;
@@ -1107,18 +1107,18 @@ public class RoundScript : MonoBehaviour {
                                 // Tired
                                 int HowMuch = (int)Random.Range(5f, 25f);
                                 MainPlayer.Tiredness = Mathf.Clamp(MainPlayer.Tiredness + HowMuch, 0, 75);
-                                SetScore("PTired_", HowMuch.ToString());
+                                SetScore(JType.RoundPunishment_Tired, HowMuch.ToString());
                                 break;
                             case "2":
                                 // Wet
                                 MainPlayer.Wet = 100;
-                                SetScore("PWet_", "1");
+                                SetScore(JType.RoundPunishment_Wet, "1");
                                 break;
                             case "3":
                                 // Damaged
                                 float HealthToLose = Random.Range(0f, Mathf.Clamp(25f, MainPlayer.Health[0] - 1f, 25f));
                                 MainPlayer.Health[0] -= HealthToLose;
-                                SetScore("PDamaged_", ((int)HealthToLose).ToString());
+                                SetScore(JType.RoundPunishment_Damaged, ((int)HealthToLose).ToString());
                                 break;
                             case "4":
                                 // NoAmmo
@@ -1126,13 +1126,13 @@ public class RoundScript : MonoBehaviour {
                                     if(MainPlayer.Inventory[LoseAmmo].Exists(JType.VariableA)) 
                                         MainPlayer.Inventory[LoseAmmo].SetFloat(JType.VariableA, 0f);
                                 }
-                                SetScore("PNoAmmo_", "1");
+                                SetScore(JType.RoundPunishment_NoAmmo, "1");
                                 break;
                             case "5":
                                 // Dirty
                                 int HowMuchDirt = (int)Random.Range(5f, 25f);
                                 MainPlayer.Dirty = Mathf.Clamp(MainPlayer.Dirty + HowMuchDirt, 0, 100);
-                                SetScore("PDirty_", HowMuchDirt.ToString());
+                                SetScore(JType.RoundPunishment_Dirty, HowMuchDirt.ToString());
                                 break;
                         }
 
@@ -1154,33 +1154,33 @@ public class RoundScript : MonoBehaviour {
                             case "0":
                                 // Random item
                                 int ByThatMuch = (int)Random.Range(1f, 2.9f);
-                                SetScore("RItemGot_", ByThatMuch.ToString());
+                                SetScore(JType.RoundReward_Item, ByThatMuch.ToString());
                                 break;
                             case "1":
                                 // Healed
-                                SetScore("RHealed_", "1");
+                                SetScore(JType.RoundReward_Healed, "1");
                                 MainPlayer.Health[0] = MainPlayer.Health[1];
                                 break;
                             case "2":
                                 // Adrenalined
-                                SetScore("RAdrenalined_", "1");
+                                SetScore(JType.RoundReward_Adrenaline, "1");
                                 MainPlayer.Adrenaline = 100f;
                                 break;
                             case "3":
                                 // Treasure
-                                SetScore("RTreasure_", "1");
+                                SetScore(JType.RoundReward_Treasure, "1");
                                 break;
                             case "4":
                                 // Drunk
                                 float DrunkBy = (int)Random.Range(25f, 75f);
                                 MainPlayer.Drunkenness = DrunkBy;
-                                SetScore("RDrunk_", DrunkBy.ToString());
+                                SetScore(JType.RoundReward_Drunk, DrunkBy.ToString());
                                 break;
                             case "5":
                                 // Money
                                 int MoneyGot = Random.Range(1, 11) * 5;
                                 GS.Money += MoneyGot;
-                                SetScore("RMoney_", MoneyGot.ToString());
+                                SetScore(JType.RoundReward_Money, MoneyGot.ToString());
                                 break;
                         }
 
@@ -1365,13 +1365,14 @@ public class RoundScript : MonoBehaviour {
 
     }
 
-    public void SetScore(string ScoreType, string Score){
+    public void SetScore(JType scoreType, string Score){
 
         bool Permission = true;
 
         if(Permission){
-            TempStats = GS.SetSemiClass(TempStats, ScoreType, Score);
-            GS.PlaythroughStats = GS.SetSemiClass(GS.PlaythroughStats, ScoreType, Score);
+            int value = Score.StartsWith("/+") ? int.Parse(Score.Substring(2), CultureInfo.InvariantCulture) : int.Parse(Score, CultureInfo.InvariantCulture);
+            TempStats.SetInt(scoreType, value, Score.StartsWith("/+") ? Maths.Add : Maths.Set);
+            GS.PlaythroughStats.SetInt(scoreType, value, Score.StartsWith("/+") ? Maths.Add : Maths.Set);
         }
 
     }
@@ -1698,8 +1699,8 @@ public class RoundScript : MonoBehaviour {
                 GameObject newObject = GameObject.Instantiate(ItemBank.GetChild(gi).gameObject);
 
                 if (additionalData != default) {
-                    if (additionalData.Exists(JType.Attachment)) {
-                        int attachment = additionalData.GetInt(JType.Attachment);
+                    if (additionalData.Exists(JType.Item_Attachment)) {
+                        int attachment = additionalData.GetInt(JType.Item_Attachment);
                         foreach (Transform Attachment in newObject.transform.GetChild(0)) {
                             if (Attachment.name == attachment.ToString()) {
                                 Attachment.gameObject.SetActive(true);

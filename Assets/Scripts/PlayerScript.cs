@@ -303,20 +303,20 @@ public class PlayerScript : MonoBehaviour {
         }
 
         // Get rewards and punishments
-        if (GS.ExistSemiClass(GS.PlaythroughStats, "RItemGot_")){
-            for(int ByThatMuch = int.Parse(GS.GetSemiClass(GS.PlaythroughStats, "RItemGot_")); ByThatMuch > 0; ByThatMuch--){
+        if (GS.PlaythroughStats.Exists(JType.RoundReward_Item)){
+            for(int ByThatMuch = GS.PlaythroughStats.GetInt(JType.RoundReward_Item); ByThatMuch > 0; ByThatMuch--){
                 int GivenID = RS.TotalItems[(int)Random.Range(0f, RS.TotalItems.Length - 0.1f)];
                 InvGet(GS.ItemCache[GivenID].startVariables, 0);
             }
-            GS.PlaythroughStats = GS.RemoveSemiClass(GS.PlaythroughStats, "RItemGot_");
+            GS.PlaythroughStats.Remove(JType.RoundReward_Item);
         }
 
-        if (GS.ExistSemiClass(GS.PlaythroughStats, "RTreasure_")){
-            for(int ByThatMuch = int.Parse(GS.GetSemiClass(GS.PlaythroughStats, "RTreasure_")); ByThatMuch > 0; ByThatMuch--){
+        if (GS.PlaythroughStats.Exists(JType.RoundReward_Treasure)){
+            for(int ByThatMuch = GS.PlaythroughStats.GetInt(JType.RoundReward_Treasure); ByThatMuch > 0; ByThatMuch--){
                 int GivenID = (int)Random.Range(990f, 999.9f);
                 InvGet(GS.ItemCache[GivenID].startVariables, 0);
             }
-            GS.PlaythroughStats = GS.RemoveSemiClass(GS.PlaythroughStats, "RTreasure_");
+            GS.PlaythroughStats.Remove(JType.RoundReward_Treasure);
         }
         // Get rewards and punishments
 
@@ -1230,21 +1230,21 @@ public class PlayerScript : MonoBehaviour {
 
         switch(Spec){
             case 1: // remove item
-                if(Inventory[Where].Exists(JType.StackQuantity) && Inventory[Where].GetInt(JType.StackQuantity) > stackAmount) {
-                    int keepStack = Inventory[Where].GetInt(JType.StackQuantity) - stackAmount;
+                if(Inventory[Where].Exists(JType.Item_StackQuantity) && Inventory[Where].GetInt(JType.Item_StackQuantity) > stackAmount) {
+                    int keepStack = Inventory[Where].GetInt(JType.Item_StackQuantity) - stackAmount;
                     Inventory[Where].CopyFrom(GS.ItemCache[ Inventory[Where].GetInt(JType.ID) ].startVariables);
-                    Inventory[Where].SetInt(JType.StackQuantity, keepStack);//= GS.SetSemiClass(Inventory[at], "sq", keepStack.ToString());
+                    Inventory[Where].SetInt(JType.Item_StackQuantity, keepStack);//= GS.SetSemiClass(Inventory[at], "sq", keepStack.ToString());
                 } else 
                     Inventory[Where] = new (0, JTemplate.JustID);
                 break;
             case 2: case -1: case -2: // drop item - drop item by player - throw item by player
-                    stackAmount = (int)Mathf.Clamp(stackAmount, 0, Inventory[Where].GetInt(JType.StackQuantity));
+                    stackAmount = (int)Mathf.Clamp(stackAmount, 0, Inventory[Where].GetInt(JType.Item_StackQuantity));
                     GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
                     DropItem.transform.position = this.transform.position + LookDir.forward * 0.5f;
                     DropItem.GetComponent<ItemScript>().Variables.CopyFrom(Inventory[Where]);
 
-                    if(DropItem.GetComponent<ItemScript>().Variables.Exists(JType.StackQuantity)) 
-                        DropItem.GetComponent<ItemScript>().Variables.SetInt(JType.StackQuantity, stackAmount);// = GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
+                    if(DropItem.GetComponent<ItemScript>().Variables.Exists(JType.Item_StackQuantity)) 
+                        DropItem.GetComponent<ItemScript>().Variables.SetInt(JType.Item_StackQuantity, stackAmount);// = GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
                     
                     DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
                     if (Spec == -1) DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
@@ -1267,17 +1267,17 @@ public class PlayerScript : MonoBehaviour {
 
         switch(Spec){
             case 0: // Add item
-                string cash = What.GetString(JType.Cacheable);
+                string cash = What.GetString(JType.Item_Cacheable);
 
                 if(cash == ""){
 
                     int stackable = 0;
                     int ammostack = 0;
 
-                    if(What.Exists(JType.StackQuantity)) {
+                    if(What.Exists(JType.Item_StackQuantity)) {
                         stackable = 1;
-                        stackAmount = What.GetInt(JType.StackQuantity);
-                    } else if(What.Exists(JType.AmmoStack)) {
+                        stackAmount = What.GetInt(JType.Item_StackQuantity);
+                    } else if(What.Exists(JType.Item_AmmoStack)) {
                         ammostack = (int)What.GetFloat(JType.VariableA);
                     }
 
@@ -1288,14 +1288,14 @@ public class PlayerScript : MonoBehaviour {
                             else if ( Inventory[cfq].GetInt(JType.ID) == What.GetInt(JType.ID)) {// && GS.RemoveSemiClass(Inventory[cfq], "sq") == GS.RemoveSemiClass(What, "sq") ) {
                                 JClass checkA = new ();
                                 checkA.CopyFrom(Inventory[cfq]);
-                                checkA.Remove(JType.StackQuantity);
+                                checkA.Remove(JType.Item_StackQuantity);
 
                                 JClass checkB = new ();
                                 checkB.CopyFrom(What);
-                                checkB.Remove(JType.StackQuantity);
+                                checkB.Remove(JType.Item_StackQuantity);
 
                                 if (checkA.CompareTo(checkB))
-                                    Inventory[cfq].SetInt(JType.StackQuantity, stackAmount, Maths.Add);// = GS.SetSemiClass(Inventory[cfq], "sq", "/+" + stackAmount);
+                                    Inventory[cfq].SetInt(JType.Item_StackQuantity, stackAmount, Maths.Add);// = GS.SetSemiClass(Inventory[cfq], "sq", "/+" + stackAmount);
                                 else
                                     stackable = 2;
 
@@ -1347,10 +1347,10 @@ public class PlayerScript : MonoBehaviour {
             case 1: // remove item
                 for(int rs = 0; rs < MaxInventorySlots; rs++) 
                     if (Inventory[rs].CompareTo(What)) {
-                        if(Inventory[rs].Exists(JType.StackQuantity) && Inventory[rs].GetInt(JType.StackQuantity) > stackAmount) {
-                            int keepStack = Inventory[rs].GetInt(JType.StackQuantity) - stackAmount;
+                        if(Inventory[rs].Exists(JType.Item_StackQuantity) && Inventory[rs].GetInt(JType.Item_StackQuantity) > stackAmount) {
+                            int keepStack = Inventory[rs].GetInt(JType.Item_StackQuantity) - stackAmount;
                             Inventory[rs] = GS.ItemCache[ Inventory[rs].GetInt(JType.ID) ].startVariables;
-                            Inventory[rs].SetInt(JType.StackQuantity, keepStack);// = GS.SetSemiClass(Inventory[rs], "sq", keepStack.ToString());
+                            Inventory[rs].SetInt(JType.Item_StackQuantity, keepStack);// = GS.SetSemiClass(Inventory[rs], "sq", keepStack.ToString());
                         } else // ] == null
                             Inventory[rs] = new (0, JTemplate.JustID);
                         break;
@@ -1359,13 +1359,13 @@ public class PlayerScript : MonoBehaviour {
             case 2: case -1: case -2: // drop item - drop item by player - throw item by player
                 for(int rs = 0; rs < MaxInventorySlots; rs++) {
                     if (Inventory[rs] == What) {
-                        stackAmount = (int)Mathf.Clamp(stackAmount, 0, Inventory[rs].GetInt(JType.StackQuantity));
+                        stackAmount = (int)Mathf.Clamp(stackAmount, 0, Inventory[rs].GetInt(JType.Item_StackQuantity));
                         GameObject DropItem = Instantiate(ItemPrefab) as GameObject;
                         DropItem.transform.position = this.transform.position + LookDir.forward * 0.5f;
                         DropItem.GetComponent<ItemScript>().Variables.CopyFrom(What);
 
-                        if(DropItem.GetComponent<ItemScript>().Variables.Exists(JType.StackQuantity))//GS.ExistSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq")) 
-                            DropItem.GetComponent<ItemScript>().Variables.SetInt(JType.StackQuantity, stackAmount);//= GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
+                        if(DropItem.GetComponent<ItemScript>().Variables.Exists(JType.Item_StackQuantity))//GS.ExistSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq")) 
+                            DropItem.GetComponent<ItemScript>().Variables.SetInt(JType.Item_StackQuantity, stackAmount);//= GS.SetSemiClass(DropItem.GetComponent<ItemScript>().Variables, "sq", stackAmount.ToString());
                         
                         if (Spec == -1) 
                             DropItem.GetComponent<ItemScript>().DroppedBy = this.gameObject;
@@ -1477,13 +1477,13 @@ public class PlayerScript : MonoBehaviour {
 
             switch(Inventory[int.Parse(SwitchItemSound, CultureInfo.InvariantCulture)].GetInt(JType.ID)){
                 case 38: case 42: case 59: case 60: case 137: case 34: case 65: case 113: case 157: case 159: case 160:
-                    if(Inventory[int.Parse(SwitchItemSound)].GetInt(JType.Attachment) == 101) 
+                    if(Inventory[int.Parse(SwitchItemSound)].GetInt(JType.Item_Attachment) == 101) 
                         SwitchItemSound = "SwitchItem";
                     else 
                         SwitchItemSound = "SwitchItem-AR";
                     break;
                 case 29: case 31: case 32: case 58: case 135:
-                    if(Inventory[int.Parse(SwitchItemSound)].GetInt(JType.Attachment) == 101) 
+                    if(Inventory[int.Parse(SwitchItemSound)].GetInt(JType.Item_Attachment) == 101) 
                         SwitchItemSound = "SwitchItem";
                     else 
                         SwitchItemSound = "SwitchItem-Pistol";
@@ -1530,7 +1530,7 @@ public class PlayerScript : MonoBehaviour {
                     MustSwitch = true;
                     ItemsShown.GetComponent<Animator>().Play(PlayItemAnim("PickUpB",Inventory[CurrentItemHeld].GetInt(JType.ID), AnimationAddition), 0, 0f);
                     for(int cfq = 0; cfq < MaxInventorySlots; cfq++) {
-                        if(Inventory[cfq].GetInt(JType.ID) == 0 || newItemVars.Exists(JType.Cacheable) || (newItemVars.Exists(JType.StackQuantity) && Inventory[cfq].GetInt(JType.ID) == newItemVars.GetInt(JType.ID))){
+                        if(Inventory[cfq].GetInt(JType.ID) == 0 || newItemVars.Exists(JType.Item_Cacheable) || (newItemVars.Exists(JType.Item_StackQuantity) && Inventory[cfq].GetInt(JType.ID) == newItemVars.GetInt(JType.ID))){
                             MustSwitch = false;
                             break;
                         }
@@ -1547,8 +1547,8 @@ public class PlayerScript : MonoBehaviour {
                 PlaySoundBank("PickupItem", 1, Random.Range(0.75f, 1f), 0f, "Only");
 
                 if(MustSwitch){
-                    if(Inventory[CurrentItemHeld].Exists(JType.StackQuantity)) 
-                        InvGet(CurrentItemHeld, 2, Inventory[CurrentItemHeld].GetInt(JType.StackQuantity) );
+                    if(Inventory[CurrentItemHeld].Exists(JType.Item_StackQuantity)) 
+                        InvGet(CurrentItemHeld, 2, Inventory[CurrentItemHeld].GetInt(JType.Item_StackQuantity) );
                     else 
                         InvGet(CurrentItemHeld, 2);
                     InvGet(newItemVars, 0);
@@ -1570,7 +1570,7 @@ public class PlayerScript : MonoBehaviour {
                     if (prevAt != 0) {
                         newItem = new (GS.ItemCache[prevAt].startVariables);
                     }
-                    InteractedGameobject.GetComponent<ItemScript>().Variables.SetInt(JType.Attachment, Inventory[CurrentItemHeld].GetInt(JType.ID)) ;//= GS.SetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "at", GS.GetSemiClass(Inventory[CurrentItemHeld].GetInt(JType.ID)); //InteractedGameobject.GetComponent<ItemScript>().Variables.z = GS.GetSemiClass(Inventory[CurrentItemHeld].GetInt(JType.ID);
+                    InteractedGameobject.GetComponent<ItemScript>().Variables.SetInt(JType.Item_Attachment, Inventory[CurrentItemHeld].GetInt(JType.ID)) ;//= GS.SetSemiClass(InteractedGameobject.GetComponent<ItemScript>().Variables, "at", GS.GetSemiClass(Inventory[CurrentItemHeld].GetInt(JType.ID)); //InteractedGameobject.GetComponent<ItemScript>().Variables.z = GS.GetSemiClass(Inventory[CurrentItemHeld].GetInt(JType.ID);
                     InteractedGameobject.GetComponent<ItemScript>().setAtt();
                     GS.Mess(GS.SetString(GS.ItemCache[Inventory[CurrentItemHeld].GetInt(JType.ID)].getName() + " attached to weapon", "Dodano " + GS.ItemCache[Inventory[CurrentItemHeld].GetInt(JType.ID)].getName() + " do broni"));
                     InvGet(CurrentItemHeld, 1);
@@ -1626,7 +1626,7 @@ public class PlayerScript : MonoBehaviour {
                             Scanner = GetChild.gameObject;
                         } else if (GetChild.name == "Attachment") {
                             foreach (Transform GetAttachment in GetChild.transform) {
-                                if (GetAttachment.name == Inventory[CurrentItemHeld].GetInt(JType.Attachment).ToString()) {
+                                if (GetAttachment.name == Inventory[CurrentItemHeld].GetInt(JType.Item_Attachment).ToString()) {
                                     GetAttachment.gameObject.SetActive(true);
                                     if(GetAttachment.name == "101"){
                                         AnimationAddition = "Grip";
@@ -1645,16 +1645,16 @@ public class PlayerScript : MonoBehaviour {
                                 }
                             }
                         } else if (GetChild.name == "Glowstick") {
-                            GetChild.GetComponent<MeshRenderer>().materials[1].color = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Color) / 10f, 1f, 1f);
-                            GetChild.GetComponent<Light>().color = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Color) / 10f, 1f, 1f);
+                            GetChild.GetComponent<MeshRenderer>().materials[1].color = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Item_Color) / 10f, 1f, 1f);
+                            GetChild.GetComponent<Light>().color = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Item_Color) / 10f, 1f, 1f);
                         } else if (GetChild.name == "Berries") {
                             GetChild.GetComponent<MeshRenderer>().materials[0].color = PlantScript.GetBerryColor(Inventory[CurrentItemHeld].GetFloat(JType.VariableA));
                         } else if (GetChild.name == "Flare") {
-                            GetChild.GetComponent<MeshRenderer>().materials[0].color = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Color) / 10f, 1f, 1f);
+                            GetChild.GetComponent<MeshRenderer>().materials[0].color = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Item_Color) / 10f, 1f, 1f);
                             if (GetChild.GetComponent<Light>() != null) {
-                                GetChild.GetComponent<Light>().color = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Color) / 10f, 1f, 1f);
+                                GetChild.GetComponent<Light>().color = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Item_Color) / 10f, 1f, 1f);
                                 ParticleSystem.MainModule SetCol = GetChild.transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>().main;
-                                SetCol.startColor = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Color) / 10f, 1f, 1f);
+                                SetCol.startColor = Color.HSVToRGB(Inventory[CurrentItemHeld].GetFloat(JType.Item_Color) / 10f, 1f, 1f);
                             }
                         } else if (GetChild.name == "CrankFlashlight"){
                             if (Inventory[CurrentItemHeld].GetFloat(JType.VariableA) > 80f) {
@@ -1847,7 +1847,7 @@ public class PlayerScript : MonoBehaviour {
                             LeftOver = new JClass (new JEntry [] {
                                 new JInt(JType.ID, 174),
                                 new JFloat(JType.VariableA, 0f),
-                                new JInt(JType.StackQuantity, 1)
+                                new JInt(JType.Item_StackQuantity, 1)
                             });
                             LeftOverChance = .5f;
                             break;
@@ -1860,7 +1860,7 @@ public class PlayerScript : MonoBehaviour {
                             LeftOver = new JClass (new JEntry [] {
                                 new JInt(JType.ID, 174),
                                 new JFloat(JType.VariableA, 0f),
-                                new JInt(JType.StackQuantity, 1)
+                                new JInt(JType.Item_StackQuantity, 1)
                             });
                             LeftOverChance = .1f;
                             break;
@@ -1911,7 +1911,7 @@ public class PlayerScript : MonoBehaviour {
                             LeftOver = new JClass (new JEntry [] {
                                 new JInt(JType.ID, 173),
                                 new JFloat(JType.VariableA, 0f),
-                                new JInt(JType.StackQuantity, 1)
+                                new JInt(JType.Item_StackQuantity, 1)
                             });
                             LeftOverChance = .25f;
                             break;
@@ -1926,7 +1926,7 @@ public class PlayerScript : MonoBehaviour {
                             LeftOver = new JClass (new JEntry [] {
                                 new JInt(JType.ID, 174),
                                 new JFloat(JType.VariableA, 0f),
-                                new JInt(JType.StackQuantity, 1)
+                                new JInt(JType.Item_StackQuantity, 1)
                             });
                             LeftOverChance = .5f;
                             break;
@@ -1947,7 +1947,7 @@ public class PlayerScript : MonoBehaviour {
                             LeftOver = new JClass (new JEntry [] {
                                 new JInt(JType.ID, 174),
                                 new JFloat(JType.VariableA, 0f),
-                                new JInt(JType.StackQuantity, 1)
+                                new JInt(JType.Item_StackQuantity, 1)
                             });
                             LeftOverChance = .5f;
                             break;
@@ -1978,7 +1978,7 @@ public class PlayerScript : MonoBehaviour {
                             LeftOver = new JClass (new JEntry [] {
                                 new JInt(JType.ID, 173),
                                 new JFloat(JType.VariableA, 0f),
-                                new JInt(JType.StackQuantity, 1)
+                                new JInt(JType.Item_StackQuantity, 1)
                             });
                             LeftOverChance = .1f;
                             if (Infection <= 0f && Radioactivity <= 0f)
@@ -2005,7 +2005,7 @@ public class PlayerScript : MonoBehaviour {
                             LeftOver = new JClass (new JEntry [] {
                                 new JInt(JType.ID, 173),
                                 new JFloat(JType.VariableA, 0f),
-                                new JInt(JType.StackQuantity, 1)
+                                new JInt(JType.Item_StackQuantity, 1)
                             });
                             LeftOverChance = .1f;
                             break;
@@ -2078,7 +2078,7 @@ public class PlayerScript : MonoBehaviour {
                             LeftOver = new JClass (new JEntry [] {
                                 new JInt(JType.ID, 174),
                                 new JFloat(JType.VariableA, 0f),
-                                new JInt(JType.StackQuantity, 1)
+                                new JInt(JType.Item_StackQuantity, 1)
                             });
                             LeftOverChance = .05f;
                             break;
@@ -2100,7 +2100,7 @@ public class PlayerScript : MonoBehaviour {
                             LeftOver = new JClass (new JEntry [] {
                                 new JInt(JType.ID, 174),
                                 new JFloat(JType.VariableA, 0f),
-                                new JInt(JType.StackQuantity, 1)
+                                new JInt(JType.Item_StackQuantity, 1)
                             });
                             LeftOverChance = .5f;
                             break;
@@ -2246,7 +2246,7 @@ public class PlayerScript : MonoBehaviour {
                             LeftOver = new JClass (new JEntry [] {
                                 new JInt(JType.ID, 173),
                                 new JFloat(JType.VariableA, 0f),
-                                new JInt(JType.StackQuantity, 1)
+                                new JInt(JType.Item_StackQuantity, 1)
                             });
                             LeftOverChance = .25f;
                             break;
@@ -2497,7 +2497,7 @@ public class PlayerScript : MonoBehaviour {
                         Inventory[CurrentItemHeld]  = new JClass (new JEntry [] {
                             new JInt(JType.ID, 13),
                             new JFloat(JType.VariableA, 30f),
-                            new JFloat(JType.Color, Inventory[CurrentItemHeld].GetFloat(JType.Color))
+                            new JFloat(JType.Item_Color, Inventory[CurrentItemHeld].GetFloat(JType.Item_Color))
                         });
                         //Inventory[CurrentItemHeld] = "id13;va30;cl" + GS.GetSemiClass(Inventory[CurrentItemHeld], "cl"); //new Vector3(13f, 30f, Inventory[CurrentItemHeld].z);
                     }
@@ -2984,32 +2984,32 @@ public class PlayerScript : MonoBehaviour {
                     // Get range info
 
                     // Attachment stats change
-                    if(Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 101){
+                    if(Inventory[CurrentItemHeld].GetInt(JType.Item_Attachment) == 101){
                         FireAnimation[0] = "Grip" + FireAnimation[0];
                         FireAnimation[1] = "Grip" + FireAnimation[1];
                         ReloadingAnimation[0] = "Grip" + ReloadingAnimation[0];
                         AimingAnimation = new [] {"", FireAnimation[0]};
                         if(currID == 55) 
                             FireAnimation = new string[]{"GripThompson-Shoot", "GripTHompson-Shoot"};
-                    } else if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 103) {
+                    } else if (Inventory[CurrentItemHeld].GetInt(JType.Item_Attachment) == 103) {
                         AimZoom = 5f;
                         BurstFire = 1;
                         GunCooldown[0] = 1f;
                         GunSpreadPC = 0f;
-                    } else if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 104) {
+                    } else if (Inventory[CurrentItemHeld].GetInt(JType.Item_Attachment) == 104) {
                         AimZoom = 25f;
                     }
                     GunSpreadPC = Mathf.Clamp(GunSpreadPC, 0f, 1f);
 
                     if (GS.GetComponent<GameScript>().ReceiveButtonPress("AltAction", "Hold") > 0f) {
-                        if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 14) {
+                        if (Inventory[CurrentItemHeld].GetInt(JType.Item_Attachment) == 14) {
                             if (CantUseItem <= 0f) {
                                 CantUseItem = 0.5f;
                                 CantSwitchItem = 0.5f;
                                 ItemsShown.GetComponent<Animator>().Play(FireAnimation[1], 0, 0f);
                                 RS.Attack(new string[]{ "Bayonet", "Power" + (Drunkenness / 10f), "Inventory" + CurrentItemHeld }, LookDir.position, MainCamera.forward, this.gameObject, SlimEnd, SlimEnd);
                             }
-                        } else if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 102) {
+                        } else if (Inventory[CurrentItemHeld].GetInt(JType.Item_Attachment) == 102) {
                             if (CantUseItem <= 0f && Inventory[CurrentItemHeld].GetFloat(JType.VariableA) >= (int)(ReloadVariables[0] / 2f)) {
                                 //Inventory[CurrentItemHeld] = GS.SetSemiClass(Inventory[CurrentItemHeld], "va", "/+-" + ((int)(ReloadVariables[0] / 2f)).ToString(CultureInfo.InvariantCulture));//Inventory[CurrentItemHeld].y -= (int)(ReloadVariables[0] / 2f);
                                 Inventory[CurrentItemHeld].SetFloat(JType.VariableA, -(ReloadVariables[0] / 2f), Maths.Add);
@@ -3060,7 +3060,7 @@ public class PlayerScript : MonoBehaviour {
                         Inventory[CurrentItemHeld].SetFloat(JType.VariableA, -AmmoInUse, Maths.Add);
 
                         if (ZoomValues[1] <= ZoomValues[0] + 1) {
-                            if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 103) {
+                            if (Inventory[CurrentItemHeld].GetInt(JType.Item_Attachment) == 103) {
                                 ItemsShown.GetComponent<Animator>().Play(FireAnimation[0], 0, 0f);
                             } else if (AimingAnimation[1] != "") {
                                 ItemsShown.GetComponent<Animator>().Play(AimingAnimation[1], 0, 0f);
@@ -3078,7 +3078,7 @@ public class PlayerScript : MonoBehaviour {
                             if(ZoomValues[1] <= ZoomValues[0] + 1) Gunspread /= 3f;
                             Additionals.Add("GunSpread" + Gunspread.ToString(CultureInfo.InvariantCulture));
                             Additionals.Add("Inventory" + CurrentItemHeld);
-                            if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 103) {
+                            if (Inventory[CurrentItemHeld].GetInt(JType.Item_Attachment) == 103) {
                                 Additionals.Add("Power10");
                             } else {
                                 Additionals.Add("Power" + (Drunkenness / 10f));
@@ -3086,12 +3086,12 @@ public class PlayerScript : MonoBehaviour {
                             if (BulletsToSpanw > AmountOfGunFires) {
                                 Additionals.Add("HideGunFire");
                             }
-                            if (Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 100) {
+                            if (Inventory[CurrentItemHeld].GetInt(JType.Item_Attachment) == 100) {
                                 Additionals.Add("IsSilenced");
                             }
                             RS.Attack(Additionals.ToArray(), LookDir.position, MainCamera.forward, this.gameObject, SlimEnd, BulletChamber);
                         }
-                        if (!(IsCrouching >= 1f && Inventory[CurrentItemHeld].GetInt(JType.Attachment) == 105)) {
+                        if (!(IsCrouching >= 1f && Inventory[CurrentItemHeld].GetInt(JType.Item_Attachment) == 105)) {
                             float[] RecoilMP = new float[] { Mathf.Lerp(1f, Random.Range(-0.25f, 0.25f), Mathf.Clamp(GunSpreadPC * RecoilPhysics[0], 0f, 1f) ) , Mathf.Lerp(0f, 2f, Mathf.Clamp(GunSpreadPC * RecoilPhysics[1], 0f, 1f) ) };
                             float GunspreadMP = 1f;
                             float YrecoilRandomizer = (Mathf.PerlinNoise(Time.time / 3f, Time.time / -3f) * 2f) - 1f;
@@ -3334,11 +3334,11 @@ public class PlayerScript : MonoBehaviour {
 
                     if (GS.ReceiveButtonPress("Action", "Hold") > 0f && CantUseItem <= 0f) {
 
-                        int Category = Inventory[CurrentItemHeld].GetInt(JType.ClothingCategory);
+                        int Category = Inventory[CurrentItemHeld].GetInt(JType.Item_ClothingCategory);
 
                         int AddHere = -1;
                         for (int CheckEq = 0; CheckEq < 4; CheckEq ++) {
-                            if (Equipment[CheckEq].GetInt(JType.ClothingCategory) == Category) {
+                            if (Equipment[CheckEq].GetInt(JType.Item_ClothingCategory) == Category) {
                                 AddHere = -2;
                                 CantUseItem = 0.5f;
                                 string WhatCategory = "";
@@ -3624,7 +3624,7 @@ public class PlayerScript : MonoBehaviour {
                         }
 
                         if (success) {
-                            RS.SetScore("PickedLocks_", "/+1");
+                            RS.SetScore(JType.RoundScore_Stats_PickedLocks, "/+1");
 
                             GameObject Ring = Instantiate(EffectPrefab) as GameObject;
                             Ring.transform.position = this.transform.position;
@@ -3638,7 +3638,7 @@ public class PlayerScript : MonoBehaviour {
                                     interactable.Interaction("Break", 9999f);
                                 } else if (interactable.Variables.GetInt(JType.ID) == 3) {
                                     GS.Mess(GS.SetString("Door has been opened", "Drzwi zostały otwarte"), "Good");
-                                    interactable.Variables.SetInt(JType.InteractableType, 0);
+                                    interactable.Variables.SetInt(JType.Interactable_Type, 0);
                                 }
                             } else if (picked.TryGetComponent<ChestScript>(out ChestScript chest)) {
                                 GS.Mess(GS.SetString(chest.Name[0] + " has been opened", "Otwarto " + chest.Name[1]), "Good");
@@ -3942,7 +3942,7 @@ public class PlayerScript : MonoBehaviour {
                                     Destroy(ClearScans.gameObject);
                                 }
 
-                                if (Inventory[CurrentItemHeld].GetInt(JType.ScanOption) == 0) {
+                                if (Inventory[CurrentItemHeld].GetInt(JType.Item_ScanOption) == 0) {
                                     // Items
                                     Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "ItemScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
                                     foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Item")) {
@@ -3950,7 +3950,7 @@ public class PlayerScript : MonoBehaviour {
                                             scans.Add(ScanItem);
                                         }
                                     }
-                                } else if (Inventory[CurrentItemHeld].GetInt(JType.ScanOption) == 1) {
+                                } else if (Inventory[CurrentItemHeld].GetInt(JType.Item_ScanOption) == 1) {
                                     // Mobs
                                     Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "PulseScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
                                     foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Mob")) {
@@ -3960,7 +3960,7 @@ public class PlayerScript : MonoBehaviour {
                                     }
                                     foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("MobPH"))
                                         scans.Add(ScanItem);
-                                } else if (Inventory[CurrentItemHeld].GetInt(JType.ScanOption) == 2) {
+                                } else if (Inventory[CurrentItemHeld].GetInt(JType.Item_ScanOption) == 2) {
                                     // Interactables
                                     Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "UtilityScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
                                     foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Interactable")) {
@@ -3968,7 +3968,7 @@ public class PlayerScript : MonoBehaviour {
                                             scans.Add(ScanItem);
                                         }
                                     }
-                                } else if (Inventory[CurrentItemHeld].GetInt(JType.ScanOption) == 3) {
+                                } else if (Inventory[CurrentItemHeld].GetInt(JType.Item_ScanOption) == 3) {
                                     // Exit
                                     Scanner.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "ExitScan-" + LookDir.transform.eulerAngles.x + ";" + LookDir.transform.eulerAngles.y;
                                     foreach (GameObject ScanItem in GameObject.FindGameObjectsWithTag("Interactable"))
@@ -4010,7 +4010,7 @@ public class PlayerScript : MonoBehaviour {
                             CantUseItem = 0.5f;
                             CantSwitchItem = 0.5f;
                             MainCanvas.PlaySoundBank("S_NVON");
-                            Inventory[CurrentItemHeld].SetInt(JType.ScanOption, (Inventory[CurrentItemHeld].GetInt(JType.ScanOption) + 1) % 4);
+                            Inventory[CurrentItemHeld].SetInt(JType.Item_ScanOption, (Inventory[CurrentItemHeld].GetInt(JType.Item_ScanOption) + 1) % 4);
                             scanBuffer = 0f;
                         }
                     }
@@ -4114,7 +4114,7 @@ public class PlayerScript : MonoBehaviour {
 
                         InvGet(new JClass(new JEntry[]{
                             new JInt(JType.ID, 17),
-                            new JInt(JType.StackQuantity, 1)
+                            new JInt(JType.Item_StackQuantity, 1)
                         }), 0);
                         GS.Mess(GS.SetString("Bottle of water acquired", "Nabyto butelkę wody"), "Good");
 
@@ -4169,7 +4169,7 @@ public class PlayerScript : MonoBehaviour {
                 } else if (Equipment[ScanEq].GetInt(JType.ID) == 51) {
                     SpeedMultip += 3f;
                 } else if (Equipment[ScanEq].GetInt(JType.ID) == 53) {
-                    if (Equipment[ScanEq].GetInt(JType.NightVision) != 1){//(int)Equipment[ScanEq].z == 0) {
+                    if (Equipment[ScanEq].GetInt(JType.Item_NightVision) != 1){//(int)Equipment[ScanEq].z == 0) {
                         SetNV = false;
                     } else {
                         SetNV = true;

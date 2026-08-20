@@ -13,9 +13,9 @@ public class ProfileScript : MonoBehaviour{
 
     public int[] Exp = {1,0,0};
 
-    public string Statistics = ""; // Update records is suppossed to add records, but instead, it replaces them. Fix it
+    public JClass Statistics = new JClass();
     public int RecordDate = 0;
-    public string Records = "";
+    public List<JClass> Records = new List<JClass>();
 
     // Character loadout
     public string cl_Clothes = "ClassicClothes";
@@ -125,8 +125,8 @@ public class ProfileScript : MonoBehaviour{
 
                 string DataToSave = "ID_" + ProfileID.ToString() +
                 "®PN_" + Profilename +
-                "®Stats_" + Statistics +
-                "®Records_" + Records +
+                "®Stats_" + JsonUtility.ToJson(Statistics) +
+                "®Records_" + JsonUtility.ToJson(new JList(JType.Records, Records)) +
                 "®RecDat_" + RecordDate +
                 "®LVL_" + Exp[0].ToString() +
                 "®EXP_" + Exp[1].ToString() +
@@ -168,8 +168,11 @@ public class ProfileScript : MonoBehaviour{
                         // Loading that profile
                         ProfileID = What;
                         Profilename = GS.GetSemiClass(GottenProfile, "PN_", "®");
-                        Statistics = GS.GetSemiClass(GottenProfile, "Stats_", "®");
-                        Records = GS.GetSemiClass(GottenProfile, "Records_", "®");
+                        
+                        // TODO: null here
+                        Statistics = new ();//JsonUtility.FromJson<JClass>(GS.GetSemiClass(GottenProfile, "Stats_", "®"));
+                        Records = new ();//JsonUtility.FromJson<JClass>(GS.GetSemiClass(GottenProfile, "Records_", "®")).GetList(JType.Records).Value;
+                        
                         RecordDate = int.Parse(GS.GetSemiClass(GottenProfile, "RecDat_", "®"));
                         Exp = new int[]{int.Parse(GS.GetSemiClass(GottenProfile, "LVL_", "®")), int.Parse(GS.GetSemiClass(GottenProfile, "EXP_", "®")), 9999};
                         Exp[2] = Exp[0] * 5000;
@@ -192,9 +195,9 @@ public class ProfileScript : MonoBehaviour{
                         // That profile does not exist, creating a new one
                         if(ProfileID == 1337) Profilename = "Generic Profile";
                         ProfileID = Random.Range(100000, 999999);
-                        Statistics = "";
+                        Statistics = new JClass();
                         RecordDate = 0;
-                        Records = "";
+                        Records = new List<JClass>();
                         Exp = new int[]{1, 0, 5000};
 
                         cl_Clothes = "ClassicClothes";

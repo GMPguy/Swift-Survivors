@@ -170,7 +170,7 @@ public class DestructionScript : MonoBehaviour {
                 } else {
 
                     if (killer && killer.tag == "Player")
-                        RS.SetScore("ObjectsDestroyed_", "/+1");
+                        RS.SetScore(JType.RoundScore_Stats_ObjectsDestroyed, "/+1");
 
                     // Destroy effect
                     switch(mainType){

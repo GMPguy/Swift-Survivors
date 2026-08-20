@@ -154,82 +154,82 @@ public class Spawner : MonoBehaviour {
             Chance = new float[] { 10f, 5f };
         } else if (Special == "Chests_SmallHouse") {
             theNewStuffToSpawn = new JClass[] {
-                new (new JString(JType.SpawnStuffString, "Closet")),
-                new (new JString(JType.SpawnStuffString, "Chest")),
-                new (new JString(JType.SpawnStuffString, "Fridge")),
-                new (new JString(JType.SpawnStuffString, "Desk")),
-                new (new JString(JType.SpawnStuffString, "Safe")),
-                new (new JString(JType.SpawnStuffString, "Bathroom"))
+                new (new JString(JType.Spawn_String, "Closet")),
+                new (new JString(JType.Spawn_String, "Chest")),
+                new (new JString(JType.Spawn_String, "Fridge")),
+                new (new JString(JType.Spawn_String, "Desk")),
+                new (new JString(JType.Spawn_String, "Safe")),
+                new (new JString(JType.Spawn_String, "Bathroom"))
             };
             Chance = new float[] { 100f, 25f };
         } else if (Special == "Chests_BigHouse") {
             theNewStuffToSpawn = new JClass[] {
-                new (new JString(JType.SpawnStuffString, "Closet")),
-                new (new JString(JType.SpawnStuffString, "Chest")),
-                new (new JString(JType.SpawnStuffString, "Fridge")),
-                new (new JString(JType.SpawnStuffString, "Desk")),
-                new (new JString(JType.SpawnStuffString, "Safe")),
-                new (new JString(JType.SpawnStuffString, "Bathroom")),
-                new (new JString(JType.SpawnStuffString, "Bathroom2")),
-                new (new JString(JType.SpawnStuffString, "WallUnit")),
-                new (new JString(JType.SpawnStuffString, "Kitchen"))
+                new (new JString(JType.Spawn_String, "Closet")),
+                new (new JString(JType.Spawn_String, "Chest")),
+                new (new JString(JType.Spawn_String, "Fridge")),
+                new (new JString(JType.Spawn_String, "Desk")),
+                new (new JString(JType.Spawn_String, "Safe")),
+                new (new JString(JType.Spawn_String, "Bathroom")),
+                new (new JString(JType.Spawn_String, "Bathroom2")),
+                new (new JString(JType.Spawn_String, "WallUnit")),
+                new (new JString(JType.Spawn_String, "Kitchen"))
             };
             Chance = new float[] { 75f, 5f };
         } else if (Special == "Chests_SmallLivingroom") {
             theNewStuffToSpawn = new JClass[] {
-                new (new JString(JType.SpawnStuffString, "Closet")),
-                new (new JString(JType.SpawnStuffString, "Chest")),
-                new (new JString(JType.SpawnStuffString, "Desk")),
-                new (new JString(JType.SpawnStuffString, "Safe"))
+                new (new JString(JType.Spawn_String, "Closet")),
+                new (new JString(JType.Spawn_String, "Chest")),
+                new (new JString(JType.Spawn_String, "Desk")),
+                new (new JString(JType.Spawn_String, "Safe"))
             };
             Chance = new float[] { 100f, 25f };
         } else if (Special == "Chests_BigLivingroom") {
             theNewStuffToSpawn = new JClass[] {
-                new (new JString(JType.SpawnStuffString, "Closet")),
-                new (new JString(JType.SpawnStuffString, "Chest")),
-                new (new JString(JType.SpawnStuffString, "Desk")),
-                new (new JString(JType.SpawnStuffString, "Safe")),
-                new (new JString(JType.SpawnStuffString, "WallUnit"))
+                new (new JString(JType.Spawn_String, "Closet")),
+                new (new JString(JType.Spawn_String, "Chest")),
+                new (new JString(JType.Spawn_String, "Desk")),
+                new (new JString(JType.Spawn_String, "Safe")),
+                new (new JString(JType.Spawn_String, "WallUnit"))
             };
             Chance = new float[] { 75f, 5f };
         } else if (Special == "Chests_SmallKitchen") {
             theNewStuffToSpawn = new JClass[] {
-                new (new JString(JType.SpawnStuffString, "Fridge")),
-                new (new JString(JType.SpawnStuffString, "Safe")),
-                new (new JString(JType.SpawnStuffString, "Bathroom"))
+                new (new JString(JType.Spawn_String, "Fridge")),
+                new (new JString(JType.Spawn_String, "Safe")),
+                new (new JString(JType.Spawn_String, "Bathroom"))
             };
             Chance = new float[] { 100f, 25f };
         } else if (Special == "Chests_BigKitchen") {
             theNewStuffToSpawn = new JClass[] {
-                new (new JString(JType.SpawnStuffString, "HardwareDesk")),
-                new (new JString(JType.SpawnStuffString, "Fridge")),
-                new (new JString(JType.SpawnStuffString, "Safe")),
-                new (new JString(JType.SpawnStuffString, "Bathroom")),
-                new (new JString(JType.SpawnStuffString, "Bathroom2")),
-                new (new JString(JType.SpawnStuffString, "Kitchen"))
+                new (new JString(JType.Spawn_String, "HardwareDesk")),
+                new (new JString(JType.Spawn_String, "Fridge")),
+                new (new JString(JType.Spawn_String, "Safe")),
+                new (new JString(JType.Spawn_String, "Bathroom")),
+                new (new JString(JType.Spawn_String, "Bathroom2")),
+                new (new JString(JType.Spawn_String, "Kitchen"))
             };
             Chance = new float[] { 75f, 5f };
         } else if (Special == "Chests_SmallRuin") {
             theNewStuffToSpawn = new JClass[] {
-                new (new JString(JType.SpawnStuffString, "Closet")),
-                new (new JString(JType.SpawnStuffString, "Chest")),
-                new (new JString(JType.SpawnStuffString, "Fridge")),
-                new (new JString(JType.SpawnStuffString, "Desk")),
-                new (new JString(JType.SpawnStuffString, "Safe")),
-                new (new JString(JType.SpawnStuffString, "Bathroom")),
+                new (new JString(JType.Spawn_String, "Closet")),
+                new (new JString(JType.Spawn_String, "Chest")),
+                new (new JString(JType.Spawn_String, "Fridge")),
+                new (new JString(JType.Spawn_String, "Desk")),
+                new (new JString(JType.Spawn_String, "Safe")),
+                new (new JString(JType.Spawn_String, "Bathroom")),
             };
             Chance = new float[] { 50f, 2f };
         } else if (Special == "Chests_BigRuin") {
             theNewStuffToSpawn = new JClass[] {
-                new (new JString(JType.SpawnStuffString, "Closet")),
-                new (new JString(JType.SpawnStuffString, "Chest")),
-                new (new JString(JType.SpawnStuffString, "Fridge")),
-                new (new JString(JType.SpawnStuffString, "Desk")),
-                new (new JString(JType.SpawnStuffString, "Safe")),
-                new (new JString(JType.SpawnStuffString, "Bathroom")),
-                new (new JString(JType.SpawnStuffString, "Bathroom2")),
-                new (new JString(JType.SpawnStuffString, "WallUnit")),
-                new (new JString(JType.SpawnStuffString, "Kitchen"))
+                new (new JString(JType.Spawn_String, "Closet")),
+                new (new JString(JType.Spawn_String, "Chest")),
+                new (new JString(JType.Spawn_String, "Fridge")),
+                new (new JString(JType.Spawn_String, "Desk")),
+                new (new JString(JType.Spawn_String, "Safe")),
+                new (new JString(JType.Spawn_String, "Bathroom")),
+                new (new JString(JType.Spawn_String, "Bathroom2")),
+                new (new JString(JType.Spawn_String, "WallUnit")),
+                new (new JString(JType.Spawn_String, "Kitchen"))
             };
             Chance = new float[] { 25f, 1f };
         } else if (theNewStuffToSpawn.Length <= 0){
@@ -271,8 +271,8 @@ public class Spawner : MonoBehaviour {
                 JClass chosen = theNewStuffToSpawn[Random.Range(0, theNewStuffToSpawn.Length)];
                 for (int c = 0; c <= ObjectToSpawn.transform.childCount; c++)
                     if (c == ObjectToSpawn.transform.childCount)
-                        Debug.LogError($"No chest of name {chosen.GetString(JType.SpawnStuffString)} found");
-                    else if (ObjectToSpawn.transform.GetChild(c).name == chosen.GetString(JType.SpawnStuffString)) {
+                        Debug.LogError($"No chest of name {chosen.GetString(JType.Spawn_String)} found");
+                    else if (ObjectToSpawn.transform.GetChild(c).name == chosen.GetString(JType.Spawn_String)) {
                         ChestScript SpawnChest = Instantiate(ObjectToSpawn.transform.GetChild(c).gameObject).GetComponent<ChestScript>();
                         SpawnChest.transform.SetPositionAndRotation(this.transform.position, this.transform.rotation);
                         break;

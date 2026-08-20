@@ -381,7 +381,7 @@ public class GameScript : MonoBehaviour {
 
             //Saves(CurrentSave, 2);
             SaveManipulation(CurrentSave, 2);
-            PlaythroughStats = "";
+            PlaythroughStats = new JClass();
             WhatOnStart = 0;
 
             SceneManager.LoadScene("MainGame");
@@ -422,8 +422,8 @@ public class GameScript : MonoBehaviour {
                 
                 // Create injection of file
                 string Filer = "id" + SaveID.ToString() + "®sn" + SaveFileName
-                + "®rs" + RoundSetting
-                + "®pts" + PlaythroughStats
+                + "®rs" + JsonUtility.ToJson(RoundSetting)
+                + "®pts" + JsonUtility.ToJson(PlaythroughStats)
                 + "®ro" + Round.ToString()
                 + "®so" + Score.ToString()
                 + "®bo" + Biome.ToString()
@@ -471,8 +471,8 @@ public class GameScript : MonoBehaviour {
                 if(Receiver != ""){
                     SaveFileName = GetSemiClass(Receiver, "sn", "®");
 
-                    RoundSetting = GetSemiClass(Receiver, "rs", "®");
-                    PlaythroughStats = GetSemiClass(Receiver, "pts", "®");
+                    RoundSetting = JsonUtility.FromJson<JClass>(GetSemiClass(Receiver, "rs", "®"));
+                    PlaythroughStats = JsonUtility.FromJson<JClass>(GetSemiClass(Receiver, "pts", "®"));
                     Round = int.Parse(GetSemiClass(Receiver, "ro", "®"));
                     Score = int.Parse(GetSemiClass(Receiver, "so", "®"));
                     Biome = int.Parse(GetSemiClass(Receiver, "bo", "®"));
@@ -522,72 +522,37 @@ public class GameScript : MonoBehaviour {
 
     public void UpdateRecord(){
 
-        NeueScore[0] = SetSemiClass(NeueScore[0], "R", "/+-1");
+        int rounds = Mathf.Max(NeueScore[0].GetInt(JType.RoundSettings_Round) - 1, 0);
+        int score = NeueScore[0].GetInt(JType.RoundSettings_Score);
+        int gameMode = NeueScore[0].GetInt(JType.RoundSettings_GameMode);
+        int profileDependance = NeueScore[0].GetInt(JType.RoundSettings_ProfileDependance);
+
+        if (profileDependance != 1) {
+            JType roundsType = gameMode switch {
+                0 => JType.Stats_TotalRounds,
+                2 => JType.Stats_TotalCasualRounds,
+                _ => JType.Stats_TotalWaves
+            };
+            PS.Statistics.SetInt(roundsType, rounds, Maths.Add);
+            PS.Statistics.SetInt(JType.Stats_TotalScore, score, Maths.Add);
+            if (score > PS.Statistics.GetInt(JType.Stats_HighestScore))
+                PS.Statistics.SetInt(JType.Stats_HighestScore, score);
+            JType mostRoundsType = gameMode switch {
+                0 => JType.Stats_MostRounds,
+                2 => JType.Stats_MostCasualRounds,
+                _ => JType.Stats_MostWaves
+            };
+            if (rounds > PS.Statistics.GetInt(mostRoundsType))
+                PS.Statistics.SetInt(mostRoundsType, rounds);
+            int survivedTime = NeueScore[1].GetInt(JType.RoundScore_Stats_SurvivedTime);
+            if (survivedTime > PS.Statistics.GetInt(JType.Stats_LongestSurvivedTime))
+                PS.Statistics.SetInt(JType.Stats_LongestSurvivedTime, survivedTime);
+        }
 
         // Remove rewards and whatnot
-        if(GetSemiClass(NeueScore[0], "P") != "1"){
-            if(GetSemiClass(NeueScore[0], "G") == "0") PS.Statistics = SetSemiClass(PS.Statistics, "TotalRounds_", "/+" + GetSemiClass(NeueScore[0], "R"));
-            else if(GetSemiClass(NeueScore[0], "G") == "2") PS.Statistics = SetSemiClass(PS.Statistics, "TotalCasualRounds_", "/+" + GetSemiClass(NeueScore[0], "R"));
-            else PS.Statistics = SetSemiClass(PS.Statistics, "TotalWaves_", "/+" + GetSemiClass(NeueScore[0], "R"));
-            PS.Statistics = SetSemiClass(PS.Statistics, "TotalScore_", "/+" + GetSemiClass(NeueScore[0], "S"));
-
-            if ((ExistSemiClass(NeueScore[0], "S") && int.Parse(GetSemiClass(NeueScore[0], "S")) > 0) && (!ExistSemiClass(PS.Statistics, "HighestScore_") || (float.Parse(GetSemiClass(NeueScore[0], "S")) > float.Parse(GetSemiClass(PS.Statistics, "HighestScore_"))))) {
-                PS.Statistics = SetSemiClass(PS.Statistics, "HighestScore_", GetSemiClass(NeueScore[0], "S"));
-            }
-
-            if ((ExistSemiClass(NeueScore[0], "R") && int.Parse(GetSemiClass(NeueScore[0], "R")) > 0 && GetSemiClass(NeueScore[0], "G") == "0") && (!ExistSemiClass(PS.Statistics, "MostRounds_") || (float.Parse(GetSemiClass(NeueScore[0], "R")) > float.Parse(GetSemiClass(PS.Statistics, "MostRounds_"))))) {
-                PS.Statistics = SetSemiClass(PS.Statistics, "MostRounds_", GetSemiClass(NeueScore[0], "R"));
-            } else if ((ExistSemiClass(NeueScore[0], "R") && int.Parse(GetSemiClass(NeueScore[0], "R")) > 0 && GetSemiClass(NeueScore[0], "G") == "2") && (!ExistSemiClass(PS.Statistics, "MostCasualRounds_") || (float.Parse(GetSemiClass(NeueScore[0], "R")) > float.Parse(GetSemiClass(PS.Statistics, "MostCasualRounds_"))))) {
-                PS.Statistics = SetSemiClass(PS.Statistics, "MostCasualRounds_", GetSemiClass(NeueScore[0], "R"));
-            } else if ((ExistSemiClass(NeueScore[0], "R") && int.Parse(GetSemiClass(NeueScore[0], "R")) > 0 && GetSemiClass(NeueScore[0], "G") == "1") && (!ExistSemiClass(PS.Statistics, "MostWaves_") || (float.Parse(GetSemiClass(NeueScore[0], "R")) > float.Parse(GetSemiClass(PS.Statistics, "MostWaves_"))))) {
-                PS.Statistics = SetSemiClass(PS.Statistics, "MostWaves_", GetSemiClass(NeueScore[0], "R"));
-            }
-
-            if (!ExistSemiClass(PS.Statistics, "LongestSurvivedTime_") || (int.Parse(GetSemiClass(NeueScore[1], "SurvivedTime_")) > int.Parse(GetSemiClass(PS.Statistics, "LongestSurvivedTime_")))) {
-                PS.Statistics = SetSemiClass(PS.Statistics, "LongestSurvivedTime_", GetSemiClass(NeueScore[1], "SurvivedTime_"));
-            }
-        }
-
-        string[] TempStati = ListSemiClass(NeueScore[1]);
-        string NewTemps = "";
-        for (int RU = 0; RU < TempStati.Length; RU++) {
-            string[] ScoreType = new string[]{ GetStatName(TempStati[RU], 1), GetStatName(TempStati[RU], 2)};
-            if(ScoreType[0] != "misc."){
-                if(GetSemiClass(NeueScore[0], "P") != "1") PS.Statistics = SetSemiClass(PS.Statistics, ScoreType[0] + "_", "/+" + ScoreType[1]);
-                NewTemps += TempStati[RU] + ";";
-            }
-        }
-        NeueScore[1] = NewTemps;
-
-        // Add records
-        if(GetSemiClass(NeueScore[0], "P") != "1"){
-            string NewRecord = NeueScore[0] + ";T" + PS.RecordDate.ToString() + "/";
-            PS.Records += NewRecord;
-            PS.RecordDate ++;
-
-            string[] SortedRecords = ListSemiClass(PS.Records, "/");
-            if (SortedRecords.Length > 100){
-
-                // sortowanie bombelkowe
-                bool RepeatBubble = false;
-                for(int bubcek = 0; bubcek <= SortedRecords.Length; bubcek++){
-                    if(bubcek < SortedRecords.Length){
-                        if(int.Parse(GetSemiClass(SortedRecords[bubcek], "S")) > int.Parse(GetSemiClass(SortedRecords[(int)Mathf.Clamp(bubcek, 0, SortedRecords.Length-1)], "S")) ){
-                            string heyu = SortedRecords[(int)Mathf.Clamp(bubcek, 0, SortedRecords.Length-1)];
-                            SortedRecords[(int)Mathf.Clamp(bubcek, 0, SortedRecords.Length-1)] = SortedRecords[bubcek];
-                            SortedRecords[bubcek] = heyu;
-                            RepeatBubble = true;
-                        }
-                    } else if (RepeatBubble) {
-                        bubcek = 0;
-                    }
-                }
-
-                PS.Records = "";
-                for(int no = 1; no < SortedRecords.Length; no++) PS.Records += SortedRecords[no] + "/";
-            }
-        } else {
-            NeueScore[1] += ";ProfileIndependent_0;";
+        if (profileDependance != 1) {
+            PS.Records.Add(new JClass(NeueScore[0]));
+            PS.RecordDate++;
         }
 
     }
@@ -886,7 +851,7 @@ public class GameScript : MonoBehaviour {
     // Item functions
     public void setItemData(bool isCausal){
         //JType casualAmmo = isCausal ? JType.CasualAmmo : JType.AmmoStack;
-        JEntry casualAmmo = isCausal ? new JString(JType.Cacheable, "Ammo") : new JTag(JType.AmmoStack);
+        JEntry casualAmmo = isCausal ? new JString(JType.Item_Cacheable, "Ammo") : new JTag(JType.Item_AmmoStack);
 
         ItemCache = new itemClass[]{
             new(),
@@ -940,14 +905,14 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 11),
                     new JFloat (JType.VariableA, 0f),
-                    new JFloat(JType.Color, Random.Range(0, 10))
+                    new JFloat(JType.Item_Color, Random.Range(0, 10))
                 })
             ),
             new(this, new string[]{"Flare", "Flara"},
                 new string[]{"It shines a bright light, and warms you. When thrown, it can set foes on fire.", "Flara będzie świecić jasnym światłem, i będzie cię ocieplać. Gdy rzucisz nią w kogoś, ten ktoś zostanie podpalony."},
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 12),
-                    new JFloat (JType.Color, Random.Range(0, 10))
+                    new JFloat (JType.Item_Color, Random.Range(0, 10))
                 }),
                 new (20f, 0f, 0f)
             ),
@@ -956,7 +921,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 13),
                     new JFloat (JType.VariableA, 100f),
-                    new JFloat (JType.Color, Random.Range(0, 10))
+                    new JFloat (JType.Item_Color, Random.Range(0, 10))
                 }),
                 new (20f, 0f, 0f)
             ),
@@ -965,7 +930,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 14),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (15f, 0f, 10f)
             ),
@@ -974,7 +939,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 15),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (5f, 0f, 5f)
             ),
@@ -983,7 +948,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 16),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (5f, 0f, 25f)
             ),
@@ -1033,7 +998,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 27),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (15f, 0f, 20f)
             ),
@@ -1042,7 +1007,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 28),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (15f, 0f, 25f)
             ),
@@ -1051,7 +1016,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 29),
                     new JFloat (JType.VariableA, 7),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (10f, 25f, 5f)
             ),
@@ -1068,7 +1033,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 31),
                     new JFloat (JType.VariableA, 8f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (10f, 25f, 5f)
             ),
@@ -1077,7 +1042,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 32),
                     new JFloat (JType.VariableA, 6f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (10f, 25f, 5f)
             ),
@@ -1094,7 +1059,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 34),
                     new JFloat (JType.VariableA, 5f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (7f, 25f, 5f)
             ),
@@ -1103,7 +1068,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 35),
                     new JFloat (JType.VariableA, 2f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (10f, 25f, 5f)
             ),
@@ -1112,7 +1077,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 36),
                     new JFloat (JType.VariableA, 30f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (7f, 25f, 5f)
             ),
@@ -1129,7 +1094,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 38),
                     new JFloat (JType.VariableA, 30f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (5f, 25f, 2f)
             ),
@@ -1146,7 +1111,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 40),
                     new JFloat (JType.VariableA, 5f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (5f, 25f, 2f)
             ),
@@ -1155,7 +1120,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 41),
                     new JFloat (JType.VariableA, 40f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (10f, 25f, 5f)
             ),
@@ -1164,7 +1129,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 42),
                     new JFloat (JType.VariableA, 30f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (5f, 25f, 2f)
             ),
@@ -1181,7 +1146,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 45),
                     new JFloat (JType.VariableA, 0f),
-                    new JInt (JType.ClothingCategory, 1)
+                    new JInt (JType.Item_ClothingCategory, 1)
                 })
             ),
             new(this, new string[]{"Backpack", "Plecak"},
@@ -1189,7 +1154,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 46),
                     new JFloat (JType.VariableA, 0f),
-                    new JInt (JType.ClothingCategory, 1)
+                    new JInt (JType.Item_ClothingCategory, 1)
                 })
             ),
             new(this, new string[]{"Military backpack", "Plecak wojskowy"},
@@ -1197,7 +1162,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 47),
                     new JFloat (JType.VariableA, 0f),
-                    new JInt (JType.ClothingCategory, 1)
+                    new JInt (JType.Item_ClothingCategory, 1)
                 })
             ),
             new(this, new string[]{"Bulletproof vest", "Kamizelka kuloodporna"},
@@ -1205,7 +1170,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 48),
                     new JFloat (JType.VariableA, 0f),
-                    new JInt (JType.ClothingCategory, 2)
+                    new JInt (JType.Item_ClothingCategory, 2)
                 })
             ),
             new(this, new string[]{"Military vest", "Kamizelka wojskowa"},
@@ -1213,7 +1178,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 49),
                     new JFloat (JType.VariableA, 0f),
-                    new JInt (JType.ClothingCategory, 2)
+                    new JInt (JType.Item_ClothingCategory, 2)
                 }),
                 new (5f, 0f, 0f)
             ),
@@ -1226,7 +1191,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 51),
                     new JFloat (JType.VariableA, 0f),
-                    new JInt (JType.ClothingCategory, 3)
+                    new JInt (JType.Item_ClothingCategory, 3)
                 })
             ),
             new(this, new string[]{"Money", "Pieniądze"},
@@ -1234,7 +1199,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 52),
                     new JFloat (JType.VariableA, Random.Range(1, 10) * 5),
-                    new JString (JType.Cacheable, "Money")
+                    new JString (JType.Item_Cacheable, "Money")
                 })
             ),
             new(this, new string[]{"Night vision goggles", "Noktowizor"},
@@ -1242,8 +1207,8 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 53),
                     new JFloat (JType.VariableA, 100f),
-                    new JInt (JType.ClothingCategory, 4),
-                    new JInt (JType.NightVision, 1)
+                    new JInt (JType.Item_ClothingCategory, 4),
+                    new JInt (JType.Item_NightVision, 1)
                 }),
                 new (15f, 50f, 0f)
             ),
@@ -1257,7 +1222,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 55),
                     new JFloat (JType.VariableA, 32f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (7f, 25f, 5f)
             ),
@@ -1266,7 +1231,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 56),
                     new JFloat (JType.VariableA, 8f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (5f, 25f, 2f)
             ),
@@ -1275,7 +1240,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 57),
                     new JFloat (JType.VariableA, 25f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (5f, 25f, 2f)
             ),
@@ -1284,7 +1249,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 58),
                     new JFloat (JType.VariableA, 25f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (10f, 25f, 5f)
             ),
@@ -1293,7 +1258,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 59),
                     new JFloat (JType.VariableA, 20f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (5f, 25f, 2f)
             ),
@@ -1302,7 +1267,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 60),
                     new JFloat (JType.VariableA, 28f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (5f, 25f, 2f)
             ),
@@ -1311,7 +1276,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 61),
                     new JFloat (JType.VariableA, 8f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (5f, 25f, 2f)
             ),
@@ -1320,7 +1285,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 62),
                     new JFloat (JType.VariableA, 100f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (2f, 25f, 0f)
             ),
@@ -1337,7 +1302,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 64),
                     new JFloat (JType.VariableA, 500f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (2f, 25f, 0f)
             ),
@@ -1346,7 +1311,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 65),
                     new JFloat (JType.VariableA, 5f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (5f, 25f, 2f)
             ),
@@ -1453,8 +1418,8 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 86),
                     new JFloat (JType.VariableA, 100f),
-                    new JInt (JType.ClothingCategory, 5),
-                    new JEntry (JType.Repairable)
+                    new JInt (JType.Item_ClothingCategory, 5),
+                    new JEntry (JType.Item_Repairable)
                 })
             ),
             new(this, new string[]{"Lifebuoy", "Koło ratunkowe"},
@@ -1499,7 +1464,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 94),
                     new JFloat (JType.VariableA, 0f),
-                    new JInt (JType.ClothingCategory, 94)
+                    new JInt (JType.Item_ClothingCategory, 94)
                 })
             ),
             new(this, new string[]{"Riot shield", "Tarcza policyjna"},
@@ -1507,7 +1472,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 95),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (5f, 0f, 0f)
             ),
@@ -1516,7 +1481,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 96),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 })
             ),
             new(this, new string[]{"Lockpick", "Wytrych"},
@@ -1576,7 +1541,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 108),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 })
             ),
             new(this, new string[]{"Flamethrower", "Miotacz ognia"},
@@ -1613,7 +1578,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 113),
                     new JFloat (JType.VariableA, 1f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (5f, 25f, 2f)
             ),
@@ -1626,7 +1591,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 115),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (7f, 25f, 10f)
             ),
@@ -1674,7 +1639,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 125),
                     new JFloat (JType.VariableA, 100f),
-                    new JInt (JType.ClothingCategory, 4)
+                    new JInt (JType.Item_ClothingCategory, 4)
                 }),
                 new (2f, 25f, 0f)
             ),
@@ -1683,7 +1648,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 126),
                     new JFloat (JType.VariableA, 0f),
-                    new JInt (JType.ClothingCategory, 3)
+                    new JInt (JType.Item_ClothingCategory, 3)
                 })
             ),
             new(this, new string[]{"Crank flashlight", "Latarka na korbkę"},
@@ -1715,7 +1680,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 130),
                     new JFloat (JType.VariableA, 100f),
-                    new JInt (JType.ScanOption, 0)
+                    new JInt (JType.Item_ScanOption, 0)
                 }),
                 new (10f, 100f, 0f)
             ),
@@ -1729,7 +1694,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 132),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (10f, 100f, 25f)
             ),
@@ -1743,7 +1708,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 134),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (20f, 25f, 20f)
             ),
@@ -1752,7 +1717,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 135),
                     new JFloat (JType.VariableA, 17f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (10f, 25f, 5f)
             ),
@@ -1761,7 +1726,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 136),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (10f, 15f, 10f)
             ),
@@ -1770,7 +1735,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 137),
                     new JFloat (JType.VariableA, 15f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (7f, 25f, 5f)
             ),
@@ -1779,7 +1744,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 138),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (2f, 0f, 0f)
             ),
@@ -1847,7 +1812,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 152),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 })
             ),
             new(this, new string[]{"Celt", "Celt"},
@@ -1855,7 +1820,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 153),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (10f, 25f, 10f)
             ),
@@ -1864,7 +1829,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 154),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (15f, 25f, 10f)
             ),
@@ -1873,7 +1838,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 155),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (5f, 0f, 100f)
             ),
@@ -1882,7 +1847,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 156),
                     new JFloat (JType.VariableA, 100f),
-                    new JEntry (JType.Repairable)
+                    new JEntry (JType.Item_Repairable)
                 }),
                 new (10f, 25f, 5f)
             ),
@@ -1891,7 +1856,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 157),
                     new JFloat (JType.VariableA, 1f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (10f, 25f, 5f)
             ),
@@ -1908,7 +1873,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 159),
                     new JFloat (JType.VariableA, 1),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (7f, 25f, 5f)
             ),
@@ -1917,7 +1882,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 160),
                     new JFloat (JType.VariableA, 7f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 }),
                 new (5f, 25f, 5f)
             ),
@@ -2022,7 +1987,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 180),
                     new JFloat (JType.VariableA, 0f),
-                    new JInt(JType.ClothingCategory, 3)
+                    new JInt(JType.Item_ClothingCategory, 3)
                 })
             ),
             new(this, new string[]{"Nettle", "Pokrzywa"},
@@ -2098,7 +2063,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 994),
                     new JFloat (JType.VariableA, 0f),
-                    new JInt (JType.ClothingCategory, 2)
+                    new JInt (JType.Item_ClothingCategory, 2)
                 })
             ),
             new(this, new string[]{"Spark", "Iskra"},
@@ -2110,7 +2075,7 @@ public class GameScript : MonoBehaviour {
                 new JClass(new JEntry[]{
                     new JInt (JType.ID, 996),
                     new JFloat (JType.VariableA, 0f),
-                    new JInt (JType.Attachment, 0)
+                    new JInt (JType.Item_Attachment, 0)
                 })
             ),
             new(this, new string[]{"Tesla rifle", "Karabin Tesli"},
@@ -2335,113 +2300,112 @@ public class GameScript : MonoBehaviour {
 
     }
 
-    public string GetStatName(string stat, int what = 0){
+    public string GetStatName(JEntry stat, int what = 0){
 
         string Result = "null";
 
-        string[] TypeScore = {"", "?"};
-        for(int ss = 0; ss < stat.Length; ss++)
-            if(stat.Substring(ss, 1) == "_") TypeScore[1] = "";
-            else if (TypeScore[1] == "?") TypeScore[0] += stat.Substring(ss, 1);
-            else TypeScore[1] += stat.Substring(ss, 1);
+        //string[] TypeScore = {"", "?"}; // Key / Value
                         
-            switch(TypeScore[0]){
-                case "ItemsFound":
-                    Result = SetString("Items found: ", "Znalezione przedmioty: ") + TypeScore[1];
-                    break;
-                case "TreasuresFound":
-                    Result = SetString("Treasures found: ", "Znalezione skarby: ") + TypeScore[1];
-                    break;
-                case "ItemsUnderwaterFound":
-                    Result = SetString("Items found underwater: ", "Znalezione pod wodą przedmioty: ") + TypeScore[1];
-                    break;
-                case "ObjectsDestroyed":
-                    Result = SetString("Objects destroyed: ", "Zniszczono obiektów: ") + TypeScore[1];
-                    break;
-                case "ChestsDestroyed":
-                    Result = SetString("Chests destroyed: ", "Zniszczono skrzyń: ") + TypeScore[1];
-                    break;
-                case "ChestsOpened":
-                    Result = SetString("Chests opened: ", "Otwarto skrzyń: ") + TypeScore[1];
-                    break;
-                case "PickedLocks":
-                    Result = SetString("Picked locks: ", "Otwarto wytrychem: ") + TypeScore[1];
-                    break;
-                case "Killed":
-                    Result = SetString("Killed: ", "Zabitych: ") + TypeScore[1];
-                    break;
-                case "KillMutant":
-                    Result = SetString("Mutants killed: ", "Zabitych mutantów: ") + TypeScore[1];
-                    break;
-                case "KillBandit":
-                    Result = SetString("Bandits killed: ", "Zabitych bandytów: ") + TypeScore[1];
-                    break;
-                case "KillGuard":
-                    Result = SetString("Guards killed: ", "Zabitych strażników: ") + TypeScore[1];
-                    break;
-                case "KillSurvivor":
-                    Result = SetString("Survivors killed: ", "Zabitych niedobitków: ") + TypeScore[1];
-                    break;
-                case "Damage":
-                    Result = SetString("Damage dealt: ", "Zadanych obrażeń: ") + TypeScore[1];
-                    break;
-                case "MapDiscovered":
-                    Result = SetString("Map discovered: ", "Odkrycie mapy: ") + TypeScore[1];
-                    break;
-                case "SurvivedTime":
-                    Result = SetString("Survived time: ", "Przetrwany czas:") + SecondsToTime(int.Parse(TypeScore[1]));
-                    break;
-                case "TotalRounds":
-                    Result = SetString("Total amount of rounds: ", "Całkowita liczba przetrwanych rund: ") + TypeScore[1];
-                    break;
-                case "TotalCasualRounds":
-                    Result = SetString("Total amount of rounds in casual mode: ", "Całkowita liczba przetrwanych rund w trybie swobodnym: ") + TypeScore[1];
-                    break;
-                case "TotalWaves":
-                    Result = SetString("Total amount of horde waves: ", "Całkowita liczba przetrwanych fal hordy: ") + TypeScore[1];
-                    break;
-                case "TotalScore":
-                    Result = SetString("Total amount of gained score: ", "Suma uzbieranych wyników: ") + TypeScore[1];
-                    break;
-                case "HighestScore":
-                    Result = SetString("The highest score: ", "Najwyższy wynik: ") + TypeScore[1];
-                    break;
-                case "MostRounds":
-                    Result = SetString("Most rounds in a row: ", "Najwięcej przeżytych rund: ") + TypeScore[1];
-                    break;
-                case "MostCasualRounds":
-                    Result = SetString("Most rounds in a row, in casual mode: ", "Najwięcej przeżytych rund, w trybie swobodnym: ") + TypeScore[1];
-                    break;
-                case "MostWaves":
-                    Result = SetString("Most horde waves in a row: ", "Najwięcej przeżytych fal hordy: ") + TypeScore[1];
-                    break;
-                case "LongestSurvivedTime":
-                    Result = SetString("Longest time survived: ", "Najdłuższy czas przetrwany:") + SecondsToTime(int.Parse(TypeScore[1]));
-                    break;
-                case "ProfileIndependent":
-                    Result = SetString("Profile independent - those stats won't be saved", "Niezależne od profilu - te statystyki nie zostaną zapisane");
-                    break;
-                case "TreasuresSold":
-                    Result = SetString("Treasures sold: ", "Sprzedane skarby: ") + TypeScore[1];
-                    break;
-                case "TradeBuy":
-                    Result = SetString("Trades (items bought): ", "Handle (kupiono): ") + TypeScore[1];
-                    break;
-                case "TradeSell":
-                    Result = SetString("Trades (items sold): ", "Handle (sprzedano): ") + TypeScore[1];
-                    break;
-                case "":
-                    Result = "";
-                    break;
-                default:
-                    Debug.LogError("Uknown stat type: " + stat);
-                    TypeScore[0] = "misc.";
-                    break;
-            }
+        switch(stat.Name){
+            case JType.RoundScore_Stats_ItemsFound:
+                Result = SetString("Items found: ", "Znalezione przedmioty: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_TreasuresFound:
+                Result = SetString("Treasures found: ", "Znalezione skarby: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_ItemsUnderwaterFound:
+                Result = SetString("Items found underwater: ", "Znalezione pod wodą przedmioty: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_ObjectsDestroyed:
+                Result = SetString("Objects destroyed: ", "Zniszczono obiektów: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_ChestsDestroyed:
+                Result = SetString("Chests destroyed: ", "Zniszczono skrzyń: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_ChestsOpened:
+                Result = SetString("Chests opened: ", "Otwarto skrzyń: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_PickedLocks:
+                Result = SetString("Picked locks: ", "Otwarto wytrychem: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_Killed:
+                Result = SetString("Killed: ", "Zabitych: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_KillMutant:
+                Result = SetString("Mutants killed: ", "Zabitych mutantów: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_KillBandit:
+                Result = SetString("Bandits killed: ", "Zabitych bandytów: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_KillGuard:
+                Result = SetString("Guards killed: ", "Zabitych strażników: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_KillSurvivor:
+                Result = SetString("Survivors killed: ", "Zabitych niedobitków: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_Damage:
+                Result = SetString("Damage dealt: ", "Zadanych obrażeń: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_MapDiscovered:
+                Result = SetString("Map discovered: ", "Odkrycie mapy: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_SurvivedTime:
+                Result = SetString("Survived time: ", "Przetrwany czas:") + SecondsToTime(((JInt) stat).Value);
+                break;
+            case JType.Stats_TotalRounds:
+                Result = SetString("Total amount of rounds: ", "Całkowita liczba przetrwanych rund: ") + ((JInt) stat).Value;
+                break;
+            case JType.Stats_TotalCasualRounds:
+                Result = SetString("Total amount of rounds in casual mode: ", "Całkowita liczba przetrwanych rund w trybie swobodnym: ") + ((JInt) stat).Value;
+                break;
+            case JType.Stats_TotalWaves:
+                Result = SetString("Total amount of horde waves: ", "Całkowita liczba przetrwanych fal hordy: ") + ((JInt) stat).Value;
+                break;
+            case JType.Stats_TotalScore:
+                Result = SetString("Total amount of gained score: ", "Suma uzbieranych wyników: ") + ((JInt) stat).Value;
+                break;
+            case JType.Stats_HighestScore:
+                Result = SetString("The highest score: ", "Najwyższy wynik: ") + ((JInt) stat).Value;
+                break;
+            case JType.Stats_MostRounds:
+                Result = SetString("Most rounds in a row: ", "Najwięcej przeżytych rund: ") + ((JInt) stat).Value;
+                break;
+            case JType.Stats_MostCasualRounds:
+                Result = SetString("Most rounds in a row, in casual mode: ", "Najwięcej przeżytych rund, w trybie swobodnym: ") + ((JInt) stat).Value;
+                break;
+            case JType.Stats_MostWaves:
+                Result = SetString("Most horde waves in a row: ", "Najwięcej przeżytych fal hordy: ") + ((JInt) stat).Value;
+                break;
+            case JType.Stats_LongestSurvivedTime:
+                Result = SetString("Longest time survived: ", "Najdłuższy czas przetrwany:") + SecondsToTime(((JInt) stat).Value);
+                break;
+            case JType.RoundSettings_ProfileDependance:
+                Result = SetString("Profile independent - those stats won't be saved", "Niezależne od profilu - te statystyki nie zostaną zapisane");
+                break;
+            case JType.RoundScore_Stats_TreasuresSold:
+                Result = SetString("Treasures sold: ", "Sprzedane skarby: ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_TradeBuy:
+                Result = SetString("Trades (items bought): ", "Handle (kupiono): ") + ((JInt) stat).Value;
+                break;
+            case JType.RoundScore_Stats_TradeSell:
+                Result = SetString("Trades (items sold): ", "Handle (sprzedano): ") + ((JInt) stat).Value;
+                break;
+            case JType.none:
+                Result = "";
+                break;
+            default:
+                Debug.LogError("Uknown stat type: " + stat);
+                break;
+        }
 
-        if(what == 2) return TypeScore[1];
-        else if(what == 1) return TypeScore[0];
-        else return Result;
+        /*if(what == 2) 
+            return TypeScore[1];
+        else if(what == 1) 
+            return TypeScore[0];
+        else*/
+        
+        return Result;
 
     }
 

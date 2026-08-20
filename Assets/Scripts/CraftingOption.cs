@@ -54,22 +54,22 @@ public class CraftingOption : MonoBehaviour {
                     int requiredAmount = 1;
                     
                     //if(GS.ExistSemiClass(TheResources[CheckRes], "sq")) requiredAmount = int.Parse(GS.GetSemiClass(TheResources[CheckRes], "sq") );
-                    if (TheResources[CheckRes].Exists(JType.StackQuantity))
-                        requiredAmount = TheResources[CheckRes].GetInt(JType.StackQuantity);
+                    if (TheResources[CheckRes].Exists(JType.Item_StackQuantity))
+                        requiredAmount = TheResources[CheckRes].GetInt(JType.Item_StackQuantity);
 
                     for (int CheckItem = 0; CheckItem < MainPlayer.MaxInventorySlots; CheckItem ++) {
-                        if (TheResources[CheckRes].GetInt(JType.CraftingFunction) == 0 && GotItems[CheckItem].GetInt(JType.ID) == TheResources[CheckRes].GetInt(JType.ID)) {
-                            if(!GotItems[CheckItem].Exists(JType.StackQuantity)){// GS.ExistSemiClass(GotItems[CheckItem], "sq")) {
+                        if (TheResources[CheckRes].GetInt(JType.Item_CraftingFunction) == 0 && GotItems[CheckItem].GetInt(JType.ID) == TheResources[CheckRes].GetInt(JType.ID)) {
+                            if(!GotItems[CheckItem].Exists(JType.Item_StackQuantity)){// GS.ExistSemiClass(GotItems[CheckItem], "sq")) {
                                 AcquiredItems.Add(new Vector3Int(CheckItem, 1, 0));
                                 requiredAmount--;
-                            } else if (GotItems[CheckItem].GetInt(JType.StackQuantity) < requiredAmount){//int.Parse( GS.GetSemiClass(GotItems[CheckItem], "sq") ) < requiredAmount ) {
+                            } else if (GotItems[CheckItem].GetInt(JType.Item_StackQuantity) < requiredAmount){//int.Parse( GS.GetSemiClass(GotItems[CheckItem], "sq") ) < requiredAmount ) {
                                 AcquiredItems.Add(new Vector3Int(
                                     CheckItem,
-                                    GotItems[CheckItem].GetInt(JType.StackQuantity),
+                                    GotItems[CheckItem].GetInt(JType.Item_StackQuantity),
                                     0
                                 ));
-                                requiredAmount -= GotItems[CheckItem].GetInt(JType.StackQuantity);
-                            } else if (GotItems[CheckItem].GetInt(JType.StackQuantity) >= requiredAmount ) {
+                                requiredAmount -= GotItems[CheckItem].GetInt(JType.Item_StackQuantity);
+                            } else if (GotItems[CheckItem].GetInt(JType.Item_StackQuantity) >= requiredAmount ) {
                                 AcquiredItems.Add(new Vector3Int(CheckItem, requiredAmount, 0));
                                 requiredAmount = 0;
                             }
@@ -120,8 +120,8 @@ public class CraftingOption : MonoBehaviour {
 
                         ToDisplay += GS.ItemCache[Results[0].GetInt(JType.ID)].getName().ToUpper();
 
-                        if(Results[0].Exists(JType.StackQuantity) && Results[0].GetInt(JType.StackQuantity) > 1) 
-                            ToDisplay += " x" + Results[0].GetInt(JType.StackQuantity);
+                        if(Results[0].Exists(JType.Item_StackQuantity) && Results[0].GetInt(JType.Item_StackQuantity) > 1) 
+                            ToDisplay += " x" + Results[0].GetInt(JType.Item_StackQuantity);
                     }
 
                     switch(Special){
@@ -141,8 +141,8 @@ public class CraftingOption : MonoBehaviour {
 
                         ToDisplay += "\n- " + GS.ItemCache[TheResources[sr].GetInt(JType.ID)].getName();
 
-                        if(TheResources[sr].Exists(JType.StackQuantity) && TheResources[sr].GetInt(JType.StackQuantity) > 1) 
-                            ToDisplay += " x" + TheResources[sr].GetInt(JType.StackQuantity);
+                        if(TheResources[sr].Exists(JType.Item_StackQuantity) && TheResources[sr].GetInt(JType.Item_StackQuantity) > 1) 
+                            ToDisplay += " x" + TheResources[sr].GetInt(JType.Item_StackQuantity);
                     }
 
                     MainCanvas.CDTstring = ToDisplay;
@@ -219,8 +219,8 @@ public class CraftingOption : MonoBehaviour {
 
                         COResIcons[CheckResIcon].transform.GetChild(2).GetComponent<Text>().fontSize = 24;
 
-                        if(TheResources[CheckResIcon].Exists(JType.StackQuantity) && TheResources[CheckResIcon].GetInt(JType.StackQuantity) > 1) 
-                            COResIcons[CheckResIcon].transform.GetChild(2).GetComponent<Text>().text = TheResources[CheckResIcon].GetInt(JType.StackQuantity).ToString();
+                        if(TheResources[CheckResIcon].Exists(JType.Item_StackQuantity) && TheResources[CheckResIcon].GetInt(JType.Item_StackQuantity) > 1) 
+                            COResIcons[CheckResIcon].transform.GetChild(2).GetComponent<Text>().text = TheResources[CheckResIcon].GetInt(JType.Item_StackQuantity).ToString();
                         else 
                             COResIcons[CheckResIcon].transform.GetChild(2).GetComponent<Text>().text = "";
 
